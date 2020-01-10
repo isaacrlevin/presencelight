@@ -2,7 +2,7 @@
 
 Recently I decided I wanted to have a Smart Light in my office that showed what my Presence was in Microsoft Teams. With some help, I threw together a little POC and posted to Twitter
 
-<blockquote class="twitter-tweet"><p lang="en" dir="ltr">Well look what I did on my work from home day. A <a href="https://twitter.com/hashtag/phillipshue?src=hash&amp;ref_src=twsrc%5Etfw">#phillipshue</a> light showing my <a href="https://twitter.com/MicrosoftTeams?ref_src=twsrc%5Etfw">@MicrosoftTeams</a> presence. Hey <a href="https://twitter.com/erikaehrli1?ref_src=twsrc%5Etfw">@erikaehrli1</a> don&#39;t hate me when I bring this to the office. <br><br>Thanks to <a href="https://twitter.com/jthake?ref_src=twsrc%5Etfw">@jthake</a> and <a href="https://twitter.com/darrel_miller?ref_src=twsrc%5Etfw">@darrel_miller</a> for help with the <a href="https://twitter.com/hashtag/microsoftgraph?src=hash&amp;ref_src=twsrc%5Etfw">#microsoftgraph</a> stuff <a href="https://t.co/Hbqp868Lee">pic.twitter.com/Hbqp868Lee</a></p>&mdash; Isaac Levin (@isaacrlevin) <a href="https://twitter.com/isaacrlevin/status/1215428720455897090?ref_src=twsrc%5Etfw">January 10, 2020</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+https://twitter.com/isaacrlevin/status/1215428720455897090
 
 I got enough interest that I decided to make it a little more robust, so here is a repo.
 
