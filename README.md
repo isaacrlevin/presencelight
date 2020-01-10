@@ -2,7 +2,7 @@
 
 Recently I decided I wanted to have a Smart Light in my office that showed what my Presence was in Microsoft Teams. With some help, I threw together a little POC and posted to Twitter
 
-https://twitter.com/isaacrlevin/status/1215428720455897090
+![Image of Yaktocat](/static/tweet.png)
 
 I got enough interest that I decided to make it a little more robust, so here is a repo.
 
