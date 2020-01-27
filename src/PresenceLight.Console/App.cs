@@ -17,6 +17,7 @@ namespace PresenceLight.Console
         private readonly IGraphService _graphservice;
         private readonly GraphServiceClient _graphServiceClient;
         private readonly IHueService _hueService;
+
         public App(IOptionsMonitor<ConfigWrapper> optionsAccessor, IGraphService graphService, IHueService hueService)
         {
             _options = optionsAccessor.CurrentValue;
@@ -37,4 +38,4 @@ namespace PresenceLight.Console
             }
         }
     }
-}
+} 

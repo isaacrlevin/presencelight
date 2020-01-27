@@ -5,8 +5,11 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using PresenceLight.Core;
 using PresenceLight.Core.Graph;
+using Q42.HueApi;
+using Q42.HueApi.Interfaces;
 
 namespace PresenceLight.Worker
 {
@@ -19,22 +22,18 @@ namespace PresenceLight.Worker
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-             .ConfigureAppConfiguration((hostContext, config) => {
-                 // Configure the app here.
-                 config
-                     .SetBasePath(Environment.CurrentDirectory)
-                     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                     .AddJsonFile($"appsettings.{hostContext.HostingEnvironment.EnvironmentName}.json", optional: true);
-
-                 config.AddEnvironmentVariables();
+            .UseWindowsService()
+             .ConfigureLogging(logging =>
+             {
+                 logging.AddEventLog();
              })
-                .ConfigureServices((hostContext, services) =>
-                {
-                    services.AddOptions();
-                    services.Configure<ConfigWrapper>(hostContext.Configuration);
-                    services.AddSingleton<IGraphService, GraphService>();
-                    services.AddSingleton<IHueService, HueService>();
-                    services.AddHostedService<Worker>();
-                });
+             .ConfigureServices((hostContext, services) =>
+             {
+                 services.AddOptions();
+                 services.Configure<ConfigWrapper>(hostContext.Configuration);
+                 services.AddSingleton<IGraphService, GraphService>();
+                 services.AddSingleton<IHueService, HueService>();
+                 services.AddHostedService<Worker>();
+             });
     }
 }

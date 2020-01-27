@@ -32,6 +32,7 @@ namespace PresenceLight.Console
             serviceCollection.Configure<ConfigWrapper>(configuration.GetSection("AppSettings"));
             serviceCollection.AddSingleton<IGraphService, GraphService>();
             serviceCollection.AddSingleton<IHueService, HueService>();
+
             // add app
             serviceCollection.AddTransient<App>();
         }

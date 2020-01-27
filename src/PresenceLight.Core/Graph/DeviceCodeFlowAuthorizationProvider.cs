@@ -2,9 +2,11 @@
 using Microsoft.Identity.Client;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -28,6 +30,10 @@ namespace PresenceLight.Core.Helpers
             {
                 var result = await _application.AcquireTokenWithDeviceCode(_scopes, callback =>
                 {
+                    string[] parts = callback.Message.Split(' ');
+                    var code = parts[Array.FindIndex(parts, a => a.Trim() == "code") + 1];
+                    TextCopy.Clipboard.SetText(code);
+                    OpenBrowser("https://www.microsoft.com/devicelogin");
                     Console.WriteLine(callback.Message);
                     return Task.FromResult(0);
                 }).ExecuteAsync();
@@ -37,7 +43,7 @@ namespace PresenceLight.Core.Helpers
                 _account = accounts.FirstOrDefault();
             }
 
-            if (_authResult .ExpiresOn.ToLocalTime() <= DateTime.Now)
+            if (_authResult.ExpiresOn.ToLocalTime() <= DateTime.Now)
             {
                 var result = await _application.AcquireTokenSilent(_scopes, _account).ExecuteAsync();
 
@@ -47,6 +53,34 @@ namespace PresenceLight.Core.Helpers
                 _account = accounts.FirstOrDefault();
             }
             request.Headers.Authorization = new AuthenticationHeaderValue("bearer", _authToken);
+        }
+
+        private void OpenBrowser(string url)
+        {
+            try
+            {
+                System.Diagnostics.Process.Start(url);
+            }
+            catch
+            {
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    url = url.Replace("&", "^&");
+                    System.Diagnostics.Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    System.Diagnostics.Process.Start("xdg-open", url);
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                {
+                    System.Diagnostics.Process.Start("open", url);
+                }
+                else
+                {
+                    throw;
+                }
+            }
         }
     }
 }
