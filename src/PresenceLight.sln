@@ -5,9 +5,9 @@ VisualStudioVersion = 16.0.29521.150
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresenceLight.Console", "PresenceLight.Console\PresenceLight.Console.csproj", "{109D432D-1CDC-4764-8B9F-41B8B003D3BB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PresenceLight.Core", "PresenceLight.Core\PresenceLight.Core.csproj", "{4883809C-FF4B-4504-A85E-2503607E5B99}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresenceLight.Core", "PresenceLight.Core\PresenceLight.Core.csproj", "{4883809C-FF4B-4504-A85E-2503607E5B99}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PresenceLight.Worker", "PresenceLight.Worker\PresenceLight.Worker.csproj", "{89336649-932D-4BAF-862E-5622345F2B5E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresenceLight.Worker", "PresenceLight.Worker\PresenceLight.Worker.csproj", "{89336649-932D-4BAF-862E-5622345F2B5E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
