@@ -1,0 +1,67 @@
+﻿<Window x:Class="PresenceLight.WPFApplication.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PresenceLight.WPFApplication" xmlns:tb="http://www.hardcodet.net/taskbar"
+        xmlns:Commands="clr-namespace:PresenceLight.WPFApplication.Commands"
+        mc:Ignorable="d" Title="Presence Light" Height="450" Width="400">
+    <Grid>
+        <TabControl>
+            <TabItem Header="Profile">
+                <Grid>
+                    <Grid x:Name="dataPanel" Visibility="Hidden" >
+                        <Grid VerticalAlignment="Top">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                <Button x:Name="SignOutButton" Content="Sign-Out" HorizontalAlignment="Right" Click="SignOutButton_Click" Padding="5" Margin="5"  FontFamily="Segoe Ui"/>
+                            </StackPanel>
+                        </Grid>
+                        <Grid Margin="0,39,-0.333,-10">
+                            <Label x:Name="Name" FontSize="40" MinHeight="120" Margin="5" FontFamily="Segoe Ui"/>
+                            <Border BorderThickness="3" CornerRadius="10" Padding="2" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <Grid>
+                                    <!-- Rounded mask (stretches to fill Grid) -->
+                                    <Border Name="mask" Background="White" CornerRadius="100"/>
+                                    <!-- Main content container -->
+                                    <StackPanel>
+                                        <!-- Use a VisualBrush of 'mask' as the opacity mask -->
+                                        <StackPanel.OpacityMask>
+                                            <VisualBrush Visual="{Binding ElementName=mask}"/>
+                                        </StackPanel.OpacityMask>
+                                        <Image x:Name="profileImage" Margin="0,0,0,-5" Width="200px" />
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                            <Ellipse x:Name="status" Height="75" Width="75" StrokeThickness="5" Margin="150,200,25,70"/>
+                        </Grid>
+                    </Grid>
+                    <tb:TaskbarIcon x:Name="MyNotifyIcon" IconSource="/Icons/Inactive.ico" DoubleClickCommand="{Commands:ShowWindowCommand}"
+                        DoubleClickCommandParameter="{Binding RelativeSource={RelativeSource Self}}" >
+                        <tb:TaskbarIcon.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Exit"
+                              Command="{Commands:CloseWindowCommand}"
+                              CommandParameter="{Binding}">
+                                </MenuItem>
+                            </ContextMenu>
+                        </tb:TaskbarIcon.ContextMenu>
+                    </tb:TaskbarIcon>
+                    <Grid x:Name="signInPanel" Visibility="Visible">
+                        <Button x:Name="CallGraphButton" Content="Sign In" HorizontalAlignment="Right" Padding="5" Click="CallGraphButton_Click" Margin="0,130,88.667,200" FontFamily="Segoe Ui" Width="216"/>
+                        <Label Content="Login to Microsoft Account to Sync Presence" HorizontalAlignment="Left" Margin="63,99,0,0" VerticalAlignment="Top"/>
+                    </Grid>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Configure Phillips Hue" >
+                <Grid>
+                    <Button Content="Search for Bridges" Margin="79,20,102.667,318"/>
+                    <Label Content="Hue Bridge IP Address" Margin="22,97,187.667,266"/>
+                    <TextBox HorizontalAlignment="Left" Height="23" Margin="175,101,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+                    <Label Content="Hue Bridge Api Key" Margin="22,224,187.667,139"/>
+                    <TextBox HorizontalAlignment="Left" Height="23" Margin="175,224,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+                </Grid>
+            </TabItem>
+
+        </TabControl>
+    </Grid>
+</Window>

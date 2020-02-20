@@ -2,6 +2,7 @@
 using Microsoft.Graph;
 using PresenceLight.Core;
 using PresenceLight.Core.Graph;
+using PresenceLight.Core.Helpers;
 using Q42.HueApi;
 using Q42.HueApi.ColorConverters;
 using Q42.HueApi.ColorConverters.Original;
@@ -23,7 +24,7 @@ namespace PresenceLight.Console
             _options = optionsAccessor.CurrentValue;
             _graphservice = graphService;
             _hueService = hueService;
-            _graphServiceClient = _graphservice.GetAuthenticatedGraphClient();
+            _graphServiceClient = _graphservice.GetAuthenticatedGraphClient(typeof(DeviceCodeFlowAuthorizationProvider));
         }
 
         public ConfigWrapper Options => _options;

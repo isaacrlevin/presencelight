@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
@@ -8,10 +7,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Graph;
 using PresenceLight.Core;
 using PresenceLight.Core.Graph;
-using Q42.HueApi;
-using Q42.HueApi.ColorConverters;
-using Q42.HueApi.ColorConverters.Original;
-using Q42.HueApi.Interfaces;
+using PresenceLight.Core.Helpers;
 
 namespace PresenceLight.Worker
 {
@@ -28,7 +24,7 @@ namespace PresenceLight.Worker
             _graphservice = graphService;
             _hueService = hueService;
             _logger = logger;
-            _graphServiceClient = _graphservice.GetAuthenticatedGraphClient();
+            _graphServiceClient = _graphservice.GetAuthenticatedGraphClient(typeof(DeviceCodeFlowAuthorizationProvider));
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
