@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresenceLight.Core", "Prese
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresenceLight.Worker", "PresenceLight.Worker\PresenceLight.Worker.csproj", "{89336649-932D-4BAF-862E-5622345F2B5E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PresenceLight.WPFApplication", "PresenceLight.WPFApplication\PresenceLight.WPFApplication.csproj", "{E0C9DB61-A1E6-4254-A200-A946F4353D66}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{89336649-932D-4BAF-862E-5622345F2B5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{89336649-932D-4BAF-862E-5622345F2B5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{89336649-932D-4BAF-862E-5622345F2B5E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0C9DB61-A1E6-4254-A200-A946F4353D66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0C9DB61-A1E6-4254-A200-A946F4353D66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0C9DB61-A1E6-4254-A200-A946F4353D66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0C9DB61-A1E6-4254-A200-A946F4353D66}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

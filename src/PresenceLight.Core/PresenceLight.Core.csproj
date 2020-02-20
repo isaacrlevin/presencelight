@@ -17,6 +17,7 @@
     <PackageReference Include="Microsoft.Identity.Client" Version="4.7.1" />
     <PackageReference Include="Q42.HueApi" Version="3.14.1" />
     <PackageReference Include="Q42.HueApi.ColorConverters" Version="3.14.0" />
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="4.7.0" />
     <PackageReference Include="TextCopy" Version="3.0.0" />
   </ItemGroup>
 </Project>

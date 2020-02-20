@@ -6,7 +6,6 @@ using Q42.HueApi.Interfaces;
 using Q42.HueApi.Models.Bridge;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -24,10 +23,12 @@ namespace PresenceLight.Core
         public HueService(IOptionsMonitor<ConfigWrapper> optionsAccessor)
         {
             _options = optionsAccessor.CurrentValue;
+            //CheckBridge();
         }
 
         public async Task SetColor(string availability)
         {
+           
             _client = new LocalHueClient(_options.HueIpAddress);
             _client.Initialize(_options.HueApiKey);
 

@@ -12,7 +12,7 @@ namespace PresenceLight.Core.Graph
 {
     public interface IGraphService
     {
-        GraphServiceClient GetAuthenticatedGraphClient();
+        GraphServiceClient GetAuthenticatedGraphClient(Type t);
     }
 
     public class GraphService : IGraphService
@@ -23,21 +23,14 @@ namespace PresenceLight.Core.Graph
         {
             _options = optionsAccessor.CurrentValue;
         }
-        public GraphServiceClient GetAuthenticatedGraphClient()
+        public GraphServiceClient GetAuthenticatedGraphClient(Type t)
         {
-            var authenticationProvider = CreateAuthorizationProvider();
+            var authenticationProvider = CreateAuthorizationProvider(t);// CreateAuthorizationProvider();
             var _graphServiceClient = new GraphServiceClient(authenticationProvider);
             return _graphServiceClient;
         }
 
-        private HttpClient GetAuthenticatedHTTPClient()
-        {
-            var authenticationProvider = CreateAuthorizationProvider();
-            var _httpClient = new HttpClient(new AuthHandler(authenticationProvider, new HttpClientHandler()));
-            return _httpClient;
-        }
-
-        private IAuthenticationProvider CreateAuthorizationProvider()
+        private IAuthenticationProvider CreateAuthorizationProvider(Type t)
         {
             var clientId = _options.ApplicationId;
             var redirectUri = _options.RedirectUri;
@@ -52,7 +45,10 @@ namespace PresenceLight.Core.Graph
                                                     .WithAuthority(authority)
                                                     .WithRedirectUri(redirectUri)
                                                     .Build();
-            return new DeviceCodeFlowAuthorizationProvider(pca, scopes);
+
+            TokenCacheHelper.EnableSerialization(pca.UserTokenCache);
+
+            return (IAuthenticationProvider)Activator.CreateInstance(t, new object[] { pca, scopes });
         }
     }
 }
