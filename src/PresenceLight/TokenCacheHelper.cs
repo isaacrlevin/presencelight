@@ -2,7 +2,7 @@
 using System.Security.Cryptography;
 using Microsoft.Identity.Client;
 
-namespace PresenceLight.WPFApplication
+namespace PresenceLight
 {
     static class TokenCacheHelper
     {

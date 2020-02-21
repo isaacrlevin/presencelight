@@ -16,7 +16,8 @@ using System.Windows.Media.Imaging;
 using System.IO;
 using System.Windows.Media;
 using Media = System.Windows.Media;
-namespace PresenceLight.WPFApplication
+
+namespace PresenceLight
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -40,6 +41,8 @@ namespace PresenceLight.WPFApplication
 
             _application = CreateAuthorizationProvider();
             InitializeComponent();
+            MyNotifyIcon.ToolTipText = PresenceConstants.Inactive;
+            MyNotifyIcon.IconSource = new BitmapImage(new Uri(IconConstants.Inactive));
         }
 
         private IPublicClientApplication CreateAuthorizationProvider()

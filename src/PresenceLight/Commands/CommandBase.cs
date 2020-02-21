@@ -7,7 +7,7 @@ using System.Windows.Media;
 using Hardcodet.Wpf.TaskbarNotification;
 
 
-namespace PresenceLight.WPFApplication.Commands
+namespace PresenceLight.Commands
 {
     /// <summary>
     /// Basic implementation of the <see cref="ICommand"/>

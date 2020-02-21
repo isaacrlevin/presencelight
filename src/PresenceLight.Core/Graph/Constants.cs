@@ -24,7 +24,7 @@ namespace PresenceLight.Core.Graph
 
     public static class IconConstants
     {
-        private static string Base = "pack://application:,,,/PresenceLight.WPFApplication;component/icons";
+        private static string Base = "pack://application:,,,/PresenceLight;component/icons";
         public static string Available = $"{Base}/Available.ico";
         public static string Busy = $"{Base}/Busy.ico";
         public static string BeRightBack = $"{Base}/BeRightBack.ico";

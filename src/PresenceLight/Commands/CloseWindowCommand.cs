@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Input;
 
-namespace PresenceLight.WPFApplication.Commands
+namespace PresenceLight.Commands
 {
     /// <summary>
     /// Closes the current window.
