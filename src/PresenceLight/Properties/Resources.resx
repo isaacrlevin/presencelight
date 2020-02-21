@@ -133,6 +133,9 @@
   <data name="DoNotDisturb" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Icons\DoNotDisturb.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="Icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Icon.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="Inactive" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Icons\Inactive.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>

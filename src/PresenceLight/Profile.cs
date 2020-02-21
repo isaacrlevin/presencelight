@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PresenceLight.WPFApplication
+namespace PresenceLight
 {
     public class Rootobject
     {

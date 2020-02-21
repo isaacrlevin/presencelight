@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresenceLight.Core", "Prese
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresenceLight.Worker", "PresenceLight.Worker\PresenceLight.Worker.csproj", "{89336649-932D-4BAF-862E-5622345F2B5E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PresenceLight.WPFApplication", "PresenceLight.WPFApplication\PresenceLight.WPFApplication.csproj", "{E0C9DB61-A1E6-4254-A200-A946F4353D66}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PresenceLight", "PresenceLight\PresenceLight.csproj", "{E0C9DB61-A1E6-4254-A200-A946F4353D66}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

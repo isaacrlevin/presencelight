@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Graph;
 using PresenceLight.Core.Helpers;
 
-namespace PresenceLight.WPFApplication
+namespace PresenceLight
 {
     /// <summary>
     /// Interaction logic for App.xaml
