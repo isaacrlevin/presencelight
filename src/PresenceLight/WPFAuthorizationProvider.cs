@@ -7,14 +7,14 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows.Interop;
 using System.Windows;
+using System.Net.Http.Headers;
 
 namespace PresenceLight.Core.Helpers
 {
     public class WPFAuthorizationProvider : MSGraph.IAuthenticationProvider
     {
-        private readonly IPublicClientApplication _application;
+        public static IPublicClientApplication _application;
         private readonly List<string> _scopes;
-        string graphAPIEndpoint = "https://graph.microsoft.com/beta/me/presence";
 
         public WPFAuthorizationProvider(IPublicClientApplication application, List<string> scopes)
         {
@@ -39,12 +39,14 @@ namespace PresenceLight.Core.Helpers
             {
                 try
                 {
-
-                    authResult = await _application.AcquireTokenInteractive(_scopes)
-                       .WithParentActivityOrWindow(new WindowInteropHelper(Application.Current.MainWindow).Handle)
-                       .ExecuteAsync();
+                    await Application.Current.Dispatcher.Invoke(async () =>
+                     {
+                         authResult = await _application.AcquireTokenInteractive(_scopes)
+                            .WithParentActivityOrWindow(new WindowInteropHelper(Application.Current.MainWindow).Handle)
+                            .ExecuteAsync();
+                     });
                 }
-                catch
+                catch (Exception e)
                 {
 
                 }
@@ -52,27 +54,7 @@ namespace PresenceLight.Core.Helpers
 
             if (authResult != null)
             {
-                //request.Headers.Authorization = new AuthenticationHeaderValue("bearer", _authToken);
-                await GetHttpContentWithToken(graphAPIEndpoint, authResult.AccessToken);
-            }
-        }
-
-        public async Task<string> GetHttpContentWithToken(string url, string token)
-        {
-            var httpClient = new System.Net.Http.HttpClient();
-            System.Net.Http.HttpResponseMessage response;
-            try
-            {
-                var request = new System.Net.Http.HttpRequestMessage(System.Net.Http.HttpMethod.Get, url);
-                //Add the token in Authorization header
-                request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-                response = await httpClient.SendAsync(request);
-                var content = await response.Content.ReadAsStringAsync();
-                return content;
-            }
-            catch (Exception ex)
-            {
-                return ex.ToString();
+                request.Headers.Authorization = new AuthenticationHeaderValue("bearer", authResult.AccessToken);
             }
         }
     }

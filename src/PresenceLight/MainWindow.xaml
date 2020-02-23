@@ -10,6 +10,18 @@
         <TabControl>
             <TabItem Header="Profile">
                 <Grid>
+                    <Grid x:Name="configErrorPanel" Visibility="Hidden" >
+                        <Label Margin="0,130,4.667,200" RenderTransformOrigin="0.5,0.5" >
+                            <TextBlock TextWrapping="Wrap" TextAlignment="Center">
+                              Your Application is not configured to login, please go to below link for more information.  
+                            </TextBlock>
+                        </Label>
+                        <TextBlock Margin="163,179,163.667,183">           
+    <Hyperlink NavigateUri="https://github.com/isaacrlevin/PresenceLight"  RequestNavigate="Hyperlink_RequestNavigate">
+        Click here
+    </Hyperlink>
+                        </TextBlock>
+                    </Grid>
                     <Grid x:Name="dataPanel" Visibility="Hidden" >
                         <Grid VerticalAlignment="Top">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
@@ -35,7 +47,7 @@
                             <Ellipse x:Name="status" Height="75" Width="75" StrokeThickness="5" Margin="150,200,25,70"/>
                         </Grid>
                     </Grid>
-                    <tb:TaskbarIcon x:Name="MyNotifyIcon" DoubleClickCommand="{Commands:ShowWindowCommand}"
+                    <tb:TaskbarIcon x:Name="notificationIcon" DoubleClickCommand="{Commands:ShowWindowCommand}"
                         DoubleClickCommandParameter="{Binding RelativeSource={RelativeSource Self}}" >
                         <tb:TaskbarIcon.ContextMenu>
                             <ContextMenu>
@@ -56,9 +68,19 @@
                 <Grid>
                     <Button Content="Search for Bridges" Margin="79,20,102.667,318"/>
                     <Label Content="Hue Bridge IP Address" Margin="22,97,187.667,266"/>
-                    <TextBox HorizontalAlignment="Left" Height="23" Margin="175,101,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+                    <TextBox x:Name="hueIpAddress" HorizontalAlignment="Left" Height="23" Margin="175,101,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
                     <Label Content="Hue Bridge Api Key" Margin="22,224,187.667,139"/>
-                    <TextBox HorizontalAlignment="Left" Height="23" Margin="175,224,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+                    <TextBox x:Name="hueApiKey" HorizontalAlignment="Left" Height="23" Margin="175,224,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+                    <Button Content="Save" Margin="79,281,102.667,57" Click="SaveHueSettings_Click"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Settings" >
+                <Grid>
+                    <Label Content="Icon Type" Margin="22,97,187.667,266"/>
+                   
+                    <Button Content="Save" Margin="79,281,102.667,57" Click="SaveSettings_Click"/>
+                    <RadioButton GroupName="IconType" x:Name="Transparent" Content="Transparent" HorizontalAlignment="Left" Margin="118,104,0,0" VerticalAlignment="Top"/>
+                    <RadioButton GroupName="IconType" x:Name="White" Content="White" HorizontalAlignment="Left" Margin="118,131,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.43,-0.627"/>
                 </Grid>
             </TabItem>
 

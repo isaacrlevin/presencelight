@@ -12,5 +12,6 @@ namespace PresenceLight.Core
         public string RedirectUri { get; set; }
         public string HueApiKey { get; set; }
         public string HueIpAddress { get; set; }
+        public string IconType { get; set; }
     }
 }
