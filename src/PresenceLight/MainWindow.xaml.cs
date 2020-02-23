@@ -16,6 +16,11 @@ using System.Windows.Media.Imaging;
 using System.IO;
 using System.Windows.Media;
 using Media = System.Windows.Media;
+using System.Diagnostics;
+using System.Windows.Navigation;
+using PresenceLight.Core.Helpers;
+using Newtonsoft.Json;
+using System.Web.UI.WebControls;
 
 namespace PresenceLight
 {
@@ -25,130 +30,109 @@ namespace PresenceLight
     public partial class MainWindow : Window
     {
         private readonly ConfigWrapper _options;
-        private IPublicClientApplication _application;
-        private AuthenticationResult authResult;
         private bool stopPolling;
-        List<string> _scopes;
+        private readonly IHueService _hueService;
+        private readonly GraphServiceClient _graphServiceClient;
+        private readonly IGraphService _graphservice;
 
-        public MainWindow(IGraphService graphService, IOptionsMonitor<ConfigWrapper> optionsAccessor)
+        public MainWindow(IGraphService graphService, IHueService hueService, IOptionsMonitor<ConfigWrapper> optionsAccessor)
         {
             _options = optionsAccessor.CurrentValue;
 
-            _scopes = new List<string>()
-            {
-             GraphConstants.Scopes
-            };
 
-            _application = CreateAuthorizationProvider();
             InitializeComponent();
-            MyNotifyIcon.ToolTipText = PresenceConstants.Inactive;
-            MyNotifyIcon.IconSource = new BitmapImage(new Uri(IconConstants.Inactive));
+
+            if (string.IsNullOrEmpty(_options.ApplicationId) || string.IsNullOrEmpty(_options.TenantId) || string.IsNullOrEmpty(_options.RedirectUri))
+            {
+                configErrorPanel.Visibility = Visibility.Visible;
+                dataPanel.Visibility = Visibility.Hidden;
+                signInPanel.Visibility = Visibility.Hidden;
+            }
+            else
+            {
+                _graphservice = graphService;
+                _graphServiceClient = _graphservice.GetAuthenticatedGraphClient(typeof(WPFAuthorizationProvider));
+            }
+
+            if (_options.IconType == "Transparent")
+            {
+                Transparent.IsChecked = true;
+            }
+            else
+            {
+                White.IsChecked = true;
+            }
+
+
+            _hueService = hueService;
+
+            notificationIcon.ToolTipText = PresenceConstants.Inactive;
+            notificationIcon.IconSource = new BitmapImage(new Uri(IconConstants.GetIcon(String.Empty, IconConstants.Inactive)));
         }
 
-        private IPublicClientApplication CreateAuthorizationProvider()
+        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
-            var clientId = _options.ApplicationId;
-            var redirectUri = _options.RedirectUri;
-            var authority = $"{GraphConstants.MSALLoginUrl}{_options.TenantId}";
-
-            var pca = PublicClientApplicationBuilder.Create(clientId)
-                                                    .WithAuthority(authority)
-                                                    .WithRedirectUri(redirectUri)
-                                                    .Build();
-
-            TokenCacheHelper.EnableSerialization(pca.UserTokenCache);
-            return pca;
+            System.Diagnostics.Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
+            e.Handled = true;
         }
 
         private async void CallGraphButton_Click(object sender, RoutedEventArgs e)
         {
-            authResult = null;
+            var (profile, presence) = await System.Threading.Tasks.Task.Run(() => GetBatchContent());
+            var photo = await System.Threading.Tasks.Task.Run(() => GetPhoto());
 
-            var accounts = await _application.GetAccountsAsync();
-            var firstAccount = accounts.FirstOrDefault();
-
-            try
+            MapUI(presence, profile, LoadImage(photo));
+            //await _hueService.SetColor(presence.Availability);
+            this.signInPanel.Visibility = Visibility.Collapsed;
+            dataPanel.Visibility = Visibility.Visible;
+            while (true)
             {
-                authResult = await _application.AcquireTokenSilent(_scopes, accounts.FirstOrDefault())
-                .ExecuteAsync();
-
-            }
-            catch (MsalUiRequiredException)
-            {
+                if (stopPolling)
+                {
+                    stopPolling = false;
+                    notificationIcon.ToolTipText = PresenceConstants.Inactive;
+                    notificationIcon.IconSource = new BitmapImage(new Uri(IconConstants.GetIcon(String.Empty, IconConstants.Inactive)));
+                    return;
+                }
+                await Task.Delay(5000);
                 try
                 {
-                    authResult = await _application.AcquireTokenInteractive(_scopes)
-                       .WithParentActivityOrWindow(new WindowInteropHelper(this).Handle)
-                       .ExecuteAsync();
+                    presence = await System.Threading.Tasks.Task.Run(() => GetPresence());
+                    //await _hueService.SetColor(presence.Availability);
+                    MapUI(presence, null, null);
                 }
-                catch (MsalException)
-                {
-
-                }
-            }
-            catch (Exception)
-            { }
-
-
-            if (authResult != null)
-            {
-                var response = await System.Threading.Tasks.Task.Run(() => GetBatchContent());
-
-                Microsoft.Graph.Serializer s = new Serializer();
-
-                var image = LoadImage(Convert.FromBase64String(response["2"]));
-                var profile = s.DeserializeObject<User>(response["1"]);
-                var presence = s.DeserializeObject<Presence>(response["3"]);
-
-                MapUI(presence, profile, image);
-
-                this.signInPanel.Visibility = Visibility.Collapsed;
-                dataPanel.Visibility = Visibility.Visible;
-                while (true)
-                {
-                    if (stopPolling)
-                    {
-                        stopPolling = false;
-                        MyNotifyIcon.ToolTipText = PresenceConstants.Inactive;
-                        MyNotifyIcon.IconSource = new BitmapImage(new Uri(IconConstants.Inactive));
-                        return;
-                    }
-                    await Task.Delay(5000);
-                    try
-                    {
-                        var presenceResponse = await System.Threading.Tasks.Task.Run(() => GetPresence());
-                        presence = s.DeserializeObject<Presence>(presenceResponse);
-
-                        MapUI(presence, null, null);
-                    }
-                    catch { }
-                }
+                catch { }
             }
         }
 
         private async void SignOutButton_Click(object sender, RoutedEventArgs e)
         {
-            var accounts = await _application.GetAccountsAsync();
+            var accounts = await WPFAuthorizationProvider._application.GetAccountsAsync();
             if (accounts.Any())
             {
                 try
                 {
-                    await _application.RemoveAsync(accounts.FirstOrDefault());
+                    await WPFAuthorizationProvider._application.RemoveAsync(accounts.FirstOrDefault());
                     this.signInPanel.Visibility = Visibility.Visible;
                     dataPanel.Visibility = Visibility.Collapsed;
                     stopPolling = true;
 
-
-                    MyNotifyIcon.ToolTipText = PresenceConstants.Inactive;
-                    MyNotifyIcon.IconSource = new BitmapImage(new Uri(IconConstants.Inactive));
+                    notificationIcon.ToolTipText = PresenceConstants.Inactive;
+                    notificationIcon.IconSource = new BitmapImage(new Uri(IconConstants.GetIcon(string.Empty, IconConstants.Inactive)));
                 }
                 catch (MsalException)
                 {
-                    // ResultText.Text = $"Error signing-out user: {ex.Message}";
                 }
             }
         }
 
+        protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+        {
+            this.Hide();
+            e.Cancel = true;
+        }
+
+        #region UI Helpers
         private static BitmapImage LoadImage(byte[] imageData)
         {
             if (imageData == null || imageData.Length == 0) return null;
@@ -180,34 +164,34 @@ namespace PresenceLight
             switch (presence.Availability)
             {
                 case "Available":
-                    image = new BitmapImage(new Uri(IconConstants.Available));
+                    image = new BitmapImage(new Uri(IconConstants.GetIcon(_options.IconType, IconConstants.Available)));
                     color = MapColor("#009933");
-                    MyNotifyIcon.ToolTipText = PresenceConstants.Available;
+                    notificationIcon.ToolTipText = PresenceConstants.Available;
                     break;
                 case "Busy":
-                    image = new BitmapImage(new Uri(IconConstants.Busy));
+                    image = new BitmapImage(new Uri(IconConstants.GetIcon(_options.IconType, IconConstants.Busy)));
                     color = MapColor("#ff3300");
-                    MyNotifyIcon.ToolTipText = PresenceConstants.Busy;
+                    notificationIcon.ToolTipText = PresenceConstants.Busy;
                     break;
                 case "BeRightBack":
-                    image = new BitmapImage(new Uri(IconConstants.BeRightBack));
+                    image = new BitmapImage(new Uri(IconConstants.GetIcon(_options.IconType, IconConstants.BeRightBack)));
                     color = MapColor("#ffff00");
-                    MyNotifyIcon.ToolTipText = PresenceConstants.BeRightBack;
+                    notificationIcon.ToolTipText = PresenceConstants.BeRightBack;
                     break;
                 case "Away":
-                    image = new BitmapImage(new Uri(IconConstants.Away));
+                    image = new BitmapImage(new Uri(IconConstants.GetIcon(_options.IconType, IconConstants.Away)));
                     color = MapColor("#ffff00");
-                    MyNotifyIcon.ToolTipText = PresenceConstants.Away;
+                    notificationIcon.ToolTipText = PresenceConstants.Away;
                     break;
                 case "DoNotDisturb":
-                    image = new BitmapImage(new Uri(IconConstants.DoNotDisturb));
+                    image = new BitmapImage(new Uri(IconConstants.GetIcon(_options.IconType, IconConstants.DoNotDisturb)));
                     color = MapColor("#800000");
-                    MyNotifyIcon.ToolTipText = PresenceConstants.DoNotDisturb;
+                    notificationIcon.ToolTipText = PresenceConstants.DoNotDisturb;
                     break;
                 default:
-                    image = new BitmapImage(new Uri(IconConstants.Inactive));
+                    image = new BitmapImage(new Uri(IconConstants.GetIcon(string.Empty, IconConstants.Inactive)));
                     color = MapColor("#FFFFFF");
-                    MyNotifyIcon.ToolTipText = PresenceConstants.Inactive;
+                    notificationIcon.ToolTipText = PresenceConstants.Inactive;
                     break;
             }
 
@@ -216,7 +200,7 @@ namespace PresenceLight
                 profileImage.Source = profileImageBit;
             }
 
-            MyNotifyIcon.IconSource = image;
+            notificationIcon.IconSource = image;
             mySolidColorBrush.Color = color;
             status.Fill = mySolidColorBrush;
             status.StrokeThickness = 1;
@@ -227,65 +211,81 @@ namespace PresenceLight
                 Name.Content = profile.DisplayName;
             }
         }
+        #endregion
 
-        public async Task<string> GetPresence()
+        #region Graph Calls
+        public async Task<Presence> GetPresence()
         {
-            var httpClient = new System.Net.Http.HttpClient();
-            System.Net.Http.HttpResponseMessage response;
-            try
+            if (!stopPolling)
             {
-                var request = new System.Net.Http.HttpRequestMessage(System.Net.Http.HttpMethod.Get, GraphConstants.PresenceGraphEndPoint);
-                //Add the token in Authorization header
-                request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authResult.AccessToken);
-                response = await httpClient.SendAsync(request);
-                var content = await response.Content.ReadAsStringAsync();
-                return content;
+                return await _graphServiceClient.Me.Presence.Request().GetAsync();
             }
-            catch (Exception ex)
+            else
             {
-                return ex.ToString();
+                throw new Exception();
             }
         }
 
-        public async Task<Dictionary<string, string>> GetBatchContent()
+        public async Task<byte[]> GetPhoto()
         {
-            var httpClient = new System.Net.Http.HttpClient();
-            httpClient.DefaultRequestHeaders
-      .Accept
-      .Add(new MediaTypeWithQualityHeaderValue("application/json"));//ACCEPT header
-            System.Net.Http.HttpResponseMessage response;
-            try
+            return ReadFully(await _graphServiceClient.Me.Photo.Content.Request().GetAsync());
+        }
+
+        public static byte[] ReadFully(Stream input)
+        {
+            byte[] buffer = new byte[16 * 1024];
+            using (MemoryStream ms = new MemoryStream())
             {
-                var request = new HttpRequestMessage(HttpMethod.Post, GraphConstants.BatchGraphEndPoint);
-                //Add the token in Authorization header
-                request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authResult.AccessToken);
-
-                var content = new StringContent(
-                  System.IO.File.ReadAllText("BatchRequestJson.json"), Encoding.UTF8,
-                                    "application/json");
-                request.Content = content;
-                response = await httpClient.SendAsync(request);
-                var batchResponseContent = new BatchResponseContent(response);
-                var responses = await batchResponseContent.GetResponsesAsync();
-
-                var list = new Dictionary<string, string>();
-
-                foreach (var r in responses)
+                int read;
+                while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
                 {
-                    list.Add(r.Key, await r.Value.Content.ReadAsStringAsync());
+                    ms.Write(buffer, 0, read);
                 }
-                return list;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
+                return ms.ToArray();
             }
         }
 
-        protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+        public async Task<(User User, Presence Presence)> GetBatchContent()
         {
-            this.Hide();
-            e.Cancel = true;
+            IUserRequest userRequest = _graphServiceClient.Me.Request();
+            IPresenceRequest presenceRequest = _graphServiceClient.Me.Presence.Request();
+
+            BatchRequestContent batchRequestContent = new BatchRequestContent();
+
+            var userRequestId = batchRequestContent.AddBatchRequestStep(userRequest);
+            var presenceRequestId = batchRequestContent.AddBatchRequestStep(presenceRequest);
+
+            BatchResponseContent returnedResponse = await _graphServiceClient.Batch.Request().PostAsync(batchRequestContent);
+
+            User user = await returnedResponse.GetResponseByIdAsync<User>(userRequestId);
+            Presence presence = await returnedResponse.GetResponseByIdAsync<Presence>(presenceRequestId);
+
+            return (User: user, Presence: presence);
+        }
+        #endregion
+
+        private void SaveHueSettings_Click(object sender, RoutedEventArgs e)
+        {
+            _options.HueIpAddress = hueIpAddress.Text;
+            _options.HueApiKey = hueApiKey.Text;
+
+            System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/appsettings.json", JsonConvert.SerializeObject(_options));
+
+            var hueService = new HueService(_options);
+        }
+
+        private void SaveSettings_Click(object sender, RoutedEventArgs e)
+        {
+            if (Transparent.IsChecked == true)
+            {
+                _options.IconType = "Transparent";
+            }
+            else
+            {
+                _options.IconType = "White";
+            }
+
+            System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/appsettings.json", JsonConvert.SerializeObject(_options));
         }
     }
 }

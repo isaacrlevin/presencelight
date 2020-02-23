@@ -26,9 +26,13 @@ namespace PresenceLight.Core
             //CheckBridge();
         }
 
-        public async Task SetColor(string availability)
+        public HueService(ConfigWrapper options)
         {
-           
+            _options = options;
+        }
+
+        public async Task SetColor(string availability)
+        {           
             _client = new LocalHueClient(_options.HueIpAddress);
             _client.Initialize(_options.HueApiKey);
 
