@@ -54,6 +54,17 @@ namespace PresenceLight
                 _graphServiceClient = _graphservice.GetAuthenticatedGraphClient(typeof(WPFAuthorizationProvider));
             }
 
+            if (string.IsNullOrEmpty(_options.HueApiKey))
+            {
+              lblMessage.Text = "Missing App Registration, please button on bridge than click 'Register Bridge'";
+            }
+            else
+            {
+                lblMessage.Text = "App Registered with Bridge";
+            }
+
+            hueIpAddress.Text = _options.HueIpAddress;
+
             if (_options.IconType == "Transparent")
             {
                 Transparent.IsChecked = true;
@@ -82,7 +93,12 @@ namespace PresenceLight
             var photo = await System.Threading.Tasks.Task.Run(() => GetPhoto());
 
             MapUI(presence, profile, LoadImage(photo));
-            //await _hueService.SetColor(presence.Availability);
+            
+            if (!string.IsNullOrEmpty(_options.HueApiKey) && string.IsNullOrEmpty(_options.HueIpAddress))
+            {
+                await _hueService.SetColor(presence.Availability);
+            }
+
             this.signInPanel.Visibility = Visibility.Collapsed;
             dataPanel.Visibility = Visibility.Visible;
             while (true)
@@ -98,7 +114,10 @@ namespace PresenceLight
                 try
                 {
                     presence = await System.Threading.Tasks.Task.Run(() => GetPresence());
-                    //await _hueService.SetColor(presence.Availability);
+                    if (!string.IsNullOrEmpty(_options.HueApiKey) && string.IsNullOrEmpty(_options.HueIpAddress))
+                    {
+                        await _hueService.SetColor(presence.Availability);
+                    }
                     MapUI(presence, null, null);
                 }
                 catch { }
@@ -266,12 +285,9 @@ namespace PresenceLight
 
         private void SaveHueSettings_Click(object sender, RoutedEventArgs e)
         {
-            _options.HueIpAddress = hueIpAddress.Text;
-            _options.HueApiKey = hueApiKey.Text;
-
             System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/appsettings.json", JsonConvert.SerializeObject(_options));
 
-            var hueService = new HueService(_options);
+            var _hueService = new HueService(_options);
         }
 
         private void SaveSettings_Click(object sender, RoutedEventArgs e)
@@ -286,6 +302,17 @@ namespace PresenceLight
             }
 
             System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/appsettings.json", JsonConvert.SerializeObject(_options));
+        }
+
+        private async void registerBridge_Click(object sender, RoutedEventArgs e)
+        {
+            await _hueService.RegisterBridge();
+
+            if (!string.IsNullOrEmpty(_options.HueApiKey))
+            {
+                lblMessage.Text = "App Registered with Bridge";
+                System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/appsettings.json", JsonConvert.SerializeObject(_options));
+            }
         }
     }
 }
