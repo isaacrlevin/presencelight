@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using Q42.HueApi;
 using Q42.HueApi.ColorConverters;
 using Q42.HueApi.ColorConverters.HSB;
@@ -14,6 +15,7 @@ namespace PresenceLight.Core
     public interface IHueService
     {
         Task SetColor(string availability);
+        Task RegisterBridge();
     }
     public class HueService : IHueService
     {
@@ -23,7 +25,6 @@ namespace PresenceLight.Core
         public HueService(IOptionsMonitor<ConfigWrapper> optionsAccessor)
         {
             _options = optionsAccessor.CurrentValue;
-            //CheckBridge();
         }
 
         public HueService(ConfigWrapper options)
@@ -67,19 +68,21 @@ namespace PresenceLight.Core
         }
 
         //Need to wire up a way to do this without user intervention
-        private async Task CheckBridge()
+        public async Task RegisterBridge()
         {
-            if (string.IsNullOrEmpty(_options.HueIpAddress) || string.IsNullOrEmpty(_options.HueApiKey))
+            if (string.IsNullOrEmpty(_options.HueApiKey))
             {
-                IBridgeLocator locator = new HttpBridgeLocator(); //Or: LocalNetworkScanBridgeLocator, MdnsBridgeLocator, MUdpBasedBridgeLocator
-                var bridges = (List<LocatedBridge>)locator.LocateBridgesAsync(TimeSpan.FromSeconds(5)).Result;
+                //IBridgeLocator locator = new HttpBridgeLocator(); //Or: LocalNetworkScanBridgeLocator, MdnsBridgeLocator, MUdpBasedBridgeLocator
+                //var bridges = (List<LocatedBridge>)locator.LocateBridgesAsync(TimeSpan.FromSeconds(5)).Result;
 
-                _options.HueIpAddress = bridges[0].IpAddress;
+                //_options.HueIpAddress = bridges[0].IpAddress;
 
                 _client = new LocalHueClient(_options.HueIpAddress);
                 //Make sure the user has pressed the button on the bridge before calling RegisterAsync
                 //It will throw an LinkButtonNotPressedException if the user did not press the button
                 _options.HueApiKey = await _client.RegisterAsync("presence-light", "presence-light");
+
+                System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/appsettings.json", JsonConvert.SerializeObject(_options));
             }
         }
 
