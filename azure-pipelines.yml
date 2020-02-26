@@ -1,0 +1,29 @@
+# .NET Desktop
+# Build and run tests for .NET Desktop or Windows classic desktop solutions.
+# Add steps that publish symbols, save build artifacts, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/apps/windows/dot-net
+
+trigger:
+- master
+
+variables:
+  BuildConfiguration: Release
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  Platform: AnyCPU
+  
+jobs:
+- job: Build
+  pool:
+    name: Hosted Windows 2019 with VS2019
+    demands: msbuild
+
+  steps:
+  - task: MSBuild@1
+    displayName: Build for $(BuildConfiguration)
+    inputs:
+      platform: $(Platform)
+      solution: src/PresenceLight/PresenceLight.csproj
+      msbuildArguments: /restore 
+      configuration: $(BuildConfiguration)
+      maximumCpuCount: false
+
