@@ -9,7 +9,7 @@ trigger:
 variables:
   BuildConfiguration: Release
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-  Platform: AnyCPU
+  Platform: Any CPU
   
 jobs:
 - job: Build
@@ -22,7 +22,7 @@ jobs:
     displayName: Build for $(BuildConfiguration)
     inputs:
       platform: $(Platform)
-      solution: src/PresenceLight/PresenceLight.csproj
+      solution: src/PresenceLight.sln
       msbuildArguments: /restore 
       configuration: $(BuildConfiguration)
       maximumCpuCount: false
