@@ -56,7 +56,7 @@
     <DefaultLanguage>en-US</DefaultLanguage>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
     <EntryPointProjectUniqueName>..\PresenceLight\PresenceLight.csproj</EntryPointProjectUniqueName>
-    <PackageCertificateThumbprint>FD07B414EB0F8F70B21A9BA7B0AC6350D5981C68</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>B10C72B21B797244419626E45468EB59B671839B</PackageCertificateThumbprint>
   </PropertyGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -64,6 +64,7 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
+    <None Include="build.pfx" />
     <Content Include="Images\LargeTile.scale-100.png" />
     <Content Include="Images\LargeTile.scale-125.png" />
     <Content Include="Images\LargeTile.scale-150.png" />
