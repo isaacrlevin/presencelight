@@ -54,10 +54,15 @@
     <TargetPlatformVersion>10.0.18362.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.14393.0</TargetPlatformMinVersion>
     <DefaultLanguage>en-US</DefaultLanguage>
-    <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
+    <AppxPackageSigningEnabled>false</AppxPackageSigningEnabled>
+    <AppInstallerUri>https://presencelight.z5.web.core.windows.net/CD</AppInstallerUri>
+    <AppxBundle>Never</AppxBundle>
+    <AppxBundlePlatforms>x86</AppxBundlePlatforms>
+    <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
+    <AppInstallerUpdateFrequency>0</AppInstallerUpdateFrequency>
+    <AppInstallerCheckForUpdateFrequency>OnApplicationRun</AppInstallerCheckForUpdateFrequency>
     <EntryPointProjectUniqueName>..\PresenceLight\PresenceLight.csproj</EntryPointProjectUniqueName>
-    <PackageCertificateThumbprint>3342BD4D09750172258DFECAD1D27653FE2F201D</PackageCertificateThumbprint>
-    <PackageCertificateKeyFile>PresenceLight.Package_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <GenerateTestArtifacts>True</GenerateTestArtifacts>
   </PropertyGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -65,7 +70,6 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
-    <None Include="build.pfx" />
     <Content Include="Images\LargeTile.scale-100.png" />
     <Content Include="Images\LargeTile.scale-125.png" />
     <Content Include="Images\LargeTile.scale-150.png" />
@@ -117,7 +121,7 @@
     <Content Include="Images\Wide310x150Logo.scale-150.png" />
     <Content Include="Images\Wide310x150Logo.scale-200.png" />
     <Content Include="Images\Wide310x150Logo.scale-400.png" />
-    <None Include="PresenceLight.Package_TemporaryKey.pfx" />
+    <Content Include="Package.appinstaller" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PresenceLight\PresenceLight.csproj" />
