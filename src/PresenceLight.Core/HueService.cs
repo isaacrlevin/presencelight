@@ -60,6 +60,9 @@ namespace PresenceLight.Core
                 case "DoNotDisturb":
                     command.SetColor(new RGBColor("#800000"));
                     break;
+                case "OutOfOffice":
+                    command.SetColor(new RGBColor("#800080"));
+                    break;
                 default:
                     command.SetColor(new RGBColor("#FFFFFF"));
                     break;

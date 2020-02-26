@@ -9,6 +9,7 @@ namespace PresenceLight.Core.Graph
         public static string BeRightBack = $"{Base} - Be Right Back";
         public static string Away = $"{Base} - Away";
         public static string DoNotDisturb = $"{Base} - Do Not Disturb";
+        public static string OutOfOffice = $"{Base} - Out Of Office";
         public static string Inactive = $"{Base} - Not Logged In";
     }
 
@@ -19,6 +20,7 @@ namespace PresenceLight.Core.Graph
         public static string Busy = $"Busy.ico";
         public static string BeRightBack = $"BeRightBack.ico";
         public static string Away = $"Away.ico";
+        public static string OutOfOffice = $"OutOfOffice.ico";
         public static string DoNotDisturb = $"DoNotDisturb.ico";
         public static string Inactive = $"Inactive.ico";
 

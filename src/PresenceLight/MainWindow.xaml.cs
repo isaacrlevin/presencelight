@@ -54,15 +54,23 @@ namespace PresenceLight
                 _graphServiceClient = _graphservice.GetAuthenticatedGraphClient(typeof(WPFAuthorizationProvider));
             }
 
+            SolidColorBrush fontBrush = new SolidColorBrush();
+
             if (string.IsNullOrEmpty(_options.HueApiKey))
             {
-              lblMessage.Text = "Missing App Registration, please button on bridge than click 'Register Bridge'";
+                lblMessage.Text = "Missing App Registration, please button on bridge than click 'Register Bridge'";
+                fontBrush.Color = MapColor("#ff3300");
+                lblMessage.Foreground = fontBrush;
             }
             else
             {
                 lblMessage.Text = "App Registered with Bridge";
+                fontBrush.Color = MapColor("#009933");
+                lblMessage.Foreground = fontBrush;
             }
 
+            clientId.Text = _options.ApplicationId;
+            tenantId.Text = _options.TenantId;
             hueIpAddress.Text = _options.HueIpAddress;
 
             if (_options.IconType == "Transparent")
@@ -89,16 +97,19 @@ namespace PresenceLight
 
         private async void CallGraphButton_Click(object sender, RoutedEventArgs e)
         {
+            signInPanel.Visibility = Visibility.Collapsed;
+            loadingPanel.Visibility = Visibility.Visible;
             var (profile, presence) = await System.Threading.Tasks.Task.Run(() => GetBatchContent());
             var photo = await System.Threading.Tasks.Task.Run(() => GetPhoto());
 
             MapUI(presence, profile, LoadImage(photo));
-            
-            if (!string.IsNullOrEmpty(_options.HueApiKey) && string.IsNullOrEmpty(_options.HueIpAddress))
+
+            if (!string.IsNullOrEmpty(_options.HueApiKey) && !string.IsNullOrEmpty(_options.HueIpAddress))
             {
                 await _hueService.SetColor(presence.Availability);
             }
 
+            loadingPanel.Visibility = Visibility.Collapsed;
             this.signInPanel.Visibility = Visibility.Collapsed;
             dataPanel.Visibility = Visibility.Visible;
             while (true)
@@ -114,7 +125,7 @@ namespace PresenceLight
                 try
                 {
                     presence = await System.Threading.Tasks.Task.Run(() => GetPresence());
-                    if (!string.IsNullOrEmpty(_options.HueApiKey) && string.IsNullOrEmpty(_options.HueIpAddress))
+                    if (!string.IsNullOrEmpty(_options.HueApiKey) && !string.IsNullOrEmpty(_options.HueIpAddress))
                     {
                         await _hueService.SetColor(presence.Availability);
                     }
@@ -206,6 +217,11 @@ namespace PresenceLight
                     image = new BitmapImage(new Uri(IconConstants.GetIcon(_options.IconType, IconConstants.DoNotDisturb)));
                     color = MapColor("#800000");
                     notificationIcon.ToolTipText = PresenceConstants.DoNotDisturb;
+                    break;
+                case "OutOfOffice":
+                    image = new BitmapImage(new Uri(IconConstants.GetIcon(_options.IconType, IconConstants.OutOfOffice)));
+                    color = MapColor("#800080");
+                    notificationIcon.ToolTipText = PresenceConstants.OutOfOffice;
                     break;
                 default:
                     image = new BitmapImage(new Uri(IconConstants.GetIcon(string.Empty, IconConstants.Inactive)));
@@ -301,16 +317,40 @@ namespace PresenceLight
                 _options.IconType = "White";
             }
 
+            _options.ApplicationId = clientId.Text;
+            _options.TenantId = tenantId.Text;
+
             System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/appsettings.json", JsonConvert.SerializeObject(_options));
         }
 
         private async void registerBridge_Click(object sender, RoutedEventArgs e)
         {
-            await _hueService.RegisterBridge();
+            MessageBoxHelper.PrepToCenterMessageBoxOnForm(this);
+            MessageBox.Show("Please press the sync button on your Phillips Hue Bridge");
+
+            SolidColorBrush fontBrush = new SolidColorBrush();
+
+            try
+            {
+                imgLoading.Visibility = Visibility.Visible;
+                lblMessage.Visibility = Visibility.Collapsed;
+                await _hueService.RegisterBridge();
+                imgLoading.Visibility = Visibility.Collapsed;
+                lblMessage.Visibility = Visibility.Visible;
+            }
+            catch
+            {
+                lblMessage.Text = "Error Occured registering bridge, please try again";
+                fontBrush.Color = MapColor("#ff3300");
+                lblMessage.Foreground = fontBrush;
+            }
 
             if (!string.IsNullOrEmpty(_options.HueApiKey))
             {
                 lblMessage.Text = "App Registered with Bridge";
+                fontBrush.Color = MapColor("#009933");
+                lblMessage.Foreground = fontBrush;
+
                 System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/appsettings.json", JsonConvert.SerializeObject(_options));
             }
         }
