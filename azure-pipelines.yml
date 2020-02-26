@@ -7,9 +7,8 @@ trigger:
 - master
 
 variables:
-  BuildConfiguration: Release
-  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-  Platform: Any CPU
+- group: CertPassword
+- name: CertPassword
   
 jobs:
 - job: Build
@@ -19,11 +18,11 @@ jobs:
 
   steps:
   - task: MSBuild@1
-    displayName: Build for $(BuildConfiguration)
+    displayName: Build for Release
     inputs:
-      platform: $(Platform)
+      platform: Any CPU
       solution: src/PresenceLight.sln
       msbuildArguments: /restore 
-      configuration: $(BuildConfiguration)
+      configuration: Release
       maximumCpuCount: false
 
