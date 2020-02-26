@@ -56,7 +56,8 @@
     <DefaultLanguage>en-US</DefaultLanguage>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
     <EntryPointProjectUniqueName>..\PresenceLight\PresenceLight.csproj</EntryPointProjectUniqueName>
-    <PackageCertificateThumbprint>B10C72B21B797244419626E45468EB59B671839B</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>3342BD4D09750172258DFECAD1D27653FE2F201D</PackageCertificateThumbprint>
+    <PackageCertificateKeyFile>PresenceLight.Package_TemporaryKey.pfx</PackageCertificateKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
