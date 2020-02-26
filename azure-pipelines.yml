@@ -6,14 +6,17 @@
 trigger:
 - master
 
-pool:
-  vmImage: 'windows-latest'
-
 variables:
   BuildConfiguration: Release
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   
-steps:
+jobs:
+- job: Build
+  pool:
+    name: Hosted Windows 2019 with VS2019
+    demands: msbuild
+
+  steps:
   - task: MSBuild@1
     displayName: Build for $(BuildConfiguration)
     inputs:
