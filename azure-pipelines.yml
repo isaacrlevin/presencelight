@@ -22,7 +22,7 @@ jobs:
     displayName: Build for $(BuildConfiguration)
     inputs:
       platform: $(Platform)
-      solution: src/PresenceLight/PresenceLight.csproj
+      solution: src/PresenceLight.sln
       msbuildArguments: /restore 
       configuration: $(BuildConfiguration)
       maximumCpuCount: false
