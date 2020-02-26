@@ -20,7 +20,7 @@ jobs:
   - task: MSBuild@1
     displayName: Build for $(BuildConfiguration)
     inputs:
-      solution: MyWPFApp.sln
+      solution: src/PresenceLight/PresenceLight.csproj
       platform: x86
       msbuildArguments: /restore 
       configuration: $(BuildConfiguration)
