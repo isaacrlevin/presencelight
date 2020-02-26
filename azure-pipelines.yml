@@ -16,13 +16,62 @@ jobs:
     name: Hosted Windows 2019 with VS2019
     demands: msbuild
 
+  strategy:
+    matrix:
+      Channel_CD_Web:
+        ChannelName: CD-Web
+        DistributionUrl: https://presencelightapp.azurewebsites.net/CD
+        MsixPackageId: PresenceLight.CD
+        MsixPublisherId: CN=build
+        MsixPackageDisplayName: PresenceLight (CD)
+        MsixBuildMode: SideLoadOnly
+        MsixGenerateAppInstaller: true
+      Channel_Prod_Web:
+        ChannelName: Prod-Web
+        DistributionUrl: https://presencelight.z5.web.core.windows.net/Prod
+        MsixPackageId: PresenceLight
+        MsixPublisherId: CN=build
+        MsixPackageDisplayName: PresenceLight (Prod)
+        MsixBuildMode: SideLoadOnly
+        MsixGenerateAppInstaller: true
+
   steps:
-  - task: MSBuild@1
-    displayName: Build for Release
+  - task: DotNetCoreCLI@2  
     inputs:
-      platform: Any CPU
+      command: custom
+      custom: tool
+      arguments: install -g nbgv
+    displayName: Install NBGV tool
+
+  - script: nbgv cloud -c
+    displayName: Set Version
+
+  - powershell: |
+      # Update appxmanifest. This must be done before build.
+      # Set the per-channel values into the appxmanifest, replacing the checked-in values
+      [xml]$manifest= get-content ".\PresenceLight.Package\Package.appxmanifest"
+      $manifest.Package.Identity.Version = "$(GitBuildVersionSimple).0"
+      $manifest.Package.Identity.Name = "$(MsixPackageId)"
+      $manifest.Package.Identity.Publisher = "$(MsixPublisherId)"
+      $manifest.Package.Properties.DisplayName = "$(MsixPackageDisplayName)"
+      $manifest.Package.Applications.Application.VisualElements.DisplayName = "$(MsixPackageDisplayName)"
+      $manifest.save(".\PresenceLight.Package\Package.appxmanifest")
+    displayName: Update manifest version
+
+  - task: MSBuild@1
+    displayName: Build for $(BuildConfiguration)
+    inputs:
       solution: src/PresenceLight.sln
-      msbuildArguments: /restore 
-      configuration: Release
+      platform: x86
+      msbuildArguments: /restore /p:AppInstallerUri=$(DistributionUrl) /p:UapAppxPackageBuildMode=$(MsixBuildMode) /p:GenerateAppInstallerFile=$(MsixGenerateAppInstaller)
+      configuration: $(BuildConfiguration)
       maximumCpuCount: false
 
+  - script: copy build.cer PresenceLight.Package\AppPackages\PresenceLight.Package_$(GitBuildVersionSimple).0_x86_Test\PresenceLight.Package_$(GitBuildVersionSimple).0_x86.cer
+    displayName: Copy Certificate to versioned dir
+    condition: and(succeeded(), not(eq(variables['ChannelName'], 'Prod-Store')))
+
+  - task: PublishPipelineArtifact@0
+    inputs:
+      artifactName: $(ChannelName)
+      targetPath: PresenceLight.Package/AppPackages
