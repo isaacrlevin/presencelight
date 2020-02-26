@@ -9,7 +9,7 @@ trigger:
 variables:
   BuildConfiguration: Release
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-  Platform: AnyCPU
+  Platform: Any CPU
   
 jobs:
 - job: Build
