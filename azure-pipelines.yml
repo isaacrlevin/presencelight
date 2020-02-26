@@ -7,8 +7,8 @@ trigger:
 - master
 
 variables:
-- group: CertPassword
-- name: CertPassword
+  BuildConfiguration: Release
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   
 jobs:
 - job: Build
