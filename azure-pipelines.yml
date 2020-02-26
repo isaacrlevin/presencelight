@@ -10,24 +10,16 @@ pool:
   vmImage: 'windows-latest'
 
 variables:
-  solution: '**/*.sln'
-  buildPlatform: 'Any CPU'
-  buildConfiguration: 'Release'
-
+  BuildConfiguration: Release
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  
 steps:
-- task: NuGetToolInstaller@1
+  - task: MSBuild@1
+    displayName: Build for $(BuildConfiguration)
+    inputs:
+      solution: MyWPFApp.sln
+      platform: x86
+      msbuildArguments: /restore 
+      configuration: $(BuildConfiguration)
+      maximumCpuCount: false
 
-- task: NuGetCommand@2
-  inputs:
-    restoreSolution: '$(solution)'
-
-- task: VSBuild@1
-  inputs:
-    solution: '$(solution)'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-
-- task: VSTest@2
-  inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
