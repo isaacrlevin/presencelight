@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PresenceLight" xmlns:tb="http://www.hardcodet.net/taskbar"
         xmlns:Commands="clr-namespace:PresenceLight.Commands"
+        xmlns:gif="http://wpfanimatedgif.codeplex.com"
         mc:Ignorable="d" Title="Presence Light" Height="450" Width="400">
     <Grid>
         <TabControl>
@@ -13,7 +14,7 @@
                     <Grid x:Name="configErrorPanel" Visibility="Hidden" >
                         <Label Margin="0,130,4.667,200" RenderTransformOrigin="0.5,0.5" >
                             <TextBlock TextWrapping="Wrap" TextAlignment="Center">
-                              Your Application is not configured to login, please go to below link for more information.  
+                              Your Application is not configured to login, please go to below link for more information.
                             </TextBlock>
                         </Label>
                         <TextBlock Margin="163,179,163.667,183">           
@@ -59,30 +60,45 @@
                         </tb:TaskbarIcon.ContextMenu>
                     </tb:TaskbarIcon>
                     <Grid x:Name="signInPanel" Visibility="Visible">
-                        <Button x:Name="CallGraphButton" Content="Sign In" HorizontalAlignment="Right" Padding="5" Click="CallGraphButton_Click" Margin="0,130,88.667,200" FontFamily="Segoe Ui" Width="216"/>
-                        <Label Content="Login to Microsoft Account to Sync Presence" HorizontalAlignment="Left" Margin="63,99,0,0" VerticalAlignment="Top"/>
+                        <Button Content="Sign In" Margin="90,130,90,200" Click="CallGraphButton_Click" />
+                        <Label Content="Login to Microsoft Account to Sync Presence" Margin="70,99,70,0" VerticalAlignment="Top"/>
+
+                    </Grid>
+                    <Grid x:Name="loadingPanel" Visibility="Collapsed">
+                        <Image gif:ImageBehavior.AnimatedSource="Icons/loading.gif" Width="100" />
                     </Grid>
                 </Grid>
             </TabItem>
             <TabItem Header="Configure Phillips Hue" >
                 <Grid>
-                    <Button Content="Register Bridge" Margin="79,95,103,243" Click="registerBridge_Click"/>
-                    <Label Content="Hue Bridge IP Address" Margin="10,34,200,319"/>
+                    <Button Content="Register Bridge" Margin="90,95,90,243" Click="registerBridge_Click"/>
+                    <Label Content="Hue Bridge IP Address" Margin="5,34,200,319"/>
                     <TextBox x:Name="hueIpAddress" HorizontalAlignment="Left" Height="23" Margin="203,39,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
-                    <Label Margin="0,158,5,172" RenderTransformOrigin="0.5,0.5" >
-                        <TextBlock  x:Name="lblMessage" TextWrapping="Wrap" TextAlignment="Center">
+                    <Label Margin="5,158,5,172" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Center" >
+                        <TextBlock  x:Name="lblMessage" TextWrapping="Wrap"  TextAlignment="Center">
+
                         </TextBlock>
                     </Label>
-                    <Button Content="Save" Margin="79,224,103,114" Click="SaveHueSettings_Click"/>
+                    <Image x:Name="imgLoading" Visibility="Collapsed" gif:ImageBehavior.AnimatedSource="Icons/loading.gif" Width="75" Margin="143,17,143,-17" />
+                    <Button Content="Save" Margin="90,280,90,58" Click="SaveHueSettings_Click"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Settings" >
                 <Grid>
-                    <Label Content="Icon Type" Margin="22,97,188,254"/>
-                   
-                    <Button Content="Save" Margin="79,281,102.667,57" Click="SaveSettings_Click"/>
-                    <RadioButton GroupName="IconType" x:Name="Transparent" Content="Transparent" HorizontalAlignment="Left" Margin="118,104,0,0" VerticalAlignment="Top" Height="27"/>
-                    <RadioButton GroupName="IconType" x:Name="White" Content="White" HorizontalAlignment="Left" Margin="118,137,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.43,-0.627" Height="23"/>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="85*"/>
+                        <ColumnDefinition Width="301*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Content="Azure App Client ID" Margin="5,34,200,319" Grid.ColumnSpan="2"/>
+                    <TextBox x:Name="clientId" HorizontalAlignment="Left" Height="23" Margin="45.479,34,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="230" Grid.Column="1"/>
+
+                    <Label Content="Azure App Tenant ID" Margin="5,62,200,291" Grid.ColumnSpan="2"/>
+                    <TextBox x:Name="tenantId" HorizontalAlignment="Left" Height="23" Margin="45.479,62,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="230" Grid.Column="1"/>
+
+                    <Label Content="Icon Type" Margin="5,97,188,254" Grid.ColumnSpan="2"/>
+                    <RadioButton GroupName="IconType" x:Name="Transparent" Content="Transparent" HorizontalAlignment="Left" Margin="45.479,104,0,0" VerticalAlignment="Top" Height="27" Grid.Column="1"/>
+                    <RadioButton GroupName="IconType" x:Name="White" Content="White" HorizontalAlignment="Left" Margin="45.479,137,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.43,-0.627" Height="23" Grid.Column="1"/>
+                    <Button Content="Save" Margin="5.479,280,90,58" Click="SaveSettings_Click" Grid.Column="1"/>
                 </Grid>
             </TabItem>
 
