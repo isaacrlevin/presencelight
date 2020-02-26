@@ -12,8 +12,8 @@
     Version="1.0.0.0" />
 
   <Properties>
-    <DisplayName>PresenceLight.Package</DisplayName>
-    <PublisherDisplayName>CN=build</PublisherDisplayName>
+    <DisplayName>PresenceLight (Local)</DisplayName>
+    <PublisherDisplayName>Build</PublisherDisplayName>
     <Logo>Images\StoreLogo.png</Logo>
   </Properties>
 
@@ -31,8 +31,8 @@
       Executable="$targetnametoken$.exe"
       EntryPoint="$targetentrypoint$">
       <uap:VisualElements
-        DisplayName="PresenceLight.Package"
-        Description="PresenceLight.Package"
+        DisplayName="PresenceLight (Local)"
+        Description="PresenceLight"
         BackgroundColor="transparent"
         Square150x150Logo="Images\Square150x150Logo.png"
         Square44x44Logo="Images\Square44x44Logo.png">
