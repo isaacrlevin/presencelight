@@ -67,7 +67,7 @@ jobs:
       configuration: $(BuildConfiguration)
       maximumCpuCount: false
 
-  - script: copy build.cer src\PresenceLight.Package\AppPackages\PresenceLight.Package_$(GitBuildVersionSimple).0_x86_Test\PresenceLight.Package_$(GitBuildVersionSimple).0_x86.cer
+  - script: copy src\build.cer src\PresenceLight.Package\AppPackages\PresenceLight.Package_$(GitBuildVersionSimple).0_x86_Test\PresenceLight.Package_$(GitBuildVersionSimple).0_x86.cer
     displayName: Copy Certificate to versioned dir
     condition: and(succeeded(), not(eq(variables['ChannelName'], 'Prod-Store')))
 
