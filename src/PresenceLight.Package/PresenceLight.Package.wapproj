@@ -52,7 +52,7 @@
   <PropertyGroup>
     <ProjectGuid>12ddad24-ccbd-409f-9342-17a0e445604f</ProjectGuid>
     <TargetPlatformVersion>10.0.18362.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.14393.0</TargetPlatformMinVersion>
+    <TargetPlatformMinVersion>10.0.18362.0</TargetPlatformMinVersion>
     <DefaultLanguage>en-US</DefaultLanguage>
     <AppxPackageSigningEnabled>false</AppxPackageSigningEnabled>
     <AppInstallerUri>https://presencelight.z5.web.core.windows.net/CD</AppInstallerUri>
