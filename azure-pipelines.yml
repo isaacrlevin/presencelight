@@ -22,7 +22,7 @@ jobs:
         ChannelName: CD-Web
         DistributionUrl: https://presencelightapp.azurewebsites.net/CD
         MsixPackageId: PresenceLight.CD
-        MsixPublisherId: CN=build
+        MsixPublisherId: CN=Presence Light, O=Isaac Levin, C=US
         MsixPackageDisplayName: PresenceLight (CD)
         MsixBuildMode: SideLoadOnly
         MsixGenerateAppInstaller: true
@@ -30,7 +30,7 @@ jobs:
         ChannelName: Prod-Web
         DistributionUrl: https://presencelight.z5.web.core.windows.net/Prod
         MsixPackageId: PresenceLight
-        MsixPublisherId: CN=build
+        MsixPublisherId: CN=Presence Light, O=Isaac Levin, C=US
         MsixPackageDisplayName: PresenceLight (Prod)
         MsixBuildMode: SideLoadOnly
         MsixGenerateAppInstaller: true
