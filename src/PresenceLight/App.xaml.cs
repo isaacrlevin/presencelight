@@ -33,7 +33,7 @@ namespace PresenceLight
             SetAddRemoveProgramsIcon();
 
             var builder = new ConfigurationBuilder()
-                  .SetBasePath(System.IO.Directory.GetCurrentDirectory())
+                  //.SetBasePath(System.IO.Directory.GetCurrentDirectory())
                   .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
             Configuration = builder.Build();
