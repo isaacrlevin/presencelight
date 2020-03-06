@@ -17,10 +17,8 @@ namespace PresenceLight.Worker
         private readonly IGraphService _graphservice;
         private readonly IHueService _hueService;
         private readonly ILogger<Worker> _logger;
-        private readonly ConfigWrapper _options;
-        public Worker(IGraphService graphService, IHueService hueService, ILogger<Worker> logger, IOptionsMonitor<ConfigWrapper> optionsAccessor)
+        public Worker(IGraphService graphService, IHueService hueService, ILogger<Worker> logger)
         {
-            _options = optionsAccessor.CurrentValue;
             _graphservice = graphService;
             _hueService = hueService;
             _logger = logger;

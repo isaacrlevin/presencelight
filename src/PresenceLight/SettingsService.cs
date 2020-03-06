@@ -12,7 +12,7 @@ namespace PresenceLight
     public static class SettingsService
     {
         private const string SETTINGS_FILENAME = "settings.json";
-        private static StorageFolder _settingsFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
+        private static readonly StorageFolder _settingsFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
         public async static Task<ConfigWrapper> LoadSettings()
         {
             try
@@ -42,7 +42,7 @@ namespace PresenceLight
             }
         }
 
-        public static async Task<bool> IsFilePresent(string fileName)
+        public static async Task<bool> IsFilePresent()
         {
             try
             {

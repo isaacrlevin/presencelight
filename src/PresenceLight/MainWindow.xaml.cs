@@ -25,13 +25,11 @@ namespace PresenceLight
     public partial class MainWindow : Window
     {
         private readonly ConfigWrapper _options;
-        public ConfigWrapper _config { get; set; }
+        public ConfigWrapper Config { get; set; }
         private bool stopPolling;
-        private readonly IHueService _hueService;
+        private IHueService _hueService;
         private GraphServiceClient _graphServiceClient;
         private readonly IGraphService _graphservice;
-        private StorageFile _sampleFile;
-        private StorageFolder _localFolder;
 
         public MainWindow(IGraphService graphService, IHueService hueService, IOptionsMonitor<ConfigWrapper> optionsAccessor)
         {
@@ -51,14 +49,14 @@ namespace PresenceLight
             this.Dispatcher.Invoke(() =>
             {
                 LoadApp();
-                DataContext = _config;
+                DataContext = Config;
             });
         });
         }
 
         private void LoadApp()
         {
-            if (string.IsNullOrEmpty(_config.ApplicationId) || string.IsNullOrEmpty(_config.TenantId) || string.IsNullOrEmpty(_config.RedirectUri))
+            if (string.IsNullOrEmpty(Config.ApplicationId) || string.IsNullOrEmpty(Config.TenantId) || string.IsNullOrEmpty(Config.RedirectUri))
             {
                 configErrorPanel.Visibility = Visibility.Visible;
                 dataPanel.Visibility = Visibility.Hidden;
@@ -71,7 +69,7 @@ namespace PresenceLight
 
             CheckHueSettings();
 
-            if (_config.IconType == "Transparent")
+            if (Config.IconType == "Transparent")
             {
                 Transparent.IsChecked = true;
             }
@@ -87,12 +85,12 @@ namespace PresenceLight
 
         private async Task LoadSettings()
         {
-            if (!(await SettingsService.IsFilePresent("settings.json")))
+            if (!(await SettingsService.IsFilePresent()))
             {
                 await SettingsService.SaveSettings(_options);
             }
 
-            _config = await SettingsService.LoadSettings();
+            Config = await SettingsService.LoadSettings();
         }
 
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
@@ -110,7 +108,7 @@ namespace PresenceLight
 
             MapUI(presence, profile, LoadImage(photo));
 
-            if (!string.IsNullOrEmpty(_config.HueApiKey) && !string.IsNullOrEmpty(_config.HueIpAddress))
+            if (!string.IsNullOrEmpty(Config.HueApiKey) && !string.IsNullOrEmpty(Config.HueIpAddress))
             {
                 await _hueService.SetColor(presence.Availability);
             }
@@ -131,7 +129,7 @@ namespace PresenceLight
                 try
                 {
                     presence = await System.Threading.Tasks.Task.Run(() => GetPresence());
-                    if (!string.IsNullOrEmpty(_config.HueApiKey) && !string.IsNullOrEmpty(_config.HueIpAddress))
+                    if (!string.IsNullOrEmpty(Config.HueApiKey) && !string.IsNullOrEmpty(Config.HueIpAddress))
                     {
                         await _hueService.SetColor(presence.Availability);
                     }
@@ -200,32 +198,32 @@ namespace PresenceLight
             switch (presence.Availability)
             {
                 case "Available":
-                    image = new BitmapImage(new Uri(IconConstants.GetIcon(_config.IconType, IconConstants.Available)));
+                    image = new BitmapImage(new Uri(IconConstants.GetIcon(Config.IconType, IconConstants.Available)));
                     color = MapColor("#009933");
                     notificationIcon.ToolTipText = PresenceConstants.Available;
                     break;
                 case "Busy":
-                    image = new BitmapImage(new Uri(IconConstants.GetIcon(_config.IconType, IconConstants.Busy)));
+                    image = new BitmapImage(new Uri(IconConstants.GetIcon(Config.IconType, IconConstants.Busy)));
                     color = MapColor("#ff3300");
                     notificationIcon.ToolTipText = PresenceConstants.Busy;
                     break;
                 case "BeRightBack":
-                    image = new BitmapImage(new Uri(IconConstants.GetIcon(_config.IconType, IconConstants.BeRightBack)));
+                    image = new BitmapImage(new Uri(IconConstants.GetIcon(Config.IconType, IconConstants.BeRightBack)));
                     color = MapColor("#ffff00");
                     notificationIcon.ToolTipText = PresenceConstants.BeRightBack;
                     break;
                 case "Away":
-                    image = new BitmapImage(new Uri(IconConstants.GetIcon(_config.IconType, IconConstants.Away)));
+                    image = new BitmapImage(new Uri(IconConstants.GetIcon(Config.IconType, IconConstants.Away)));
                     color = MapColor("#ffff00");
                     notificationIcon.ToolTipText = PresenceConstants.Away;
                     break;
                 case "DoNotDisturb":
-                    image = new BitmapImage(new Uri(IconConstants.GetIcon(_config.IconType, IconConstants.DoNotDisturb)));
+                    image = new BitmapImage(new Uri(IconConstants.GetIcon(Config.IconType, IconConstants.DoNotDisturb)));
                     color = MapColor("#800000");
                     notificationIcon.ToolTipText = PresenceConstants.DoNotDisturb;
                     break;
                 case "OutOfOffice":
-                    image = new BitmapImage(new Uri(IconConstants.GetIcon(_config.IconType, IconConstants.OutOfOffice)));
+                    image = new BitmapImage(new Uri(IconConstants.GetIcon(Config.IconType, IconConstants.OutOfOffice)));
                     color = MapColor("#800080");
                     notificationIcon.ToolTipText = PresenceConstants.OutOfOffice;
                     break;
@@ -249,7 +247,7 @@ namespace PresenceLight
 
             if (profile != null)
             {
-                Name.Content = profile.DisplayName;
+                userName.Content = profile.DisplayName;
             }
         }
         #endregion
@@ -307,27 +305,27 @@ namespace PresenceLight
 
         private async void SaveHueSettings_Click(object sender, RoutedEventArgs e)
         {
-            await SettingsService.SaveSettings(_config);
+            await SettingsService.SaveSettings(Config);
 
-            var _hueService = new HueService(_config);
+            _hueService = new HueService(Config);
         }
 
         private async void SaveSettings_Click(object sender, RoutedEventArgs e)
         {
             if (Transparent.IsChecked == true)
             {
-                _config.IconType = "Transparent";
+                Config.IconType = "Transparent";
             }
             else
             {
-                _config.IconType = "White";
+                Config.IconType = "White";
             }
 
-            await SettingsService.SaveSettings(_config);
+            await SettingsService.SaveSettings(Config);
             lblSettingSaved.Visibility = Visibility.Visible;
         }
 
-        private async void registerBridge_Click(object sender, RoutedEventArgs e)
+        private async void RegisterBridge_Click(object sender, RoutedEventArgs e)
         {
             MessageBoxHelper.PrepToCenterMessageBoxOnForm(this);
             MessageBox.Show("Please press the sync button on your Phillips Hue Bridge");
@@ -349,13 +347,13 @@ namespace PresenceLight
                 lblMessage.Foreground = fontBrush;
             }
 
-            if (!string.IsNullOrEmpty(_config.HueApiKey))
+            if (!string.IsNullOrEmpty(Config.HueApiKey))
             {
                 lblMessage.Text = "App Registered with Bridge";
                 fontBrush.Color = MapColor("#009933");
                 lblMessage.Foreground = fontBrush;
 
-                await SettingsService.SaveSettings(_config);
+                await SettingsService.SaveSettings(Config);
             }
         }
 
@@ -376,7 +374,7 @@ namespace PresenceLight
             }
             else
             {
-                if (string.IsNullOrEmpty(_config.HueApiKey))
+                if (string.IsNullOrEmpty(Config.HueApiKey))
                 {
                     lblMessage.Text = "Missing App Registration, please button on bridge than click 'Register Bridge'";
                     fontBrush.Color = MapColor("#ff3300");
@@ -391,7 +389,7 @@ namespace PresenceLight
             }
         }
 
-        private void hueIpAddress_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        private void HueIpAddress_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
             CheckHueSettings();
         }

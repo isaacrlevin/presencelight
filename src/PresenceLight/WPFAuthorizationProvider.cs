@@ -46,10 +46,7 @@ namespace PresenceLight.Core.Helpers
                             .ExecuteAsync();
                      });
                 }
-                catch (Exception e)
-                {
-
-                }
+                catch { }
             }
 
             if (authResult != null)
