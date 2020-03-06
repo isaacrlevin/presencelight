@@ -30,7 +30,7 @@
                             </StackPanel>
                         </Grid>
                         <Grid Margin="0,39,-0.333,-10">
-                            <Label x:Name="Name" FontSize="40" MinHeight="120" Margin="5" FontFamily="Segoe Ui"/>
+                            <Label x:Name="userName" FontSize="40" MinHeight="120" Margin="5" FontFamily="Segoe Ui"/>
                             <Border BorderThickness="3" CornerRadius="10" Padding="2" HorizontalAlignment="Center" VerticalAlignment="Center">
                                 <Grid>
                                     <!-- Rounded mask (stretches to fill Grid) -->
@@ -71,9 +71,9 @@
             </TabItem>
             <TabItem Header="Configure Phillips Hue" >
                 <Grid>
-                    <Button Content="Register Bridge" Margin="90,95,90,243" Click="registerBridge_Click"/>
+                    <Button Content="Register Bridge" Margin="90,95,90,243" Click="RegisterBridge_Click"/>
                     <Label Content="Hue Bridge IP Address" Margin="5,34,200,319"/>
-                    <TextBox Text="{Binding HueIpAddress}" x:Name="hueIpAddress" HorizontalAlignment="Left" Height="23" Margin="203,39,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" TextChanged="hueIpAddress_TextChanged"/>
+                    <TextBox Text="{Binding HueIpAddress}" x:Name="hueIpAddress" HorizontalAlignment="Left" Height="23" Margin="203,39,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" TextChanged="HueIpAddress_TextChanged"/>
                     <Label Margin="5,158,5,172" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Center" >
                         <TextBlock  x:Name="lblMessage" TextWrapping="Wrap"  TextAlignment="Center">
 
