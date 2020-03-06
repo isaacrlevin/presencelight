@@ -8,7 +8,7 @@
         xmlns:gif="http://wpfanimatedgif.codeplex.com"
         mc:Ignorable="d" Title="Presence Light" Height="450" Width="400">
     <Grid>
-        <TabControl>
+        <TabControl SelectionChanged="TabControl_SelectionChanged">
             <TabItem Header="Profile">
                 <Grid>
                     <Grid x:Name="configErrorPanel" Visibility="Hidden" >
@@ -73,7 +73,7 @@
                 <Grid>
                     <Button Content="Register Bridge" Margin="90,95,90,243" Click="registerBridge_Click"/>
                     <Label Content="Hue Bridge IP Address" Margin="5,34,200,319"/>
-                    <TextBox x:Name="hueIpAddress" HorizontalAlignment="Left" Height="23" Margin="203,39,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+                    <TextBox Text="{Binding HueIpAddress}" x:Name="hueIpAddress" HorizontalAlignment="Left" Height="23" Margin="203,39,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" TextChanged="hueIpAddress_TextChanged"/>
                     <Label Margin="5,158,5,172" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Center" >
                         <TextBlock  x:Name="lblMessage" TextWrapping="Wrap"  TextAlignment="Center">
 
@@ -87,18 +87,20 @@
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="85*"/>
-                        <ColumnDefinition Width="301*"/>
+                        <ColumnDefinition Width="31*"/>
+                        <ColumnDefinition Width="270*"/>
                     </Grid.ColumnDefinitions>
-                    <Label Content="Azure App Client ID" Margin="5,34,200,319" Grid.ColumnSpan="2"/>
-                    <TextBox x:Name="clientId" HorizontalAlignment="Left" Height="23" Margin="45.479,34,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="230" Grid.Column="1"/>
+                    <Label Content="Azure App Client ID" Margin="5,34,199.667,319" Grid.ColumnSpan="3"/>
+                    <TextBox Text="{Binding ApplicationId}" x:Name="clientId" HorizontalAlignment="Left" Height="23" Margin="14.343,34,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="230" Grid.Column="2"/>
 
-                    <Label Content="Azure App Tenant ID" Margin="5,62,200,291" Grid.ColumnSpan="2"/>
-                    <TextBox x:Name="tenantId" HorizontalAlignment="Left" Height="23" Margin="45.479,62,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="230" Grid.Column="1"/>
+                    <Label Content="Azure App Tenant ID" Margin="5,62,199.667,291" Grid.ColumnSpan="3"/>
+                    <TextBox Text="{Binding TenantId}" x:Name="tenantId" HorizontalAlignment="Left" Height="23" Margin="14.343,62,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="230" Grid.Column="2"/>
 
-                    <Label Content="Icon Type" Margin="5,97,188,254" Grid.ColumnSpan="2"/>
-                    <RadioButton GroupName="IconType" x:Name="Transparent" Content="Transparent" HorizontalAlignment="Left" Margin="45.479,104,0,0" VerticalAlignment="Top" Height="27" Grid.Column="1"/>
-                    <RadioButton GroupName="IconType" x:Name="White" Content="White" HorizontalAlignment="Left" Margin="45.479,137,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.43,-0.627" Height="23" Grid.Column="1"/>
-                    <Button Content="Save" Margin="5.479,280,90,58" Click="SaveSettings_Click" Grid.Column="1"/>
+                    <Label Content="Icon Type" Margin="5,97,187.667,254" Grid.ColumnSpan="3"/>
+                    <RadioButton GroupName="IconType" x:Name="Transparent" Content="Transparent" HorizontalAlignment="Left" Margin="14.343,104,0,0" VerticalAlignment="Top" Height="27" Grid.Column="2"/>
+                    <RadioButton GroupName="IconType" x:Name="White" Content="White" HorizontalAlignment="Left" Margin="14.343,137,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.43,-0.627" Height="23" Grid.Column="2"/>
+                    <Button Content="Save" Margin="5.667,280,89.667,58" Click="SaveSettings_Click" Grid.Column="1" Grid.ColumnSpan="2"/>
+                    <Label x:Name="lblSettingSaved" Visibility="Collapsed" Content="Settings Updated" Foreground="Green" Margin="23.343,341,135.667,10" Grid.Column="2"/>
                 </Grid>
             </TabItem>
 

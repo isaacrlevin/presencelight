@@ -15,7 +15,7 @@ namespace PresenceLight.Core
     public interface IHueService
     {
         Task SetColor(string availability);
-        Task RegisterBridge();
+        Task<string> RegisterBridge();
     }
     public class HueService : IHueService
     {
@@ -33,7 +33,7 @@ namespace PresenceLight.Core
         }
 
         public async Task SetColor(string availability)
-        {           
+        {
             _client = new LocalHueClient(_options.HueIpAddress);
             _client.Initialize(_options.HueApiKey);
 
@@ -71,22 +71,18 @@ namespace PresenceLight.Core
         }
 
         //Need to wire up a way to do this without user intervention
-        public async Task RegisterBridge()
+        public async Task<string> RegisterBridge()
         {
             if (string.IsNullOrEmpty(_options.HueApiKey))
             {
-                //IBridgeLocator locator = new HttpBridgeLocator(); //Or: LocalNetworkScanBridgeLocator, MdnsBridgeLocator, MUdpBasedBridgeLocator
-                //var bridges = (List<LocatedBridge>)locator.LocateBridgesAsync(TimeSpan.FromSeconds(5)).Result;
-
-                //_options.HueIpAddress = bridges[0].IpAddress;
-
                 _client = new LocalHueClient(_options.HueIpAddress);
+             
                 //Make sure the user has pressed the button on the bridge before calling RegisterAsync
                 //It will throw an LinkButtonNotPressedException if the user did not press the button
-                _options.HueApiKey = await _client.RegisterAsync("presence-light", "presence-light");
 
-                System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/appsettings.json", JsonConvert.SerializeObject(_options));
+                return await _client.RegisterAsync("presence-light", "presence-light");
             }
+            return String.Empty;
         }
 
         private void CheckLights()
