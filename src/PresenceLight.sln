@@ -13,8 +13,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PresenceLight", "PresenceLi
 EndProject
 Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "PresenceLight.Package", "PresenceLight.Package\PresenceLight.Package.wapproj", "{12DDAD24-CCBD-409F-9342-17A0E445604F}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{51EB02C5-B09E-4EBB-B2BD-8FCCEE660011}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|AnyCPU = Debug|AnyCPU

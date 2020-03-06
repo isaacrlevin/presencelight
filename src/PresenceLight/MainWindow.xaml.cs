@@ -2,16 +2,11 @@
 using Microsoft.Identity.Client;
 using PresenceLight.Core;
 using PresenceLight.Core.Graph;
-using System.Collections.Generic;
 using System.Windows;
-using System.Windows.Interop;
 using System.Linq;
 using System;
 using System.Threading.Tasks;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using Microsoft.Extensions.Options;
-using System.Text;
 using System.Windows.Media.Imaging;
 using System.IO;
 using System.Windows.Media;
@@ -20,7 +15,7 @@ using System.Diagnostics;
 using System.Windows.Navigation;
 using PresenceLight.Core.Helpers;
 using Newtonsoft.Json;
-using System.Web.UI.WebControls;
+using Windows.Storage;
 
 namespace PresenceLight
 {
@@ -30,19 +25,40 @@ namespace PresenceLight
     public partial class MainWindow : Window
     {
         private readonly ConfigWrapper _options;
+        public ConfigWrapper _config { get; set; }
         private bool stopPolling;
         private readonly IHueService _hueService;
-        private readonly GraphServiceClient _graphServiceClient;
+        private GraphServiceClient _graphServiceClient;
         private readonly IGraphService _graphservice;
+        private StorageFile _sampleFile;
+        private StorageFolder _localFolder;
 
         public MainWindow(IGraphService graphService, IHueService hueService, IOptionsMonitor<ConfigWrapper> optionsAccessor)
         {
-            _options = optionsAccessor.CurrentValue;
-
-
             InitializeComponent();
 
-            if (string.IsNullOrEmpty(_options.ApplicationId) || string.IsNullOrEmpty(_options.TenantId) || string.IsNullOrEmpty(_options.RedirectUri))
+            _graphservice = graphService;
+
+            _hueService = hueService;
+            _options = optionsAccessor.CurrentValue;
+
+            LoadSettings().ContinueWith(
+        t =>
+        {
+            if (t.IsFaulted)
+            { }
+
+            this.Dispatcher.Invoke(() =>
+            {
+                LoadApp();
+                DataContext = _config;
+            });
+        });
+        }
+
+        private void LoadApp()
+        {
+            if (string.IsNullOrEmpty(_config.ApplicationId) || string.IsNullOrEmpty(_config.TenantId) || string.IsNullOrEmpty(_config.RedirectUri))
             {
                 configErrorPanel.Visibility = Visibility.Visible;
                 dataPanel.Visibility = Visibility.Hidden;
@@ -50,30 +66,12 @@ namespace PresenceLight
             }
             else
             {
-                _graphservice = graphService;
                 _graphServiceClient = _graphservice.GetAuthenticatedGraphClient(typeof(WPFAuthorizationProvider));
             }
 
-            SolidColorBrush fontBrush = new SolidColorBrush();
+            CheckHueSettings();
 
-            if (string.IsNullOrEmpty(_options.HueApiKey))
-            {
-                lblMessage.Text = "Missing App Registration, please button on bridge than click 'Register Bridge'";
-                fontBrush.Color = MapColor("#ff3300");
-                lblMessage.Foreground = fontBrush;
-            }
-            else
-            {
-                lblMessage.Text = "App Registered with Bridge";
-                fontBrush.Color = MapColor("#009933");
-                lblMessage.Foreground = fontBrush;
-            }
-
-            clientId.Text = _options.ApplicationId;
-            tenantId.Text = _options.TenantId;
-            hueIpAddress.Text = _options.HueIpAddress;
-
-            if (_options.IconType == "Transparent")
+            if (_config.IconType == "Transparent")
             {
                 Transparent.IsChecked = true;
             }
@@ -82,11 +80,19 @@ namespace PresenceLight
                 White.IsChecked = true;
             }
 
-
-            _hueService = hueService;
-
             notificationIcon.ToolTipText = PresenceConstants.Inactive;
             notificationIcon.IconSource = new BitmapImage(new Uri(IconConstants.GetIcon(String.Empty, IconConstants.Inactive)));
+        }
+
+
+        private async Task LoadSettings()
+        {
+            if (!(await SettingsService.IsFilePresent("settings.json")))
+            {
+                await SettingsService.SaveSettings(_options);
+            }
+
+            _config = await SettingsService.LoadSettings();
         }
 
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
@@ -104,7 +110,7 @@ namespace PresenceLight
 
             MapUI(presence, profile, LoadImage(photo));
 
-            if (!string.IsNullOrEmpty(_options.HueApiKey) && !string.IsNullOrEmpty(_options.HueIpAddress))
+            if (!string.IsNullOrEmpty(_config.HueApiKey) && !string.IsNullOrEmpty(_config.HueIpAddress))
             {
                 await _hueService.SetColor(presence.Availability);
             }
@@ -125,7 +131,7 @@ namespace PresenceLight
                 try
                 {
                     presence = await System.Threading.Tasks.Task.Run(() => GetPresence());
-                    if (!string.IsNullOrEmpty(_options.HueApiKey) && !string.IsNullOrEmpty(_options.HueIpAddress))
+                    if (!string.IsNullOrEmpty(_config.HueApiKey) && !string.IsNullOrEmpty(_config.HueIpAddress))
                     {
                         await _hueService.SetColor(presence.Availability);
                     }
@@ -194,32 +200,32 @@ namespace PresenceLight
             switch (presence.Availability)
             {
                 case "Available":
-                    image = new BitmapImage(new Uri(IconConstants.GetIcon(_options.IconType, IconConstants.Available)));
+                    image = new BitmapImage(new Uri(IconConstants.GetIcon(_config.IconType, IconConstants.Available)));
                     color = MapColor("#009933");
                     notificationIcon.ToolTipText = PresenceConstants.Available;
                     break;
                 case "Busy":
-                    image = new BitmapImage(new Uri(IconConstants.GetIcon(_options.IconType, IconConstants.Busy)));
+                    image = new BitmapImage(new Uri(IconConstants.GetIcon(_config.IconType, IconConstants.Busy)));
                     color = MapColor("#ff3300");
                     notificationIcon.ToolTipText = PresenceConstants.Busy;
                     break;
                 case "BeRightBack":
-                    image = new BitmapImage(new Uri(IconConstants.GetIcon(_options.IconType, IconConstants.BeRightBack)));
+                    image = new BitmapImage(new Uri(IconConstants.GetIcon(_config.IconType, IconConstants.BeRightBack)));
                     color = MapColor("#ffff00");
                     notificationIcon.ToolTipText = PresenceConstants.BeRightBack;
                     break;
                 case "Away":
-                    image = new BitmapImage(new Uri(IconConstants.GetIcon(_options.IconType, IconConstants.Away)));
+                    image = new BitmapImage(new Uri(IconConstants.GetIcon(_config.IconType, IconConstants.Away)));
                     color = MapColor("#ffff00");
                     notificationIcon.ToolTipText = PresenceConstants.Away;
                     break;
                 case "DoNotDisturb":
-                    image = new BitmapImage(new Uri(IconConstants.GetIcon(_options.IconType, IconConstants.DoNotDisturb)));
+                    image = new BitmapImage(new Uri(IconConstants.GetIcon(_config.IconType, IconConstants.DoNotDisturb)));
                     color = MapColor("#800000");
                     notificationIcon.ToolTipText = PresenceConstants.DoNotDisturb;
                     break;
                 case "OutOfOffice":
-                    image = new BitmapImage(new Uri(IconConstants.GetIcon(_options.IconType, IconConstants.OutOfOffice)));
+                    image = new BitmapImage(new Uri(IconConstants.GetIcon(_config.IconType, IconConstants.OutOfOffice)));
                     color = MapColor("#800080");
                     notificationIcon.ToolTipText = PresenceConstants.OutOfOffice;
                     break;
@@ -299,28 +305,26 @@ namespace PresenceLight
         }
         #endregion
 
-        private void SaveHueSettings_Click(object sender, RoutedEventArgs e)
+        private async void SaveHueSettings_Click(object sender, RoutedEventArgs e)
         {
-            System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/appsettings.json", JsonConvert.SerializeObject(_options));
+            await SettingsService.SaveSettings(_config);
 
-            var _hueService = new HueService(_options);
+            var _hueService = new HueService(_config);
         }
 
-        private void SaveSettings_Click(object sender, RoutedEventArgs e)
+        private async void SaveSettings_Click(object sender, RoutedEventArgs e)
         {
             if (Transparent.IsChecked == true)
             {
-                _options.IconType = "Transparent";
+                _config.IconType = "Transparent";
             }
             else
             {
-                _options.IconType = "White";
+                _config.IconType = "White";
             }
 
-            _options.ApplicationId = clientId.Text;
-            _options.TenantId = tenantId.Text;
-
-            System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/appsettings.json", JsonConvert.SerializeObject(_options));
+            await SettingsService.SaveSettings(_config);
+            lblSettingSaved.Visibility = Visibility.Visible;
         }
 
         private async void registerBridge_Click(object sender, RoutedEventArgs e)
@@ -345,14 +349,51 @@ namespace PresenceLight
                 lblMessage.Foreground = fontBrush;
             }
 
-            if (!string.IsNullOrEmpty(_options.HueApiKey))
+            if (!string.IsNullOrEmpty(_config.HueApiKey))
             {
                 lblMessage.Text = "App Registered with Bridge";
                 fontBrush.Color = MapColor("#009933");
                 lblMessage.Foreground = fontBrush;
 
-                System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/appsettings.json", JsonConvert.SerializeObject(_options));
+                await SettingsService.SaveSettings(_config);
             }
+        }
+
+        private void TabControl_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            lblSettingSaved.Visibility = Visibility.Collapsed;
+        }
+
+        private void CheckHueSettings()
+        {
+            SolidColorBrush fontBrush = new SolidColorBrush();
+
+            if (string.IsNullOrEmpty(hueIpAddress.Text) || hueIpAddress.Text.Length < 7)
+            {
+                lblMessage.Text = "IP Address Needs to be longer than 7 characters";
+                fontBrush.Color = MapColor("#ff3300");
+                lblMessage.Foreground = fontBrush;
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(_config.HueApiKey))
+                {
+                    lblMessage.Text = "Missing App Registration, please button on bridge than click 'Register Bridge'";
+                    fontBrush.Color = MapColor("#ff3300");
+                    lblMessage.Foreground = fontBrush;
+                }
+                else
+                {
+                    lblMessage.Text = "App Registered with Bridge";
+                    fontBrush.Color = MapColor("#009933");
+                    lblMessage.Foreground = fontBrush;
+                }
+            }
+        }
+
+        private void hueIpAddress_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            CheckHueSettings();
         }
     }
 }
