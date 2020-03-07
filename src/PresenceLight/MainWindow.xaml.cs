@@ -16,6 +16,7 @@ using System.Windows.Navigation;
 using PresenceLight.Core.Helpers;
 using Newtonsoft.Json;
 using Windows.Storage;
+using Hardcodet.Wpf.TaskbarNotification;
 
 namespace PresenceLight
 {
@@ -49,24 +50,20 @@ namespace PresenceLight
             this.Dispatcher.Invoke(() =>
             {
                 LoadApp();
+
+                var tbContext = notificationIcon.DataContext;
+
                 DataContext = Config;
+
+                notificationIcon.DataContext = tbContext;
+
+                //notificationIcon.DataContext = new TaskbarIcon();
             });
         });
         }
 
         private void LoadApp()
         {
-            if (string.IsNullOrEmpty(Config.ApplicationId) || string.IsNullOrEmpty(Config.TenantId) || string.IsNullOrEmpty(Config.RedirectUri))
-            {
-                configErrorPanel.Visibility = Visibility.Visible;
-                dataPanel.Visibility = Visibility.Hidden;
-                signInPanel.Visibility = Visibility.Hidden;
-            }
-            else
-            {
-                _graphServiceClient = _graphservice.GetAuthenticatedGraphClient(typeof(WPFAuthorizationProvider));
-            }
-
             CheckHueSettings();
 
             if (Config.IconType == "Transparent")
@@ -364,6 +361,20 @@ namespace PresenceLight
 
         private void CheckHueSettings()
         {
+            if (string.IsNullOrEmpty(Config.ApplicationId) || string.IsNullOrEmpty(Config.TenantId) || string.IsNullOrEmpty(Config.RedirectUri))
+            {
+                configErrorPanel.Visibility = Visibility.Visible;
+                dataPanel.Visibility = Visibility.Hidden;
+                signInPanel.Visibility = Visibility.Hidden;
+            }
+            else
+            {
+                if (_graphServiceClient == null)
+                {
+                    _graphServiceClient = _graphservice.GetAuthenticatedGraphClient(typeof(WPFAuthorizationProvider));
+                }
+            }
+
             SolidColorBrush fontBrush = new SolidColorBrush();
 
             if (string.IsNullOrEmpty(hueIpAddress.Text) || hueIpAddress.Text.Length < 7)
