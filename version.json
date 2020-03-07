@@ -1,0 +1,8 @@
+{
+  "version": "1.0",
+  "publicReleaseRefSpec": [
+    "^refs/heads/master$",
+    "^refs/heads/develop$",
+    "^refs/heads/rel/v\\d+\\.\\d+"
+  ]
+}
