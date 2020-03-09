@@ -34,6 +34,14 @@ jobs:
         MsixPackageDisplayName: PresenceLight
         MsixBuildMode: SideLoadOnly
         MsixGenerateAppInstaller: true
+      Channel_MS_Prod_Web:
+        ChannelName: MS-Prod-Web
+        DistributionUrl: https://presencelight.z5.web.core.windows.net/MSFT
+        MsixPackageId: PresenceLight
+        MsixPublisherId: CN=Presence Light, O=Isaac Levin, C=US
+        MsixPackageDisplayName: PresenceLight
+        MsixBuildMode: SideLoadOnly
+        MsixGenerateAppInstaller: true
 
   steps:
   - task: DotNetCoreCLI@2  
@@ -57,6 +65,16 @@ jobs:
       $manifest.Package.Applications.Application.VisualElements.DisplayName = "$(MsixPackageDisplayName)"
       $manifest.save(".\src\PresenceLight.Package\Package.appxmanifest")
     displayName: Update manifest version
+
+  - powershell: |
+      # Update appxmanifest. This must be done before build.
+      # Set the per-channel values into the appxmanifest, replacing the checked-in values
+      $appsettings= get-content ".\src\PresenceLight\appsettings.json" -raw | ConvertFrom-Json
+      $appsettings.tenantId = $(TenantId)
+      $appsettings.applicationId = $(ApplicationId)
+      $appsettings.save(".\src\PresenceLight\appsettings.json")
+    displayName: Update manifest version
+    condition: and(succeeded(), eq(variables['ChannelName'], 'MS-Prod-Web'))
 
   - task: MSBuild@1
     displayName: Build for $(BuildConfiguration)
