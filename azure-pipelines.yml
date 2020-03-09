@@ -70,8 +70,8 @@ jobs:
       # Update appxmanifest. This must be done before build.
       # Set the per-channel values into the appxmanifest, replacing the checked-in values
       $appsettings= get-content ".\src\PresenceLight\appsettings.json" -raw | ConvertFrom-Json
-      $appsettings.tenantId = $(TenantId)
-      $appsettings.applicationId = $(ApplicationId)
+      $appsettings.tenantId = "$(TenantId)""
+      $appsettings.applicationId = "$(ApplicationId)""
       $appsettings.save(".\src\PresenceLight\appsettings.json")
     displayName: Update manifest version
     condition: and(succeeded(), eq(variables['ChannelName'], 'MS-Prod-Web'))
