@@ -17,6 +17,7 @@ using PresenceLight.Core.Helpers;
 using Newtonsoft.Json;
 using Windows.Storage;
 using Hardcodet.Wpf.TaskbarNotification;
+using System.Text.RegularExpressions;
 
 namespace PresenceLight
 {
@@ -52,12 +53,8 @@ namespace PresenceLight
                 LoadApp();
 
                 var tbContext = notificationIcon.DataContext;
-
                 DataContext = Config;
-
                 notificationIcon.DataContext = tbContext;
-
-                //notificationIcon.DataContext = new TaskbarIcon();
             });
         });
         }
@@ -303,8 +300,8 @@ namespace PresenceLight
         private async void SaveHueSettings_Click(object sender, RoutedEventArgs e)
         {
             await SettingsService.SaveSettings(Config);
-
             _hueService = new HueService(Config);
+            CheckHueSettings();
         }
 
         private async void SaveSettings_Click(object sender, RoutedEventArgs e)
@@ -320,6 +317,7 @@ namespace PresenceLight
 
             await SettingsService.SaveSettings(Config);
             lblSettingSaved.Visibility = Visibility.Visible;
+            CheckHueSettings();
         }
 
         private async void RegisterBridge_Click(object sender, RoutedEventArgs e)
@@ -352,6 +350,8 @@ namespace PresenceLight
 
                 await SettingsService.SaveSettings(Config);
             }
+
+            CheckHueSettings();
         }
 
         private void TabControl_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
@@ -361,46 +361,64 @@ namespace PresenceLight
 
         private void CheckHueSettings()
         {
-            if (string.IsNullOrEmpty(Config.ApplicationId) || string.IsNullOrEmpty(Config.TenantId) || string.IsNullOrEmpty(Config.RedirectUri))
+            if (Config != null)
             {
-                configErrorPanel.Visibility = Visibility.Visible;
-                dataPanel.Visibility = Visibility.Hidden;
-                signInPanel.Visibility = Visibility.Hidden;
-            }
-            else
-            {
-                if (_graphServiceClient == null)
+                if (string.IsNullOrEmpty(Config.ApplicationId) || string.IsNullOrEmpty(Config.TenantId) || string.IsNullOrEmpty(Config.RedirectUri))
                 {
-                    _graphServiceClient = _graphservice.GetAuthenticatedGraphClient(typeof(WPFAuthorizationProvider));
+                    configErrorPanel.Visibility = Visibility.Visible;
+                    dataPanel.Visibility = Visibility.Hidden;
+                    signInPanel.Visibility = Visibility.Hidden;
                 }
-            }
-
-            SolidColorBrush fontBrush = new SolidColorBrush();
-
-            if (string.IsNullOrEmpty(hueIpAddress.Text) || hueIpAddress.Text.Length < 7)
-            {
-                lblMessage.Text = "IP Address Needs to be longer than 7 characters";
-                fontBrush.Color = MapColor("#ff3300");
-                lblMessage.Foreground = fontBrush;
-            }
-            else
-            {
-                if (string.IsNullOrEmpty(Config.HueApiKey))
+                else
                 {
-                    lblMessage.Text = "Missing App Registration, please button on bridge than click 'Register Bridge'";
+                    if (_graphServiceClient == null)
+                    {
+                        _graphServiceClient = _graphservice.GetAuthenticatedGraphClient(typeof(WPFAuthorizationProvider));
+                    }
+                }
+
+                SolidColorBrush fontBrush = new SolidColorBrush();
+
+                Regex r = new Regex("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]).){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$");
+
+
+
+                if (string.IsNullOrEmpty(hueIpAddress.Text.Trim()) || !r.IsMatch(hueIpAddress.Text.Trim()) || hueIpAddress.Text.Trim().EndsWith("."))
+                {
+
+                    lblMessage.Text = "Valid IP Address Required";
                     fontBrush.Color = MapColor("#ff3300");
                     lblMessage.Foreground = fontBrush;
                 }
                 else
                 {
-                    lblMessage.Text = "App Registered with Bridge";
-                    fontBrush.Color = MapColor("#009933");
-                    lblMessage.Foreground = fontBrush;
+                    if (string.IsNullOrEmpty(Config.HueApiKey))
+                    {
+                        lblMessage.Text = "Missing App Registration, please button on bridge than click 'Register Bridge'";
+                        fontBrush.Color = MapColor("#ff3300");
+                        lblMessage.Foreground = fontBrush;
+                    }
+                    else
+                    {
+                        lblMessage.Text = "App Registered with Bridge";
+                        fontBrush.Color = MapColor("#009933");
+                        lblMessage.Foreground = fontBrush;
+                    }
                 }
             }
         }
 
-        private void HueIpAddress_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        private void HueIpAddress_ValueChanged(object sender, Telerik.Windows.RadRoutedEventArgs e)
+        {
+            CheckHueSettings();
+        }
+
+        private void hueIpAddress_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
+        {
+            CheckHueSettings();
+        }
+
+        private void hueIpAddress_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
             CheckHueSettings();
         }
