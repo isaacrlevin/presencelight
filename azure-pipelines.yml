@@ -9,6 +9,8 @@ trigger:
 variables:
   BuildConfiguration: Release
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  -group: AAD
+  -name
   
 jobs:
 - job: Build
@@ -70,10 +72,13 @@ jobs:
       # Update appxmanifest. This must be done before build.
       # Set the per-channel values into the appxmanifest, replacing the checked-in values
       $appsettings= get-content ".\src\PresenceLight\appsettings.json" -raw | ConvertFrom-Json
-      $appsettings.tenantId = "$(TenantId)"
-      $appsettings.applicationId = "$(ApplicationId)"
+      $appsettings.tenantId = "$env:TenantId"
+      $appsettings.applicationId = "$env:ApplicationId"
       $appsettings.save(".\src\PresenceLight\appsettings.json")
     displayName: Update manifest version
+    env:
+     ApplicationId: $(ApplicationId)
+     TenantId: $(TenantId)
     condition: and(succeeded(), eq(variables['ChannelName'], 'MS-Prod-Web'))
 
   - task: MSBuild@1
