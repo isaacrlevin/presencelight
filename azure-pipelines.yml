@@ -31,7 +31,7 @@ jobs:
         DistributionUrl: https://presencelight.z5.web.core.windows.net/Prod
         MsixPackageId: PresenceLight
         MsixPublisherId: CN=Presence Light, O=Isaac Levin, C=US
-        MsixPackageDisplayName: PresenceLight (Prod)
+        MsixPackageDisplayName: PresenceLight
         MsixBuildMode: SideLoadOnly
         MsixGenerateAppInstaller: true
 
