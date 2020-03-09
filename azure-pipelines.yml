@@ -78,12 +78,18 @@ jobs:
      TenantId: $(TenantId)
     condition: and(succeeded(), eq(variables['ChannelName'], 'MS-Prod-Web'))
 
+  - task: NuGetCommand@2
+    inputs:
+      command: 'restore'
+      restoreSolution: 'src/PresenceLight.sln'
+      feedsToUse: 'config'
+      externalFeedCredentials: 'Telerik'
   - task: MSBuild@1
     displayName: Build for $(BuildConfiguration)
     inputs:
       solution: src/PresenceLight.sln
       platform: x86
-      msbuildArguments: /restore /p:AppInstallerUri=$(DistributionUrl) /p:UapAppxPackageBuildMode=$(MsixBuildMode) /p:GenerateAppInstallerFile=$(MsixGenerateAppInstaller)
+      msbuildArguments: /p:AppInstallerUri=$(DistributionUrl) /p:UapAppxPackageBuildMode=$(MsixBuildMode) /p:GenerateAppInstallerFile=$(MsixGenerateAppInstaller)
       configuration: $(BuildConfiguration)
       maximumCpuCount: false
 
