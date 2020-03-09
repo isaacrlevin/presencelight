@@ -6,6 +6,9 @@
 trigger:
 - master
 
+variables:
+ -group: AAD
+
 pool:
   vmImage: 'ubuntu-latest'
 
