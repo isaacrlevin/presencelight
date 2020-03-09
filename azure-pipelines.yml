@@ -9,8 +9,6 @@ trigger:
 variables:
   BuildConfiguration: Release
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-  -group: AAD
-  -name
   
 jobs:
 - job: Build
