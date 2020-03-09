@@ -4,8 +4,11 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PresenceLight" xmlns:tb="http://www.hardcodet.net/taskbar"
+        xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation" 
+        xmlns:maskedInput="clr-namespace:Telerik.Windows.Controls.MaskedInput;assembly=Telerik.Windows.Controls.Input"
         xmlns:Commands="clr-namespace:PresenceLight.Commands"
         xmlns:gif="http://wpfanimatedgif.codeplex.com"
+        KeyDown="hueIpAddress_PreviewKeyDown"
         mc:Ignorable="d" Title="Presence Light" Height="450" Width="400">
     <Grid>
         <TabControl SelectionChanged="TabControl_SelectionChanged">
@@ -73,7 +76,17 @@
                 <Grid>
                     <Button Content="Register Bridge" Margin="90,95,90,243" Click="RegisterBridge_Click"/>
                     <Label Content="Hue Bridge IP Address" Margin="5,34,200,319"/>
-                    <TextBox Text="{Binding HueIpAddress}" x:Name="hueIpAddress" HorizontalAlignment="Left" Height="23" Margin="203,39,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" TextChanged="HueIpAddress_TextChanged"/>
+
+                    <telerik:RadMaskedTextInput ValidationRegex="{x:Static maskedInput:ValidationHelper.IP}" x:Name="hueIpAddress" Height="23" Margin="203,39,0,0" VerticalAlignment="Top" Width="120" HorizontalAlignment="Left" 
+                                    EmptyContent="Enter IP Address"
+                                    InputBehavior="Insert"                 
+                                    Mask="{Binding Path=Text, ElementName=Mask, Mode=TwoWay}"
+                                    IsClearButtonVisible="False"
+                                    SelectionOnFocus="CaretToEnd"
+                                    TextMode="PlainText" 
+                                    UpdateValueEvent="LostFocus"         
+                                    ValueChanged="HueIpAddress_ValueChanged"
+                                     />
                     <Label Margin="5,158,5,172" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Center" >
                         <TextBlock  x:Name="lblMessage" TextWrapping="Wrap"  TextAlignment="Center">
 
@@ -91,10 +104,16 @@
                         <ColumnDefinition Width="270*"/>
                     </Grid.ColumnDefinitions>
                     <Label Content="Azure App Client ID" Margin="5,34,199.667,319" Grid.ColumnSpan="3"/>
-                    <TextBox Text="{Binding ApplicationId}" x:Name="clientId" HorizontalAlignment="Left" Height="23" Margin="14.343,34,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="230" Grid.Column="2"/>
 
+                    <telerik:RadMaskedTextInput Mask="{Binding Path=Text, ElementName=Mask, Mode=TwoWay}"                                     
+                            ValidationRegex="^(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}$"  
+                            maskedInput:ValidationHelper.DisplayValidationErrors="True" 
+                            Text="{Binding ApplicationId}" x:Name="clientId" HorizontalAlignment="Left" Height="23" Margin="14.343,34,0,0" VerticalAlignment="Top" Width="230" Grid.Column="2"/>
+                    
                     <Label Content="Azure App Tenant ID" Margin="5,62,199.667,291" Grid.ColumnSpan="3"/>
-                    <TextBox Text="{Binding TenantId}" x:Name="tenantId" HorizontalAlignment="Left" Height="23" Margin="14.343,62,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="230" Grid.Column="2"/>
+                    <telerik:RadMaskedTextInput Mask="{Binding Path=Text, ElementName=Mask, Mode=TwoWay}"                                    
+                            ValidationRegex="^(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}$"  
+                            maskedInput:ValidationHelper.DisplayValidationErrors="True" Text="{Binding TenantId}" x:Name="tenantId" HorizontalAlignment="Left" Height="23" Margin="14.343,62,0,0"  VerticalAlignment="Top" Width="230" Grid.Column="2"/>
 
                     <Label Content="Icon Type" Margin="5,97,187.667,254" Grid.ColumnSpan="3"/>
                     <RadioButton GroupName="IconType" x:Name="Transparent" Content="Transparent" HorizontalAlignment="Left" Margin="14.343,104,0,0" VerticalAlignment="Top" Height="27" Grid.Column="2"/>

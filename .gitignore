@@ -380,3 +380,4 @@ MigrationBackup/
 
 # End of https://www.gitignore.io/api/visualstudio,windows
 
+/src/lib/RCWPF/2020.1.218.45.NoXaml.Trial

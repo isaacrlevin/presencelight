@@ -1,14 +1,9 @@
-﻿using Microsoft.Identity.Client;
-using PresenceLight.Core;
+﻿using PresenceLight.Core;
 using PresenceLight.Core.Graph;
 using System;
-using System.Collections.Generic;
 using System.Windows;
-using System.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Graph;
-using PresenceLight.Core.Helpers;
 using System.Deployment.Application;
 using System.IO;
 using Microsoft.Win32;
@@ -32,8 +27,7 @@ namespace PresenceLight
         {
             SetAddRemoveProgramsIcon();
 
-            var builder = new ConfigurationBuilder()
-                  //.SetBasePath(System.IO.Directory.GetCurrentDirectory())
+            var builder = new Microsoft.Extensions.Configuration.ConfigurationBuilder()
                   .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
             Configuration = builder.Build();
