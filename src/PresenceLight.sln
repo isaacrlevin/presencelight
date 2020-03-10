@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29521.150
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresenceLight.Console", "PresenceLight.Console\PresenceLight.Console.csproj", "{109D432D-1CDC-4764-8B9F-41B8B003D3BB}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresenceLight.Core", "PresenceLight.Core\PresenceLight.Core.csproj", "{4883809C-FF4B-4504-A85E-2503607E5B99}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresenceLight.Worker", "PresenceLight.Worker\PresenceLight.Worker.csproj", "{89336649-932D-4BAF-862E-5622345F2B5E}"
@@ -27,26 +25,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{109D432D-1CDC-4764-8B9F-41B8B003D3BB}.Debug|AnyCPU.ActiveCfg = Debug|Any CPU
-		{109D432D-1CDC-4764-8B9F-41B8B003D3BB}.Debug|AnyCPU.Build.0 = Debug|Any CPU
-		{109D432D-1CDC-4764-8B9F-41B8B003D3BB}.Debug|ARM.ActiveCfg = Debug|Any CPU
-		{109D432D-1CDC-4764-8B9F-41B8B003D3BB}.Debug|ARM.Build.0 = Debug|Any CPU
-		{109D432D-1CDC-4764-8B9F-41B8B003D3BB}.Debug|ARM64.ActiveCfg = Debug|Any CPU
-		{109D432D-1CDC-4764-8B9F-41B8B003D3BB}.Debug|ARM64.Build.0 = Debug|Any CPU
-		{109D432D-1CDC-4764-8B9F-41B8B003D3BB}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{109D432D-1CDC-4764-8B9F-41B8B003D3BB}.Debug|x64.Build.0 = Debug|Any CPU
-		{109D432D-1CDC-4764-8B9F-41B8B003D3BB}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{109D432D-1CDC-4764-8B9F-41B8B003D3BB}.Debug|x86.Build.0 = Debug|Any CPU
-		{109D432D-1CDC-4764-8B9F-41B8B003D3BB}.Release|AnyCPU.ActiveCfg = Release|Any CPU
-		{109D432D-1CDC-4764-8B9F-41B8B003D3BB}.Release|AnyCPU.Build.0 = Release|Any CPU
-		{109D432D-1CDC-4764-8B9F-41B8B003D3BB}.Release|ARM.ActiveCfg = Release|Any CPU
-		{109D432D-1CDC-4764-8B9F-41B8B003D3BB}.Release|ARM.Build.0 = Release|Any CPU
-		{109D432D-1CDC-4764-8B9F-41B8B003D3BB}.Release|ARM64.ActiveCfg = Release|Any CPU
-		{109D432D-1CDC-4764-8B9F-41B8B003D3BB}.Release|ARM64.Build.0 = Release|Any CPU
-		{109D432D-1CDC-4764-8B9F-41B8B003D3BB}.Release|x64.ActiveCfg = Release|Any CPU
-		{109D432D-1CDC-4764-8B9F-41B8B003D3BB}.Release|x64.Build.0 = Release|Any CPU
-		{109D432D-1CDC-4764-8B9F-41B8B003D3BB}.Release|x86.ActiveCfg = Release|Any CPU
-		{109D432D-1CDC-4764-8B9F-41B8B003D3BB}.Release|x86.Build.0 = Release|Any CPU
 		{4883809C-FF4B-4504-A85E-2503607E5B99}.Debug|AnyCPU.ActiveCfg = Debug|Any CPU
 		{4883809C-FF4B-4504-A85E-2503607E5B99}.Debug|AnyCPU.Build.0 = Debug|Any CPU
 		{4883809C-FF4B-4504-A85E-2503607E5B99}.Debug|ARM.ActiveCfg = Debug|Any CPU
