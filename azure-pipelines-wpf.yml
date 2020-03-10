@@ -4,7 +4,13 @@
 # https://docs.microsoft.com/azure/devops/pipelines/apps/windows/dot-net
 
 trigger:
-- master
+ branches:
+   include:
+   - master
+ paths:
+   exclude:
+     - '*.yml'
+
 
 variables:
   BuildConfiguration: Release
