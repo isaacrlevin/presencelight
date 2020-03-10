@@ -51,4 +51,4 @@ steps:
   - task: PublishPipelineArtifact@0
     inputs:
       artifactName: $(ChannelName)
-      targetPath: src/PresenceLight.Worker/publish
+      targetPath: $(Build.ArtifactStagingDirectory)/$(RID)
