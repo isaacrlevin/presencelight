@@ -45,10 +45,10 @@ steps:
     inputs:
       command: 'publish'
       workingDirectory: src/PresenceLight.Worker
-      arguments: -r $(RID) -c $(buildConfiguration) /p:PublishSingleFile=true -o $(Build.ArtifactStagingDirectory)/$(RID)
+      arguments: -r $(RID) -c $(buildConfiguration) /p:PublishSingleFile=true -o $(Build.ArtifactStagingDirectory)/$(ChannelName)
       publishWebProjects: false
 
   - task: PublishPipelineArtifact@0
     inputs:
       artifactName: $(ChannelName)
-      targetPath: $(Build.ArtifactStagingDirectory)/$(RID)
+      targetPath: $(Build.ArtifactStagingDirectory)/$(ChannelName)
