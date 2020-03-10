@@ -35,8 +35,13 @@ strategy:
       Channel_Linux_Musl_ARM_x64:
         ChannelName: Linux_Musl_ARM_x64
         RID: linux-musl-x64
-
 steps:
-- script: dotnet publish -r $(RID) -c $(buildConfiguration) /p:PublishSingleFile=true
-  displayName: 'dotnet build $(buildConfiguration)'
-  workingDirectory: 'src/PresenceLight.Worker'
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'publish'
+      arguments: -r $(RID) -c $(buildConfiguration) /p:PublishSingleFile=true
+
+  - task: PublishPipelineArtifact@0
+    inputs:
+      artifactName: $(ChannelName)
+      targetPath: src/PresenceLight.Worker/publish
