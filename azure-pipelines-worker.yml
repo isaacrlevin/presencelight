@@ -39,6 +39,7 @@ steps:
   - task: DotNetCoreCLI@2
     inputs:
       command: 'publish'
+      workingDirectory: src/PresenceLight.Worker
       arguments: -r $(RID) -c $(buildConfiguration) /p:PublishSingleFile=true
       publishWebProjects: false
 
