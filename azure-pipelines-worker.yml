@@ -16,20 +16,27 @@ strategy:
     matrix:
       Channel_Windows_x64_x86:
         ChannelName: Windows_x64_x86
+        RID: win-x64
       Channel_Windows_ARM:
         ChannelName: Windows_ARM
+        RID: win-arm
       Channel_macOS:
         ChannelName: macOS
+        RID: osx-x64
       Channel_Linux_ARM:
         ChannelName: Linux_ARM
+        RID: linux-arm
       Channel_Linux_ARM64:
         ChannelName: Linux_ARM64
+        RID: linux-x64
       Channel_Linux_Musl_x64:
         ChannelName: Linux_Musl_x64
+        RID: linux-x64
       Channel_Linux_Musl_ARM_x64:
         ChannelName: Linux_Musl_ARM_x64
+        RID: linux-musl-x64
 
 steps:
-- script: dotnet build --configuration $(buildConfiguration)
+- script: dotnet publish -r $(RID) -c $(buildConfiguration) /p:PublishSingleFile=true
   displayName: 'dotnet build $(buildConfiguration)'
   workingDirectory: 'src/PresenceLight.Worker'
