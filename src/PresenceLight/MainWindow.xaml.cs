@@ -358,12 +358,15 @@ namespace PresenceLight
         {
             lblSettingSaved.Visibility = Visibility.Collapsed;
         }
-
+        private void HueIpAddress_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            CheckHueSettings();
+        }
         private void CheckHueSettings()
         {
             if (Config != null)
             {
-                if (string.IsNullOrEmpty(Config.ApplicationId) || string.IsNullOrEmpty(Config.TenantId) || string.IsNullOrEmpty(Config.RedirectUri))
+                if (!CheckAAD())
                 {
                     configErrorPanel.Visibility = Visibility.Visible;
                     dataPanel.Visibility = Visibility.Hidden;
@@ -371,6 +374,9 @@ namespace PresenceLight
                 }
                 else
                 {
+                    configErrorPanel.Visibility = Visibility.Hidden;
+                    signInPanel.Visibility = Visibility.Visible;
+
                     if (_graphServiceClient == null)
                     {
                         _graphServiceClient = _graphservice.GetAuthenticatedGraphClient(typeof(WPFAuthorizationProvider));
@@ -379,13 +385,9 @@ namespace PresenceLight
 
                 SolidColorBrush fontBrush = new SolidColorBrush();
 
-                Regex r = new Regex("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]).){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$");
 
-
-
-                if (string.IsNullOrEmpty(hueIpAddress.Text.Trim()) || !r.IsMatch(hueIpAddress.Text.Trim()) || hueIpAddress.Text.Trim().EndsWith("."))
+                if (!CheckHueIp())
                 {
-
                     lblMessage.Text = "Valid IP Address Required";
                     fontBrush.Color = MapColor("#ff3300");
                     lblMessage.Foreground = fontBrush;
@@ -394,6 +396,8 @@ namespace PresenceLight
                 {
                     if (string.IsNullOrEmpty(Config.HueApiKey))
                     {
+
+
                         lblMessage.Text = "Missing App Registration, please button on bridge than click 'Register Bridge'";
                         fontBrush.Color = MapColor("#ff3300");
                         lblMessage.Foreground = fontBrush;
@@ -407,20 +411,25 @@ namespace PresenceLight
                 }
             }
         }
-
-        private void HueIpAddress_ValueChanged(object sender, Telerik.Windows.RadRoutedEventArgs e)
+        private bool CheckHueIp()
         {
-            CheckHueSettings();
+            Regex r = new Regex("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]).){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$");
+
+            if (string.IsNullOrEmpty(hueIpAddress.Text.Trim()) || !r.IsMatch(hueIpAddress.Text.Trim()) || hueIpAddress.Text.Trim().EndsWith("."))
+            {
+                return false;
+            }
+            return true;
         }
 
-        private void hueIpAddress_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
+        private bool CheckAAD()
         {
-            CheckHueSettings();
-        }
-
-        private void hueIpAddress_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
-        {
-            CheckHueSettings();
+            Regex r = new Regex(@"^(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}$");
+            if (string.IsNullOrEmpty(Config.ApplicationId) || string.IsNullOrEmpty(Config.TenantId) || string.IsNullOrEmpty(Config.RedirectUri) || !r.IsMatch(Config.ApplicationId) || !r.IsMatch(Config.TenantId))
+            {
+                return false;
+            }
+            return true;
         }
     }
 }
