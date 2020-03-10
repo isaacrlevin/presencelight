@@ -1,0 +1,54 @@
+# ASP.NET Core
+# Build and test ASP.NET Core projects targeting .NET Core.
+# Add steps that run tests, create a NuGet package, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+ branches:
+   include:
+   - master
+ paths:
+   exclude:
+     - '*.yml'
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  buildConfiguration: 'Release'
+
+strategy:
+    matrix:
+      Channel_Windows_x64_x86:
+        ChannelName: Windows_x64_x86
+        RID: win-x64
+      Channel_Windows_ARM:
+        ChannelName: Windows_ARM
+        RID: win-arm
+      Channel_macOS:
+        ChannelName: macOS
+        RID: osx-x64
+      Channel_Linux_ARM:
+        ChannelName: Linux_ARM
+        RID: linux-arm
+      Channel_Linux_ARM64:
+        ChannelName: Linux_ARM64
+        RID: linux-x64
+      Channel_Linux_Musl_x64:
+        ChannelName: Linux_Musl_x64
+        RID: linux-x64
+      Channel_Linux_Musl_ARM_x64:
+        ChannelName: Linux_Musl_ARM_x64
+        RID: linux-musl-x64
+steps:
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'publish'
+      workingDirectory: src/PresenceLight.Worker
+      arguments: -r $(RID) -c $(buildConfiguration) /p:PublishSingleFile=true -o $(Build.ArtifactStagingDirectory)/$(RID)
+      publishWebProjects: false
+
+  - task: PublishPipelineArtifact@0
+    inputs:
+      artifactName: $(ChannelName)
+      targetPath: $(Build.ArtifactStagingDirectory)/$(RID)
