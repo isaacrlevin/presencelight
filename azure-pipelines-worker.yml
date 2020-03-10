@@ -12,6 +12,23 @@ pool:
 variables:
   buildConfiguration: 'Release'
 
+strategy:
+    matrix:
+      Channel_Windows_x64_x86:
+        ChannelName: Windows_x64_x86
+      Channel_Windows_ARM:
+        ChannelName: Windows_ARM
+      Channel_macOS:
+        ChannelName: macOS
+      Channel_Linux_ARM:
+        ChannelName: Linux_ARM
+      Channel_Linux_ARM64:
+        ChannelName: Linux_ARM64
+      Channel_Linux_Musl_x64:
+        ChannelName: Linux_Musl_x64
+      Channel_Linux_Musl_ARM_x64:
+        ChannelName: Linux_Musl_ARM_x64
+
 steps:
 - script: dotnet build --configuration $(buildConfiguration)
   displayName: 'dotnet build $(buildConfiguration)'
