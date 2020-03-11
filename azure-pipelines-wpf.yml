@@ -94,7 +94,7 @@ jobs:
       $badge.svg.g[1].text[2].InnerText = "$(GitBuildVersionSimple).0"
       $badge.svg.g[1].text[3].InnerText = "$(GitBuildVersionSimple).0"
       $badge.Save("$(Build.ArtifactStagingDirectory)\$(ChannelName)\stable_badge.svg")
-      displayName: Update badge versions
+    displayName: Update badge versions
 
 
   - task: MSBuild@1
