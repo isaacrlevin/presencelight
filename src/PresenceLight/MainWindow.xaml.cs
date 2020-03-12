@@ -109,6 +109,9 @@ namespace PresenceLight
 
             loadingPanel.Visibility = Visibility.Collapsed;
             this.signInPanel.Visibility = Visibility.Collapsed;
+            hueIpAddress.IsEnabled = false;
+            clientId.IsEnabled = false;
+            tenantId.IsEnabled = false;
             dataPanel.Visibility = Visibility.Visible;
             while (true)
             {
@@ -147,6 +150,9 @@ namespace PresenceLight
 
                     notificationIcon.ToolTipText = PresenceConstants.Inactive;
                     notificationIcon.IconSource = new BitmapImage(new Uri(IconConstants.GetIcon(string.Empty, IconConstants.Inactive)));
+                    hueIpAddress.IsEnabled = true;
+                    clientId.IsEnabled = true;
+                    tenantId.IsEnabled = true;
                 }
                 catch (MsalException)
                 {
