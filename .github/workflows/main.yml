@@ -20,7 +20,8 @@ jobs:
     - name: Restore NuGet Packages
       run: nuget restore src/PresenceLight.sln
       
-   - name: Display the path
+    
+    - name: Display the path
       run: |
         # Update appxmanifest. This must be done before build.
         # Set the per-channel values into the appxmanifest, replacing the checked-in values
