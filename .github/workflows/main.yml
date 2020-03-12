@@ -6,6 +6,33 @@ jobs:
   build:
  
     runs-on: windows-latest
+    
+  strategy:
+    matrix:
+      Channel_CD_Web:
+        ChannelName: CD-Web
+        DistributionUrl: https://presencelightapp.azurewebsites.net/CD
+        MsixPackageId: PresenceLight.CD
+        MsixPublisherId: CN=Presence Light, O=Isaac Levin, C=US
+        MsixPackageDisplayName: PresenceLight (CD)
+        MsixBuildMode: SideLoadOnly
+        MsixGenerateAppInstaller: true
+      Channel_Prod_Web:
+        ChannelName: Prod-Web
+        DistributionUrl: https://presencelight.z5.web.core.windows.net/Prod
+        MsixPackageId: PresenceLight
+        MsixPublisherId: CN=Presence Light, O=Isaac Levin, C=US
+        MsixPackageDisplayName: PresenceLight
+        MsixBuildMode: SideLoadOnly
+        MsixGenerateAppInstaller: true
+      Channel_MS_Prod_Web:
+        ChannelName: MS-Prod-Web
+        DistributionUrl: https://presencelight.z5.web.core.windows.net/MSFT
+        MsixPackageId: PresenceLight
+        MsixPublisherId: CN=Presence Light, O=Isaac Levin, C=US
+        MsixPackageDisplayName: PresenceLight
+        MsixBuildMode: SideLoadOnly
+        MsixGenerateAppInstaller: true
  
     steps:
     - uses: actions/checkout@v1
@@ -17,11 +44,11 @@ jobs:
     - name: Setup NuGet
       uses: NuGet/setup-nuget@v1.0.2
   
-    - name: Run Gloabal Tool
+    - name: Install NBGV Global Tool
       run: dotnet tool install -g nbgv
       shell: cmd
       
-    - name: Run Gloabal Tool
+    - name: Run NBGV Tool
       run: nbgv cloud -c -a
       shell: cmd
      
@@ -29,7 +56,7 @@ jobs:
       run: nuget restore src/PresenceLight.sln
       
     
-    - name: Display the path
+    - name: Update AppxManifest
       run: |
         # Update appxmanifest. This must be done before build.
         # Set the per-channel values into the appxmanifest, replacing the checked-in values
@@ -42,7 +69,7 @@ jobs:
         $manifest.save(".\src\PresenceLight.Package\Package.appxmanifest")
       shell: pwsh
       
-    - name: Build and Publish Web App
+    - name: Build WPF App
       run: msbuild src/PresenceLight.sln /p:Configuration="Release" /p:platform="x86" /restore /p:AppInstallerUri=https://presencelightapp.azurewebsites.net/CD /p:UapAppxPackageBuildMode=SideLoadOnly /p:GenerateAppInstallerFile=true
  
     - name: Copy Certificate to versioned dir
