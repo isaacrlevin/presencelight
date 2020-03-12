@@ -20,6 +20,10 @@ jobs:
     - name: Run Gloabal Tool
       run: dotnet tool install -g nbgv
       shell: cmd
+      
+    - name: Run Gloabal Tool
+      run: nbgv cloud -c -a
+      shell: cmd
      
     - name: Restore NuGet Packages
       run: nuget restore src/PresenceLight.sln
