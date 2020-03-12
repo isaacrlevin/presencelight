@@ -46,7 +46,7 @@ jobs:
       run: msbuild src/PresenceLight.sln /p:Configuration="Release" /p:platform="x86" /restore /p:AppInstallerUri=https://presencelightapp.azurewebsites.net/CD /p:UapAppxPackageBuildMode=SideLoadOnly /p:GenerateAppInstallerFile=true
  
     - name: Copy Certificate to versioned dir
-      run: copy src\build.cer src\PresenceLight.Package\AppPackages\PresenceLight.Package_1.0.0.0_x86_Test\PresenceLight.Package_1.0.0.0_x86.cer
+      run: copy src\build.cer src\PresenceLight.Package\AppPackages\PresenceLight.Package_${{ env.GitBuildVersionSimple }}_x86_Test\PresenceLight.Package_${{ env.GitBuildVersionSimple }}_x86.cer
       shell: cmd
     
     - name: Upload Artifact
