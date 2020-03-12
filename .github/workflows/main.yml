@@ -34,7 +34,7 @@ jobs:
         # Update appxmanifest. This must be done before build.
         # Set the per-channel values into the appxmanifest, replacing the checked-in values
         [xml]$manifest= get-content ".\src\PresenceLight.Package\Package.appxmanifest"
-        $manifest.Package.Identity.Version = "${{ env.GitBuildVersionSimple }}"
+        $manifest.Package.Identity.Version = "${{ env.GitBuildVersionSimple }}.0"
         $manifest.Package.Identity.Name = "PresenceLight.CD"
         $manifest.Package.Identity.Publisher = "CN=Presence Light, O=Isaac Levin, C=US"
         $manifest.Package.Properties.DisplayName = "PresenceLight (CD)"
@@ -46,7 +46,7 @@ jobs:
       run: msbuild src/PresenceLight.sln /p:Configuration="Release" /p:platform="x86" /restore /p:AppInstallerUri=https://presencelightapp.azurewebsites.net/CD /p:UapAppxPackageBuildMode=SideLoadOnly /p:GenerateAppInstallerFile=true
  
     - name: Copy Certificate to versioned dir
-      run: copy src\build.cer src\PresenceLight.Package\AppPackages\PresenceLight.Package_'${{ env.GitBuildVersionSimple }}'_x86_Test\PresenceLight.Package_'${{ env.GitBuildVersionSimple }}'_x86.cer
+      run: copy src\build.cer src\PresenceLight.Package\AppPackages\PresenceLight.Package_'${{ env.GitBuildVersionSimple }}'.0_x86_Test\PresenceLight.Package_'${{ env.GitBuildVersionSimple }}'.0_x86.cer
       shell: cmd
     
     - name: Upload Artifact
