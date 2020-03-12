@@ -19,3 +19,7 @@ jobs:
      
     - name: Restore NuGet Packages
       run: nuget restore src/PresenceLight.sln
+      
+    - name: Build and Publish Web App
+      run: msbuild SimpleFrameworkApp.sln /p:Configuration="Release" /p:platform="x86" /restore /p:AppInstallerUri=https://presencelightapp.azurewebsites.net/CD /p:UapAppxPackageBuildMode=SideLoadOnly /p:GenerateAppInstallerFile=true
+ 
