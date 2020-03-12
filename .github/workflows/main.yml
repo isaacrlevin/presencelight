@@ -23,3 +23,8 @@ jobs:
     - name: Build and Publish Web App
       run: msbuild src/PresenceLight.sln /p:Configuration="Release" /p:platform="x86" /restore /p:AppInstallerUri=https://presencelightapp.azurewebsites.net/CD /p:UapAppxPackageBuildMode=SideLoadOnly /p:GenerateAppInstallerFile=true
  
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v1.0.0
+      with:
+        name: published_webapp
+        path: src/PresenceLight.Package/AppPackages
