@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:PresenceLight" xmlns:tb="http://www.hardcodet.net/taskbar"
         xmlns:Commands="clr-namespace:PresenceLight.Commands"
         xmlns:gif="http://wpfanimatedgif.codeplex.com"
-        mc:Ignorable="d" Title="Presence Light" Height="450" Width="400">
+        mc:Ignorable="d" Title="Presence Light" Height="450" Width="400"
+        DataContextChanged="Window_DataContextChanged">
     <Grid>
         <TabControl SelectionChanged="TabControl_SelectionChanged">
             <TabItem Header="Profile">
