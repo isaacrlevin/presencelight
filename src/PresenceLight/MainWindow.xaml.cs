@@ -376,7 +376,7 @@ namespace PresenceLight
             {
                 _options.HueApiKey = String.Empty;
             }
-            if (Config.HueApiKey != null)
+            if (Config != null)
             {
                 Config.HueApiKey = String.Empty;
             }
