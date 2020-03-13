@@ -372,8 +372,14 @@ namespace PresenceLight
         }
         private void HueIpAddress_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
-            _options.HueApiKey = string.Empty;
-            Config.HueApiKey = string.Empty;
+            if (_options != null)
+            {
+                _options.HueApiKey = String.Empty;
+            }
+            if (Config.HueApiKey != null)
+            {
+                Config.HueApiKey = String.Empty;
+            }
             CheckHueSettings();
         }
         private void CheckHueSettings()
