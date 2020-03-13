@@ -26,7 +26,7 @@
                     <Grid x:Name="dataPanel" Visibility="Hidden" >
                         <Grid VerticalAlignment="Top">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                <Button x:Name="SignOutButton" Content="Sign-Out" HorizontalAlignment="Right" Click="SignOutButton_Click" Padding="5" Margin="5"  FontFamily="Segoe Ui"/>
+                                <Button x:Name="SignOutButton" Height="30" Width="60" Content="Sign-Out" HorizontalAlignment="Right" Click="SignOutButton_Click" Padding="5" Margin="5"  FontFamily="Segoe Ui"/>
                             </StackPanel>
                         </Grid>
                         <Grid Margin="0,39,-0.333,-10">
@@ -60,17 +60,18 @@
                         </tb:TaskbarIcon.ContextMenu>
                     </tb:TaskbarIcon>
                     <Grid x:Name="signInPanel" Visibility="Visible">
-                        <Button Content="Sign In" Margin="90,130,90,200" Click="CallGraphButton_Click" />
+                        <Button Content="Sign In" Margin="90,130,90,200" Click="CallGraphButton_Click" Height="45" Width="170" />
                         <Label Content="Login to Microsoft Account to Sync Presence" Margin="70,99,70,0" VerticalAlignment="Top"/>
                     </Grid>
                     <Grid x:Name="loadingPanel" Visibility="Collapsed">
                         <Image gif:ImageBehavior.AnimatedSource="Icons/loading.gif" Width="100" />
+                        <Label Content="If you are adding new lights, this may take up to a minute"  Margin="36,262,36.667,66"/>
                     </Grid>
                 </Grid>
             </TabItem>
             <TabItem Header="Configure Phillips Hue" >
                 <Grid>
-                    <Button Content="Register Bridge" Margin="90,95,90,243" Click="RegisterBridge_Click"/>
+                    <Button x:Name="btnRegister" Height="45" Width="170" Content="Register Bridge" Margin="90,95,90,243" Click="RegisterBridge_Click"/>
                     <Label Content="Hue Bridge IP Address" Margin="5,34,200,319"/>
                     <TextBox Text="{Binding HueIpAddress}" x:Name="hueIpAddress" HorizontalAlignment="Left" Height="23" Margin="203,39,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" TextChanged="HueIpAddress_TextChanged"/>
                     <Label Margin="5,158,5,172" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Center" >
@@ -79,7 +80,7 @@
                         </TextBlock>
                     </Label>
                     <Image x:Name="imgLoading" Visibility="Collapsed" gif:ImageBehavior.AnimatedSource="Icons/loading.gif" Width="75" Margin="143,17,143,-17" />
-                    <Button Content="Save" Margin="90,280,90,58" Click="SaveHueSettings_Click"/>
+                    <Button Height="45" Width="170" Content="Save" Margin="90,280,90,58" Click="SaveHueSettings_Click"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Settings" >
@@ -98,7 +99,7 @@
                     <Label Content="Icon Type" Margin="5,97,187.667,254" Grid.ColumnSpan="3"/>
                     <RadioButton GroupName="IconType" x:Name="Transparent" Content="Transparent" HorizontalAlignment="Left" Margin="14.343,104,0,0" VerticalAlignment="Top" Height="27" Grid.Column="2"/>
                     <RadioButton GroupName="IconType" x:Name="White" Content="White" HorizontalAlignment="Left" Margin="14.343,137,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.43,-0.627" Height="23" Grid.Column="2"/>
-                    <Button Content="Save" Margin="5.667,280,89.667,58" Click="SaveSettings_Click" Grid.Column="1" Grid.ColumnSpan="2"/>
+                    <Button Height="45" Width="170" Content="Save" Margin="5.667,280,89.667,58" Click="SaveSettings_Click" Grid.Column="1" Grid.ColumnSpan="2"/>
                     <Label x:Name="lblSettingSaved" Visibility="Collapsed" Content="Settings Updated" Foreground="Green" Margin="23.343,341,135.667,10" Grid.Column="2"/>
                 </Grid>
             </TabItem>
