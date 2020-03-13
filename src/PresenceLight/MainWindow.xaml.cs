@@ -337,11 +337,16 @@ namespace PresenceLight
             {
                 imgLoading.Visibility = Visibility.Visible;
                 lblMessage.Visibility = Visibility.Collapsed;
-                await _hueService.RegisterBridge();
+                if (string.IsNullOrEmpty(_options.HueIpAddress))
+                {
+                    _options.HueIpAddress = Config.HueIpAddress;
+                }
+                Config.HueApiKey = await _hueService.RegisterBridge();
+                _options.HueApiKey = Config.HueApiKey;
                 imgLoading.Visibility = Visibility.Collapsed;
                 lblMessage.Visibility = Visibility.Visible;
             }
-            catch
+            catch (Exception ex)
             {
                 lblMessage.Text = "Error Occured registering bridge, please try again";
                 fontBrush.Color = MapColor("#ff3300");
@@ -366,6 +371,8 @@ namespace PresenceLight
         }
         private void HueIpAddress_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
+            _options.HueApiKey = string.Empty;
+            Config.HueApiKey = string.Empty;
             CheckHueSettings();
         }
         private void CheckHueSettings()
@@ -396,10 +403,12 @@ namespace PresenceLight
                 {
                     lblMessage.Text = "Valid IP Address Required";
                     fontBrush.Color = MapColor("#ff3300");
+                    btnRegister.IsEnabled = false;
                     lblMessage.Foreground = fontBrush;
                 }
                 else
                 {
+                    btnRegister.IsEnabled = true;
                     if (string.IsNullOrEmpty(Config.HueApiKey))
                     {
 
@@ -419,7 +428,11 @@ namespace PresenceLight
         }
         private bool CheckHueIp()
         {
-            Regex r = new Regex("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]).){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$");
+            string r1 = "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]).){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$";
+
+           string r2 = @"\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b";
+
+            Regex r = new Regex(r2);
 
             if (string.IsNullOrEmpty(hueIpAddress.Text.Trim()) || !r.IsMatch(hueIpAddress.Text.Trim()) || hueIpAddress.Text.Trim().EndsWith("."))
             {
