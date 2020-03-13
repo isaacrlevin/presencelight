@@ -345,6 +345,7 @@ namespace PresenceLight
                 _options.HueApiKey = Config.HueApiKey;
                 imgLoading.Visibility = Visibility.Collapsed;
                 lblMessage.Visibility = Visibility.Visible;
+                await SettingsService.SaveSettings(Config);
             }
             catch (Exception ex)
             {
@@ -430,7 +431,7 @@ namespace PresenceLight
         {
             string r1 = "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]).){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$";
 
-           string r2 = @"\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b";
+            string r2 = @"\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b";
 
             Regex r = new Regex(r2);
 
@@ -449,6 +450,11 @@ namespace PresenceLight
                 return false;
             }
             return true;
+        }
+
+        private async void Window_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            await SettingsService.SaveSettings(Config);
         }
     }
 }
