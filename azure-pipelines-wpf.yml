@@ -10,6 +10,7 @@ trigger:
  paths:
    exclude:
    - azure-pipelines-worker.yml
+   - .github/workflows/main.yml
 
 
 variables:
