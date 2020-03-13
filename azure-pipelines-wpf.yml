@@ -100,7 +100,7 @@ jobs:
 
   - script: copy src\PresenceLight\bin\Debug\PresenceLight.pdb src\PresenceLight.Package\AppPackages\PresenceLight.Package_$(GitBuildVersionSimple).0_x86_Debug_Test\PresenceLight.pdb
     displayName: Copy pdb
-    condition: and(succeeded(), not(eq(variables['ChannelName'], 'MS-Prod-Web')))
+    condition: and(succeeded(), eq(variables['ChannelName'], 'MS-Prod-Web'))
 
   - powershell: |
       # Update badges
