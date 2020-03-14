@@ -14,7 +14,7 @@ trigger:
 
 
 variables:
-  BuildConfiguration: Debug
+  BuildConfiguration: Release
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   
 jobs:
@@ -94,13 +94,10 @@ jobs:
       configuration: $(BuildConfiguration)
       maximumCpuCount: false
 
-  - script: copy src\build.cer src\PresenceLight.Package\AppPackages\PresenceLight.Package_$(GitBuildVersionSimple).0_x86_Debug_Test\PresenceLight.Package_$(GitBuildVersionSimple).0_x86.cer
+  - script: copy src\build.cer src\PresenceLight.Package\AppPackages\PresenceLight.Package_$(GitBuildVersionSimple).0_x86_Test\PresenceLight.Package_$(GitBuildVersionSimple).0_x86.cer
     displayName: Copy Certificate to versioned dir
     condition: and(succeeded(), not(eq(variables['ChannelName'], 'Prod-Store')))
 
-  - script: copy src\PresenceLight\bin\Debug\PresenceLight.pdb src\PresenceLight.Package\AppPackages\PresenceLight.Package_$(GitBuildVersionSimple).0_x86_Debug_Test\PresenceLight.pdb
-    displayName: Copy pdb
-    condition: and(succeeded(), eq(variables['ChannelName'], 'MS-Prod-Web'))
 
   - powershell: |
       # Update badges
