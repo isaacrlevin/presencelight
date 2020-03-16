@@ -74,6 +74,29 @@ jobs:
     displayName: Update manifest version
 
   - powershell: |
+      # Update App Insights instrumentation key
+      [xml]$doc = Get-Content ".\src\PresenceLight\App.config"
+      $node=$doc.configuration.appSettings
+      $node.#text = "$(AppInsightsKey)"
+      $doc.save(".\src\PresenceLight\App.config")
+    displayName: Set AppInsights Config in App.config
+    env:
+      AppInsightsKey: $(AppInsightsKey)
+    condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')), not(eq(variables['AppInsightsKey'], '')))
+
+
+  - powershell: |
+      # Update App Insights instrumentation key
+      [xml]$doc = Get-Content ".\src\PresenceLight\ApplicationInsights.config"
+      $doc.ApplicationInsights.InstrumentationKey = "$(AppInsightsKey)"
+      $doc.save(".\src\PresenceLight\ApplicationInsights.config")
+    displayName: Set AppInsights Config in ApplicationInsightsConfig
+    env:
+      AppInsightsKey: $(AppInsightsKey)
+    condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')), not(eq(variables['AppInsightsKey'], '')))
+
+
+  - powershell: |
       # Update appsettings.json. This must be done before build.
       $appsettings= get-content ".\src\PresenceLight\appsettings.json" -raw | ConvertFrom-Json
       $appsettings.tenantId = "$env:TenantId"
@@ -97,6 +120,13 @@ jobs:
   - script: copy src\build.cer src\PresenceLight.Package\AppPackages\PresenceLight.Package_$(GitBuildVersionSimple).0_x86_Test\PresenceLight.Package_$(GitBuildVersionSimple).0_x86.cer
     displayName: Copy Certificate to versioned dir
     condition: and(succeeded(), not(eq(variables['ChannelName'], 'Prod-Store')))
+
+  - task: CmdLine@2
+    displayName: Copy PDBs
+    inputs:
+      script: |
+        copy src\PresenceLight\bin\Release\PresenceLight.pdb src\PresenceLight.Package\AppPackages\PresenceLight.Package_$(GitBuildVersionSimple).0_x86_Test\PresenceLight.pdb
+        copy src\PresenceLight.Core\bin\Release\PresenceLight.Core.pdb src\PresenceLight.Package\AppPackages\PresenceLight.Package_$(GitBuildVersionSimple).0_x86_Test\PresenceLight.Core.pdb
 
 
   - powershell: |
