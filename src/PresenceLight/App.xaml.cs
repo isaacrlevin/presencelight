@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Deployment.Application;
 using System.IO;
 using Microsoft.Win32;
+using PresenceLight.Telemetry;
 
 namespace PresenceLight
 {
@@ -38,6 +39,8 @@ namespace PresenceLight
             services.AddSingleton<IGraphService, GraphService>();
             services.AddSingleton<IHueService, HueService>();
             services.AddSingleton<MainWindow>();
+
+            DiagnosticsClient.Initialize();
 
             ServiceProvider = services.BuildServiceProvider();
 
