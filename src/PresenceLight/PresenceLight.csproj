@@ -84,6 +84,10 @@
     <Compile Include="Commands\ShowWindowCommand.cs" />
     <Compile Include="MessageBoxHelper.cs" />
     <Compile Include="SettingsService.cs" />
+    <Compile Include="Telemetry\AppVersionTelemetryInitializer.cs" />
+    <Compile Include="Telemetry\DiagnosticsClient.cs" />
+    <Compile Include="Telemetry\EnvironmentTelemetryInitializer.cs" />
+    <Compile Include="Telemetry\ThisAppInfo.cs" />
     <Compile Include="WPFAuthorizationProvider.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -153,6 +157,9 @@
     <Content Include="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="ApplicationInsights.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -200,6 +207,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="AppInsights.WindowsDesktop">
+      <Version>2.10.55</Version>
+    </PackageReference>
     <PackageReference Include="Hardcodet.NotifyIcon.Wpf">
       <Version>1.0.8</Version>
     </PackageReference>
@@ -259,6 +269,9 @@
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>12.0.3</Version>
+    </PackageReference>
+    <PackageReference Include="OSVersionHelper">
+      <Version>1.0.11</Version>
     </PackageReference>
     <PackageReference Include="Q42.HueApi">
       <Version>3.15.1</Version>
@@ -327,5 +340,6 @@
       <Version>2.0.0-beta.2</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

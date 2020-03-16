@@ -383,7 +383,7 @@ namespace PresenceLight
             CheckHueSettings();
         }
         private void CheckHueSettings()
-        {
+        {        
             if (Config != null)
             {
                 if (!CheckAAD())
