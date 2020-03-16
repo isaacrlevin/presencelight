@@ -77,7 +77,7 @@ jobs:
       # Update App Insights instrumentation key
       [xml]$doc = Get-Content ".\src\PresenceLight\App.config"
       $node=$doc.configuration.appSettings
-      $node.#text = "$(AppInsightsKey)"
+      $node.InnerText = "$(AppInsightsKey)"
       $doc.save(".\src\PresenceLight\App.config")
     displayName: Set AppInsights Config in App.config
     env:
