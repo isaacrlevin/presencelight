@@ -18,6 +18,8 @@ using Newtonsoft.Json;
 using Windows.Storage;
 using Hardcodet.Wpf.TaskbarNotification;
 using System.Text.RegularExpressions;
+using Q42.HueApi;
+using System.Windows.Controls;
 
 namespace PresenceLight
 {
@@ -85,6 +87,15 @@ namespace PresenceLight
             }
 
             Config = await SettingsService.LoadSettings();
+            if (!string.IsNullOrEmpty(Config.HueApiKey))
+            {
+                _options.HueApiKey = Config.HueApiKey;
+            }
+
+            if (!string.IsNullOrEmpty(Config.HueIpAddress))
+            {
+                _options.HueIpAddress = Config.HueIpAddress;
+            }
         }
 
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
@@ -102,9 +113,9 @@ namespace PresenceLight
 
             MapUI(presence, profile, LoadImage(photo));
 
-            if (!string.IsNullOrEmpty(Config.HueApiKey) && !string.IsNullOrEmpty(Config.HueIpAddress))
+            if (!string.IsNullOrEmpty(Config.HueApiKey) && !string.IsNullOrEmpty(Config.HueIpAddress) && ((Light)ddlLights.SelectedItem) != null)
             {
-                await _hueService.SetColor(presence.Availability);
+                await _hueService.SetColor(presence.Availability, ((Light)ddlLights.SelectedItem).Id);
             }
 
             loadingPanel.Visibility = Visibility.Collapsed;
@@ -128,7 +139,7 @@ namespace PresenceLight
                     presence = await System.Threading.Tasks.Task.Run(() => GetPresence());
                     if (!string.IsNullOrEmpty(Config.HueApiKey) && !string.IsNullOrEmpty(Config.HueIpAddress))
                     {
-                        await _hueService.SetColor(presence.Availability);
+                        await _hueService.SetColor(presence.Availability, ((Light)ddlLights.SelectedItem).Id);
                     }
                     MapUI(presence, null, null);
                 }
@@ -342,7 +353,9 @@ namespace PresenceLight
                     _options.HueIpAddress = Config.HueIpAddress;
                 }
                 Config.HueApiKey = await _hueService.RegisterBridge();
+                ddlLights.ItemsSource = await _hueService.CheckLights();
                 _options.HueApiKey = Config.HueApiKey;
+                ddlLights.Visibility = Visibility.Visible;
                 imgLoading.Visibility = Visibility.Collapsed;
                 lblMessage.Visibility = Visibility.Visible;
                 await SettingsService.SaveSettings(Config);
@@ -359,8 +372,6 @@ namespace PresenceLight
                 lblMessage.Text = "App Registered with Bridge";
                 fontBrush.Color = MapColor("#009933");
                 lblMessage.Foreground = fontBrush;
-
-                await SettingsService.SaveSettings(Config);
             }
 
             CheckHueSettings();
@@ -372,18 +383,21 @@ namespace PresenceLight
         }
         private void HueIpAddress_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
-            if (_options != null)
+            if (((TextBox)e.OriginalSource).Text.Trim() != ((TextBox)e.Source).Text.Trim())
             {
-                _options.HueApiKey = String.Empty;
-            }
-            if (Config != null)
-            {
-                Config.HueApiKey = String.Empty;
+                if (_options != null)
+                {
+                    _options.HueApiKey = String.Empty;
+                }
+                if (Config != null)
+                {
+                    Config.HueApiKey = String.Empty;
+                }
             }
             CheckHueSettings();
         }
-        private void CheckHueSettings()
-        {        
+        private async void CheckHueSettings()
+        {
             if (Config != null)
             {
                 if (!CheckAAD())
@@ -411,6 +425,7 @@ namespace PresenceLight
                     lblMessage.Text = "Valid IP Address Required";
                     fontBrush.Color = MapColor("#ff3300");
                     btnRegister.IsEnabled = false;
+                    ddlLights.Visibility = Visibility.Collapsed;
                     lblMessage.Foreground = fontBrush;
                 }
                 else
@@ -418,14 +433,15 @@ namespace PresenceLight
                     btnRegister.IsEnabled = true;
                     if (string.IsNullOrEmpty(Config.HueApiKey))
                     {
-
-
                         lblMessage.Text = "Missing App Registration, please button on bridge than click 'Register Bridge'";
                         fontBrush.Color = MapColor("#ff3300");
+                        ddlLights.Visibility = Visibility.Collapsed;
                         lblMessage.Foreground = fontBrush;
                     }
                     else
                     {
+                        ddlLights.ItemsSource = await _hueService.CheckLights();
+                        ddlLights.Visibility = Visibility.Visible;
                         lblMessage.Text = "App Registered with Bridge";
                         fontBrush.Color = MapColor("#009933");
                         lblMessage.Foreground = fontBrush;

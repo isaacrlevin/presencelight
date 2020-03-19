@@ -62,11 +62,11 @@
                     </tb:TaskbarIcon>
                     <Grid x:Name="signInPanel" Visibility="Visible">
                         <Button Content="Sign In" Margin="90,130,90,200" Click="CallGraphButton_Click" Height="45" Width="170" />
-                        <Label Content="Login to Microsoft Account to Sync Presence" Margin="70,99,70,0" VerticalAlignment="Top"/>
+                        <Label Content="Login to Microsoft Account to Sync Presence" Margin="90,100,90,200" VerticalAlignment="Top"/>
                     </Grid>
                     <Grid x:Name="loadingPanel" Visibility="Collapsed">
                         <Image gif:ImageBehavior.AnimatedSource="Icons/loading.gif" Width="100" />
-                        <Label Content="If you are adding new lights, this may take up to a minute"  Margin="36,262,36.667,66"/>
+                        <Label Content="If you are adding new lights, this may take up to a minute"  Margin="25,262,36.667,50"/>
                     </Grid>
                 </Grid>
             </TabItem>
@@ -77,11 +77,12 @@
                     <TextBox Text="{Binding HueIpAddress}" x:Name="hueIpAddress" HorizontalAlignment="Left" Height="23" Margin="203,39,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" TextChanged="HueIpAddress_TextChanged"/>
                     <Label Margin="5,158,5,172" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Center" >
                         <TextBlock  x:Name="lblMessage" TextWrapping="Wrap"  TextAlignment="Center">
-
                         </TextBlock>
                     </Label>
+                    <ComboBox x:Name="ddlLights" DisplayMemberPath="Name" Visibility="Collapsed"  HorizontalAlignment="Center" Margin="0,234,0,0" VerticalAlignment="Top" Width="120"/>
                     <Image x:Name="imgLoading" Visibility="Collapsed" gif:ImageBehavior.AnimatedSource="Icons/loading.gif" Width="75" Margin="143,17,143,-17" />
                     <Button Height="45" Width="170" Content="Save" Margin="90,280,90,58" Click="SaveHueSettings_Click"/>
+
                 </Grid>
             </TabItem>
             <TabItem Header="Settings" >

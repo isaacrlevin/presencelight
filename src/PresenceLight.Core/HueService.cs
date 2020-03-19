@@ -7,6 +7,7 @@ using Q42.HueApi.Interfaces;
 using Q42.HueApi.Models.Bridge;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,8 +15,9 @@ namespace PresenceLight.Core
 {
     public interface IHueService
     {
-        Task SetColor(string availability);
+        Task SetColor(string availability, string lightId);
         Task<string> RegisterBridge();
+        Task<IEnumerable<Light>> CheckLights();
     }
     public class HueService : IHueService
     {
@@ -32,12 +34,10 @@ namespace PresenceLight.Core
             _options = options;
         }
 
-        public async Task SetColor(string availability)
+        public async Task SetColor(string availability, string lightId)
         {
             _client = new LocalHueClient(_options.HueIpAddress);
             _client.Initialize(_options.HueApiKey);
-
-            CheckLights();
 
             var command = new LightCommand
             {
@@ -67,7 +67,8 @@ namespace PresenceLight.Core
                     command.SetColor(new RGBColor("#FFFFFF"));
                     break;
             }
-            await _client.SendCommandAsync(command);
+
+            await _client.SendCommandAsync(command, new List<string> { lightId });
         }
 
         //Need to wire up a way to do this without user intervention
@@ -76,7 +77,7 @@ namespace PresenceLight.Core
             if (string.IsNullOrEmpty(_options.HueApiKey))
             {
                 _client = new LocalHueClient(_options.HueIpAddress);
-             
+
                 //Make sure the user has pressed the button on the bridge before calling RegisterAsync
                 //It will throw an LinkButtonNotPressedException if the user did not press the button
 
@@ -85,17 +86,22 @@ namespace PresenceLight.Core
             return String.Empty;
         }
 
-        private void CheckLights()
+        public async Task<IEnumerable<Light>> CheckLights()
         {
-            List<Light> lights = (List<Light>)_client.GetLightsAsync().Result;
-
-            // if there are no lights, get some
-            if (lights.Count == 0)
+            if (_client == null)
             {
-                _client.SearchNewLightsAsync();
-                Thread.Sleep(40000);
-                _client.GetNewLightsAsync();
+                _client = new LocalHueClient(_options.HueIpAddress);
+                _client.Initialize(_options.HueApiKey);
             }
+            var lights = await _client.GetLightsAsync();
+            // if there are no lights, get some
+            if (lights.Count() == 0)
+            {
+                await _client.SearchNewLightsAsync();
+                Thread.Sleep(40000);
+                lights = await _client.GetNewLightsAsync();
+            }
+            return lights;
         }
     }
 }
