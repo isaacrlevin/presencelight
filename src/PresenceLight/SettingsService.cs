@@ -23,7 +23,7 @@ namespace PresenceLight
                 string content = await FileIO.ReadTextAsync(sf);
                 return JsonConvert.DeserializeObject<ConfigWrapper>(content);
             }
-            catch
+            catch (Exception e)
             { return null; }
         }
 
@@ -36,7 +36,7 @@ namespace PresenceLight
                 await FileIO.WriteTextAsync(file, content);
                 return true;
             }
-            catch
+            catch (Exception e)
             {
                 return false;
             }
@@ -47,9 +47,23 @@ namespace PresenceLight
             try
             {
                 var item = await _settingsFolder.TryGetItemAsync(SETTINGS_FILENAME);
-                return item != null;
+
+                if (item == null)
+                {
+                    return false;
+                }
+                else
+                {
+                    var config = await LoadSettings();
+                    if (config == null)
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
             }
-            catch
+            catch (Exception e)
             {
                 return false;
             }

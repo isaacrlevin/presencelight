@@ -41,7 +41,7 @@ namespace PresenceLight.Worker
                     }
 
                     var graphResult = _graphServiceClient.Me.Presence.Request().GetAsync().Result;
-                    await _hueService.SetColor(graphResult.Availability);
+                    await _hueService.SetColor(graphResult.Availability, "1");
                 }
                 catch (Exception e)
                 {
