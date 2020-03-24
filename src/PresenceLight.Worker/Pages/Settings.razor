@@ -1,0 +1,28 @@
+﻿@page "/settings"
+
+@using PresenceLight.Core
+@using Microsoft.Extensions.Options
+@inject IOptionsMonitor<ConfigWrapper> Config
+<h1>Settings</h1>
+
+
+
+<table style="width:50%">
+    <tr>
+        <td>Azure App Client Id</td>
+        <td style="width:50%">
+            <input style="width:100%" @bind="Config.CurrentValue.ClientId" type="text" id="clientId" />
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Azure App Tenant Id
+        </td>
+        <td style="width:50%">
+            <input style="width:100%" @bind="Config.CurrentValue.TenantId" type="text" id="tenantId" />
+        </td>
+    </tr>
+</table>
+@code {
+
+}
