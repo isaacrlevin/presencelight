@@ -1,0 +1,65 @@
+﻿@page "/"
+
+@using Microsoft.AspNetCore.Http
+@using PresenceLight.Core.Graph
+@using PresenceLight.Core.Helpers
+@using Microsoft.Graph;
+@using Microsoft.AspNetCore.Mvc;
+@using Microsoft.Graph.Auth;
+@using Microsoft.Identity.Client;
+@inject AppState appState
+@inject IGraphService _graphService
+
+
+@if (appState.User != null)
+{
+    <h1>@appState.User.DisplayName</h1>
+
+    <div class="container">
+        <img class="image" src="@appState.ProfileImage" />
+        <div class="circle bottom-right @appState.Presence.Availability"></div>
+    </div>
+}
+else
+{
+    <h2>You have not logged into your Microsoft 365 Account, please do so by directing</h2>
+}
+
+@code {
+
+    protected override async Task OnInitializedAsync()
+    {
+
+
+
+        //OnBehalfOfProvider onBehalfOfProvider =
+        //    new OnBehalfOfProvider(confidentialClientApplication);
+
+        //var graphClient = new GraphServiceClient(onBehalfOfProvider);
+        //var me = await graphClient.Me.Request().WithUserAssertion(new UserAssertion(tokens.AccessToken)).GetAsync();
+
+        //var _graphServiceClient = _graphService.GetAuthenticatedGraphClient(typeof(DeviceCodeFlowAuthorizationProvider));
+
+        //var foo = await _graphServiceClient.Me.Presence.Request().GetAsync();
+
+
+        //var accessToken =
+        //    await tokenAcquisition.GetAccessTokenForUserAsync(new[] { Constants.ScopeUserRead });
+
+        //var me = await graphApiOperations.GetUserInformation(accessToken);
+        //var photo = await graphApiOperations.GetPhotoAsBase64Async(accessToken);
+
+        appState.OnChange += RaiseStateHasChanged;
+
+    }
+
+    public void Dispose()
+    {
+        appState.OnChange -= RaiseStateHasChanged;
+    }
+
+    private void RaiseStateHasChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+}

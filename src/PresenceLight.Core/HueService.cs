@@ -76,16 +76,22 @@ namespace PresenceLight.Core
         {
             if (string.IsNullOrEmpty(_options.HueApiKey))
             {
-                _client = new LocalHueClient(_options.HueIpAddress);
+                try
+                {
+                    _client = new LocalHueClient(_options.HueIpAddress);
 
-                //Make sure the user has pressed the button on the bridge before calling RegisterAsync
-                //It will throw an LinkButtonNotPressedException if the user did not press the button
+                    //Make sure the user has pressed the button on the bridge before calling RegisterAsync
+                    //It will throw an LinkButtonNotPressedException if the user did not press the button
 
-                return await _client.RegisterAsync("presence-light", "presence-light");
+                    return await _client.RegisterAsync("presence-light", "presence-light");
+                }
+                catch
+                {
+                    return String.Empty;
+                }
             }
-            return String.Empty;
+            return String.Empty;        
         }
-
         public async Task<IEnumerable<Light>> CheckLights()
         {
             if (_client == null)

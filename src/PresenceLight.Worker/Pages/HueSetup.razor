@@ -1,0 +1,125 @@
+﻿@page "/hue"
+
+@using Newtonsoft.Json
+@using PresenceLight.Core
+@using Q42.HueApi
+@using Microsoft.Extensions.Options
+@inject IHueService _hueService
+@inject AppState appState;
+@inject IModalService Modal
+@inject IOptionsMonitor<ConfigWrapper> Config
+
+
+
+<h1>Hue Setup</h1>
+
+
+
+@*<EditForm Model="@Config.CurrentValue.HueIpAddress" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <InputText id="name" @bind-Value="@Config.CurrentValue.HueIpAddress" />
+
+        <button type="submit">Submit</button>
+    </EditForm>*@
+
+
+
+<input id="name" @bind="Config.CurrentValue.HueIpAddress" />
+
+
+
+<button @onclick="RegisterBridge" class="btn btn-primary">Register Bridge</button>
+
+<br />
+<br />
+
+@ResultMessage
+
+<p>
+    @if (appState.Lights != null)
+    {
+        <div class="form-group">
+            <select class="form-control" @onchange="OnChange" style="width:20%">
+                <option value="" disabled="disabled">Select</option>
+                @foreach (var light in appState.Lights)
+                {
+                    <option value=@light.Id>@light.Name</option>
+                }
+            </select>
+        </div>
+    }
+</p>
+
+<br />
+
+<button class="btn btn-primary" @onclick="Save">Save</button>
+
+
+@code {
+
+    private void HandleValidSubmit()
+    {
+        Console.WriteLine("OnValidSubmit");
+    }
+
+    private void Save()
+    {
+        _hueService = new HueService(Config.CurrentValue);
+    }
+
+    private string ResultMessage;
+
+    async Task RegisterBridge()
+    {
+        var formModal = Modal.Show<Confirm>("Please press the sync button on your Phillips Hue Bridge");
+        var result = await formModal.Result;
+
+        if (result.Cancelled)
+        {
+            Console.WriteLine("Modal was cancelled");
+        }
+        else
+        {
+            try
+            {
+                Config.CurrentValue.HueApiKey = await _hueService.RegisterBridge();
+            }
+            catch
+            {
+                ResultMessage = "Error Occured registering bridge, please try again";
+            }
+
+            if (!string.IsNullOrEmpty(Config.CurrentValue.HueApiKey))
+            {
+                ResultMessage = "App Registered with Bridge";
+            }
+
+            //System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/appsettings.json", JsonConvert.SerializeObject(Config.CurrentValue));
+
+            appState.SetLights(await _hueService.CheckLights());
+        }
+    }
+
+    private void OnChange(ChangeEventArgs e)
+    {
+        var light = e.Value.ToString();
+        appState.SetLight(light);
+    }
+
+    protected override void OnInitialized()
+    {
+        appState.OnChange += RaiseStateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        appState.OnChange -= RaiseStateHasChanged;
+    }
+
+    private void RaiseStateHasChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+}
