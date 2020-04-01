@@ -32,7 +32,7 @@ namespace PresenceLight.Core.Graph
 
         private IAuthenticationProvider CreateAuthorizationProvider(Type t)
         {
-            var clientId = _options.ApplicationId;
+            var clientId = _options.ClientId;
             var redirectUri = _options.RedirectUri;
             var authority = $"https://login.microsoftonline.com/{_options.TenantId}";
 
