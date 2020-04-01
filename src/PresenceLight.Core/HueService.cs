@@ -18,6 +18,7 @@ namespace PresenceLight.Core
         Task SetColor(string availability, string lightId);
         Task<string> RegisterBridge();
         Task<IEnumerable<Light>> CheckLights();
+        Task<string> FindBridge();
     }
     public class HueService : IHueService
     {
@@ -76,12 +77,35 @@ namespace PresenceLight.Core
         {
             if (string.IsNullOrEmpty(_options.HueApiKey))
             {
-                _client = new LocalHueClient(_options.HueIpAddress);
+                try
+                {
+                    _client = new LocalHueClient(_options.HueIpAddress);
 
-                //Make sure the user has pressed the button on the bridge before calling RegisterAsync
-                //It will throw an LinkButtonNotPressedException if the user did not press the button
+                    //Make sure the user has pressed the button on the bridge before calling RegisterAsync
+                    //It will throw an LinkButtonNotPressedException if the user did not press the button
 
-                return await _client.RegisterAsync("presence-light", "presence-light");
+                    return await _client.RegisterAsync("presence-light", "presence-light");
+                }
+                catch
+                {
+                    return String.Empty;
+                }
+            }
+            return String.Empty;        
+        }
+
+        public async Task<string> FindBridge()
+        {
+            try {
+                IBridgeLocator locator = new HttpBridgeLocator(); //Or: LocalNetworkScanBridgeLocator, MdnsBridgeLocator, MUdpBasedBridgeLocator
+                var bridges = await locator.LocateBridgesAsync(TimeSpan.FromSeconds(5));
+                if (bridges.Count() > 0)
+                {
+                    return bridges.FirstOrDefault().IpAddress;
+                }
+            }
+            catch {
+                return String.Empty;
             }
             return String.Empty;
         }

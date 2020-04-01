@@ -358,7 +358,6 @@ namespace PresenceLight
                 ddlLights.Visibility = Visibility.Visible;
                 imgLoading.Visibility = Visibility.Collapsed;
                 lblMessage.Visibility = Visibility.Visible;
-                await SettingsService.SaveSettings(Config);
             }
             catch (Exception ex)
             {
@@ -430,6 +429,15 @@ namespace PresenceLight
                 }
                 else
                 {
+                    if (string.IsNullOrEmpty(Config.HueIpAddress))
+                    {
+                        Config.HueIpAddress = hueIpAddress.Text;
+                    }
+
+                    if (string.IsNullOrEmpty(_options.HueIpAddress))
+                    {
+                        _options.HueIpAddress = hueIpAddress.Text;
+                    }
                     btnRegister.IsEnabled = true;
                     if (string.IsNullOrEmpty(Config.HueApiKey))
                     {
@@ -467,16 +475,16 @@ namespace PresenceLight
         private bool CheckAAD()
         {
             Regex r = new Regex(@"^(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}$");
-            if (string.IsNullOrEmpty(Config.ApplicationId) || string.IsNullOrEmpty(Config.TenantId) || string.IsNullOrEmpty(Config.RedirectUri) || !r.IsMatch(Config.ApplicationId) || !r.IsMatch(Config.TenantId))
+            if (string.IsNullOrEmpty(Config.ClientId) || string.IsNullOrEmpty(Config.TenantId) || string.IsNullOrEmpty(Config.RedirectUri) || !r.IsMatch(Config.ClientId) || !r.IsMatch(Config.TenantId))
             {
                 return false;
             }
             return true;
         }
 
-        private async void Window_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        private async void FindBridge_Click(object sender, RoutedEventArgs e)
         {
-            await SettingsService.SaveSettings(Config);
+            hueIpAddress.Text = await _hueService.FindBridge();
         }
     }
 }
