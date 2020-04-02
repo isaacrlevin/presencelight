@@ -100,7 +100,7 @@ jobs:
       # Update appsettings.json. This must be done before build.
       $appsettings= get-content ".\src\PresenceLight\appsettings.json" -raw | ConvertFrom-Json
       $appsettings.tenantId = "$env:TenantId"
-      $appsettings.applicationId = "$env:ApplicationId"
+      $appsettings.clientId = "$env:ApplicationId"
       $appsettings | ConvertTo-Json -depth 32| set-content '.\src\PresenceLight\appsettings.json'
     displayName: Update appsettings.json
     env:
