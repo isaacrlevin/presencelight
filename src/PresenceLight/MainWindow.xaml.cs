@@ -87,6 +87,12 @@ namespace PresenceLight
             }
 
             Config = await SettingsService.LoadSettings();
+
+            if (string.IsNullOrEmpty(Config.RedirectUri))
+            {
+                await SettingsService.DeleteSettings();
+                await SettingsService.SaveSettings(_options);
+            }
             if (!string.IsNullOrEmpty(Config.HueApiKey))
             {
                 _options.HueApiKey = Config.HueApiKey;
@@ -137,7 +143,7 @@ namespace PresenceLight
                 try
                 {
                     presence = await System.Threading.Tasks.Task.Run(() => GetPresence());
-                    if (!string.IsNullOrEmpty(Config.HueApiKey) && !string.IsNullOrEmpty(Config.HueIpAddress))
+                    if (!string.IsNullOrEmpty(Config.HueApiKey) && !string.IsNullOrEmpty(Config.HueIpAddress) && ddlLights.SelectedItem != null)
                     {
                         await _hueService.SetColor(presence.Availability, ((Light)ddlLights.SelectedItem).Id);
                     }
