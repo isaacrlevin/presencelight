@@ -13,6 +13,8 @@
 
 Presence Light is a solution to broadcast your Microsoft Teams presence to a Phillips Hue light bulb. There are other solutions that do something similar, but they require a tethered solution (plugging a light into a computer via USB). What Presence Light does is leverage the [Presence Api](https://docs.microsoft.com/graph/api/presence-get), which is available in [Microsoft Graph](https://docs.microsoft.com/graph/overview), allowing to retrieve your presence without having to be tethered. This could potentially allow someone to update the Phillips Hue light bulb from a remote machine they do not use, as long as it is on the same network.
 
+### [Demo of Presence Light](https://youtu.be/nQbjKXxKlHU)
+
 ## Hardware Requirements
 
 | Item  |
