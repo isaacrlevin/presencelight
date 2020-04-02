@@ -42,6 +42,20 @@ namespace PresenceLight
             }
         }
 
+        public async static Task<bool> DeleteSettings()
+        {
+            try
+            {
+                StorageFile sf = await _settingsFolder.GetFileAsync(SETTINGS_FILENAME);
+                var foo = sf.DeleteAsync(StorageDeleteOption.PermanentDelete);
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+
         public static async Task<bool> IsFilePresent()
         {
             try
