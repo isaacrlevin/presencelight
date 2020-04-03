@@ -16,8 +16,15 @@ namespace PresenceLight.Core
         public string CallbackPath { get; set; }
         public string HueApiKey { get; set; }
 
+        public string Authority => $"https://login.microsoftonline.com/{TenantId}";
+
+        public string ApiScopes { get; set; }
+
+        public string SelectedLightId { get; set; }
+
         [Required]
-        [StringLength(10, ErrorMessage = "Name is too long.")]
+        [RegularExpression(@"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b",
+        ErrorMessage = "Characters are not allowed.")]
         public string HueIpAddress { get; set; }
         public string IconType { get; set; }
     }

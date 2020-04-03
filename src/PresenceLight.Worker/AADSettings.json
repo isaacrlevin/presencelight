@@ -1,0 +1,14 @@
+{
+  "ClientId": "",
+  "ClientSecret": "",
+  "Domain": "",
+  "Instance": "https://login.microsoftonline.com/",
+  "TenantId": "",
+  "RedirectUri": null,
+  "CallbackPath": "/signin-oidc",
+  "HueApiKey": "",
+  "HueIpAddress": "",
+  "IconType": "",
+  "SelectedLightId": "",
+  "ApiScopes": "User.Read offline_access"
+}

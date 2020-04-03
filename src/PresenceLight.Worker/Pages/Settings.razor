@@ -2,6 +2,7 @@
 
 @using PresenceLight.Core
 @using Microsoft.Extensions.Options
+@using Newtonsoft.Json
 @inject IOptionsMonitor<ConfigWrapper> Config
 <h1>Settings</h1>
 
@@ -23,6 +24,13 @@
         </td>
     </tr>
 </table>
+
+<button @onclick="SaveSettings" class="btn btn-primary">Save</button>
 @code {
 
+
+    void SaveSettings()
+    {
+        System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/AADSettings.json", JsonConvert.SerializeObject(Config.CurrentValue));
+    }
 }

@@ -1,11 +1,30 @@
 ﻿using Blazored.Modal;
+using IdentityModel.Client;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.AzureAD.UI;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.Hosting.Server.Features;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
+using Microsoft.Graph;
 using PresenceLight.Core;
 using PresenceLight.Core.Graph;
+using System;
+using System.Diagnostics;
+using System.Globalization;
+using System.Linq;
+using System.Net.Http;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 
 namespace PresenceLight.Worker
 {
@@ -18,19 +37,44 @@ namespace PresenceLight.Worker
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+
+            services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
+                    .AddAzureAD(options => Configuration.Bind(options));
+
+
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.Configure<ConfigWrapper>(Configuration);
+
+            services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>
+            {
+                options.ResponseType = "code";
+                options.SaveTokens = true;
+                options.Scope.Add("offline_access");
+                options.Scope.Add("User.Read");
+                options.Resource = "https://graph.microsoft.com";
+            });
+
+            services.AddHttpClient();
+            services.AddScoped<TokenProvider>();
+
+            services.AddControllersWithViews(options =>
+            {
+                var policy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build();
+                options.Filters.Add(new AuthorizeFilter(policy));
+            });
+
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddOptions();
-            services.Configure<ConfigWrapper>(options => Configuration.Bind("AzureAd", options));
+
             services.AddSingleton<IGraphService, GraphService>();
             services.AddSingleton<IHueService, HueService>();
             services.AddSingleton<AppState, AppState>();
             services.AddBlazoredModal();
-            services.AddHttpContextAccessor();
             services.AddHostedService<Worker>();
         }
 
