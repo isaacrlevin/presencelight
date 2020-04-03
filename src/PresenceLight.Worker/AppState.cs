@@ -25,13 +25,19 @@ namespace PresenceLight.Worker
 
         public Presence Presence { get; set; }
 
-        public void SetUserInfo(User user, byte[] photo, Presence presence)
+        public string AccessToken { get; set; }
+
+        public void SetToken(string token)
+        {
+            AccessToken = token;
+            NotifyStateChanged();
+        }
+
+        public void SetUserInfo(User user, string photo, Presence presence)
         {
             User = user;
             Presence = presence;
-            var base64 = Convert.ToBase64String(photo);
-            var imgSrc = String.Format("data:image/gif;base64,{0}", base64);
-            ProfileImage = imgSrc;
+            ProfileImage = photo;
             NotifyStateChanged();
         }
 

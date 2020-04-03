@@ -36,8 +36,16 @@ a, .btn-link {
     background-color: red;
 }
 
+.DoNotDisturb {
+    background-color: darkred;
+}
+
 .Available {
     background-color: green;
+}
+
+.Away {
+    background-color: yellow;
 }
 
 .BeRightBack {

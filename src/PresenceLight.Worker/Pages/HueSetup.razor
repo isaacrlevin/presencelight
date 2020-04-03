@@ -2,10 +2,9 @@
 
 @using Newtonsoft.Json
 @using PresenceLight.Core
-@using Q42.HueApi
 @using Microsoft.Extensions.Options
 @inject IHueService _hueService
-@inject AppState appState;
+@inject AppState appState
 @inject IModalService Modal
 @inject IOptionsMonitor<ConfigWrapper> Config
 
@@ -15,22 +14,15 @@
 
 
 
-@*<EditForm Model="@Config.CurrentValue.HueIpAddress" OnValidSubmit="HandleValidSubmit">
-        <DataAnnotationsValidator />
-        <ValidationSummary />
+<EditForm Model="@tempConfig" OnValidSubmit="RegisterBridge">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
 
-        <InputText id="name" @bind-Value="@Config.CurrentValue.HueIpAddress" />
-
-        <button type="submit">Submit</button>
-    </EditForm>*@
-
-
-
-<input id="name" @bind="Config.CurrentValue.HueIpAddress" />
-
-
-
-<button @onclick="RegisterBridge" class="btn btn-primary">Register Bridge</button>
+    <InputText id="name" @bind-Value="@tempConfig.HueIpAddress" />
+    <br />
+    <br />
+    <button class="btn btn-primary" type="submit">Register Bridge</button>
+</EditForm>
 
 <br />
 <br />
@@ -42,10 +34,17 @@
     {
         <div class="form-group">
             <select class="form-control" @onchange="OnChange" style="width:20%">
-                <option value="" disabled="disabled">Select</option>
+                <option disabled="disabled">Select</option>
                 @foreach (var light in appState.Lights)
                 {
-                    <option value=@light.Id>@light.Name</option>
+                    @if (tempConfig.SelectedLightId == light.Id)
+                    {
+                        <option selected="selected" value=@light.Id>@light.Name</option>
+                    }
+                    else
+                    {
+                        <option value=@light.Id>@light.Name</option>
+                    }
                 }
             </select>
         </div>
@@ -59,13 +58,11 @@
 
 @code {
 
-    private void HandleValidSubmit()
-    {
-        Console.WriteLine("OnValidSubmit");
-    }
+    private ConfigWrapper tempConfig;
 
     private void Save()
     {
+        System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/AADSettings.json", JsonConvert.SerializeObject(Config.CurrentValue));
         _hueService = new HueService(Config.CurrentValue);
     }
 
@@ -84,19 +81,22 @@
         {
             try
             {
-                Config.CurrentValue.HueApiKey = await _hueService.RegisterBridge();
+                tempConfig.HueApiKey = await _hueService.RegisterBridge();
             }
             catch
             {
                 ResultMessage = "Error Occured registering bridge, please try again";
             }
 
-            if (!string.IsNullOrEmpty(Config.CurrentValue.HueApiKey))
+            if (!string.IsNullOrEmpty(tempConfig.HueApiKey))
             {
                 ResultMessage = "App Registered with Bridge";
             }
 
-            //System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/appsettings.json", JsonConvert.SerializeObject(Config.CurrentValue));
+            Config.CurrentValue.HueIpAddress = tempConfig.HueIpAddress;
+            Config.CurrentValue.HueApiKey = tempConfig.HueApiKey;
+
+            System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/AADSettings.json", JsonConvert.SerializeObject(Config.CurrentValue));
 
             appState.SetLights(await _hueService.CheckLights());
         }
@@ -105,11 +105,20 @@
     private void OnChange(ChangeEventArgs e)
     {
         var light = e.Value.ToString();
+        tempConfig.SelectedLightId = light;
+        Config.CurrentValue.SelectedLightId = light;
         appState.SetLight(light);
     }
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        tempConfig = Config.CurrentValue;
+
+        if (!string.IsNullOrEmpty(tempConfig.HueIpAddress) && !string.IsNullOrEmpty(tempConfig.HueApiKey))
+        {
+            appState.SetLights(await _hueService.CheckLights());
+        }
+
         appState.OnChange += RaiseStateHasChanged;
     }
 
