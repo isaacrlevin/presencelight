@@ -32,15 +32,19 @@ namespace PresenceLight
         public ConfigWrapper Config { get; set; }
         private bool stopPolling;
         private IHueService _hueService;
+        private LifxService _lifxService;
         private GraphServiceClient _graphServiceClient;
         private readonly IGraphService _graphservice;
 
-        public MainWindow(IGraphService graphService, IHueService hueService, IOptionsMonitor<ConfigWrapper> optionsAccessor)
+
+        #region Init
+        public MainWindow(IGraphService graphService, IHueService hueService, LifxService lifxService, IOptionsMonitor<ConfigWrapper> optionsAccessor)
         {
             InitializeComponent();
 
             _graphservice = graphService;
 
+            _lifxService = lifxService;
             _hueService = hueService;
             _options = optionsAccessor.CurrentValue;
 
@@ -78,7 +82,6 @@ namespace PresenceLight
             notificationIcon.IconSource = new BitmapImage(new Uri(IconConstants.GetIcon(String.Empty, IconConstants.Inactive)));
         }
 
-
         private async Task LoadSettings()
         {
             if (!(await SettingsService.IsFilePresent()))
@@ -93,16 +96,41 @@ namespace PresenceLight
                 await SettingsService.DeleteSettings();
                 await SettingsService.SaveSettings(_options);
             }
-            if (!string.IsNullOrEmpty(Config.HueApiKey))
+
+            if (Config.IsPhillipsEnabled)
             {
-                _options.HueApiKey = Config.HueApiKey;
+                pnlPhillips.Visibility = Visibility.Visible;
+                if (!string.IsNullOrEmpty(Config.HueApiKey))
+                {
+                    _options.HueApiKey = Config.HueApiKey;
+                }
+
+                if (!string.IsNullOrEmpty(Config.HueIpAddress))
+                {
+                    _options.HueIpAddress = Config.HueIpAddress;
+                }
+            }
+            else
+            {
+                pnlPhillips.Visibility = Visibility.Collapsed;
             }
 
-            if (!string.IsNullOrEmpty(Config.HueIpAddress))
+            if (Config.IsLifxEnabled)
             {
-                _options.HueIpAddress = Config.HueIpAddress;
+                pnlLifx.Visibility = Visibility.Visible;
+                if (!string.IsNullOrEmpty(Config.HueApiKey))
+                {
+                    _options.LifxApiKey = Config.LifxApiKey;
+                }
+            }
+            else
+            {
+                pnlLifx.Visibility = Visibility.Collapsed;
             }
         }
+        #endregion
+
+        #region Profile Panel
 
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
@@ -122,6 +150,11 @@ namespace PresenceLight
             if (!string.IsNullOrEmpty(Config.HueApiKey) && !string.IsNullOrEmpty(Config.HueIpAddress) && ((Light)ddlLights.SelectedItem) != null)
             {
                 await _hueService.SetColor(presence.Availability, ((Light)ddlLights.SelectedItem).Id);
+            }
+
+            if (Config.IsLifxEnabled && !string.IsNullOrEmpty(Config.LifxApiKey))
+            {
+                await _lifxService.SetColor(presence.Availability);
             }
 
             loadingPanel.Visibility = Visibility.Collapsed;
@@ -147,6 +180,12 @@ namespace PresenceLight
                     {
                         await _hueService.SetColor(presence.Availability, ((Light)ddlLights.SelectedItem).Id);
                     }
+
+                    if (Config.IsLifxEnabled && !string.IsNullOrEmpty(Config.LifxApiKey))
+                    {
+                        await _lifxService.SetColor(presence.Availability);
+                    }
+
                     MapUI(presence, null, null);
                 }
                 catch { }
@@ -176,12 +215,7 @@ namespace PresenceLight
                 }
             }
         }
-
-        protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
-        {
-            this.Hide();
-            e.Cancel = true;
-        }
+        #endregion
 
         #region UI Helpers
         private static BitmapImage LoadImage(byte[] imageData)
@@ -320,6 +354,8 @@ namespace PresenceLight
         }
         #endregion
 
+        #region Hue Panel
+
         private async void SaveHueSettings_Click(object sender, RoutedEventArgs e)
         {
             await SettingsService.SaveSettings(Config);
@@ -327,65 +363,6 @@ namespace PresenceLight
             CheckHueSettings();
         }
 
-        private async void SaveSettings_Click(object sender, RoutedEventArgs e)
-        {
-            if (Transparent.IsChecked == true)
-            {
-                Config.IconType = "Transparent";
-            }
-            else
-            {
-                Config.IconType = "White";
-            }
-
-            await SettingsService.SaveSettings(Config);
-            lblSettingSaved.Visibility = Visibility.Visible;
-            CheckHueSettings();
-        }
-
-        private async void RegisterBridge_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBoxHelper.PrepToCenterMessageBoxOnForm(this);
-            MessageBox.Show("Please press the sync button on your Phillips Hue Bridge");
-
-            SolidColorBrush fontBrush = new SolidColorBrush();
-
-            try
-            {
-                imgLoading.Visibility = Visibility.Visible;
-                lblMessage.Visibility = Visibility.Collapsed;
-                if (string.IsNullOrEmpty(_options.HueIpAddress))
-                {
-                    _options.HueIpAddress = Config.HueIpAddress;
-                }
-                Config.HueApiKey = await _hueService.RegisterBridge();
-                ddlLights.ItemsSource = await _hueService.CheckLights();
-                _options.HueApiKey = Config.HueApiKey;
-                ddlLights.Visibility = Visibility.Visible;
-                imgLoading.Visibility = Visibility.Collapsed;
-                lblMessage.Visibility = Visibility.Visible;
-            }
-            catch (Exception ex)
-            {
-                lblMessage.Text = "Error Occured registering bridge, please try again";
-                fontBrush.Color = MapColor("#ff3300");
-                lblMessage.Foreground = fontBrush;
-            }
-
-            if (!string.IsNullOrEmpty(Config.HueApiKey))
-            {
-                lblMessage.Text = "App Registered with Bridge";
-                fontBrush.Color = MapColor("#009933");
-                lblMessage.Foreground = fontBrush;
-            }
-
-            CheckHueSettings();
-        }
-
-        private void TabControl_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-        {
-            lblSettingSaved.Visibility = Visibility.Collapsed;
-        }
         private void HueIpAddress_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
             if (((TextBox)e.OriginalSource).Text.Trim() != ((TextBox)e.Source).Text.Trim())
@@ -491,6 +468,123 @@ namespace PresenceLight
         private async void FindBridge_Click(object sender, RoutedEventArgs e)
         {
             hueIpAddress.Text = await _hueService.FindBridge();
+        }
+
+        private void cbIsPhillipsEnabledChanged(object sender, RoutedEventArgs e)
+        {
+            if (Config.IsPhillipsEnabled)
+            {
+                pnlPhillips.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                pnlPhillips.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private async void RegisterBridge_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBoxHelper.PrepToCenterMessageBoxOnForm(this);
+            MessageBox.Show("Please press the sync button on your Phillips Hue Bridge");
+
+            SolidColorBrush fontBrush = new SolidColorBrush();
+
+            try
+            {
+                imgLoading.Visibility = Visibility.Visible;
+                lblMessage.Visibility = Visibility.Collapsed;
+                if (string.IsNullOrEmpty(_options.HueIpAddress))
+                {
+                    _options.HueIpAddress = Config.HueIpAddress;
+                }
+                Config.HueApiKey = await _hueService.RegisterBridge();
+                ddlLights.ItemsSource = await _hueService.CheckLights();
+                _options.HueApiKey = Config.HueApiKey;
+                ddlLights.Visibility = Visibility.Visible;
+                imgLoading.Visibility = Visibility.Collapsed;
+                lblMessage.Visibility = Visibility.Visible;
+            }
+            catch (Exception ex)
+            {
+                lblMessage.Text = "Error Occured registering bridge, please try again";
+                fontBrush.Color = MapColor("#ff3300");
+                lblMessage.Foreground = fontBrush;
+            }
+
+            if (!string.IsNullOrEmpty(Config.HueApiKey))
+            {
+                lblMessage.Text = "App Registered with Bridge";
+                fontBrush.Color = MapColor("#009933");
+                lblMessage.Foreground = fontBrush;
+            }
+
+            CheckHueSettings();
+        }
+
+        #endregion
+
+        #region Lifx Panel
+
+        private async void SaveLifxSettings_Click(object sender, RoutedEventArgs e)
+        {
+            await SettingsService.SaveSettings(Config);
+        }
+
+        private async void CheckLifx_Click(object sender, RoutedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(lifxApiKey.Text))
+            {
+                try
+                {
+                    ddlLifxLights.ItemsSource = await _lifxService.GetLightsAsync();
+                    _options.LifxApiKey = lifxApiKey.Text;
+                    Config.LifxApiKey = lifxApiKey.Text;
+                }
+                catch { }
+            }
+        }
+
+        private void cbIsLifxEnabledChanged(object sender, RoutedEventArgs e)
+        {
+            if (Config.IsLifxEnabled)
+            {
+                pnlLifx.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                pnlLifx.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        #endregion
+
+        #region Settings Panel
+        private async void SaveSettings_Click(object sender, RoutedEventArgs e)
+        {
+            if (Transparent.IsChecked == true)
+            {
+                Config.IconType = "Transparent";
+            }
+            else
+            {
+                Config.IconType = "White";
+            }
+
+            await SettingsService.SaveSettings(Config);
+            lblSettingSaved.Visibility = Visibility.Visible;
+            CheckHueSettings();
+        }
+        #endregion
+
+        protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+        {
+            this.Hide();
+            e.Cancel = true;
+        }
+
+        private void TabControl_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            lblSettingSaved.Visibility = Visibility.Collapsed;
         }
     }
 }
