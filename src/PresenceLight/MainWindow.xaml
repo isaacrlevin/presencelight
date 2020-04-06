@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:PresenceLight" xmlns:tb="http://www.hardcodet.net/taskbar"
         xmlns:Commands="clr-namespace:PresenceLight.Commands"
         xmlns:gif="http://wpfanimatedgif.codeplex.com"
-        mc:Ignorable="d" Title="Presence Light" Height="450" Width="400">
+        mc:Ignorable="d" Title="Presence Light" Height="450" Width="600">
     <Grid>
         <TabControl SelectionChanged="TabControl_SelectionChanged">
             <TabItem Header="Profile">
@@ -18,9 +18,9 @@
                             </TextBlock>
                         </Label>
                         <TextBlock Margin="163,179,163.667,183">           
-    <Hyperlink NavigateUri="https://github.com/isaacrlevin/PresenceLight"  RequestNavigate="Hyperlink_RequestNavigate">
-        Click here
-    </Hyperlink>
+                            <Hyperlink NavigateUri="https://github.com/isaacrlevin/PresenceLight"  RequestNavigate="Hyperlink_RequestNavigate">
+                                Click here
+                            </Hyperlink>
                         </TextBlock>
                     </Grid>
                     <Grid x:Name="dataPanel" Visibility="Hidden" >
@@ -32,12 +32,9 @@
                         <Grid Margin="0,39,-0.333,-10">
                             <Label x:Name="userName" FontSize="40" MinHeight="120" Margin="5" FontFamily="Segoe Ui"/>
                             <Border BorderThickness="3" CornerRadius="10" Padding="2" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                <Grid>
-                                    <!-- Rounded mask (stretches to fill Grid) -->
+                                <Grid>                                    
                                     <Border Name="mask" Background="White" CornerRadius="100"/>
-                                    <!-- Main content container -->
                                     <StackPanel>
-                                        <!-- Use a VisualBrush of 'mask' as the opacity mask -->
                                         <StackPanel.OpacityMask>
                                             <VisualBrush Visual="{Binding ElementName=mask}"/>
                                         </StackPanel.OpacityMask>
@@ -61,48 +58,82 @@
                     </tb:TaskbarIcon>
                     <Grid x:Name="signInPanel" Visibility="Visible">
                         <Button Content="Sign In" Margin="90,130,90,200" Click="CallGraphButton_Click" Height="45" Width="170" />
-                        <Label Content="Login to Microsoft Account to Sync Presence" Margin="90,100,90,200" VerticalAlignment="Top"/>
+                        <Label Content="Login to Microsoft Account to Sync Presence" Margin="160,100,90,200" VerticalAlignment="Top"/>
                     </Grid>
                     <Grid x:Name="loadingPanel" Visibility="Collapsed">
                         <Image gif:ImageBehavior.AnimatedSource="Icons/loading.gif" Width="100" />
-                        <Label Content="If you are adding new lights, this may take up to a minute"  Margin="25,262,36.667,50"/>
+                        <Label Content="If you are adding new lights, this may take up to a minute"  Margin="150,262,36.667,50"/>
                     </Grid>
                 </Grid>
             </TabItem>
             <TabItem Header="Configure Phillips Hue" >
                 <Grid>
-                    <Button x:Name="btnRegister" Height="45" Width="170" Content="Register Bridge" Margin="90,95,90,243" Click="RegisterBridge_Click"/>
-                    <Label Content="Hue Bridge IP Address" Margin="5,34,200,319"/>
-                    <TextBox Text="{Binding HueIpAddress}" x:Name="hueIpAddress" HorizontalAlignment="Left" Height="23" Margin="203,39,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" TextChanged="HueIpAddress_TextChanged"/>  <Button Height="45" Width="170" Content="Save" Margin="90,280,90,58" Click="SaveHueSettings_Click"/>
-                    <Button Height="23" Width="120" Content="Find Bridge" Margin="165,-40,20,319" Click="FindBridge_Click"/>
-                    <Label Margin="5,158,5,172" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Center" >
-                        <TextBlock  x:Name="lblMessage" TextWrapping="Wrap"  TextAlignment="Center">
-                        </TextBlock>
-                    </Label>
-                    <ComboBox x:Name="ddlLights" DisplayMemberPath="Name" Visibility="Collapsed"  HorizontalAlignment="Center" Margin="0,234,0,0" VerticalAlignment="Top" Width="120"/>
-                    <Image x:Name="imgLoading" Visibility="Collapsed" gif:ImageBehavior.AnimatedSource="Icons/loading.gif" Width="75" Margin="143,17,143,-17" />
-                    <Button Height="45" Width="170" Content="Save" Margin="90,280,90,58" Click="SaveHueSettings_Click"/>
-
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="15*"/>
+                        <ColumnDefinition Width="78*"/>
+                        <ColumnDefinition Width="52*"/>
+                        <ColumnDefinition Width="138*"/>
+                        <ColumnDefinition Width="111*"/>
+                    </Grid.ColumnDefinitions>
+                    <CheckBox x:Name="cbIsPhillipsEnabled" IsChecked="{Binding IsPhillipsEnabled}" Content="Connect to Phillips Light" Grid.Column="1" Grid.ColumnSpan="4" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbIsPhillipsEnabledChanged" Checked="cbIsPhillipsEnabledChanged" />
+                    <Grid x:Name="pnlPhillips"  Grid.Column="1" Grid.ColumnSpan="4">
+                        <Button x:Name="btnRegister" Height="45" Width="170" Content="Register Bridge" Margin="0,60,1,193" Click="RegisterBridge_Click"/>
+                        <Label Content="Hue Bridge IP Address" Margin="0,60,90,244"/>
+                        <TextBox Text="{Binding HueIpAddress}" x:Name="hueIpAddress" HorizontalAlignment="Left" Height="23" Margin="150,60,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" TextChanged="HueIpAddress_TextChanged"/>
+                        <Button Height="23" Width="120" Content="Find Bridge" Margin="165,-245,0,0" Click="FindBridge_Click"/>
+                        <Label Margin="5,158,5,172" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Center" >
+                            <TextBlock  x:Name="lblMessage" TextWrapping="Wrap"  TextAlignment="Center">
+                            </TextBlock>
+                        </Label>
+                        <ComboBox x:Name="ddlLights" DisplayMemberPath="Name" Visibility="Collapsed"  HorizontalAlignment="Center" Margin="0,234,0,0" VerticalAlignment="Top" Width="120"/>
+                        <Image x:Name="imgLoading" Visibility="Collapsed" gif:ImageBehavior.AnimatedSource="Icons/loading.gif" Width="75" Margin="143,17,143,-17" />
+                        <Button Height="45" Width="170" Content="Save" Margin="0,250,1,69" Click="SaveHueSettings_Click"/>
+                    </Grid>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Configure Lifx" >
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="15*"/>
+                        <ColumnDefinition Width="78*"/>
+                        <ColumnDefinition Width="52*"/>
+                        <ColumnDefinition Width="138*"/>
+                        <ColumnDefinition Width="111*"/>
+                    </Grid.ColumnDefinitions>
+                    <CheckBox x:Name="cbIsLifxEnabled" IsChecked="{Binding IsLifxEnabled}" Content="Connect to Lifx Light" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbIsLifxEnabledChanged" Checked="cbIsLifxEnabledChanged" Grid.Column="1" Grid.ColumnSpan="4" />
+                    <Grid x:Name="pnlLifx" Grid.Column="1" Grid.ColumnSpan="4">
+                        <Label Content="Lifx Api Key" Margin="0,60,90,244"/>
+                        <TextBox Text="{Binding LifxApiKey}" x:Name="lifxApiKey" HorizontalAlignment="Left" Height="23" Margin="100,60,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="450" Grid.ColumnSpan="2"/>
+                        <Button x:Name="btnCheckLifxKey" Height="45" Width="170" Content="Check Lifx Key" Margin="0,60,1,193" Click="CheckLifx_Click"/>
+                        <Label Margin="192,250,0,129" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Left" >
+                            <TextBlock  x:Name="lblLifxMessage" TextWrapping="Wrap"  TextAlignment="Center">
+                            </TextBlock>
+                        </Label>
+                        <ComboBox x:Name="ddlLifxLights" DisplayMemberPath="Name" Visibility="Collapsed"  HorizontalAlignment="Left" Margin="137,234,0,0" VerticalAlignment="Top" Width="120"/>
+                        <Image x:Name="imgLifxLoading" Visibility="Collapsed" gif:ImageBehavior.AnimatedSource="Icons/loading.gif" Width="75" Margin="160,17,49,-17" />
+                        <Button Height="45" Width="170" Content="Save" Margin="0,250,1,69" Click="SaveLifxSettings_Click"/>
+                    </Grid>
                 </Grid>
             </TabItem>
             <TabItem Header="Settings" >
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="85*"/>
-                        <ColumnDefinition Width="31*"/>
-                        <ColumnDefinition Width="270*"/>
+                        <ColumnDefinition Width="87*"/>
+                        <ColumnDefinition Width="32*"/>
+                        <ColumnDefinition Width="91*"/>
+                        <ColumnDefinition Width="184*"/>
                     </Grid.ColumnDefinitions>
-                    <Label Content="Azure App Client ID" Margin="5,34,199.667,319" Grid.ColumnSpan="3"/>
-                    <TextBox Text="{Binding ClientId}" x:Name="clientId" HorizontalAlignment="Left" Height="23" Margin="14.343,34,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="230" Grid.Column="2"/>
+                    <Label Content="Azure App Client ID" Margin="5,34,16,319" Grid.ColumnSpan="3"/>
+                    <TextBox Text="{Binding ClientId}" x:Name="clientId" HorizontalAlignment="Left" Height="23" Margin="15,34,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="230" Grid.Column="2" Grid.ColumnSpan="2"/>
 
-                    <Label Content="Azure App Tenant ID" Margin="5,62,199.667,291" Grid.ColumnSpan="3"/>
-                    <TextBox Text="{Binding TenantId}" x:Name="tenantId" HorizontalAlignment="Left" Height="23" Margin="14.343,62,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="230" Grid.Column="2"/>
+                    <Label Content="Azure App Tenant ID" Margin="5,62,16,291" Grid.ColumnSpan="3"/>
+                    <TextBox Text="{Binding TenantId}" x:Name="tenantId" HorizontalAlignment="Left" Height="23" Margin="15,62,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="230" Grid.Column="2" Grid.ColumnSpan="2"/>
 
-                    <Label Content="Icon Type" Margin="5,97,187.667,254" Grid.ColumnSpan="3"/>
-                    <RadioButton GroupName="IconType" x:Name="Transparent" Content="Transparent" HorizontalAlignment="Left" Margin="14.343,104,0,0" VerticalAlignment="Top" Height="27" Grid.Column="2"/>
-                    <RadioButton GroupName="IconType" x:Name="White" Content="White" HorizontalAlignment="Left" Margin="14.343,137,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.43,-0.627" Height="23" Grid.Column="2"/>
-                    <Button Height="45" Width="170" Content="Save" Margin="5.667,280,89.667,58" Click="SaveSettings_Click" Grid.Column="1" Grid.ColumnSpan="2"/>
-                    <Label x:Name="lblSettingSaved" Visibility="Collapsed" Content="Settings Updated" Foreground="Green" Margin="23.343,341,135.667,10" Grid.Column="2"/>
+                    <Label Content="Icon Type" Margin="5,97,4,254" Grid.ColumnSpan="3"/>
+                    <RadioButton GroupName="IconType" x:Name="Transparent" Content="Transparent" HorizontalAlignment="Left" Margin="15,104,0,0" VerticalAlignment="Top" Height="27" Grid.Column="2" Grid.ColumnSpan="2"/>
+                    <RadioButton GroupName="IconType" x:Name="White" Content="White" HorizontalAlignment="Left" Margin="15,137,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.43,-0.627" Height="23" Grid.Column="2"/>
+                    <Button Height="45" Width="170" Content="Save" Margin="-106,250,1,69" Click="SaveSettings_Click" Grid.ColumnSpan="4" Grid.Column="1"/>
+                    <Label x:Name="lblSettingSaved" Visibility="Collapsed" Content="Settings Updated" Foreground="Green" Margin="24,341,136,10" Grid.Column="2" Grid.ColumnSpan="2"/>
                 </Grid>
             </TabItem>
 

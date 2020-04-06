@@ -6,6 +6,8 @@ namespace PresenceLight.Core
     {
         public string ClientId { get; set; }
 
+        public string LifxApiKey { get; set; }
+
         public string ClientSecret { get; set; }
 
         public string Domain { get; set; }
@@ -19,5 +21,9 @@ namespace PresenceLight.Core
         public string SelectedLightId { get; set; }
         public string HueIpAddress { get; set; }
         public string IconType { get; set; }
+
+        public bool IsLifxEnabled { get; set; }
+
+        public bool IsPhillipsEnabled { get; set; }
     }
 }

@@ -38,6 +38,7 @@ namespace PresenceLight
             services.Configure<ConfigWrapper>(Configuration);
             services.AddSingleton<IGraphService, GraphService>();
             services.AddSingleton<IHueService, HueService>();
+            services.AddSingleton<LifxService, LifxService>();
             services.AddSingleton<MainWindow>();
 
             DiagnosticsClient.Initialize();
