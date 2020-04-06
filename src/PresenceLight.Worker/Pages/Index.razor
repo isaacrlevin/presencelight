@@ -13,7 +13,6 @@
 @using Microsoft.AspNetCore.Authorization;
 @using System.Threading;
 @using System.Security.Claims;
-@using PresenceLight.Worker.Models
 @inject AppState appState
 @inject PresenceLight.Core.IHueService _hueService
 @inject TokenProvider _store
@@ -48,39 +47,39 @@
         InvokeAsync(StateHasChanged);
     }
 
-    private async Task BuildAuth()
-    {
-        string responseString = "";
-        try
-        {
-            // Retrieve the token with the specified scopes
-            var scope = Config.CurrentValue.ApiScopes.Split(' ');
-            string signedInUserID = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+    //private async Task BuildAuth()
+    //{
+    //    string responseString = "";
+    //    try
+    //    {
+    //        // Retrieve the token with the specified scopes
+    //        var scope = Config.CurrentValue.ApiScopes.Split(' ');
+    //        string signedInUserID = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-            IConfidentialClientApplication cca =
-            ConfidentialClientApplicationBuilder.Create(Config.CurrentValue.ClientId)
-            .WithRedirectUri(Config.CurrentValue.RedirectUri)
-            .WithAuthority(Config.CurrentValue.Authority)
-            .WithClientSecret(Config.CurrentValue.ClientSecret)
-            .Build();
+    //        IConfidentialClientApplication cca =
+    //        ConfidentialClientApplicationBuilder.Create(Config.CurrentValue.ClientId)
+    //        .WithRedirectUri(Config.CurrentValue.RedirectUri)
+    //        .WithAuthority(Config.CurrentValue.Authority)
+    //        .WithClientSecret(Config.CurrentValue.ClientSecret)
+    //        .Build();
 
-            new MSALStaticCache(signedInUserID, _httpContextAccessor.HttpContext).EnablePersistence(cca.UserTokenCache);
+    //        new MSALStaticCache(signedInUserID, _httpContextAccessor.HttpContext).EnablePersistence(cca.UserTokenCache);
 
-            var accounts = await cca.GetAccountsAsync();
-            AuthenticationResult result = await cca.AcquireTokenSilent(scope, accounts.FirstOrDefault())
-            .ExecuteAsync();
+    //        var accounts = await cca.GetAccountsAsync();
+    //        AuthenticationResult result = await cca.AcquireTokenSilent(scope, accounts.FirstOrDefault())
+    //        .ExecuteAsync();
 
-            var user = await GetUserInformation(result.AccessToken);
-        }
-        catch (MsalUiRequiredException ex)
-        {
-            responseString = $"Session has expired. Please sign in again. {ex.Message}";
-        }
-        catch (Exception ex)
-        {
-            responseString = $"Error calling API: {ex.Message}";
-        }
-    }
+    //        var user = await GetUserInformation(result.AccessToken);
+    //    }
+    //    catch (MsalUiRequiredException ex)
+    //    {
+    //        responseString = $"Session has expired. Please sign in again. {ex.Message}";
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        responseString = $"Error calling API: {ex.Message}";
+    //    }
+    //}
 
     private async Task GetData()
     {
