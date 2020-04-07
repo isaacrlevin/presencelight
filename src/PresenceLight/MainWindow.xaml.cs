@@ -209,6 +209,9 @@ namespace PresenceLight
                     hueIpAddress.IsEnabled = true;
                     clientId.IsEnabled = true;
                     tenantId.IsEnabled = true;
+
+                    await _hueService.SetColor("Off", Config.SelectedLightId);
+                    await _lifxService.SetColor("Off");
                 }
                 catch (MsalException)
                 {
@@ -610,6 +613,8 @@ namespace PresenceLight
 
         protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
         {
+            _hueService.SetColor("Off", Config.SelectedLightId);
+            _lifxService.SetColor("Off");
             this.Hide();
             e.Cancel = true;
         }
