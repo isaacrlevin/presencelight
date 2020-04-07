@@ -85,7 +85,7 @@
                             <TextBlock  x:Name="lblHueMessage" TextWrapping="Wrap"  TextAlignment="Center">
                             </TextBlock>
                         </Label>
-                        <ComboBox x:Name="ddlHueLights" DisplayMemberPath="Name" Visibility="Collapsed" SelectionChanged="ddlHueLights_SelectionChanged"  HorizontalAlignment="Center" Margin="0,234,0,0" VerticalAlignment="Top" Width="120"/>
+                        <ComboBox x:Name="ddlHueLights" DisplayMemberPath="Name" Visibility="Collapsed" SelectionChanged="ddlHueLights_SelectionChanged"  HorizontalAlignment="Center" Margin="0,250,0,0" VerticalAlignment="Top" Width="120"/>
                         <Image x:Name="imgLoading" Visibility="Collapsed" gif:ImageBehavior.AnimatedSource="Icons/loading.gif" Width="75" Margin="143,17,143,-17" />
                         <Button Height="45" Width="170" Content="Save" Margin="0,250,1,69" Click="SaveHueSettings_Click"/>
                     </Grid>
@@ -177,7 +177,7 @@
                     <TextBlock Grid.Row="2" FontSize="15" x:Name="packageVersion" Grid.Column="1" Margin="20,0,0,0" VerticalAlignment="Center" />
 
                     <Label Grid.Row="3" FontSize="15" Content="Installed from" Target="{Binding ElementName=installedFrom}" VerticalAlignment="Center" />
-                    <TextBlock Grid.Row="3" FontSize="15" x:Name="installedFrom" Grid.Column="1" Margin="20,0,0,0" VerticalAlignment="Center"  />
+                    <TextBlock Grid.Row="3" FontSize="15" TextWrapping="Wrap" x:Name="installedFrom" Grid.Column="1" Margin="20,0,0,0" VerticalAlignment="Center"  />
 
                     <Label Grid.Row="4" FontSize="15" Content="AssemblyVersion" Target="{Binding ElementName=assemblyVersion}" VerticalAlignment="Center" />
                     <TextBlock Grid.Row="4" FontSize="15" x:Name="assemblyVersion" Grid.Column="1" Margin="20,0,0,0" VerticalAlignment="Center" />
