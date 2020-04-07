@@ -552,9 +552,9 @@ namespace PresenceLight
             {
                 try
                 {
-                    ddlLifxLights.ItemsSource = await _lifxService.GetLightsAsync();
                     _options.LifxApiKey = lifxApiKey.Text;
                     Config.LifxApiKey = lifxApiKey.Text;
+                    ddlLifxLights.ItemsSource = await _lifxService.GetLightsAsync();
 
                     lblLifxMessage.Text = "Connected to Lifx Light";
                     fontBrush.Color = MapColor("#009933");
@@ -617,12 +617,6 @@ namespace PresenceLight
         private void TabControl_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             lblSettingSaved.Visibility = Visibility.Collapsed;
-        }
-
-        private void ddlHueLights_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            //Config.SelectedLightId = ((Light)ddlHueLights.SelectedItem).Id;
-            //_options.SelectedLightId = Config.SelectedLightId;
         }
     }
 }
