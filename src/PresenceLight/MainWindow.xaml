@@ -78,14 +78,14 @@
                     <CheckBox x:Name="cbIsPhillipsEnabled" IsChecked="{Binding IsPhillipsEnabled}" Content="Connect to Phillips Light" Grid.Column="1" Grid.ColumnSpan="4" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbIsPhillipsEnabledChanged" Checked="cbIsPhillipsEnabledChanged" />
                     <Grid x:Name="pnlPhillips"  Grid.Column="1" Grid.ColumnSpan="4">
                         <Button x:Name="btnRegister" Height="45" Width="170" Content="Register Bridge" Margin="0,60,1,193" Click="RegisterBridge_Click"/>
-                        <Label Content="Hue Bridge IP Address" Margin="0,60,90,244"/>
+                        <Label  Content="Hue Bridge IP Address" Margin="0,60,426,244"/>
                         <TextBox Text="{Binding HueIpAddress}" x:Name="hueIpAddress" HorizontalAlignment="Left" Height="23" Margin="150,60,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" TextChanged="HueIpAddress_TextChanged"/>
                         <Button Height="23" Width="120" Content="Find Bridge" Margin="165,-245,0,0" Click="FindBridge_Click"/>
                         <Label Margin="5,158,5,172" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Center" >
-                            <TextBlock  x:Name="lblMessage" TextWrapping="Wrap"  TextAlignment="Center">
+                            <TextBlock  x:Name="lblHueMessage" TextWrapping="Wrap"  TextAlignment="Center">
                             </TextBlock>
                         </Label>
-                        <ComboBox x:Name="ddlLights" DisplayMemberPath="Name" Visibility="Collapsed"  HorizontalAlignment="Center" Margin="0,234,0,0" VerticalAlignment="Top" Width="120"/>
+                        <ComboBox x:Name="ddlHueLights" DisplayMemberPath="Name" Visibility="Collapsed" SelectionChanged="ddlHueLights_SelectionChanged"  HorizontalAlignment="Center" Margin="0,234,0,0" VerticalAlignment="Top" Width="120"/>
                         <Image x:Name="imgLoading" Visibility="Collapsed" gif:ImageBehavior.AnimatedSource="Icons/loading.gif" Width="75" Margin="143,17,143,-17" />
                         <Button Height="45" Width="170" Content="Save" Margin="0,250,1,69" Click="SaveHueSettings_Click"/>
                     </Grid>
@@ -105,7 +105,7 @@
                         <Label Content="Lifx Api Key" Margin="0,60,90,244"/>
                         <TextBox Text="{Binding LifxApiKey}" x:Name="lifxApiKey" HorizontalAlignment="Left" Height="23" Margin="100,60,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="450" Grid.ColumnSpan="2"/>
                         <Button x:Name="btnCheckLifxKey" Height="45" Width="170" Content="Check Lifx Key" Margin="0,60,1,193" Click="CheckLifx_Click"/>
-                        <Label Margin="192,250,0,129" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Left" >
+                        <Label Margin="210,170,5,172" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Left" >
                             <TextBlock  x:Name="lblLifxMessage" TextWrapping="Wrap"  TextAlignment="Center">
                             </TextBlock>
                         </Label>
