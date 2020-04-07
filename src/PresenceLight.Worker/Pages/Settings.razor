@@ -1,0 +1,36 @@
+﻿@page "/settings"
+
+@using PresenceLight.Core
+@using Microsoft.Extensions.Options
+@using Newtonsoft.Json
+@inject IOptionsMonitor<ConfigWrapper> Config
+<h1>Settings</h1>
+
+
+
+<table style="width:50%">
+    <tr>
+        <td>Azure App Client Id</td>
+        <td style="width:50%">
+            <input style="width:100%" @bind="Config.CurrentValue.ClientId" type="text" id="clientId" />
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Azure App Tenant Id
+        </td>
+        <td style="width:50%">
+            <input style="width:100%" @bind="Config.CurrentValue.TenantId" type="text" id="tenantId" />
+        </td>
+    </tr>
+</table>
+
+<button @onclick="SaveSettings" class="btn btn-primary">Save</button>
+@code {
+
+
+    void SaveSettings()
+    {
+        System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/AADSettings.json", JsonConvert.SerializeObject(Config.CurrentValue));
+    }
+}

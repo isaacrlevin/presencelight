@@ -109,7 +109,6 @@ namespace PresenceLight.Core
             }
             return String.Empty;
         }
-
         public async Task<IEnumerable<Light>> CheckLights()
         {
             if (_client == null)

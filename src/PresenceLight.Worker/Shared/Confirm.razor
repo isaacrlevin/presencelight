@@ -1,0 +1,10 @@
+﻿<div>
+    <button @onclick="Close" class="btn btn-primary">Ok</button>
+</div>
+
+@code {
+
+    [CascadingParameter] BlazoredModalInstance BlazoredModal { get; set; }
+
+    void Close() => BlazoredModal.Close(ModalResult.Ok(true));
+}

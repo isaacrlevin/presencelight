@@ -471,6 +471,11 @@ namespace PresenceLight
             {
                 return false;
             }
+
+            _options.ClientId = Config.ClientId;
+            _options.TenantId = Config.TenantId;
+            _options.RedirectUri = Config.RedirectUri;
+
             return true;
         }
 

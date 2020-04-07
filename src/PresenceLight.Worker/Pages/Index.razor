@@ -1,0 +1,186 @@
+﻿@page "/"
+
+@using PresenceLight.Core
+@using Microsoft.Graph;
+@using System;
+@using System.Net;
+@using System.Net.Http;
+@using System.Net.Http.Headers;
+@using System.Threading.Tasks;
+@using Microsoft.Identity.Client;
+@using Newtonsoft.Json;
+@using Microsoft.Extensions.Options
+@using Microsoft.AspNetCore.Authorization;
+@using System.Threading;
+@using System.Security.Claims;
+@inject AppState appState
+@inject PresenceLight.Core.IHueService _hueService
+@inject TokenProvider _store
+@inject IOptionsMonitor<ConfigWrapper> Config
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor _httpContextAccessor
+<h1>@appState.User?.DisplayName</h1>
+
+<div class="container">
+    <img class="image" src="@appState.ProfileImage" />
+    <div class="circle bottom-right @appState.Presence?.Availability"></div>
+</div>
+
+@code {
+
+    protected override void OnInitialized()
+    {
+        appState.OnChange += RaiseStateHasChanged;
+
+        //Task.Run(() => BuildAuth());
+        //Task.Run(() => GetData());
+
+        appState.SetToken(_store.AccessToken);
+    }
+
+    public void Dispose()
+    {
+        appState.OnChange -= RaiseStateHasChanged;
+    }
+
+    private void RaiseStateHasChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    //private async Task BuildAuth()
+    //{
+    //    string responseString = "";
+    //    try
+    //    {
+    //        // Retrieve the token with the specified scopes
+    //        var scope = Config.CurrentValue.ApiScopes.Split(' ');
+    //        string signedInUserID = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+    //        IConfidentialClientApplication cca =
+    //        ConfidentialClientApplicationBuilder.Create(Config.CurrentValue.ClientId)
+    //        .WithRedirectUri(Config.CurrentValue.RedirectUri)
+    //        .WithAuthority(Config.CurrentValue.Authority)
+    //        .WithClientSecret(Config.CurrentValue.ClientSecret)
+    //        .Build();
+
+    //        new MSALStaticCache(signedInUserID, _httpContextAccessor.HttpContext).EnablePersistence(cca.UserTokenCache);
+
+    //        var accounts = await cca.GetAccountsAsync();
+    //        AuthenticationResult result = await cca.AcquireTokenSilent(scope, accounts.FirstOrDefault())
+    //        .ExecuteAsync();
+
+    //        var user = await GetUserInformation(result.AccessToken);
+    //    }
+    //    catch (MsalUiRequiredException ex)
+    //    {
+    //        responseString = $"Session has expired. Please sign in again. {ex.Message}";
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        responseString = $"Error calling API: {ex.Message}";
+    //    }
+    //}
+
+    private async Task GetData()
+    {
+
+        HttpClient Client = new HttpClient();
+
+        var token = _store.AccessToken;
+
+        var user = await GetUserInformation(token);
+
+        var photo = await GetPhotoAsBase64Async(token);
+
+        var presence = await GetPresence(token);
+
+        appState.SetUserInfo(user, photo, presence);
+
+        if (!string.IsNullOrEmpty(Config.CurrentValue.HueApiKey) && !string.IsNullOrEmpty(Config.CurrentValue.HueIpAddress) && !string.IsNullOrEmpty(Config.CurrentValue.SelectedLightId))
+        {
+            await _hueService.SetColor(presence.Availability, Config.CurrentValue.SelectedLightId);
+        }
+
+        while (true)
+        {
+
+            presence = await GetPresence(token);
+
+            appState.SetPresence(presence);
+
+            if (!string.IsNullOrEmpty(Config.CurrentValue.HueApiKey) && !string.IsNullOrEmpty(Config.CurrentValue.HueIpAddress) && !string.IsNullOrEmpty(Config.CurrentValue.SelectedLightId))
+            {
+                await _hueService.SetColor(presence.Availability, Config.CurrentValue.SelectedLightId);
+            }
+
+            Thread.Sleep(5000);
+        }
+    }
+
+    public async Task<User>
+    GetUserInformation(string accessToken)
+    {
+        HttpClient httpClient = new HttpClient();
+
+        httpClient.DefaultRequestHeaders.Authorization =
+        new AuthenticationHeaderValue("Bearer",
+        accessToken);
+        var response = await httpClient.GetAsync($"https://graph.microsoft.com//beta/me");
+        if (response.StatusCode == HttpStatusCode.OK)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            var me = JsonConvert.DeserializeObject<User>
+                (content);
+
+            return me;
+        }
+
+        throw new
+        HttpRequestException($"Invalid status code in the HttpResponseMessage: {response.StatusCode}.");
+    }
+
+    public async Task<string>
+        GetPhotoAsBase64Async(string accessToken)
+    {
+        HttpClient httpClient = new HttpClient();
+        httpClient.DefaultRequestHeaders.Authorization =
+        new AuthenticationHeaderValue("Bearer",
+        accessToken);
+
+        var response = await httpClient.GetAsync($"https://graph.microsoft.com/beta/me/photo/$value");
+        if (response.StatusCode == HttpStatusCode.OK)
+        {
+            byte[] photo = await response.Content.ReadAsByteArrayAsync();
+            var base64 = Convert.ToBase64String(photo);
+            var photoBase64 = String.Format("data:image/gif;base64,{0}", base64);
+
+            return photoBase64;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    public async Task<Presence>
+        GetPresence(string accessToken)
+    {
+        HttpClient httpClient = new HttpClient();
+        httpClient.DefaultRequestHeaders.Authorization =
+        new AuthenticationHeaderValue("Bearer",
+        accessToken);
+
+        var response = await httpClient.GetAsync($"https://graph.microsoft.com//beta/me/presence");
+        if (response.StatusCode == HttpStatusCode.OK)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            var me = JsonConvert.DeserializeObject<Presence>
+                (content);
+
+            return me;
+        }
+
+        throw new
+        HttpRequestException($"Invalid status code in the HttpResponseMessage: {response.StatusCode}.");
+    }
+}
