@@ -12,6 +12,7 @@ namespace PresenceLight.Core
 
         public string Instance { get; set; }
         public string TenantId { get; set; }
+
         public string RedirectUri { get; set; }
         public string CallbackPath { get; set; }
         public string HueApiKey { get; set; }

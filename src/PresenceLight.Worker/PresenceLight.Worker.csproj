@@ -4,6 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UserSecretsId>dotnet-PresenceLight.Worker-DA5AA2C7-D1D6-45F0-8DAE-43751E7DCAD6</UserSecretsId>
     <LangVersion>8.0</LangVersion>
+    <AssemblyName>PresenceLight</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

@@ -87,6 +87,12 @@ namespace PresenceLight
             }
 
             Config = await SettingsService.LoadSettings();
+
+            if (string.IsNullOrEmpty(Config.RedirectUri))
+            {
+                await SettingsService.DeleteSettings();
+                await SettingsService.SaveSettings(_options);
+            }
             if (!string.IsNullOrEmpty(Config.HueApiKey))
             {
                 _options.HueApiKey = Config.HueApiKey;
@@ -137,7 +143,7 @@ namespace PresenceLight
                 try
                 {
                     presence = await System.Threading.Tasks.Task.Run(() => GetPresence());
-                    if (!string.IsNullOrEmpty(Config.HueApiKey) && !string.IsNullOrEmpty(Config.HueIpAddress))
+                    if (!string.IsNullOrEmpty(Config.HueApiKey) && !string.IsNullOrEmpty(Config.HueIpAddress) && ddlLights.SelectedItem != null)
                     {
                         await _hueService.SetColor(presence.Availability, ((Light)ddlLights.SelectedItem).Id);
                     }
@@ -358,7 +364,6 @@ namespace PresenceLight
                 ddlLights.Visibility = Visibility.Visible;
                 imgLoading.Visibility = Visibility.Collapsed;
                 lblMessage.Visibility = Visibility.Visible;
-                await SettingsService.SaveSettings(Config);
             }
             catch (Exception ex)
             {
@@ -430,6 +435,15 @@ namespace PresenceLight
                 }
                 else
                 {
+                    if (string.IsNullOrEmpty(Config.HueIpAddress))
+                    {
+                        Config.HueIpAddress = hueIpAddress.Text;
+                    }
+
+                    if (string.IsNullOrEmpty(_options.HueIpAddress))
+                    {
+                        _options.HueIpAddress = hueIpAddress.Text;
+                    }
                     btnRegister.IsEnabled = true;
                     if (string.IsNullOrEmpty(Config.HueApiKey))
                     {
@@ -474,9 +488,9 @@ namespace PresenceLight
             return true;
         }
 
-        private async void Window_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        private async void FindBridge_Click(object sender, RoutedEventArgs e)
         {
-            await SettingsService.SaveSettings(Config);
+            hueIpAddress.Text = await _hueService.FindBridge();
         }
     }
 }
