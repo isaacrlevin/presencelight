@@ -105,7 +105,7 @@
                         <Label Content="Lifx Api Key" Margin="0,60,90,244"/>
                         <TextBox Text="{Binding LifxApiKey}" x:Name="lifxApiKey" HorizontalAlignment="Left" Height="23" Margin="100,60,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="450" Grid.ColumnSpan="2"/>
                         <Button x:Name="btnCheckLifxKey" Height="45" Width="170" Content="Check Lifx Key" Margin="0,60,1,193" Click="CheckLifx_Click"/>
-                        <Label Margin="210,170,5,172" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Left" >
+                        <Label Margin="150,170,5,172" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Left" >
                             <TextBlock  x:Name="lblLifxMessage" TextWrapping="Wrap"  TextAlignment="Center">
                             </TextBlock>
                         </Label>

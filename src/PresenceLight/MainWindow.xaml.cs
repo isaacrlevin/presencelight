@@ -618,5 +618,11 @@ namespace PresenceLight
         {
             lblSettingSaved.Visibility = Visibility.Collapsed;
         }
+
+        private void ddlHueLights_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Config.SelectedLightId = ((Light)ddlHueLights.SelectedItem).Id;
+            _options.SelectedLightId = Config.SelectedLightId;
+        }
     }
 }
