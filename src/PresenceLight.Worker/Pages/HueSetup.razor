@@ -1,0 +1,134 @@
+﻿@page "/hue"
+
+@using Newtonsoft.Json
+@using PresenceLight.Core
+@using Microsoft.Extensions.Options
+@inject IHueService _hueService
+@inject AppState appState
+@inject IModalService Modal
+@inject IOptionsMonitor<ConfigWrapper> Config
+
+
+
+<h1>Hue Setup</h1>
+
+
+
+<EditForm Model="@tempConfig" OnValidSubmit="RegisterBridge">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <InputText id="name" @bind-Value="@tempConfig.HueIpAddress" />
+    <br />
+    <br />
+    <button class="btn btn-primary" type="submit">Register Bridge</button>
+</EditForm>
+
+<br />
+<br />
+
+@ResultMessage
+
+<p>
+    @if (appState.Lights != null)
+    {
+        <div class="form-group">
+            <select class="form-control" @onchange="OnChange" style="width:20%">
+                <option disabled="disabled">Select</option>
+                @foreach (var light in appState.Lights)
+                {
+                    @if (tempConfig.SelectedLightId == light.Id)
+                    {
+                        <option selected="selected" value=@light.Id>@light.Name</option>
+                    }
+                    else
+                    {
+                        <option value=@light.Id>@light.Name</option>
+                    }
+                }
+            </select>
+        </div>
+    }
+</p>
+
+<br />
+
+<button class="btn btn-primary" @onclick="Save">Save</button>
+
+
+@code {
+
+    private ConfigWrapper tempConfig;
+
+    private void Save()
+    {
+        System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/AADSettings.json", JsonConvert.SerializeObject(Config.CurrentValue));
+        _hueService = new HueService(Config.CurrentValue);
+    }
+
+    private string ResultMessage;
+
+    async Task RegisterBridge()
+    {
+        var formModal = Modal.Show<Confirm>("Please press the sync button on your Phillips Hue Bridge");
+        var result = await formModal.Result;
+
+        if (result.Cancelled)
+        {
+            Console.WriteLine("Modal was cancelled");
+        }
+        else
+        {
+            try
+            {
+                tempConfig.HueApiKey = await _hueService.RegisterBridge();
+            }
+            catch
+            {
+                ResultMessage = "Error Occured registering bridge, please try again";
+            }
+
+            if (!string.IsNullOrEmpty(tempConfig.HueApiKey))
+            {
+                ResultMessage = "App Registered with Bridge";
+            }
+
+            Config.CurrentValue.HueIpAddress = tempConfig.HueIpAddress;
+            Config.CurrentValue.HueApiKey = tempConfig.HueApiKey;
+
+            System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/AADSettings.json", JsonConvert.SerializeObject(Config.CurrentValue));
+
+            appState.SetLights(await _hueService.CheckLights());
+        }
+    }
+
+    private void OnChange(ChangeEventArgs e)
+    {
+        var light = e.Value.ToString();
+        tempConfig.SelectedLightId = light;
+        Config.CurrentValue.SelectedLightId = light;
+        appState.SetLight(light);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        tempConfig = Config.CurrentValue;
+
+        if (!string.IsNullOrEmpty(tempConfig.HueIpAddress) && !string.IsNullOrEmpty(tempConfig.HueApiKey))
+        {
+            appState.SetLights(await _hueService.CheckLights());
+        }
+
+        appState.OnChange += RaiseStateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        appState.OnChange -= RaiseStateHasChanged;
+    }
+
+    private void RaiseStateHasChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+}

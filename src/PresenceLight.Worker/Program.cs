@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -22,18 +23,15 @@ namespace PresenceLight.Worker
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-            .UseWindowsService()
-             .ConfigureLogging(logging =>
-             {
-                 logging.AddEventLog();
-             })
-             .ConfigureServices((hostContext, services) =>
-             {
-                 services.AddOptions();
-                 services.Configure<ConfigWrapper>(hostContext.Configuration);
-                 services.AddSingleton<IGraphService, GraphService>();
-                 services.AddSingleton<IHueService, HueService>();
-                 services.AddHostedService<Worker>();
-             });
+                .ConfigureAppConfiguration((hostingContext, config) =>
+                {
+                    config.AddJsonFile(
+                    "AADSettings.json", optional: false, reloadOnChange: false);
+
+                })
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                });
     }
 }
