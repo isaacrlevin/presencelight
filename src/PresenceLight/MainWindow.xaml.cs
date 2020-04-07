@@ -626,8 +626,11 @@ namespace PresenceLight
 
         private void ddlHueLights_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Config.SelectedLightId = ((Light)ddlHueLights.SelectedItem).Id;
-            _options.SelectedLightId = Config.SelectedLightId;
+            if (ddlHueLights.SelectedItem != null)
+            {
+                Config.SelectedLightId = ((Light)ddlHueLights.SelectedItem).Id;
+                _options.SelectedLightId = Config.SelectedLightId;
+            }
         }
     }
 }
