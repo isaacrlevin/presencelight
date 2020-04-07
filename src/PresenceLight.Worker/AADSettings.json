@@ -1,14 +1,1 @@
-{
-  "ClientId": "",
-  "ClientSecret": "",
-  "Domain": "",
-  "Instance": "https://login.microsoftonline.com/",
-  "TenantId": "",
-  "RedirectUri": null,
-  "CallbackPath": "/signin-oidc",
-  "HueApiKey": "",
-  "HueIpAddress": "",
-  "IconType": "",
-  "SelectedLightId": "",
-  "ApiScopes": "User.Read offline_access"
-}
+{"ClientId":"c0e3adc5-3661-4fab-b2b4-3afd2323a1a0","ClientSecret":"-ljXI/f:h2BJxQQDINs0rJ[sLqYALe69","Domain":"","Instance":"https://login.microsoftonline.com/","TenantId":"2d18179c-4386-4cbd-8891-7fd867c4f62e","RedirectUri":"","CallbackPath":"/signin-oidc","HueApiKey":"cFbRwcFTTk3FfHSykZRUT76rkGeJzfjltBAVmGwL","Authority":"https://login.microsoftonline.com/2d18179c-4386-4cbd-8891-7fd867c4f62e","ApiScopes":"User.Read offline_access","SelectedLightId":"3","HueIpAddress":"192.168.1.33","IconType":""}
