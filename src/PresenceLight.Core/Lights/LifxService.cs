@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace PresenceLight.Core
 {
-   public class LifxService
+    public class LifxService
     {
         private readonly ConfigWrapper _options;
         private LifxCloudClient client;
@@ -48,8 +48,9 @@ namespace PresenceLight.Core
                     break;
             }
 
-            await client.SetAllState(new LifxCloud.NET.Models.SetStateRequest { 
-             color = color
+            var result = await client.SetAllState(new LifxCloud.NET.Models.SetStateRequest
+            {
+                color = color
             });
         }
     }

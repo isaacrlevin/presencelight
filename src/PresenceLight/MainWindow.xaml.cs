@@ -147,9 +147,9 @@ namespace PresenceLight
 
             MapUI(presence, profile, LoadImage(photo));
 
-            if (!string.IsNullOrEmpty(Config.HueApiKey) && !string.IsNullOrEmpty(Config.HueIpAddress) && ((Light)ddlLights.SelectedItem) != null)
+            if (!string.IsNullOrEmpty(Config.HueApiKey) && !string.IsNullOrEmpty(Config.HueIpAddress) && !string.IsNullOrEmpty(Config.SelectedLightId))
             {
-                await _hueService.SetColor(presence.Availability, ((Light)ddlLights.SelectedItem).Id);
+                await _hueService.SetColor(presence.Availability, Config.SelectedLightId);
             }
 
             if (Config.IsLifxEnabled && !string.IsNullOrEmpty(Config.LifxApiKey))
@@ -176,9 +176,9 @@ namespace PresenceLight
                 try
                 {
                     presence = await System.Threading.Tasks.Task.Run(() => GetPresence());
-                    if (!string.IsNullOrEmpty(Config.HueApiKey) && !string.IsNullOrEmpty(Config.HueIpAddress) && ddlLights.SelectedItem != null)
+                    if (!string.IsNullOrEmpty(Config.HueApiKey) && !string.IsNullOrEmpty(Config.HueIpAddress) && !string.IsNullOrEmpty(Config.SelectedLightId))
                     {
-                        await _hueService.SetColor(presence.Availability, ((Light)ddlLights.SelectedItem).Id);
+                        await _hueService.SetColor(presence.Availability, Config.SelectedLightId);
                     }
 
                     if (Config.IsLifxEnabled && !string.IsNullOrEmpty(Config.LifxApiKey))
@@ -404,11 +404,11 @@ namespace PresenceLight
 
                 if (!CheckHueIp())
                 {
-                    lblMessage.Text = "Valid IP Address Required";
+                    lblHueMessage.Text = "Valid IP Address Required";
                     fontBrush.Color = MapColor("#ff3300");
                     btnRegister.IsEnabled = false;
-                    ddlLights.Visibility = Visibility.Collapsed;
-                    lblMessage.Foreground = fontBrush;
+                    ddlHueLights.Visibility = Visibility.Collapsed;
+                    lblHueMessage.Foreground = fontBrush;
                 }
                 else
                 {
@@ -424,18 +424,27 @@ namespace PresenceLight
                     btnRegister.IsEnabled = true;
                     if (string.IsNullOrEmpty(Config.HueApiKey))
                     {
-                        lblMessage.Text = "Missing App Registration, please button on bridge than click 'Register Bridge'";
+                        lblHueMessage.Text = "Missing App Registration, please button on bridge than click 'Register Bridge'";
                         fontBrush.Color = MapColor("#ff3300");
-                        ddlLights.Visibility = Visibility.Collapsed;
-                        lblMessage.Foreground = fontBrush;
+                        ddlHueLights.Visibility = Visibility.Collapsed;
+                        lblHueMessage.Foreground = fontBrush;
                     }
                     else
                     {
-                        ddlLights.ItemsSource = await _hueService.CheckLights();
-                        ddlLights.Visibility = Visibility.Visible;
-                        lblMessage.Text = "App Registered with Bridge";
+                        ddlHueLights.ItemsSource = await _hueService.CheckLights();
+
+                        foreach (var item in ddlHueLights.Items)
+                        {
+                            var light = (Light)item;
+                            if (light.Id == Config.SelectedLightId)
+                            {
+                                ddlHueLights.SelectedItem = item;
+                            }
+                        }
+                        ddlHueLights.Visibility = Visibility.Visible;
+                        lblHueMessage.Text = "App Registered with Bridge";
                         fontBrush.Color = MapColor("#009933");
-                        lblMessage.Foreground = fontBrush;
+                        lblHueMessage.Foreground = fontBrush;
                     }
                 }
             }
@@ -492,30 +501,30 @@ namespace PresenceLight
             try
             {
                 imgLoading.Visibility = Visibility.Visible;
-                lblMessage.Visibility = Visibility.Collapsed;
+                lblHueMessage.Visibility = Visibility.Collapsed;
                 if (string.IsNullOrEmpty(_options.HueIpAddress))
                 {
                     _options.HueIpAddress = Config.HueIpAddress;
                 }
                 Config.HueApiKey = await _hueService.RegisterBridge();
-                ddlLights.ItemsSource = await _hueService.CheckLights();
+                ddlHueLights.ItemsSource = await _hueService.CheckLights();
                 _options.HueApiKey = Config.HueApiKey;
-                ddlLights.Visibility = Visibility.Visible;
+                ddlHueLights.Visibility = Visibility.Visible;
                 imgLoading.Visibility = Visibility.Collapsed;
-                lblMessage.Visibility = Visibility.Visible;
+                lblHueMessage.Visibility = Visibility.Visible;
             }
             catch (Exception ex)
             {
-                lblMessage.Text = "Error Occured registering bridge, please try again";
+                lblHueMessage.Text = "Error Occured registering bridge, please try again";
                 fontBrush.Color = MapColor("#ff3300");
-                lblMessage.Foreground = fontBrush;
+                lblHueMessage.Foreground = fontBrush;
             }
 
             if (!string.IsNullOrEmpty(Config.HueApiKey))
             {
-                lblMessage.Text = "App Registered with Bridge";
+                lblHueMessage.Text = "App Registered with Bridge";
                 fontBrush.Color = MapColor("#009933");
-                lblMessage.Foreground = fontBrush;
+                lblHueMessage.Foreground = fontBrush;
             }
 
             CheckHueSettings();
@@ -532,6 +541,8 @@ namespace PresenceLight
 
         private async void CheckLifx_Click(object sender, RoutedEventArgs e)
         {
+            SolidColorBrush fontBrush = new SolidColorBrush();
+
             if (!string.IsNullOrEmpty(lifxApiKey.Text))
             {
                 try
@@ -539,8 +550,24 @@ namespace PresenceLight
                     ddlLifxLights.ItemsSource = await _lifxService.GetLightsAsync();
                     _options.LifxApiKey = lifxApiKey.Text;
                     Config.LifxApiKey = lifxApiKey.Text;
+
+                    lblLifxMessage.Text = "Connected to Lifx Light";
+                    fontBrush.Color = MapColor("#009933");
+                    lblLifxMessage.Foreground = fontBrush;
                 }
-                catch { }
+                catch
+                {
+
+                    lblLifxMessage.Text = "Error Occured Connecting to Lifx, please try again";
+                    fontBrush.Color = MapColor("#ff3300");
+                    lblLifxMessage.Foreground = fontBrush;
+                }
+            }
+            else
+            {
+                lblLifxMessage.Text = "Valid IP Address Required";
+                fontBrush.Color = MapColor("#ff3300");
+                lblLifxMessage.Foreground = fontBrush;
             }
         }
 
@@ -585,6 +612,12 @@ namespace PresenceLight
         private void TabControl_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             lblSettingSaved.Visibility = Visibility.Collapsed;
+        }
+
+        private void ddlHueLights_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            //Config.SelectedLightId = ((Light)ddlHueLights.SelectedItem).Id;
+            //_options.SelectedLightId = Config.SelectedLightId;
         }
     }
 }
