@@ -6,18 +6,18 @@
         xmlns:local="clr-namespace:PresenceLight" xmlns:tb="http://www.hardcodet.net/taskbar"
         xmlns:Commands="clr-namespace:PresenceLight.Commands"
         xmlns:gif="http://wpfanimatedgif.codeplex.com"
-        mc:Ignorable="d" Title="Presence Light" Height="450" Width="600">
+        mc:Ignorable="d" Title="Presence Light" Height="550" Width="600">
     <Grid>
         <TabControl SelectionChanged="TabControl_SelectionChanged">
             <TabItem Header="Profile">
                 <Grid>
                     <Grid x:Name="configErrorPanel" Visibility="Hidden" >
-                        <Label Margin="0,130,4.667,200" RenderTransformOrigin="0.5,0.5" >
+                        <Label Margin="50,130,4.667,200" RenderTransformOrigin="0.5,0.5" >
                             <TextBlock TextWrapping="Wrap" TextAlignment="Center">
                               Your Application is not configured to login, please go to below link for more information.
                             </TextBlock>
                         </Label>
-                        <TextBlock Margin="163,179,163.667,183">           
+                        <TextBlock Margin="250,179,163.667,183">           
                             <Hyperlink NavigateUri="https://github.com/isaacrlevin/PresenceLight"  RequestNavigate="Hyperlink_RequestNavigate">
                                 Click here
                             </Hyperlink>
@@ -32,7 +32,7 @@
                         <Grid Margin="0,39,-0.333,-10">
                             <Label x:Name="userName" FontSize="40" MinHeight="120" Margin="5" FontFamily="Segoe Ui"/>
                             <Border BorderThickness="3" CornerRadius="10" Padding="2" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                <Grid>                                    
+                                <Grid>
                                     <Border Name="mask" Background="White" CornerRadius="100"/>
                                     <StackPanel>
                                         <StackPanel.OpacityMask>
@@ -62,7 +62,7 @@
                     </Grid>
                     <Grid x:Name="loadingPanel" Visibility="Collapsed">
                         <Image gif:ImageBehavior.AnimatedSource="Icons/loading.gif" Width="100" />
-                        <Label Content="If you are adding new lights, this may take up to a minute"  Margin="150,262,36.667,50"/>
+                        <Label Content="If you are adding new lights, this may take up to a minute"  Margin="150,300,36.667,50"/>
                     </Grid>
                 </Grid>
             </TabItem>
@@ -80,8 +80,8 @@
                         <Button x:Name="btnRegister" Height="45" Width="170" Content="Register Bridge" Margin="0,60,1,193" Click="RegisterBridge_Click"/>
                         <Label  Content="Hue Bridge IP Address" Margin="0,60,426,244"/>
                         <TextBox Text="{Binding HueIpAddress}" x:Name="hueIpAddress" HorizontalAlignment="Left" Height="23" Margin="150,60,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" TextChanged="HueIpAddress_TextChanged"/>
-                        <Button Height="23" Width="120" Content="Find Bridge" Margin="165,-245,0,0" Click="FindBridge_Click"/>
-                        <Label Margin="5,158,5,172" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Center" >
+                        <Button Height="23" Width="120" Content="Find Bridge" Margin="165,-340,0,0" Click="FindBridge_Click"/>
+                        <Label Margin="5,220,5,172" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Center" >
                             <TextBlock  x:Name="lblHueMessage" TextWrapping="Wrap"  TextAlignment="Center">
                             </TextBlock>
                         </Label>
@@ -105,7 +105,7 @@
                         <Label Content="Lifx Api Key" Margin="0,60,90,244"/>
                         <TextBox Text="{Binding LifxApiKey}" x:Name="lifxApiKey" HorizontalAlignment="Left" Height="23" Margin="100,60,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="450" Grid.ColumnSpan="2"/>
                         <Button x:Name="btnCheckLifxKey" Height="45" Width="170" Content="Check Lifx Key" Margin="0,60,1,193" Click="CheckLifx_Click"/>
-                        <Label Margin="150,170,5,172" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Left" >
+                        <Label Margin="150,220,5,172" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Left" >
                             <TextBlock  x:Name="lblLifxMessage" TextWrapping="Wrap"  TextAlignment="Center">
                             </TextBlock>
                         </Label>
@@ -133,7 +133,66 @@
                     <RadioButton GroupName="IconType" x:Name="Transparent" Content="Transparent" HorizontalAlignment="Left" Margin="15,104,0,0" VerticalAlignment="Top" Height="27" Grid.Column="2" Grid.ColumnSpan="2"/>
                     <RadioButton GroupName="IconType" x:Name="White" Content="White" HorizontalAlignment="Left" Margin="15,137,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.43,-0.627" Height="23" Grid.Column="2"/>
                     <Button Height="45" Width="170" Content="Save" Margin="-106,250,1,69" Click="SaveSettings_Click" Grid.ColumnSpan="4" Grid.Column="1"/>
-                    <Label x:Name="lblSettingSaved" Visibility="Collapsed" Content="Settings Updated" Foreground="Green" Margin="24,341,136,10" Grid.Column="2" Grid.ColumnSpan="2"/>
+                    <Label x:Name="lblSettingSaved" Visibility="Collapsed" Content="Settings Updated" Foreground="Green" Margin="70,360,136,10" Grid.Column="2" Grid.ColumnSpan="2"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="About" >
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="200" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+
+                    <Border Grid.Row="0" Grid.Column="1" Margin="0,50,0,0">
+                        <TextBlock FontSize="25" Text="Presence Light by Isaac Levin">
+                        </TextBlock>
+                    </Border>
+
+                    <Border Grid.Row="0" Grid.Column="1" Margin="0,100,0,0">
+                        <TextBlock>
+                            <Hyperlink FontSize="15" NavigateUri="https://github.com/isaacrlevin/presencelight" RequestNavigate="Hyperlink_RequestNavigate">
+                                https://github.com/isaacrlevin/presencelight
+                            </Hyperlink>
+                        </TextBlock>
+                    </Border>
+
+
+
+                    <Image HorizontalAlignment="Left" Height="100" Margin="45,45,0,0" Source="/Images/profileimage.jpg" VerticalAlignment="Top" Width="100"/>
+
+                    <Label Grid.Row="1" FontSize="15" Content="Package Name" Target="{Binding ElementName=packageName}" VerticalAlignment="Center" />
+                    <TextBlock Grid.Row="1" FontSize="15" x:Name="packageName" Grid.Column="1" Margin="20,0,0,0" VerticalAlignment="Center"  />
+
+                    <Label Grid.Row="2" FontSize="15" Content="Package Version" Target="{Binding ElementName=packageVersion}" VerticalAlignment="Center" />
+                    <TextBlock Grid.Row="2" FontSize="15" x:Name="packageVersion" Grid.Column="1" Margin="20,0,0,0" VerticalAlignment="Center" />
+
+                    <Label Grid.Row="3" FontSize="15" Content="Installed from" Target="{Binding ElementName=installedFrom}" VerticalAlignment="Center" />
+                    <TextBlock Grid.Row="3" FontSize="15" x:Name="installedFrom" Grid.Column="1" Margin="20,0,0,0" VerticalAlignment="Center"  />
+
+                    <Label Grid.Row="4" FontSize="15" Content="AssemblyVersion" Target="{Binding ElementName=assemblyVersion}" VerticalAlignment="Center" />
+                    <TextBlock Grid.Row="4" FontSize="15" x:Name="assemblyVersion" Grid.Column="1" Margin="20,0,0,0" VerticalAlignment="Center" />
+
+                    <Label Grid.Row="5" FontSize="15" Content="Install Location" Target="{Binding ElementName=installLocation}" />
+                    <TextBlock Grid.Row="5" FontSize="15" TextWrapping="Wrap" x:Name="installLocation" Margin="20,0,0,0" Grid.Column="1" VerticalAlignment="Center"  />
+
+
+                    <Button x:Name="ButtonShowRuntimeVersionInfo" FontSize="15" Grid.Row="6" Click="Button_Click" Height="40" Margin="0,20,0,0"  Width="210">Show Runtime Info</Button>
+                    <TextBlock x:Name="RuntimeVersionInfo" FontSize="15" Grid.Row="6" Grid.Column="1" Margin="20,20,0,0"  />
+
+                   
+                   
+
+
                 </Grid>
             </TabItem>
 
