@@ -6,8 +6,7 @@
         xmlns:local="clr-namespace:PresenceLight" xmlns:tb="http://www.hardcodet.net/taskbar"
         xmlns:Commands="clr-namespace:PresenceLight.Commands"
         xmlns:gif="http://wpfanimatedgif.codeplex.com"
-        mc:Ignorable="d" Title="Presence Light" Height="450" Width="400"
-        DataContextChanged="Window_DataContextChanged">
+        mc:Ignorable="d" Title="Presence Light" Height="450" Width="400">
     <Grid>
         <TabControl SelectionChanged="TabControl_SelectionChanged">
             <TabItem Header="Profile">
@@ -74,7 +73,8 @@
                 <Grid>
                     <Button x:Name="btnRegister" Height="45" Width="170" Content="Register Bridge" Margin="90,95,90,243" Click="RegisterBridge_Click"/>
                     <Label Content="Hue Bridge IP Address" Margin="5,34,200,319"/>
-                    <TextBox Text="{Binding HueIpAddress}" x:Name="hueIpAddress" HorizontalAlignment="Left" Height="23" Margin="203,39,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" TextChanged="HueIpAddress_TextChanged"/>
+                    <TextBox Text="{Binding HueIpAddress}" x:Name="hueIpAddress" HorizontalAlignment="Left" Height="23" Margin="203,39,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" TextChanged="HueIpAddress_TextChanged"/>  <Button Height="45" Width="170" Content="Save" Margin="90,280,90,58" Click="SaveHueSettings_Click"/>
+                    <Button Height="23" Width="120" Content="Find Bridge" Margin="165,-40,20,319" Click="FindBridge_Click"/>
                     <Label Margin="5,158,5,172" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Center" >
                         <TextBlock  x:Name="lblMessage" TextWrapping="Wrap"  TextAlignment="Center">
                         </TextBlock>
@@ -93,7 +93,7 @@
                         <ColumnDefinition Width="270*"/>
                     </Grid.ColumnDefinitions>
                     <Label Content="Azure App Client ID" Margin="5,34,199.667,319" Grid.ColumnSpan="3"/>
-                    <TextBox Text="{Binding ApplicationId}" x:Name="clientId" HorizontalAlignment="Left" Height="23" Margin="14.343,34,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="230" Grid.Column="2"/>
+                    <TextBox Text="{Binding ClientId}" x:Name="clientId" HorizontalAlignment="Left" Height="23" Margin="14.343,34,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="230" Grid.Column="2"/>
 
                     <Label Content="Azure App Tenant ID" Margin="5,62,199.667,291" Grid.ColumnSpan="3"/>
                     <TextBox Text="{Binding TenantId}" x:Name="tenantId" HorizontalAlignment="Left" Height="23" Margin="14.343,62,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="230" Grid.Column="2"/>

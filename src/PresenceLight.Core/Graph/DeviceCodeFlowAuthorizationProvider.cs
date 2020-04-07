@@ -1,5 +1,6 @@
 ﻿using Microsoft.Graph;
 using Microsoft.Identity.Client;
+using PresenceLight.Core.Graph;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

@@ -33,7 +33,7 @@ namespace PresenceLight.Core.Graph
         private IAuthenticationProvider CreateAuthorizationProvider(Type t)
         {
             var clientId = _options.ClientId;
-            var redirectUri = $"https://localhost:5001{_options.CallbackPath}";
+            var redirectUri = _options.RedirectUri;
             var authority = $"https://login.microsoftonline.com/{_options.TenantId}";
 
             List<string> scopes = new List<string>
