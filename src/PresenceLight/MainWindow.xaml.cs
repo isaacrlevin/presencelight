@@ -20,6 +20,7 @@ using Hardcodet.Wpf.TaskbarNotification;
 using System.Text.RegularExpressions;
 using Q42.HueApi;
 using System.Windows.Controls;
+using System.Windows.Documents;
 
 namespace PresenceLight
 {
@@ -42,6 +43,8 @@ namespace PresenceLight
         {
             InitializeComponent();
 
+            LoadAboutMe();
+
             _graphservice = graphService;
 
             _lifxService = lifxService;
@@ -63,6 +66,29 @@ namespace PresenceLight
                 notificationIcon.DataContext = tbContext;
             });
         });
+        }
+
+        private void LoadAboutMe()
+        {
+            packageName.Text = ThisAppInfo.GetDisplayName();
+            assemblyVersion.Text = ThisAppInfo.GetThisAssemblyVersion();
+            packageVersion.Text = ThisAppInfo.GetPackageVersion();
+            installedFrom.Text = ThisAppInfo.GetAppInstallerUri();
+            installLocation.Text = ThisAppInfo.GetInstallLocation();
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (ButtonShowRuntimeVersionInfo.Content.ToString().StartsWith("Show"))
+            {
+                RuntimeVersionInfo.Text = ThisAppInfo.GetDotNetRuntimeInfo();
+                ButtonShowRuntimeVersionInfo.Content = "Hide Runtime Info";
+            }
+            else
+            {
+                RuntimeVersionInfo.Text = "";
+                ButtonShowRuntimeVersionInfo.Content = "Show Runtime Info";
+            }
         }
 
         private void LoadApp()
@@ -210,8 +236,15 @@ namespace PresenceLight
                     clientId.IsEnabled = true;
                     tenantId.IsEnabled = true;
 
-                    await _hueService.SetColor("Off", Config.SelectedLightId);
-                    await _lifxService.SetColor("Off");
+                    if (Config.IsPhillipsEnabled && !string.IsNullOrEmpty(Config.HueApiKey) && !string.IsNullOrEmpty(Config.HueIpAddress) && !string.IsNullOrEmpty(Config.SelectedLightId))
+                    {
+                        await _hueService.SetColor("Off", Config.SelectedLightId);
+                    }
+
+                    if (Config.IsLifxEnabled && !string.IsNullOrEmpty(Config.LifxApiKey))
+                    {
+                        await _lifxService.SetColor("Off");
+                    }
                 }
                 catch (MsalException)
                 {
@@ -573,9 +606,23 @@ namespace PresenceLight
             }
             else
             {
-                lblLifxMessage.Text = "Valid IP Address Required";
+
+                Run run1 = new Run("Valid Lifx Key Required ");
+                Run run2 = new Run(" https://cloud.lifx.com/settings");
+
+                Hyperlink hyperlink = new Hyperlink(run2)
+                {
+                    NavigateUri = new Uri("https://cloud.lifx.com/settings")
+                };
+                hyperlink.RequestNavigate += new System.Windows.Navigation.RequestNavigateEventHandler(Hyperlink_RequestNavigate); //to be implemented
+                lblLifxMessage.Inlines.Clear();
+                lblLifxMessage.Inlines.Add(run1);
+                lblLifxMessage.Inlines.Add(hyperlink);
+
+
                 fontBrush.Color = MapColor("#ff3300");
                 lblLifxMessage.Foreground = fontBrush;
+
             }
         }
 
