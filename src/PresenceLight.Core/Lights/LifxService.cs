@@ -17,12 +17,18 @@ namespace PresenceLight.Core
             _options = optionsAccessor.CurrentValue;
         }
 
-        public async Task<List<Light>> GetLightsAsync()
+        public async Task<List<Light>> GetAllLightsAsync()
         {
             client = await LifxCloudClient.CreateAsync(_options.LifxApiKey);
-            return await client.ListLights();
+            return await client.ListLights(Selector.All);
         }
-        public async Task SetColor(string availability)
+
+        public async Task<List<Group>> GetAllGroupsAsync()
+        {
+            client = await LifxCloudClient.CreateAsync(_options.LifxApiKey);
+            return await client.ListGroups(Selector.All);
+        }
+        public async Task SetColor(string availability, Selector selector)
         {
             client = await LifxCloudClient.CreateAsync(_options.LifxApiKey);
             string color = "";
@@ -48,9 +54,9 @@ namespace PresenceLight.Core
                     break;
             }
 
-            var result = await client.SetAllState(new LifxCloud.NET.Models.SetStateRequest
+            var result = await client.SetState(selector,new LifxCloud.NET.Models.SetStateRequest
             {
-                color = color
+                Color = color
             });
         }
     }
