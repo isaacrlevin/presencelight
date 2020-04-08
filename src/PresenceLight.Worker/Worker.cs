@@ -4,13 +4,8 @@ using Microsoft.Extensions.Options;
 using Microsoft.Graph;
 using Newtonsoft.Json;
 using PresenceLight.Core;
-using PresenceLight.Core.Graph;
-using PresenceLight.Core.Helpers;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -26,12 +21,19 @@ namespace PresenceLight.Worker
         private readonly IHueService _hueService;
         private readonly AppState _appState;
         private readonly ILogger<Worker> _logger;
-        public Worker(IGraphService graphService, IHueService hueService, ILogger<Worker> logger, IOptionsMonitor<ConfigWrapper> optionsAccessor, AppState appState)
+        private readonly UserAuthService _userAuthService;
+
+        public Worker(IHueService hueService,
+                      ILogger<Worker> logger,
+                      IOptionsMonitor<ConfigWrapper> optionsAccessor,
+                      AppState appState,
+                      UserAuthService userAuthService)
         {
             Config = optionsAccessor.CurrentValue;
             _hueService = hueService;
             _logger = logger;
             _appState = appState;
+            _userAuthService = userAuthService;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -43,11 +45,11 @@ namespace PresenceLight.Worker
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                if (!string.IsNullOrEmpty(_appState.AccessToken))
+                if (await _userAuthService.IsUserAuthenticated())
                 {
                     try
                     {
-                        await GetData(_appState.AccessToken);
+                        await GetData();
                     }
                     catch { }
                     await Task.Delay(5000, stoppingToken);
@@ -84,8 +86,10 @@ namespace PresenceLight.Worker
             }
         }
 
-        private async Task GetData(string token)
+        private async Task GetData()
         {
+            var token = await _userAuthService.GetAccessToken();
+
             var user = await GetUserInformation(token);
 
             var photo = await GetPhotoAsBase64Async(token);
@@ -99,9 +103,9 @@ namespace PresenceLight.Worker
                 await _hueService.SetColor(presence.Availability, Config.SelectedLightId);
             }
 
-            while (true)
+            while (await _userAuthService.IsUserAuthenticated())
             {
-
+                token = await _userAuthService.GetAccessToken();
                 presence = await GetPresence(token);
 
                 _appState.SetPresence(presence);
@@ -113,6 +117,8 @@ namespace PresenceLight.Worker
 
                 Thread.Sleep(5000);
             }
+
+            _logger.LogInformation("User logged out, no longer polling for presence.");
         }
 
         public async Task<User> GetUserInformation(string accessToken)

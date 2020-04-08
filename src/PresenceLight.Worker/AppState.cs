@@ -25,14 +25,6 @@ namespace PresenceLight.Worker
 
         public Presence Presence { get; set; }
 
-        public string AccessToken { get; set; }
-
-        public void SetToken(string token)
-        {
-            AccessToken = token;
-            NotifyStateChanged();
-        }
-
         public void SetUserInfo(User user, string photo, Presence presence)
         {
             User = user;

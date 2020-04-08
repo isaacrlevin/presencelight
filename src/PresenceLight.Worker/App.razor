@@ -1,6 +1,4 @@
-﻿@inject TokenProvider TokensProvider
-
-<CascadingAuthenticationState>
+﻿<CascadingAuthenticationState>
     <Router AppAssembly="@typeof(Program).Assembly">
         <Found Context="routeData">
             <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
@@ -12,15 +10,3 @@
         </NotFound>
     </Router>
 </CascadingAuthenticationState>
-
-@code{
-    [Parameter] public InitialApplicationState InitialState { get; set; }
-
-    protected override Task OnInitializedAsync()
-    {
-        TokensProvider.AccessToken = InitialState.AccessToken;
-        TokensProvider.RefreshToken = InitialState.RefreshToken;
-
-        return base.OnInitializedAsync();
-    }
-}

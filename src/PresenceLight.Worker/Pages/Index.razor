@@ -7,17 +7,14 @@
 @using System.Net.Http;
 @using System.Net.Http.Headers;
 @using System.Threading.Tasks;
-@using Microsoft.Identity.Client;
 @using Newtonsoft.Json;
 @using Microsoft.Extensions.Options
-@using Microsoft.AspNetCore.Authorization;
 @using System.Threading;
-@using System.Security.Claims;
 @inject AppState appState
 @inject PresenceLight.Core.IHueService _hueService
-@inject TokenProvider _store
 @inject IOptionsMonitor<ConfigWrapper> Config
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor _httpContextAccessor
+@inject UserAuthService _userAuthService
 <h1>@appState.User?.DisplayName</h1>
 
 <div class="container">
@@ -27,14 +24,29 @@
 
 @code {
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         appState.OnChange += RaiseStateHasChanged;
+
+        // Handle server restarts
+        // In this case, the user's browser still has the auth cookie
+        // so the HttpContext is authenticated, and ASP.NET won't
+        // challenge the user. We need the challenge piece to go through
+        // so we can initialize MSAL properly in the OnAuthorizationCodeReceived
+        // event. This is because we're not persisting the token cache, so on restart it's empty.
+        // The alternative here would be to implement a proper storage for
+        // token cache serialization. Since this is running on a local box, and is cross-plat,
+        // doing this securely might be challenging.
+        bool isUserAuth = await _userAuthService.IsUserAuthenticated();
+        if (!isUserAuth)
+        {
+            await _httpContextAccessor.HttpContext.ChallengeAsync();
+        }
 
         //Task.Run(() => BuildAuth());
         //Task.Run(() => GetData());
 
-        appState.SetToken(_store.AccessToken);
+        //appState.SetToken(_store.AccessToken);
     }
 
     public void Dispose()
@@ -81,9 +93,9 @@
     //    }
     //}
 
+    /*
     private async Task GetData()
     {
-
         HttpClient Client = new HttpClient();
 
         var token = _store.AccessToken;
@@ -183,4 +195,5 @@
         throw new
         HttpRequestException($"Invalid status code in the HttpResponseMessage: {response.StatusCode}.");
     }
+    */
 }
