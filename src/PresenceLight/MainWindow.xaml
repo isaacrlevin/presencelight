@@ -104,12 +104,13 @@
                     <Grid x:Name="pnlLifx" Grid.Column="1" Grid.ColumnSpan="4">
                         <Label Content="Lifx Api Key" Margin="0,60,90,244"/>
                         <TextBox Text="{Binding LifxApiKey}" x:Name="lifxApiKey" HorizontalAlignment="Left" Height="23" Margin="100,60,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="450" Grid.ColumnSpan="2"/>
-                        <Button x:Name="btnCheckLifxKey" Height="45" Width="170" Content="Check Lifx Key" Margin="0,60,1,193" Click="CheckLifx_Click"/>
-                        <Label Margin="150,220,5,172" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Left" >
+                        <Button x:Name="btnGetLifxLights" Height="45" Width="170" Content="Get Lights" Margin="-200,60,1,193" Click="CheckLifx_Click"/>
+                        <Button x:Name="btnGetLifxGroups" Height="45" Width="170" Content="Get Groups" Margin="200,60,1,193" Click="CheckLifx_Click"/>
+                        <Label Margin="220,220,0,0" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Left" >
                             <TextBlock  x:Name="lblLifxMessage" TextWrapping="Wrap"  TextAlignment="Center">
                             </TextBlock>
                         </Label>
-                        <ComboBox x:Name="ddlLifxLights" DisplayMemberPath="Name" Visibility="Collapsed"  HorizontalAlignment="Left" Margin="137,234,0,0" VerticalAlignment="Top" Width="120"/>
+                        <ComboBox x:Name="ddlLifxLights" DisplayMemberPath="Label" Visibility="Collapsed"  HorizontalAlignment="Left" Margin="220,250,0,0" VerticalAlignment="Top" Width="120"/>
                         <Image x:Name="imgLifxLoading" Visibility="Collapsed" gif:ImageBehavior.AnimatedSource="Icons/loading.gif" Width="75" Margin="160,17,49,-17" />
                         <Button Height="45" Width="170" Content="Save" Margin="0,250,1,69" Click="SaveLifxSettings_Click"/>
                     </Grid>

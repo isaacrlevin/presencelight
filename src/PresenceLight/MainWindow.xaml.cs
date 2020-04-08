@@ -21,6 +21,7 @@ using System.Text.RegularExpressions;
 using Q42.HueApi;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using LifxCloud.NET.Models;
 
 namespace PresenceLight
 {
@@ -180,7 +181,7 @@ namespace PresenceLight
 
             if (Config.IsLifxEnabled && !string.IsNullOrEmpty(Config.LifxApiKey))
             {
-                await _lifxService.SetColor(presence.Availability);
+                await _lifxService.SetColor(presence.Availability, Selector.All);
             }
 
             loadingPanel.Visibility = Visibility.Collapsed;
@@ -209,7 +210,7 @@ namespace PresenceLight
 
                     if (Config.IsLifxEnabled && !string.IsNullOrEmpty(Config.LifxApiKey))
                     {
-                        await _lifxService.SetColor(presence.Availability);
+                        await _lifxService.SetColor(presence.Availability, Selector.All);
                     }
 
                     MapUI(presence, null, null);
@@ -243,7 +244,7 @@ namespace PresenceLight
 
                     if (Config.IsLifxEnabled && !string.IsNullOrEmpty(Config.LifxApiKey))
                     {
-                        await _lifxService.SetColor("Off");
+                        await _lifxService.SetColor("Off", Selector.All);
                     }
                 }
                 catch (MsalException)
@@ -471,7 +472,7 @@ namespace PresenceLight
 
                         foreach (var item in ddlHueLights.Items)
                         {
-                            var light = (Light)item;
+                            var light = (Q42.HueApi.Light)item;
                             if (light.Id == Config.SelectedLightId)
                             {
                                 ddlHueLights.SelectedItem = item;
@@ -590,15 +591,24 @@ namespace PresenceLight
                 {
                     _options.LifxApiKey = lifxApiKey.Text;
                     Config.LifxApiKey = lifxApiKey.Text;
-                    ddlLifxLights.ItemsSource = await _lifxService.GetLightsAsync();
 
-                    lblLifxMessage.Text = "Connected to Lifx Light";
+                    if (((System.Windows.Controls.Button)sender).Name == "btnGetLifxGroups")
+                    {
+                        ddlLifxLights.ItemsSource = await _lifxService.GetAllGroupsAsync();
+                    }
+                    else
+                    {
+                        ddlLifxLights.ItemsSource = await _lifxService.GetAllLightsAsync();
+                    }
+                       
+                    ddlLifxLights.Visibility = Visibility.Visible;
+                    lblLifxMessage.Text = "Connected to Lifx Cloud";
                     fontBrush.Color = MapColor("#009933");
                     lblLifxMessage.Foreground = fontBrush;
                 }
                 catch
                 {
-
+                    ddlLifxLights.Visibility = Visibility.Collapsed;
                     lblLifxMessage.Text = "Error Occured Connecting to Lifx, please try again";
                     fontBrush.Color = MapColor("#ff3300");
                     lblLifxMessage.Foreground = fontBrush;
@@ -661,7 +671,7 @@ namespace PresenceLight
         protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
         {
             _hueService.SetColor("Off", Config.SelectedLightId);
-            _lifxService.SetColor("Off");
+            _lifxService.SetColor("Off", Selector.All);
             this.Hide();
             e.Cancel = true;
         }
@@ -675,7 +685,7 @@ namespace PresenceLight
         {
             if (ddlHueLights.SelectedItem != null)
             {
-                Config.SelectedLightId = ((Light)ddlHueLights.SelectedItem).Id;
+                Config.SelectedLightId = ((Q42.HueApi.Light)ddlHueLights.SelectedItem).Id;
                 _options.SelectedLightId = Config.SelectedLightId;
             }
         }
