@@ -174,14 +174,14 @@ namespace PresenceLight
 
             MapUI(presence, profile, LoadImage(photo));
 
-            if (!string.IsNullOrEmpty(Config.HueApiKey) && !string.IsNullOrEmpty(Config.HueIpAddress) && !string.IsNullOrEmpty(Config.SelectedLightId))
+            if (!string.IsNullOrEmpty(Config.HueApiKey) && !string.IsNullOrEmpty(Config.HueIpAddress) && !string.IsNullOrEmpty(Config.SelectedHueLightId))
             {
-                await _hueService.SetColor(presence.Availability, Config.SelectedLightId);
+                await _hueService.SetColor(presence.Availability, Config.SelectedHueLightId);
             }
 
             if (Config.IsLifxEnabled && !string.IsNullOrEmpty(Config.LifxApiKey))
             {
-                await _lifxService.SetColor(presence.Availability, Selector.All);
+                await _lifxService.SetColor(presence.Availability, (Selector)Config.SelectedLifxItemId);
             }
 
             loadingPanel.Visibility = Visibility.Collapsed;
@@ -203,14 +203,14 @@ namespace PresenceLight
                 try
                 {
                     presence = await System.Threading.Tasks.Task.Run(() => GetPresence());
-                    if (!string.IsNullOrEmpty(Config.HueApiKey) && !string.IsNullOrEmpty(Config.HueIpAddress) && !string.IsNullOrEmpty(Config.SelectedLightId))
+                    if (!string.IsNullOrEmpty(Config.HueApiKey) && !string.IsNullOrEmpty(Config.HueIpAddress) && !string.IsNullOrEmpty(Config.SelectedHueLightId))
                     {
-                        await _hueService.SetColor(presence.Availability, Config.SelectedLightId);
+                        await _hueService.SetColor(presence.Availability, Config.SelectedHueLightId);
                     }
 
                     if (Config.IsLifxEnabled && !string.IsNullOrEmpty(Config.LifxApiKey))
                     {
-                        await _lifxService.SetColor(presence.Availability, Selector.All);
+                        await _lifxService.SetColor(presence.Availability, (Selector)Config.SelectedLifxItemId);
                     }
 
                     MapUI(presence, null, null);
@@ -237,14 +237,25 @@ namespace PresenceLight
                     clientId.IsEnabled = true;
                     tenantId.IsEnabled = true;
 
-                    if (Config.IsPhillipsEnabled && !string.IsNullOrEmpty(Config.HueApiKey) && !string.IsNullOrEmpty(Config.HueIpAddress) && !string.IsNullOrEmpty(Config.SelectedLightId))
+                    if (Config.IsPhillipsEnabled && !string.IsNullOrEmpty(Config.HueApiKey) && !string.IsNullOrEmpty(Config.HueIpAddress) && !string.IsNullOrEmpty(Config.SelectedHueLightId))
                     {
-                        await _hueService.SetColor("Off", Config.SelectedLightId);
+                        await _hueService.SetColor("Off", Config.SelectedHueLightId);
                     }
 
                     if (Config.IsLifxEnabled && !string.IsNullOrEmpty(Config.LifxApiKey))
                     {
-                        await _lifxService.SetColor("Off", Selector.All);
+                        if (ddlLifxLights.SelectedItem.GetType() == typeof(LifxCloud.NET.Models.Group))
+                        {
+                            Config.SelectedHueLightId = ((LifxCloud.NET.Models.Group)ddlLifxLights.SelectedItem).Id;
+                        }
+
+                        if (ddlLifxLights.SelectedItem.GetType() == typeof(LifxCloud.NET.Models.Light))
+                        {
+                            Config.SelectedHueLightId = ((LifxCloud.NET.Models.Group)ddlLifxLights.SelectedItem).Id;
+
+                        }
+
+                        await _lifxService.SetColor("Off", (Selector)Config.SelectedLifxItemId);
                     }
                 }
                 catch (MsalException)
@@ -473,7 +484,7 @@ namespace PresenceLight
                         foreach (var item in ddlHueLights.Items)
                         {
                             var light = (Q42.HueApi.Light)item;
-                            if (light.Id == Config.SelectedLightId)
+                            if (light.Id == Config.SelectedHueLightId)
                             {
                                 ddlHueLights.SelectedItem = item;
                             }
@@ -600,7 +611,7 @@ namespace PresenceLight
                     {
                         ddlLifxLights.ItemsSource = await _lifxService.GetAllLightsAsync();
                     }
-                       
+
                     ddlLifxLights.Visibility = Visibility.Visible;
                     lblLifxMessage.Text = "Connected to Lifx Cloud";
                     fontBrush.Color = MapColor("#009933");
@@ -670,8 +681,8 @@ namespace PresenceLight
 
         protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
         {
-            _hueService.SetColor("Off", Config.SelectedLightId);
-            _lifxService.SetColor("Off", Selector.All);
+            _hueService.SetColor("Off", Config.SelectedHueLightId);
+            _lifxService.SetColor("Off", (Selector)Config.SelectedLifxItemId);
             this.Hide();
             e.Cancel = true;
         }
@@ -685,8 +696,28 @@ namespace PresenceLight
         {
             if (ddlHueLights.SelectedItem != null)
             {
-                Config.SelectedLightId = ((Q42.HueApi.Light)ddlHueLights.SelectedItem).Id;
-                _options.SelectedLightId = Config.SelectedLightId;
+                Config.SelectedHueLightId = ((Q42.HueApi.Light)ddlHueLights.SelectedItem).Id;
+                _options.SelectedHueLightId = Config.SelectedHueLightId;
+            }
+        }
+
+        private void ddlLifxLights_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ddlLifxLights.SelectedItem != null)
+            {
+                // Get whether item is group or light
+                if (ddlLifxLights.SelectedItem.GetType() == typeof(LifxCloud.NET.Models.Group))
+                {
+                    Config.SelectedLifxItemId = $"group_id:{((LifxCloud.NET.Models.Group)ddlLifxLights.SelectedItem).Id}";
+                }
+
+                if (ddlLifxLights.SelectedItem.GetType() == typeof(LifxCloud.NET.Models.Light))
+                {
+                    Config.SelectedLifxItemId = $"id:{((LifxCloud.NET.Models.Light)ddlLifxLights.SelectedItem).Id}";
+
+                }
+                _options.SelectedLifxItemId = Config.SelectedLifxItemId;
+
             }
         }
     }
