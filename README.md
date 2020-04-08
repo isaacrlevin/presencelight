@@ -11,7 +11,7 @@
 
 ## What is Presence Light?
 
-Presence Light is a solution to broadcast your Microsoft Teams presence to a Phillips Hue light bulb. There are other solutions that do something similar, but they require a tethered solution (plugging a light into a computer via USB). What Presence Light does is leverage the [Presence Api](https://docs.microsoft.com/graph/api/presence-get), which is available in [Microsoft Graph](https://docs.microsoft.com/graph/overview), allowing to retrieve your presence without having to be tethered. This could potentially allow someone to update the Phillips Hue light bulb from a remote machine they do not use, as long as it is on the same network.
+Presence Light is a solution to broadcast your Microsoft Teams presence to a Phillips Hue or LIFX light bulb. There are other solutions that do something similar, but they require a tethered solution (plugging a light into a computer via USB). What Presence Light does is leverage the [Presence Api](https://docs.microsoft.com/graph/api/presence-get), which is available in [Microsoft Graph](https://docs.microsoft.com/graph/overview), allowing to retrieve your presence without having to be tethered. This could potentially allow someone to update the light bulb from a remote machine they do not use.
 
 ### [Demo of Presence Light](https://youtu.be/nQbjKXxKlHU)
 
@@ -21,8 +21,15 @@ Presence Light is a solution to broadcast your Microsoft Teams presence to a Phi
 | ------------ |
 | [Phillips Hue Bridge](https://www2.meethue.com/en-us/p/hue-bridge/046677458478)
 | [Phillips Hue Light Bulb](https://www2.meethue.com/en-us/p/hue-white-and-color-ambiance-1-pack-e26/046677548483) |
+| [Any LIFX Light](https://www.lifx.com/pages/all-products) |
+
+## Hue HW Notes
 
 You will need the above items to broadcast your presence to. One of the requirements of the Bridge is that it needs to be hard-wired to an internet connection via ethernet, so it will need to be placed close to a router or network switch. There are steps to setup the bridge and bulb in the [Hardware and Connectivity Section](https://www2.meethue.com/en-us/support/hardware-and-connectivity) of the Phillips Support Site, but you should be able to just plug the bridge, wait for the lights to light up, get the IP address for the bridge, enter it into the app, and register the device. The app will register your device, create an account to interact with the bulbs, and finally add any bulbs it finds.
+
+## LIFX HW Notes
+
+LIFX Bulbs can be connected to over [LAN Protocol](https://lan.developer.lifx.com/), or [Cloud Api](https://lifx.readme.io/docs). Presence Light uses the Cloud, which requires getting an Api Key from the [developer portal](https://cloud.lifx.com/settings). Putting that key in Presence Light will enable all connected lights.
 
 ## Setting Up the App
 
