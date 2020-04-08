@@ -96,9 +96,9 @@
 
         appState.SetUserInfo(user, photo, presence);
 
-        if (!string.IsNullOrEmpty(Config.CurrentValue.HueApiKey) && !string.IsNullOrEmpty(Config.CurrentValue.HueIpAddress) && !string.IsNullOrEmpty(Config.CurrentValue.SelectedLightId))
+        if (!string.IsNullOrEmpty(Config.CurrentValue.HueApiKey) && !string.IsNullOrEmpty(Config.CurrentValue.HueIpAddress) && !string.IsNullOrEmpty(Config.CurrentValue.SelectedHueLightId))
         {
-            await _hueService.SetColor(presence.Availability, Config.CurrentValue.SelectedLightId);
+            await _hueService.SetColor(presence.Availability, Config.CurrentValue.SelectedHueLightId);
         }
 
         while (true)
@@ -108,9 +108,9 @@
 
             appState.SetPresence(presence);
 
-            if (!string.IsNullOrEmpty(Config.CurrentValue.HueApiKey) && !string.IsNullOrEmpty(Config.CurrentValue.HueIpAddress) && !string.IsNullOrEmpty(Config.CurrentValue.SelectedLightId))
+            if (!string.IsNullOrEmpty(Config.CurrentValue.HueApiKey) && !string.IsNullOrEmpty(Config.CurrentValue.HueIpAddress) && !string.IsNullOrEmpty(Config.CurrentValue.SelectedHueLightId))
             {
-                await _hueService.SetColor(presence.Availability, Config.CurrentValue.SelectedLightId);
+                await _hueService.SetColor(presence.Availability, Config.CurrentValue.SelectedHueLightId);
             }
 
             Thread.Sleep(5000);
