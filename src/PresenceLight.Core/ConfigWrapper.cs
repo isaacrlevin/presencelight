@@ -23,7 +23,9 @@ namespace PresenceLight.Core
 
         public string ApiScopes { get; set; }
 
-        public string SelectedLightId { get; set; }
+        public string SelectedHueLightId { get; set; }
+
+        public string SelectedLifxItemId { get; set; }
 
         [Required]
         [RegularExpression(@"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b",
