@@ -27,6 +27,7 @@ namespace PresenceLight.Worker
                 {
                     config.AddJsonFile(
                     "AADSettings.json", optional: false, reloadOnChange: false);
+                    config.AddUserSecrets<Startup>();
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
