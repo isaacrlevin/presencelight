@@ -2,13 +2,10 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Graph;
-using Newtonsoft.Json;
 using PresenceLight.Core;
 using System;
 using System.Diagnostics;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,6 +19,7 @@ namespace PresenceLight.Worker
         private readonly AppState _appState;
         private readonly ILogger<Worker> _logger;
         private readonly UserAuthService _userAuthService;
+        private readonly GraphServiceClient _graphClient;
 
         public Worker(IHueService hueService,
                       ILogger<Worker> logger,
@@ -34,6 +32,8 @@ namespace PresenceLight.Worker
             _logger = logger;
             _appState = appState;
             _userAuthService = userAuthService;
+
+            _graphClient = new GraphServiceClient(userAuthService);
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -123,67 +123,53 @@ namespace PresenceLight.Worker
 
         public async Task<User> GetUserInformation(string accessToken)
         {
-            HttpClient httpClient = new HttpClient();
-
-            httpClient.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer",
-            accessToken);
-            var response = await httpClient.GetAsync($"https://graph.microsoft.com//beta/me");
-            if (response.StatusCode == HttpStatusCode.OK)
+            try
             {
-                var content = await response.Content.ReadAsStringAsync();
-                var me = JsonConvert.DeserializeObject<User>
-                    (content);
+                var me = await _graphClient.Me.Request().GetAsync();
                 _logger.LogInformation($"User is {me.DisplayName}");
                 return me;
             }
-
-            throw new
-            HttpRequestException($"Invalid status code in the HttpResponseMessage: {response.StatusCode}.");
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception getting me: {ex.Message}");
+                throw ex;
+            }
         }
 
         public async Task<string> GetPhotoAsBase64Async(string accessToken)
         {
-            HttpClient httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer",
-            accessToken);
-
-            var response = await httpClient.GetAsync($"https://graph.microsoft.com/beta/me/photo/$value");
-            if (response.StatusCode == HttpStatusCode.OK)
+            try
             {
-                byte[] photo = await response.Content.ReadAsByteArrayAsync();
-                var base64 = Convert.ToBase64String(photo);
-                var photoBase64 = String.Format("data:image/gif;base64,{0}", base64);
+                var photoStream = await _graphClient.Me.Photo.Content.Request().GetAsync();
+                var memoryStream = new MemoryStream();
+                photoStream.CopyTo(memoryStream);
 
-                return photoBase64;
+                var photoBytes = memoryStream.ToArray();
+                var base64Photo = $"data:image/gif;base64,{Convert.ToBase64String(photoBytes)}";
+
+                return base64Photo;
             }
-            else
+            catch (Exception ex)
             {
-                return null;
+                _logger.LogError($"Exception getting photo: {ex.Message}");
             }
+
+            return null;
         }
 
         public async Task<Presence> GetPresence(string accessToken)
         {
-            HttpClient httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer",
-            accessToken);
-
-            var response = await httpClient.GetAsync($"https://graph.microsoft.com//beta/me/presence");
-            if (response.StatusCode == HttpStatusCode.OK)
+            try
             {
-                var content = await response.Content.ReadAsStringAsync();
-                var presence = JsonConvert.DeserializeObject<Presence>
-                    (content);
+                var presence = await _graphClient.Me.Presence.Request().GetAsync();
                 _logger.LogInformation($"Presence is {presence.Availability}");
                 return presence;
             }
-
-            throw new
-            HttpRequestException($"Invalid status code in the HttpResponseMessage: {response.StatusCode}.");
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception getting presence: {ex.Message}");
+                throw ex;
+            }
         }
-
     }
 }

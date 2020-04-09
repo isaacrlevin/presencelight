@@ -1,13 +1,15 @@
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Graph;
 using Microsoft.Identity.Client;
 using PresenceLight.Core;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace PresenceLight.Worker
 {
-    public class UserAuthService
+    public class UserAuthService : IAuthenticationProvider
     {
         static string[] graphScopes = { "https://graph.microsoft.com/.default" };
         private readonly IConfidentialClientApplication _msalClient;
@@ -83,6 +85,16 @@ namespace PresenceLight.Worker
             {
                 await _msalClient.RemoveAsync(_userAccount);
                 _userAccount = null;
+            }
+        }
+
+        public async Task AuthenticateRequestAsync(HttpRequestMessage requestMessage)
+        {
+            var accessToken = await GetAccessToken();
+            if (!string.IsNullOrEmpty(accessToken))
+            {
+                requestMessage.Headers.Authorization =
+                    new AuthenticationHeaderValue("Bearer", accessToken);
             }
         }
     }
