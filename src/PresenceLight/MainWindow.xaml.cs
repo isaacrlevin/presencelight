@@ -253,7 +253,7 @@ namespace PresenceLight
 
                         if (ddlLifxLights.SelectedItem.GetType() == typeof(LifxCloud.NET.Models.Light))
                         {
-                            Config.SelectedHueLightId = ((LifxCloud.NET.Models.Group)ddlLifxLights.SelectedItem).Id;
+                            Config.SelectedHueLightId = ((LifxCloud.NET.Models.Light)ddlLifxLights.SelectedItem).Id;
 
                         }
 
@@ -772,6 +772,8 @@ namespace PresenceLight
 
         private async void SyncTheme_Click(object sender, RoutedEventArgs e)
         {
+            SignOutButton_Click(null,null);
+
             var theme = ((SolidColorBrush)SystemParameters.WindowGlassBrush).Color;
             stopGraphPolling = true;
 
@@ -827,6 +829,8 @@ namespace PresenceLight
         {
             if (ColorGrid.SelectedColor.HasValue)
             {
+                SignOutButton_Click(null, null);
+
                 stopGraphPolling = true;
                 stopThemePolling = true;
                 string color = $"#{ColorGrid.HexadecimalString.ToString().Substring(3)}";
