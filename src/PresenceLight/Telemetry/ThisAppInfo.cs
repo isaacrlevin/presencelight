@@ -38,6 +38,12 @@ namespace PresenceLight
             return Assembly.GetExecutingAssembly().Location;
         }
 
+        internal static string GetInstallationDate()
+        {
+            var date = System.IO.File.GetLastWriteTime(Assembly.GetExecutingAssembly().Location);
+            return $"{date.ToShortDateString()} {date.ToShortTimeString()}";
+        }
+
         internal static string GetPackageVersion()
         {
             if (WindowsVersionHelper.HasPackageIdentity)
