@@ -166,7 +166,7 @@ namespace PresenceLight
 
         private async void CallGraphButton_Click(object sender, RoutedEventArgs e)
         {
-            stopThemePolling = false;
+            stopThemePolling = true;
             signInPanel.Visibility = Visibility.Collapsed;
             lblTheme.Visibility = Visibility.Collapsed;
             loadingPanel.Visibility = Visibility.Visible;
@@ -731,7 +731,7 @@ namespace PresenceLight
         private async void SyncTheme_Click(object sender, RoutedEventArgs e)
         {
             var theme = ((SolidColorBrush)SystemParameters.WindowGlassBrush).Color;
-            stopGraphPolling = false;
+            stopGraphPolling = true;
 
             string color = $"#{theme.ToString().Substring(3)}";
 
