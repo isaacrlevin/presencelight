@@ -49,8 +49,11 @@ namespace PresenceLight.Core
                 case "DoNotDisturb":
                     color = "purple";
                     break;
-                default:
+                case "Off":
                     color = "white";
+                    break;
+                default:
+                    color = availability;
                     break;
             }
 
