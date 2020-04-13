@@ -95,10 +95,8 @@
     <ApplicationDefinition Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
     </ApplicationDefinition>
-    <Compile Include="Commands\CloseWindowCommand.cs" />
-    <Compile Include="Commands\CommandBase.cs" />
-    <Compile Include="Commands\ShowWindowCommand.cs" />
     <Compile Include="MessageBoxHelper.cs" />
+    <Compile Include="NotifyIcon.cs" />
     <Compile Include="SettingsService.cs" />
     <Compile Include="Telemetry\AppVersionTelemetryInitializer.cs" />
     <Compile Include="Telemetry\DiagnosticsClient.cs" />
@@ -231,9 +229,6 @@
     </PackageReference>
     <PackageReference Include="Extended.Wpf.Toolkit">
       <Version>3.8.1</Version>
-    </PackageReference>
-    <PackageReference Include="Hardcodet.NotifyIcon.Wpf">
-      <Version>1.0.8</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces">
       <Version>1.1.0</Version>

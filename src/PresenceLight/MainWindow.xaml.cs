@@ -14,14 +14,11 @@ using Media = System.Windows.Media;
 using System.Diagnostics;
 using System.Windows.Navigation;
 using PresenceLight.Core.Helpers;
-using Newtonsoft.Json;
-using Windows.Storage;
-using Hardcodet.Wpf.TaskbarNotification;
 using System.Text.RegularExpressions;
-using Q42.HueApi;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using LifxCloud.NET.Models;
+using System.Windows.Input;
 
 namespace PresenceLight
 {
@@ -38,7 +35,7 @@ namespace PresenceLight
         private LifxService _lifxService;
         private GraphServiceClient _graphServiceClient;
         private readonly IGraphService _graphservice;
-
+        private WindowState lastWindowState;
 
         #region Init
         public MainWindow(IGraphService graphService, IHueService hueService, LifxService lifxService, IOptionsMonitor<ConfigWrapper> optionsAccessor)
@@ -77,6 +74,7 @@ namespace PresenceLight
             packageVersion.Text = ThisAppInfo.GetPackageVersion();
             installedFrom.Text = ThisAppInfo.GetAppInstallerUri();
             installLocation.Text = ThisAppInfo.GetInstallLocation();
+            installedDate.Text = ThisAppInfo.GetInstallationDate();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -106,8 +104,8 @@ namespace PresenceLight
                 White.IsChecked = true;
             }
 
-            notificationIcon.ToolTipText = PresenceConstants.Inactive;
-            notificationIcon.IconSource = new BitmapImage(new Uri(IconConstants.GetIcon(String.Empty, IconConstants.Inactive)));
+            notificationIcon.Text = PresenceConstants.Inactive;
+            notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(String.Empty, IconConstants.Inactive)));
         }
 
         private async Task LoadSettings()
@@ -198,8 +196,8 @@ namespace PresenceLight
                 if (stopGraphPolling)
                 {
                     stopGraphPolling = false;
-                    notificationIcon.ToolTipText = PresenceConstants.Inactive;
-                    notificationIcon.IconSource = new BitmapImage(new Uri(IconConstants.GetIcon(String.Empty, IconConstants.Inactive)));
+                    notificationIcon.Text = PresenceConstants.Inactive;
+                    notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(String.Empty, IconConstants.Inactive)));
                     return;
                 }
                 await Task.Delay(5000);
@@ -234,8 +232,8 @@ namespace PresenceLight
                     dataPanel.Visibility = Visibility.Collapsed;
                     stopGraphPolling = true;
 
-                    notificationIcon.ToolTipText = PresenceConstants.Inactive;
-                    notificationIcon.IconSource = new BitmapImage(new Uri(IconConstants.GetIcon(string.Empty, IconConstants.Inactive)));
+                    notificationIcon.Text = PresenceConstants.Inactive;
+                    notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(string.Empty, IconConstants.Inactive)));
                     hueIpAddress.IsEnabled = true;
                     clientId.IsEnabled = true;
                     tenantId.IsEnabled = true;
@@ -302,37 +300,37 @@ namespace PresenceLight
                 case "Available":
                     image = new BitmapImage(new Uri(IconConstants.GetIcon(Config.IconType, IconConstants.Available)));
                     color = MapColor("#009933");
-                    notificationIcon.ToolTipText = PresenceConstants.Available;
+                    notificationIcon.Text = PresenceConstants.Available;
                     break;
                 case "Busy":
                     image = new BitmapImage(new Uri(IconConstants.GetIcon(Config.IconType, IconConstants.Busy)));
                     color = MapColor("#ff3300");
-                    notificationIcon.ToolTipText = PresenceConstants.Busy;
+                    notificationIcon.Text = PresenceConstants.Busy;
                     break;
                 case "BeRightBack":
                     image = new BitmapImage(new Uri(IconConstants.GetIcon(Config.IconType, IconConstants.BeRightBack)));
                     color = MapColor("#ffff00");
-                    notificationIcon.ToolTipText = PresenceConstants.BeRightBack;
+                    notificationIcon.Text = PresenceConstants.BeRightBack;
                     break;
                 case "Away":
                     image = new BitmapImage(new Uri(IconConstants.GetIcon(Config.IconType, IconConstants.Away)));
                     color = MapColor("#ffff00");
-                    notificationIcon.ToolTipText = PresenceConstants.Away;
+                    notificationIcon.Text = PresenceConstants.Away;
                     break;
                 case "DoNotDisturb":
                     image = new BitmapImage(new Uri(IconConstants.GetIcon(Config.IconType, IconConstants.DoNotDisturb)));
                     color = MapColor("#800000");
-                    notificationIcon.ToolTipText = PresenceConstants.DoNotDisturb;
+                    notificationIcon.Text = PresenceConstants.DoNotDisturb;
                     break;
                 case "OutOfOffice":
                     image = new BitmapImage(new Uri(IconConstants.GetIcon(Config.IconType, IconConstants.OutOfOffice)));
                     color = MapColor("#800080");
-                    notificationIcon.ToolTipText = PresenceConstants.OutOfOffice;
+                    notificationIcon.Text = PresenceConstants.OutOfOffice;
                     break;
                 default:
                     image = new BitmapImage(new Uri(IconConstants.GetIcon(string.Empty, IconConstants.Inactive)));
                     color = MapColor("#FFFFFF");
-                    notificationIcon.ToolTipText = PresenceConstants.Inactive;
+                    notificationIcon.Text = PresenceConstants.Inactive;
                     break;
             }
 
@@ -341,7 +339,7 @@ namespace PresenceLight
                 profileImage.Source = profileImageBit;
             }
 
-            notificationIcon.IconSource = image;
+            notificationIcon.Icon = image;
             mySolidColorBrush.Color = color;
             status.Fill = mySolidColorBrush;
             status.StrokeThickness = 1;
@@ -684,8 +682,14 @@ namespace PresenceLight
 
         protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
         {
-            _hueService.SetColor("Off", Config.SelectedHueLightId);
-            _lifxService.SetColor("Off", (Selector)Config.SelectedLifxItemId);
+            if (!string.IsNullOrEmpty(Config.HueApiKey) && !string.IsNullOrEmpty(Config.HueIpAddress) && !string.IsNullOrEmpty(Config.SelectedHueLightId))
+            {
+                _hueService.SetColor("Off", Config.SelectedHueLightId);
+            }
+            if (Config.IsLifxEnabled && !string.IsNullOrEmpty(Config.LifxApiKey))
+            {
+                _lifxService.SetColor("Off", (Selector)Config.SelectedLifxItemId);
+            }
             this.Hide();
             e.Cancel = true;
         }
@@ -796,6 +800,35 @@ namespace PresenceLight
                     await _lifxService.SetColor(color, (Selector)Config.SelectedLifxItemId);
                 }
             }
+        }
+
+        private void OnNotifyIconDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                this.Show();
+                this.WindowState = this.lastWindowState;
+            }
+        }
+        private void OnOpenClick(object sender, RoutedEventArgs e)
+        {
+            this.Show();
+            this.WindowState = this.lastWindowState;
+        }
+        private async void OnExitClick(object sender, RoutedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(Config.HueApiKey) && !string.IsNullOrEmpty(Config.HueIpAddress) && !string.IsNullOrEmpty(Config.SelectedHueLightId))
+            {
+                await _hueService.SetColor("Off", Config.SelectedHueLightId);
+            }
+
+            if (Config.IsLifxEnabled && !string.IsNullOrEmpty(Config.LifxApiKey))
+            {
+
+                await _lifxService.SetColor("Off", (Selector)Config.SelectedLifxItemId);
+            }
+
+            System.Windows.Application.Current.Shutdown();
         }
     }
 }
