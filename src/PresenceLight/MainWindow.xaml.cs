@@ -94,6 +94,7 @@ namespace PresenceLight
         private void LoadApp()
         {
             CheckHueSettings();
+            CheckLifxSettings();
 
             if (Config.IconType == "Transparent")
             {
@@ -498,6 +499,47 @@ namespace PresenceLight
                 }
             }
         }
+
+        private async void CheckLifxSettings()
+        {
+            if (Config.IsLifxEnabled && !string.IsNullOrEmpty(Config.LifxApiKey) && !string.IsNullOrEmpty(Config.SelectedLifxItemId))
+            {
+                ddlLifxLights.ItemsSource = await _lifxService.GetAllLightsAsync();
+
+                foreach (var item in ddlLifxLights.Items)
+                {
+                    var light = (Light)item;
+                    if ($"id:{light.Id}" == Config.SelectedLifxItemId)
+                    {
+                        ddlLifxLights.SelectedItem = item;
+                    }
+                }
+
+                if (ddlLifxLights.SelectedItem == null)
+                {
+                    ddlLifxLights.ItemsSource = await _lifxService.GetAllGroupsAsync();
+
+                    foreach (var item in ddlLifxLights.Items)
+                    {
+                        var group = (LifxCloud.NET.Models.Group)item;
+                        if ($"group_id:{group.Id}" == Config.SelectedLifxItemId)
+                        {
+                            ddlLifxLights.SelectedItem = item;
+                        }
+                    }
+                }
+
+                if (ddlLifxLights.SelectedItem != null)
+                {
+                    SolidColorBrush fontBrush = new SolidColorBrush();
+                    ddlLifxLights.Visibility = Visibility.Visible;
+                    lblLifxMessage.Text = "Connected to Lifx Cloud";
+                    fontBrush.Color = MapColor("#009933");
+                    lblLifxMessage.Foreground = fontBrush;
+                }
+            }
+        }
+        
         private bool CheckHueIp()
         {
             string r1 = "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]).){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$";
