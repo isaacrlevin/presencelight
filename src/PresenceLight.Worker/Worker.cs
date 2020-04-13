@@ -98,9 +98,9 @@ namespace PresenceLight.Worker
 
             _appState.SetUserInfo(user, photo, presence);
 
-            if (!string.IsNullOrEmpty(Config.HueApiKey) && !string.IsNullOrEmpty(Config.HueIpAddress) && !string.IsNullOrEmpty(Config.SelectedLightId))
+            if (!string.IsNullOrEmpty(Config.HueApiKey) && !string.IsNullOrEmpty(Config.HueIpAddress) && !string.IsNullOrEmpty(Config.SelectedHueLightId))
             {
-                await _hueService.SetColor(presence.Availability, Config.SelectedLightId);
+                await _hueService.SetColor(presence.Availability, Config.SelectedHueLightId);
             }
 
             while (await _userAuthService.IsUserAuthenticated())
@@ -110,9 +110,9 @@ namespace PresenceLight.Worker
 
                 _appState.SetPresence(presence);
                 _logger.LogInformation($"Presence is {presence.Availability}");
-                if (!string.IsNullOrEmpty(Config.HueApiKey) && !string.IsNullOrEmpty(Config.HueIpAddress) && !string.IsNullOrEmpty(Config.SelectedLightId))
+                if (!string.IsNullOrEmpty(Config.HueApiKey) && !string.IsNullOrEmpty(Config.HueIpAddress) && !string.IsNullOrEmpty(Config.SelectedHueLightId))
                 {
-                    await _hueService.SetColor(presence.Availability, Config.SelectedLightId);
+                    await _hueService.SetColor(presence.Availability, Config.SelectedHueLightId);
                 }
 
                 Thread.Sleep(5000);

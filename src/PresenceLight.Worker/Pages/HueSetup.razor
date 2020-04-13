@@ -37,7 +37,7 @@
                 <option disabled="disabled">Select</option>
                 @foreach (var light in appState.Lights)
                 {
-                    @if (tempConfig.SelectedLightId == light.Id)
+                    @if (tempConfig.SelectedHueLightId == light.Id)
                     {
                         <option selected="selected" value=@light.Id>@light.Name</option>
                     }
@@ -105,8 +105,8 @@
     private void OnChange(ChangeEventArgs e)
     {
         var light = e.Value.ToString();
-        tempConfig.SelectedLightId = light;
-        Config.CurrentValue.SelectedLightId = light;
+        tempConfig.SelectedHueLightId = light;
+        Config.CurrentValue.SelectedHueLightId = light;
         appState.SetLight(light);
     }
 
