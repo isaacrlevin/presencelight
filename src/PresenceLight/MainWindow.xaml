@@ -93,7 +93,7 @@
                             <TextBlock  x:Name="lblHueMessage" TextWrapping="Wrap"  TextAlignment="Center">
                             </TextBlock>
                         </Label>
-                        <ComboBox x:Name="ddlHueLights" DisplayMemberPath="Name" Visibility="Collapsed" SelectionChanged="ddlHueLights_SelectionChanged"  HorizontalAlignment="Center" Margin="0,250,0,0" VerticalAlignment="Top" Width="120"/>
+                        <ComboBox x:Name="ddlHueLights" DisplayMemberPath="Name" Visibility="Collapsed" SelectionChanged="ddlHueLights_SelectionChanged"  HorizontalAlignment="Center" Margin="0,250,0,0" VerticalAlignment="Top" Width="150"/>
                         <Image x:Name="imgLoading" Visibility="Collapsed" gif:ImageBehavior.AnimatedSource="Icons/loading.gif" Width="75" Margin="143,17,143,-17" />
                         <Button Height="45" Width="170" Content="Save" Margin="0,250,1,69" Click="SaveHueSettings_Click"/>
                     </Grid>
@@ -118,7 +118,7 @@
                             <TextBlock  x:Name="lblLifxMessage" TextWrapping="Wrap"  TextAlignment="Center">
                             </TextBlock>
                         </Label>
-                        <ComboBox x:Name="ddlLifxLights" DisplayMemberPath="Label" Visibility="Collapsed" SelectionChanged="ddlLifxLights_SelectionChanged"  HorizontalAlignment="Left" Margin="220,250,0,0" VerticalAlignment="Top" Width="120"/>
+                        <ComboBox x:Name="ddlLifxLights" DisplayMemberPath="Label" Visibility="Collapsed" SelectionChanged="ddlLifxLights_SelectionChanged"  HorizontalAlignment="Left" Margin="200,250,0,0" VerticalAlignment="Top" Width="150"/>
                         <Image x:Name="imgLifxLoading" Visibility="Collapsed" gif:ImageBehavior.AnimatedSource="Icons/loading.gif" Width="75" Margin="160,17,49,-17" />
                         <Button Height="45" Width="170" Content="Save" Margin="0,250,1,69" Click="SaveLifxSettings_Click"/>
                     </Grid>
