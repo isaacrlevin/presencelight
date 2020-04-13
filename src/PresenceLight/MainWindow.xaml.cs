@@ -32,7 +32,8 @@ namespace PresenceLight
     {
         private readonly ConfigWrapper _options;
         public ConfigWrapper Config { get; set; }
-        private bool stopPolling;
+        private bool stopGraphPolling;
+        private bool stopThemePolling;
         private IHueService _hueService;
         private LifxService _lifxService;
         private GraphServiceClient _graphServiceClient;
@@ -167,7 +168,9 @@ namespace PresenceLight
 
         private async void CallGraphButton_Click(object sender, RoutedEventArgs e)
         {
+            stopThemePolling = false;
             signInPanel.Visibility = Visibility.Collapsed;
+            lblTheme.Visibility = Visibility.Collapsed;
             loadingPanel.Visibility = Visibility.Visible;
             var (profile, presence) = await System.Threading.Tasks.Task.Run(() => GetBatchContent());
             var photo = await System.Threading.Tasks.Task.Run(() => GetPhoto());
@@ -192,9 +195,9 @@ namespace PresenceLight
             dataPanel.Visibility = Visibility.Visible;
             while (true)
             {
-                if (stopPolling)
+                if (stopGraphPolling)
                 {
-                    stopPolling = false;
+                    stopGraphPolling = false;
                     notificationIcon.ToolTipText = PresenceConstants.Inactive;
                     notificationIcon.IconSource = new BitmapImage(new Uri(IconConstants.GetIcon(String.Empty, IconConstants.Inactive)));
                     return;
@@ -229,7 +232,7 @@ namespace PresenceLight
                     await WPFAuthorizationProvider._application.RemoveAsync(accounts.FirstOrDefault());
                     this.signInPanel.Visibility = Visibility.Visible;
                     dataPanel.Visibility = Visibility.Collapsed;
-                    stopPolling = true;
+                    stopGraphPolling = true;
 
                     notificationIcon.ToolTipText = PresenceConstants.Inactive;
                     notificationIcon.IconSource = new BitmapImage(new Uri(IconConstants.GetIcon(string.Empty, IconConstants.Inactive)));
@@ -354,7 +357,7 @@ namespace PresenceLight
         #region Graph Calls
         public async Task<Presence> GetPresence()
         {
-            if (!stopPolling)
+            if (!stopGraphPolling)
             {
                 return await _graphServiceClient.Me.Presence.Request().GetAsync();
             }
@@ -718,6 +721,80 @@ namespace PresenceLight
                 }
                 _options.SelectedLifxItemId = Config.SelectedLifxItemId;
 
+            }
+        }
+
+        private async void SyncTheme_Click(object sender, RoutedEventArgs e)
+        {
+            var theme = ((SolidColorBrush)SystemParameters.WindowGlassBrush).Color;
+            stopGraphPolling = false;
+
+            string color = $"#{theme.ToString().Substring(3)}";
+
+            lblTheme.Content = $"Theme Color is {color}";
+            lblTheme.Foreground = (SolidColorBrush)SystemParameters.WindowGlassBrush;
+            lblTheme.Visibility = Visibility.Visible;
+
+            if (!string.IsNullOrEmpty(Config.HueApiKey) && !string.IsNullOrEmpty(Config.HueIpAddress) && !string.IsNullOrEmpty(Config.SelectedHueLightId))
+            {
+                await _hueService.SetColor(color, Config.SelectedHueLightId);
+            }
+
+            if (Config.IsLifxEnabled && !string.IsNullOrEmpty(Config.LifxApiKey))
+            {
+                await _lifxService.SetColor(color, (Selector)Config.SelectedLifxItemId);
+            }
+
+            while (true)
+            {
+                if (stopThemePolling)
+                {
+                    stopThemePolling = false;
+                    return;
+                }
+                await Task.Delay(5000);
+                try
+                {
+                    theme = ((SolidColorBrush)SystemParameters.WindowGlassBrush).Color;
+                    color = $"#{theme.ToString().Substring(3)}";
+
+                    lblTheme.Content = $"Theme Color is {color}";
+                    lblTheme.Foreground = (SolidColorBrush)SystemParameters.WindowGlassBrush;
+                    lblTheme.Visibility = Visibility.Visible;
+
+                    if (!string.IsNullOrEmpty(Config.HueApiKey) && !string.IsNullOrEmpty(Config.HueIpAddress) && !string.IsNullOrEmpty(Config.SelectedHueLightId))
+                    {
+                        await _hueService.SetColor(color, Config.SelectedHueLightId);
+                    }
+
+                    if (Config.IsLifxEnabled && !string.IsNullOrEmpty(Config.LifxApiKey))
+                    {
+                        await _lifxService.SetColor(color, (Selector)Config.SelectedLifxItemId);
+                    }
+                }
+                catch { }
+            }
+        }
+
+
+        private async void SetColor_Click(object sender, RoutedEventArgs e)
+        {
+            if (ColorGrid.SelectedColor.HasValue)
+            {
+                stopGraphPolling = true;
+                stopThemePolling = true;
+                string color = $"#{ColorGrid.HexadecimalString.ToString().Substring(3)}";
+
+                if (!string.IsNullOrEmpty(Config.HueApiKey) && !string.IsNullOrEmpty(Config.HueIpAddress) && !string.IsNullOrEmpty(Config.SelectedHueLightId))
+                {
+                    await _hueService.SetColor(color, Config.SelectedHueLightId);
+                }
+
+                if (Config.IsLifxEnabled && !string.IsNullOrEmpty(Config.LifxApiKey))
+                {
+
+                    await _lifxService.SetColor(color, (Selector)Config.SelectedLifxItemId);
+                }
             }
         }
     }

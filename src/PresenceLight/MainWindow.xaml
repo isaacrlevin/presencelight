@@ -6,10 +6,11 @@
         xmlns:local="clr-namespace:PresenceLight" xmlns:tb="http://www.hardcodet.net/taskbar"
         xmlns:Commands="clr-namespace:PresenceLight.Commands"
         xmlns:gif="http://wpfanimatedgif.codeplex.com"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d" Title="Presence Light" Height="550" Width="600">
     <Grid>
         <TabControl SelectionChanged="TabControl_SelectionChanged">
-            <TabItem Header="Profile">
+            <TabItem Header="Set Graph Presence">
                 <Grid>
                     <Grid x:Name="configErrorPanel" Visibility="Hidden" >
                         <Label Margin="50,130,4.667,200" RenderTransformOrigin="0.5,0.5" >
@@ -64,6 +65,14 @@
                         <Image gif:ImageBehavior.AnimatedSource="Icons/loading.gif" Width="100" />
                         <Label Content="If you are adding new lights, this may take up to a minute"  Margin="150,300,36.667,50"/>
                     </Grid>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Set Light Colors">
+                <Grid>
+                    <xctk:ColorCanvas x:Name="ColorGrid" Width="300" Height="300" Margin="0,-150,0,0" ></xctk:ColorCanvas>
+                    <Button Content="Set Color" Margin="-100,250,90, 0" Click="SetColor_Click"  Height="45" Width="170" />
+                    <Button Content="Sync Windows Theme" Margin="300,250,90, 0" Click="SyncTheme_Click"  Height="45" Width="170" />
+                    <Label x:Name="lblTheme" Margin="210,400,90,0" Visibility="Collapsed" VerticalAlignment="Top"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Configure Phillips Hue" >
@@ -190,13 +199,12 @@
                     <Button x:Name="ButtonShowRuntimeVersionInfo" FontSize="15" Grid.Row="6" Click="Button_Click" Height="40" Margin="0,20,0,0"  Width="210">Show Runtime Info</Button>
                     <TextBlock x:Name="RuntimeVersionInfo" FontSize="15" Grid.Row="6" Grid.Column="1" Margin="20,20,0,0"  />
 
-                   
-                   
+
+
 
 
                 </Grid>
             </TabItem>
-
         </TabControl>
     </Grid>
 </Window>
