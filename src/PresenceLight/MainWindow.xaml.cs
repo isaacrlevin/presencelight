@@ -19,6 +19,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using LifxCloud.NET.Models;
 using System.Windows.Input;
+using System.Runtime.InteropServices;
 
 namespace PresenceLight
 {
@@ -161,7 +162,31 @@ namespace PresenceLight
 
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
-            System.Diagnostics.Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
+            var url = e.Uri.AbsoluteUri;
+            try
+            {
+                System.Diagnostics.Process.Start(new ProcessStartInfo(url));
+            }
+            catch
+            {
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    url = url.Replace("&", "^&");
+                    System.Diagnostics.Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    System.Diagnostics.Process.Start("xdg-open", url);
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                {
+                    System.Diagnostics.Process.Start("open", url);
+                }
+                else
+                {
+                    throw;
+                }
+            }
             e.Handled = true;
         }
 
