@@ -43,7 +43,8 @@ namespace PresenceLight.Core.Graph
 
             var pca = PublicClientApplicationBuilder.Create(clientId)
                                                     .WithAuthority(authority)
-                                                    .WithRedirectUri(redirectUri)
+                                                    //.WithRedirectUri(redirectUri)
+                                                    .WithRedirectUri("http://localhost")
                                                     .Build();
 
             TokenCacheHelper.EnableSerialization(pca.UserTokenCache);

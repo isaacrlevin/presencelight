@@ -124,7 +124,9 @@
     <Content Include="Package.appinstaller" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PresenceLight\PresenceLight.csproj" />
+    <ProjectReference Include="..\PresenceLight\PresenceLight.csproj">
+      <SkipGetTargetFrameworkProperties>True</SkipGetTargetFrameworkProperties>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(WapProjPath)\Microsoft.DesktopBridge.targets" />
 </Project>

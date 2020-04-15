@@ -42,7 +42,8 @@ namespace PresenceLight.Core.Helpers
                     await Application.Current.Dispatcher.Invoke(async () =>
                      {
                          authResult = await _application.AcquireTokenInteractive(_scopes)
-                            .WithParentActivityOrWindow(new WindowInteropHelper(Application.Current.MainWindow).Handle)
+                             //.WithParentActivityOrWindow(new WindowInteropHelper(Application.Current.MainWindow).Handle)
+                             .WithUseEmbeddedWebView(false)
                             .ExecuteAsync();
                      });
                 }
