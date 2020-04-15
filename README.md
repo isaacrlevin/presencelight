@@ -1,3 +1,4 @@
+![Logo](Icon.png)
 # Presence Light
 ![Build Status](https://dev.azure.com/isaaclevin/PresenceLight/_apis/build/status/CI-build-wpf?branchName=master)
 
