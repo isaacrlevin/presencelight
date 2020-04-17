@@ -17,13 +17,11 @@ trigger:
 variables:
   BuildConfiguration: Release
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-  
+
 jobs:
 - job: Build
   pool:
-    name: Hosted Windows 2019 with VS2019
-    demands: msbuild
-
+    vmImage: windows-latest
   strategy:
     matrix:
       Channel_CD_Web:
@@ -52,7 +50,13 @@ jobs:
         MsixGenerateAppInstaller: true
 
   steps:
-  - task: DotNetCoreCLI@2  
+  - task: UseDotNet@2
+    displayName: 'Use .NET Core SDK 5.0.x'
+    inputs:
+      version: 5.0.x
+      includePreviewVersions: true
+
+  - task: DotNetCoreCLI@2
     inputs:
       command: custom
       custom: tool
@@ -72,6 +76,7 @@ jobs:
       $manifest.Package.Properties.DisplayName = "$(MsixPackageDisplayName)"
       $manifest.Package.Applications.Application.VisualElements.DisplayName = "$(MsixPackageDisplayName)"
       $manifest.save(".\src\PresenceLight.Package\Package.appxmanifest")
+
     displayName: Update manifest version
 
   - powershell: |
@@ -104,31 +109,6 @@ jobs:
       $appsettings.clientId = "$env:ApplicationId"
       $appsettings | ConvertTo-Json -depth 32| set-content '.\src\PresenceLight\appsettings.json'
     displayName: Update appsettings.json
-    env:
-     ApplicationId: $(ApplicationId)
-     TenantId: $(TenantId)
-    condition: and(succeeded(), eq(variables['ChannelName'], 'MS-Prod-Web'))
-
-  - task: MSBuild@1
-    displayName: Build for $(BuildConfiguration)
-    inputs:
-      solution: src/PresenceLight.sln
-      platform: x86
-      msbuildArguments: /restore /p:AppInstallerUri=$(DistributionUrl) /p:UapAppxPackageBuildMode=$(MsixBuildMode) /p:GenerateAppInstallerFile=$(MsixGenerateAppInstaller)
-      configuration: $(BuildConfiguration)
-      maximumCpuCount: false
-
-  - script: copy src\build.cer src\PresenceLight.Package\AppPackages\PresenceLight.Package_$(GitBuildVersionSimple).0_x86_Test\PresenceLight.Package_$(GitBuildVersionSimple).0_x86.cer
-    displayName: Copy Certificate to versioned dir
-    condition: and(succeeded(), not(eq(variables['ChannelName'], 'Prod-Store')))
-
-  - task: CmdLine@2
-    displayName: Copy PDBs
-    inputs:
-      script: |
-        copy src\PresenceLight\bin\$(BuildConfiguration)\PresenceLight.pdb src\PresenceLight.Package\AppPackages\PresenceLight.Package_$(GitBuildVersionSimple).0_x86_Test\PresenceLight.pdb
-        copy src\PresenceLight.Core\bin\$(BuildConfiguration)\netstandard2.0\PresenceLight.Core.pdb src\PresenceLight.Package\AppPackages\PresenceLight.Package_$(GitBuildVersionSimple).0_x86_Test\PresenceLight.Core.pdb
-
 
   - powershell: |
       # Update badges
@@ -141,6 +121,30 @@ jobs:
       $badge.svg.g[1].text[3].InnerText = "$(GitBuildVersionSimple).0"
       $badge.Save("src\PresenceLight.Package\AppPackages\stable_badge.svg")
     displayName: Update badge versions
+
+    env:
+     ApplicationId: $(ApplicationId)
+     TenantId: $(TenantId)
+    condition: and(succeeded(), eq(variables['ChannelName'], 'MS-Prod-Web'))
+
+    - task: MSBuild@1
+      displayName: Build Presence Light for $(BuildConfiguration)
+      inputs:
+        solution: '.\src\PresenceLight.sln'
+        msbuildArguments: /restore /p:AppInstallerUri=$(DistributionUrl) /p:UapAppxPackageBuildMode=$(MsixBuildMode) /p:GenerateAppInstallerFile=$(MsixGenerateAppInstaller)
+        configuration: $(BuildConfiguration)
+        maximumCpuCount: true
+
+  - script: copy src\build.cer src\PresenceLight.Package\AppPackages\PresenceLight.Package_$(GitBuildVersionSimple).0_x86_Test\PresenceLight.Package_$(GitBuildVersionSimple).0_x86.cer
+    displayName: Copy Certificate to versioned dir
+    condition: and(succeeded(), not(eq(variables['ChannelName'], 'Prod-Store')))
+
+  - task: CmdLine@2
+    displayName: Copy PDBs
+    inputs:
+      script: |
+        copy src\PresenceLight\bin\$(BuildConfiguration)\PresenceLight.pdb src\PresenceLight.Package\AppPackages\PresenceLight.Package_$(GitBuildVersionSimple).0_x86_Test\PresenceLight.pdb
+        copy src\PresenceLight.Core\bin\$(BuildConfiguration)\netstandard2.0\PresenceLight.Core.pdb src\PresenceLight.Package\AppPackages\PresenceLight.Package_$(GitBuildVersionSimple).0_x86_Test\PresenceLight.Core.pdb
 
   - task: PublishPipelineArtifact@0
     inputs:
