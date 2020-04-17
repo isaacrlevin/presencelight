@@ -126,6 +126,9 @@ jobs:
      ApplicationId: $(ApplicationId)
      TenantId: $(TenantId)
     condition: and(succeeded(), eq(variables['ChannelName'], 'MS-Prod-Web'))
+  
+  - script: dotnet --info
+    displayName: Get dotnet version
 
   - task: MSBuild@1
     displayName: Build Presence Light for $(BuildConfiguration)
