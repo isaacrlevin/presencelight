@@ -29,7 +29,7 @@ namespace PresenceLight
 
             var theme = ((SolidColorBrush)SystemParameters.WindowGlassBrush).Color;
             stopGraphPolling = true;
-
+            stopThemePolling = false;
             string color = $"#{theme.ToString().Substring(3)}";
 
             lblTheme.Content = $"Theme Color is {color}";
