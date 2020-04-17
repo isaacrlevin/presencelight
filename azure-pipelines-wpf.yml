@@ -146,8 +146,8 @@ jobs:
     displayName: Copy PDBs
     inputs:
       script: |
-        copy src\PresenceLight\bin\$(BuildConfiguration)\PresenceLight.pdb src\PresenceLight.Package\AppPackages\PresenceLight.Package_$(GitBuildVersionSimple).0_x86_Test\PresenceLight.pdb
-        copy src\PresenceLight.Core\bin\$(BuildConfiguration)\netstandard2.0\PresenceLight.Core.pdb src\PresenceLight.Package\AppPackages\PresenceLight.Package_$(GitBuildVersionSimple).0_x86_Test\PresenceLight.Core.pdb
+        copy src\PresenceLight\bin\$(BuildConfiguration)\netcoreapp5.0\PresenceLight.pdb src\PresenceLight.Package\AppPackages\PresenceLight.Package_$(GitBuildVersionSimple).0_x86_Test\PresenceLight.pdb
+        copy src\PresenceLight.Core\bin\$(BuildConfiguration)\netstandard2.1\PresenceLight.Core.pdb src\PresenceLight.Package\AppPackages\PresenceLight.Package_$(GitBuildVersionSimple).0_x86_Test\PresenceLight.Core.pdb
 
   - task: PublishPipelineArtifact@0
     inputs:
