@@ -110,18 +110,6 @@ jobs:
       $appsettings | ConvertTo-Json -depth 32| set-content '.\src\PresenceLight\appsettings.json'
     displayName: Update appsettings.json
 
-  - powershell: |
-      # Update badges
-      [xml]$badge = Get-Content ".\Build\ci_badge.svg"
-      $badge.svg.g[1].text[2].InnerText = "$(GitBuildVersionSimple).0"
-      $badge.svg.g[1].text[3].InnerText = "$(GitBuildVersionSimple).0"
-      $badge.Save("src\PresenceLight.Package\AppPackages\ci_badge.svg")
-      [xml]$badge = Get-Content ".\Build\store_badge.svg"
-      $badge.svg.g[1].text[2].InnerText = "$(GitBuildVersionSimple).0"
-      $badge.svg.g[1].text[3].InnerText = "$(GitBuildVersionSimple).0"
-      $badge.Save("src\PresenceLight.Package\AppPackages\stable_badge.svg")
-    displayName: Update badge versions
-
     env:
      ApplicationId: $(ApplicationId)
      TenantId: $(TenantId)
@@ -141,6 +129,18 @@ jobs:
   - script: copy src\build.cer src\PresenceLight.Package\AppPackages\PresenceLight.Package_$(GitBuildVersionSimple).0_x86_Test\PresenceLight.Package_$(GitBuildVersionSimple).0_x86.cer
     displayName: Copy Certificate to versioned dir
     condition: and(succeeded(), not(eq(variables['ChannelName'], 'Prod-Store')))
+    
+  - powershell: |
+      # Update badges
+      [xml]$badge = Get-Content ".\Build\ci_badge.svg"
+      $badge.svg.g[1].text[2].InnerText = "$(GitBuildVersionSimple).0"
+      $badge.svg.g[1].text[3].InnerText = "$(GitBuildVersionSimple).0"
+      $badge.Save("src\PresenceLight.Package\AppPackages\ci_badge.svg")
+      [xml]$badge = Get-Content ".\Build\store_badge.svg"
+      $badge.svg.g[1].text[2].InnerText = "$(GitBuildVersionSimple).0"
+      $badge.svg.g[1].text[3].InnerText = "$(GitBuildVersionSimple).0"
+      $badge.Save("src\PresenceLight.Package\AppPackages\stable_badge.svg")
+    displayName: Update badge versions
 
   - task: CmdLine@2
     displayName: Copy PDBs
