@@ -127,13 +127,13 @@ jobs:
      TenantId: $(TenantId)
     condition: and(succeeded(), eq(variables['ChannelName'], 'MS-Prod-Web'))
 
-    - task: MSBuild@1
-      displayName: Build Presence Light for $(BuildConfiguration)
-      inputs:
-        solution: '.\src\PresenceLight.sln'
-        msbuildArguments: /restore /p:AppInstallerUri=$(DistributionUrl) /p:UapAppxPackageBuildMode=$(MsixBuildMode) /p:GenerateAppInstallerFile=$(MsixGenerateAppInstaller)
-        configuration: $(BuildConfiguration)
-        maximumCpuCount: true
+  - task: MSBuild@1
+    displayName: Build Presence Light for $(BuildConfiguration)
+    inputs:
+      solution: '.\src\PresenceLight.sln'
+      msbuildArguments: /restore /p:AppInstallerUri=$(DistributionUrl) /p:UapAppxPackageBuildMode=$(MsixBuildMode) /p:GenerateAppInstallerFile=$(MsixGenerateAppInstaller)
+      configuration: $(BuildConfiguration)
+      maximumCpuCount: true
 
   - script: copy src\build.cer src\PresenceLight.Package\AppPackages\PresenceLight.Package_$(GitBuildVersionSimple).0_x86_Test\PresenceLight.Package_$(GitBuildVersionSimple).0_x86.cer
     displayName: Copy Certificate to versioned dir
