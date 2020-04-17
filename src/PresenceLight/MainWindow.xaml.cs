@@ -96,6 +96,7 @@ namespace PresenceLight
         {
             CheckHueSettings();
             CheckLifxSettings();
+            CheckAAD();
 
             if (Config.IconType == "Transparent")
             {
@@ -192,6 +193,11 @@ namespace PresenceLight
 
         private async void CallGraphButton_Click(object sender, RoutedEventArgs e)
         {
+            if (_graphServiceClient == null)
+            {
+                _graphServiceClient = _graphservice.GetAuthenticatedGraphClient(typeof(WPFAuthorizationProvider));
+            }
+
             stopThemePolling = true;
             stopGraphPolling = false;
             signInPanel.Visibility = Visibility.Collapsed;
@@ -443,40 +449,35 @@ namespace PresenceLight
                 Config.IconType = "White";
             }
 
+            CheckAAD();
+
             await SettingsService.SaveSettings(Config);
             lblSettingSaved.Visibility = Visibility.Visible;
 
-            if (!CheckAAD())
-            {
-                configErrorPanel.Visibility = Visibility.Visible;
-                dataPanel.Visibility = Visibility.Hidden;
-                signInPanel.Visibility = Visibility.Hidden;
-            }
-            else
-            {
-                configErrorPanel.Visibility = Visibility.Hidden;
-                signInPanel.Visibility = Visibility.Visible;
-
-                if (_graphServiceClient == null)
-                {
-                    _graphServiceClient = _graphservice.GetAuthenticatedGraphClient(typeof(WPFAuthorizationProvider));
-                }
-            }
         }
 
-        private bool CheckAAD()
+        private void CheckAAD()
         {
             Regex r = new Regex(@"^(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}$");
             if (string.IsNullOrEmpty(Config.ClientId) || string.IsNullOrEmpty(Config.TenantId) || string.IsNullOrEmpty(Config.RedirectUri) || !r.IsMatch(Config.ClientId) || !r.IsMatch(Config.TenantId))
             {
-                return false;
+                configErrorPanel.Visibility = Visibility.Visible;
+                dataPanel.Visibility = Visibility.Hidden;
+                signInPanel.Visibility = Visibility.Hidden;
+                return;
             }
 
             _options.ClientId = Config.ClientId;
             _options.TenantId = Config.TenantId;
             _options.RedirectUri = Config.RedirectUri;
 
-            return true;
+            configErrorPanel.Visibility = Visibility.Hidden;
+            signInPanel.Visibility = Visibility.Visible;
+
+            if (_graphServiceClient == null)
+            {
+                _graphServiceClient = _graphservice.GetAuthenticatedGraphClient(typeof(WPFAuthorizationProvider));
+            } 
         }
         #endregion
 
