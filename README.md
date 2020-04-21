@@ -41,7 +41,7 @@ In order for the desktop app to work, you need to be running Windows 10, version
 - Configure an Azure Active Directory Application
 - Obtain the IP Address for your Phillips Hue Bridge
 - Enable [side-loading apps in Windows 10](https://docs.microsoft.com/en-us/windows/application-management/sideload-apps-in-windows-10)
-- Install a User Certificate for the WPF App (included at URL of Installer)
+- Install a User Certificate for the WPF App (included at URL of Installer) into Trusted People
 - Install App via the Blue Button
 
 **ANOTHER NOTE: If you are a Microsoft Employee, you do not need to register an AAD Application, as I have done this, I have an [installer](https://presencelight.z5.web.core.windows.net/MSFT) for you to use.**
