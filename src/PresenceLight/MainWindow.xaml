@@ -6,6 +6,7 @@
         xmlns:l="clr-namespace:PresenceLight"
         xmlns:gif="http://wpfanimatedgif.codeplex.com"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:s="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d" Title="Presence Light" Height="550" Width="600">
     <Grid>
         <TabControl SelectionChanged="TabControl_SelectionChanged">
@@ -134,15 +135,18 @@
                         <ColumnDefinition Width="91*"/>
                         <ColumnDefinition Width="184*"/>
                     </Grid.ColumnDefinitions>
-                    <Label Content="Azure App Client ID" Margin="5,34,16,319" Grid.ColumnSpan="3"/>
-                    <TextBox Text="{Binding ClientId}" x:Name="clientId" HorizontalAlignment="Left" Height="23" Margin="15,34,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="230" Grid.Column="2" Grid.ColumnSpan="2"/>
+                    <Label Content="Azure App Client ID" Margin="5,30,16,319" Grid.ColumnSpan="3"/>
+                    <TextBox Text="{Binding ClientId}" x:Name="clientId" HorizontalAlignment="Left" Height="23" Margin="50,30,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="230" Grid.Column="2" Grid.ColumnSpan="2"/>
 
-                    <Label Content="Azure App Tenant ID" Margin="5,62,16,291" Grid.ColumnSpan="3"/>
-                    <TextBox Text="{Binding TenantId}" x:Name="tenantId" HorizontalAlignment="Left" Height="23" Margin="15,62,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="230" Grid.Column="2" Grid.ColumnSpan="2"/>
+                    <Label Content="Azure App Tenant ID" Margin="5,60,16,291" Grid.ColumnSpan="3"/>
+                    <TextBox Text="{Binding TenantId}" x:Name="tenantId" HorizontalAlignment="Left" Height="23" Margin="50,60,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="230" Grid.Column="2" Grid.ColumnSpan="2"/>
 
-                    <Label Content="Icon Type" Margin="5,97,4,254" Grid.ColumnSpan="3"/>
-                    <RadioButton GroupName="IconType" x:Name="Transparent" Content="Transparent" HorizontalAlignment="Left" Margin="15,104,0,0" VerticalAlignment="Top" Height="27" Grid.Column="2" Grid.ColumnSpan="2"/>
-                    <RadioButton GroupName="IconType" x:Name="White" Content="White" HorizontalAlignment="Left" Margin="15,137,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.43,-0.627" Height="23" Grid.Column="2"/>
+                    <Label Content="Graph and Theme Polling Interval " Margin="5,90,16,291" Grid.ColumnSpan="3"/>
+                    <xctk:DecimalUpDown FormatString="F2" Value="{Binding PollingInterval}" x:Name="pollingInterval"  Height="23" Margin="-75,90,0,0"  VerticalAlignment="Top" Width="230" Grid.Column="2" Grid.ColumnSpan="2" Increment=".1" Maximum="5" Minimum="1" />
+
+                     <Label Content="Icon Type" Margin="5,150,4,254" Grid.ColumnSpan="3"/>
+                    <RadioButton GroupName="IconType" x:Name="Transparent" Content="Transparent" HorizontalAlignment="Left" Margin="50,150,0,0" VerticalAlignment="Top" Height="27" Grid.Column="2" Grid.ColumnSpan="2"/>
+                    <RadioButton GroupName="IconType" x:Name="White" Content="White" HorizontalAlignment="Left" Margin="50,170,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.43,-0.627" Height="23" Grid.Column="2"/>
                     <Button Height="45" Width="170" Content="Save" Margin="-106,250,1,69" Click="SaveSettings_Click" Grid.ColumnSpan="4" Grid.Column="1"/>
                     <Label x:Name="lblSettingSaved" Visibility="Collapsed" Content="Settings Updated" Foreground="Green" Margin="70,360,136,10" Grid.Column="2" Grid.ColumnSpan="2"/>
                 </Grid>
@@ -151,7 +155,8 @@
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="119*"/>
+                        <ColumnDefinition Width="73*"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="200" />
@@ -165,12 +170,12 @@
                     </Grid.RowDefinitions>
 
 
-                    <Border Grid.Row="0" Grid.Column="1" Margin="0,50,0,0">
+                    <Border Grid.Row="0" Grid.Column="1" Margin="0,50,0,0" Grid.ColumnSpan="2">
                         <TextBlock FontSize="25" Text="Presence Light by Isaac Levin">
                         </TextBlock>
                     </Border>
 
-                    <Border Grid.Row="0" Grid.Column="1" Margin="0,100,0,0">
+                    <Border Grid.Row="0" Grid.Column="1" Margin="0,100,0,0" Grid.ColumnSpan="2">
                         <TextBlock>
                             <Hyperlink FontSize="15" NavigateUri="https://github.com/isaacrlevin/presencelight" RequestNavigate="Hyperlink_RequestNavigate">
                                 https://github.com/isaacrlevin/presencelight
@@ -183,25 +188,25 @@
                     <Image HorizontalAlignment="Left" Height="100" Margin="45,45,0,0" Source="/Images/profileimage.jpg" VerticalAlignment="Top" Width="100"/>
 
                     <Label Grid.Row="1" FontSize="15" Content="Package Name" Target="{Binding ElementName=packageName}" VerticalAlignment="Center" />
-                    <TextBlock Grid.Row="1" FontSize="15" x:Name="packageName" Grid.Column="1" Margin="20,0,0,0" VerticalAlignment="Center"  />
+                    <TextBlock Grid.Row="1" FontSize="15" x:Name="packageName" Grid.Column="1" Margin="20,0,0,0" VerticalAlignment="Center" Grid.ColumnSpan="2"  />
 
                     <Label Grid.Row="2" FontSize="15" Content="Package Version" Target="{Binding ElementName=packageVersion}" VerticalAlignment="Center" />
-                    <TextBlock Grid.Row="2" FontSize="15" x:Name="packageVersion" Grid.Column="1" Margin="20,0,0,0" VerticalAlignment="Center" />
+                    <TextBlock Grid.Row="2" FontSize="15" x:Name="packageVersion" Grid.Column="1" Margin="20,0,0,0" VerticalAlignment="Center" Grid.ColumnSpan="2" />
 
                     <Label Grid.Row="3" FontSize="15" Content="Installed from" Target="{Binding ElementName=installedFrom}" VerticalAlignment="Center" />
-                    <TextBlock Grid.Row="3" FontSize="15" TextWrapping="Wrap" x:Name="installedFrom" Grid.Column="1" Margin="20,0,0,0" VerticalAlignment="Center"  />
+                    <TextBlock Grid.Row="3" FontSize="15" TextWrapping="Wrap" x:Name="installedFrom" Grid.Column="1" Margin="20,0,0,0" VerticalAlignment="Center" Grid.ColumnSpan="2"  />
 
                     <Label Grid.Row="4" FontSize="15" Content="AssemblyVersion" Target="{Binding ElementName=assemblyVersion}" VerticalAlignment="Center" />
-                    <TextBlock Grid.Row="4" FontSize="15" x:Name="assemblyVersion" Grid.Column="1" Margin="20,0,0,0" VerticalAlignment="Center" />
+                    <TextBlock Grid.Row="4" FontSize="15" x:Name="assemblyVersion" Grid.Column="1" Margin="20,0,0,0" VerticalAlignment="Center" Grid.ColumnSpan="2" />
 
-                    <Label Grid.Row="5" FontSize="15" Content="Install Location" Target="{Binding ElementName=installLocation}" />
-                    <TextBlock Grid.Row="5" FontSize="15" TextWrapping="Wrap" x:Name="installLocation" Margin="20,0,0,0" Grid.Column="1" VerticalAlignment="Center"  />
+                    <Label Grid.Row="5" FontSize="15" Content="Install Location" Target="{Binding ElementName=installLocation}" Margin="0,0,0,30" Grid.RowSpan="2" />
+                    <TextBlock Grid.Row="5" FontSize="15" TextWrapping="Wrap" x:Name="installLocation" Margin="20,0,0,0" Grid.Column="1" VerticalAlignment="Center" Grid.ColumnSpan="2"  />
 
-                    <Label Grid.Row="6" FontSize="15" Content="Install Date" Target="{Binding ElementName=installedDate}" />
-                    <TextBlock Grid.Row="6" FontSize="15" TextWrapping="Wrap" x:Name="installedDate" Margin="20,0,0,0" Grid.Column="1" VerticalAlignment="Center"  />
+                    <Label Grid.Row="6" FontSize="15" Content="Install Date" Target="{Binding ElementName=installedDate}" Margin="0,0,0,60" Grid.RowSpan="2" />
+                    <TextBlock Grid.Row="6" FontSize="15" TextWrapping="Wrap" x:Name="installedDate" Margin="20,0,0,0" Grid.Column="1" VerticalAlignment="Center" Grid.ColumnSpan="2"  />
 
                     <Button x:Name="ButtonShowRuntimeVersionInfo" FontSize="15" Grid.Row="7" Click="Button_Click" Height="40" Margin="0,20,0,0"  Width="210">Show Runtime Info</Button>
-                    <TextBlock x:Name="RuntimeVersionInfo" FontSize="15" Grid.Row="7" Grid.Column="1" Margin="20,20,0,0"  />
+                    <TextBlock x:Name="RuntimeVersionInfo" FontSize="15" Grid.Row="7" Grid.Column="1" Margin="20,20,0,0" Grid.ColumnSpan="2"  />
 
                 </Grid>
             </TabItem>

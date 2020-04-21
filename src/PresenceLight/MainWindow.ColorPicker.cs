@@ -53,7 +53,7 @@ namespace PresenceLight
                     stopThemePolling = false;
                     return;
                 }
-                await Task.Delay(5000);
+                await Task.Delay(Convert.ToInt32(Config.PollingInterval * 1000));
                 try
                 {
                     theme = ((SolidColorBrush)SystemParameters.WindowGlassBrush).Color;
