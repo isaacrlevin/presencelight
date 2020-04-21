@@ -5,6 +5,7 @@ using System.Windows.Media;
 using PresenceLight.Core.Helpers;
 using System.Text.RegularExpressions;
 using System.Windows.Controls;
+using PresenceLight.Telemetry;
 
 namespace PresenceLight
 {
@@ -153,6 +154,8 @@ namespace PresenceLight
             }
             catch (Exception ex)
             {
+                DiagnosticsClient.TrackException(ex);
+
                 lblHueMessage.Text = "Error Occured registering bridge, please try again";
                 fontBrush.Color = MapColor("#ff3300");
                 lblHueMessage.Foreground = fontBrush;

@@ -19,6 +19,8 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using LifxCloud.NET.Models;
 using System.Windows.Input;
+using PresenceLight.Telemetry;
+
 namespace PresenceLight
 {
     public partial class MainWindow : Window
@@ -73,7 +75,10 @@ namespace PresenceLight
                         await _lifxService.SetColor(color, (Selector)Config.SelectedLifxItemId);
                     }
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    DiagnosticsClient.TrackException(ex);
+                }
             }
         }
 
