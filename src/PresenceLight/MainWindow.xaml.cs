@@ -233,7 +233,7 @@ namespace PresenceLight
                     notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(String.Empty, IconConstants.Inactive)));
                     return;
                 }
-                await Task.Delay(5000);
+                await Task.Delay(Convert.ToInt32(Config.PollingInterval * 1000));
                 try
                 {
                     presence = await System.Threading.Tasks.Task.Run(() => GetPresence());
