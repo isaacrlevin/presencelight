@@ -5,8 +5,8 @@
     <TargetFramework>netcoreapp5.0</TargetFramework>
     <AssetTargetFallback>net472</AssetTargetFallback>
     <AssemblyName>PresenceLight</AssemblyName>
-    <Title>Presence Light</Title>
-    <Description>Presence Light is a solution to broadcast your Microsoft Teams presence to a Phillips Hue or LIFX light bulb. There are other solutions that do something similar, but they require a tethered solution (plugging a light into a computer via USB). What Presence Light does is leverage the Presence Api, which is available in Microsoft Graph, allowing to retrieve your presence without having to be tethered. This could potentially allow someone to update the light bulb from a remote machine they do not use.</Description>
+    <Title>PresenceLight</Title>
+    <Description>PresenceLight is a solution to broadcast your Microsoft Teams presence to a Phillips Hue or LIFX light bulb. There are other solutions that do something similar, but they require a tethered solution (plugging a light into a computer via USB). What PresenceLight does is leverage the Presence Api, which is available in Microsoft Graph, allowing to retrieve your presence without having to be tethered. This could potentially allow someone to update the light bulb from a remote machine they do not use.</Description>
     <RootNamespace>PresenceLight</RootNamespace>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
@@ -28,13 +28,13 @@
   <PropertyGroup>
     <TargetPlatformMinVersion>10.0.17134.0</TargetPlatformMinVersion>
     <TargetPlatformVersion>10.0.18362.0</TargetPlatformVersion>
-
+    
     <NuGetDependencyVersion>5.6.0-xprivate.60020</NuGetDependencyVersion>
   </PropertyGroup>
 
 
-
-
+  
+  
   <ItemGroup>
     <PackageReference Include="AppInsights.WindowsDesktop" Version="2.10.55" />
     <PackageReference Include="Extended.Wpf.Toolkit" Version="3.8.1" />
