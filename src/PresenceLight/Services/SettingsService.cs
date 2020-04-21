@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using PresenceLight.Core;
+using PresenceLight.Telemetry;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +25,10 @@ namespace PresenceLight
                 return JsonConvert.DeserializeObject<ConfigWrapper>(content);
             }
             catch (Exception e)
-            { return null; }
+            {
+                DiagnosticsClient.TrackException(e);
+                return null;
+            }
         }
 
         public async static Task<bool> SaveSettings(ConfigWrapper data)
@@ -38,6 +42,7 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
+                DiagnosticsClient.TrackException(e);
                 return false;
             }
         }
@@ -52,6 +57,7 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
+                DiagnosticsClient.TrackException(e);
                 return false;
             }
         }
@@ -79,6 +85,7 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
+                DiagnosticsClient.TrackException(e);
                 return false;
             }
         }

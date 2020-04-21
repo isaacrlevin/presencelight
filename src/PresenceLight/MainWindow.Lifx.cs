@@ -4,6 +4,7 @@ using System.Windows.Media;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using LifxCloud.NET.Models;
+using PresenceLight.Telemetry;
 
 namespace PresenceLight
 {
@@ -51,7 +52,7 @@ namespace PresenceLight
 
                     if (ddlLifxLights.SelectedItem != null)
                     {
-                        
+
                         ddlLifxLights.Visibility = Visibility.Visible;
                         lblLifxMessage.Text = "Connected to Lifx Cloud";
                         fontBrush.Color = MapColor("#009933");
@@ -59,8 +60,10 @@ namespace PresenceLight
                     }
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                DiagnosticsClient.TrackException(ex);
+
                 lblLifxMessage.Text = "Error Occured Connecting to Lifx, please try again";
                 fontBrush.Color = MapColor("#ff3300");
                 lblLifxMessage.Foreground = fontBrush;
@@ -112,8 +115,10 @@ namespace PresenceLight
                     fontBrush.Color = MapColor("#009933");
                     lblLifxMessage.Foreground = fontBrush;
                 }
-                catch
+                catch (Exception ex)
                 {
+                    DiagnosticsClient.TrackException(ex);
+
                     ddlLifxLights.Visibility = Visibility.Collapsed;
                     lblLifxMessage.Text = "Error Occured Connecting to Lifx, please try again";
                     fontBrush.Color = MapColor("#ff3300");
@@ -155,7 +160,5 @@ namespace PresenceLight
         }
 
         #endregion
-
-
     }
 }
