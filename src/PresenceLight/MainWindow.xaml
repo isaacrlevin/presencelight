@@ -7,7 +7,7 @@
         xmlns:gif="http://wpfanimatedgif.codeplex.com"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:s="clr-namespace:System;assembly=mscorlib"
-        mc:Ignorable="d" Title="Presence Light" Height="550" Width="600">
+        mc:Ignorable="d" Title="PresenceLight" Icon="Icons/Icon.ico" Height="550" Width="600">
     <Grid>
         <TabControl SelectionChanged="TabControl_SelectionChanged">
             <TabItem Header="Set Graph Presence">
@@ -171,7 +171,7 @@
 
 
                     <Border Grid.Row="0" Grid.Column="1" Margin="0,50,0,0" Grid.ColumnSpan="2">
-                        <TextBlock FontSize="25" Text="Presence Light by Isaac Levin">
+                        <TextBlock FontSize="25" Text="PresenceLight by Isaac Levin">
                         </TextBlock>
                     </Border>
 
