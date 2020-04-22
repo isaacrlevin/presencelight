@@ -19,6 +19,8 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using LifxCloud.NET.Models;
 using System.Windows.Input;
+using PresenceLight.Telemetry;
+
 namespace PresenceLight
 {
     public partial class MainWindow : Window
@@ -29,7 +31,7 @@ namespace PresenceLight
 
             var theme = ((SolidColorBrush)SystemParameters.WindowGlassBrush).Color;
             stopGraphPolling = true;
-
+            stopThemePolling = false;
             string color = $"#{theme.ToString().Substring(3)}";
 
             lblTheme.Content = $"Theme Color is {color}";
@@ -53,7 +55,7 @@ namespace PresenceLight
                     stopThemePolling = false;
                     return;
                 }
-                await Task.Delay(5000);
+                await Task.Delay(Convert.ToInt32(Config.PollingInterval * 1000));
                 try
                 {
                     theme = ((SolidColorBrush)SystemParameters.WindowGlassBrush).Color;
@@ -73,7 +75,10 @@ namespace PresenceLight
                         await _lifxService.SetColor(color, (Selector)Config.SelectedLifxItemId);
                     }
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    DiagnosticsClient.TrackException(ex);
+                }
             }
         }
 

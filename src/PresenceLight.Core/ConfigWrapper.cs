@@ -23,6 +23,8 @@ namespace PresenceLight.Core
 
         public string ApiScopes { get; set; }
 
+        public double PollingInterval { get; set; }
+
         public string SelectedHueLightId { get; set; }
 
         public string SelectedLifxItemId { get; set; }

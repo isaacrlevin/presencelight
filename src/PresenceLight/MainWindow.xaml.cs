@@ -96,6 +96,7 @@ namespace PresenceLight
         {
             CheckHueSettings();
             CheckLifxSettings();
+            CheckAAD();
 
             if (Config.IconType == "Transparent")
             {
@@ -192,7 +193,13 @@ namespace PresenceLight
 
         private async void CallGraphButton_Click(object sender, RoutedEventArgs e)
         {
+            if (_graphServiceClient == null)
+            {
+                _graphServiceClient = _graphservice.GetAuthenticatedGraphClient(typeof(WPFAuthorizationProvider));
+            }
+
             stopThemePolling = true;
+            stopGraphPolling = false;
             signInPanel.Visibility = Visibility.Collapsed;
             lblTheme.Visibility = Visibility.Collapsed;
             loadingPanel.Visibility = Visibility.Visible;
@@ -226,7 +233,7 @@ namespace PresenceLight
                     notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(String.Empty, IconConstants.Inactive)));
                     return;
                 }
-                await Task.Delay(5000);
+                await Task.Delay(Convert.ToInt32(Config.PollingInterval * 1000));
                 try
                 {
                     presence = await System.Threading.Tasks.Task.Run(() => GetPresence());
@@ -429,10 +436,11 @@ namespace PresenceLight
         }
         #endregion
 
- 
+
         #region Settings Panel
         private async void SaveSettings_Click(object sender, RoutedEventArgs e)
         {
+            btnSettings.IsEnabled = false;
             if (Transparent.IsChecked == true)
             {
                 Config.IconType = "Transparent";
@@ -442,9 +450,35 @@ namespace PresenceLight
                 Config.IconType = "White";
             }
 
+            CheckAAD();
+
             await SettingsService.SaveSettings(Config);
             lblSettingSaved.Visibility = Visibility.Visible;
-            CheckHueSettings();
+            btnSettings.IsEnabled = true;
+        }
+
+        private void CheckAAD()
+        {
+            Regex r = new Regex(@"^(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}$");
+            if (string.IsNullOrEmpty(Config.ClientId) || string.IsNullOrEmpty(Config.TenantId) || string.IsNullOrEmpty(Config.RedirectUri) || !r.IsMatch(Config.ClientId) || !r.IsMatch(Config.TenantId))
+            {
+                configErrorPanel.Visibility = Visibility.Visible;
+                dataPanel.Visibility = Visibility.Hidden;
+                signInPanel.Visibility = Visibility.Hidden;
+                return;
+            }
+
+            _options.ClientId = Config.ClientId;
+            _options.TenantId = Config.TenantId;
+            _options.RedirectUri = Config.RedirectUri;
+
+            configErrorPanel.Visibility = Visibility.Hidden;
+            signInPanel.Visibility = Visibility.Visible;
+
+            if (_graphServiceClient == null)
+            {
+                _graphServiceClient = _graphservice.GetAuthenticatedGraphClient(typeof(WPFAuthorizationProvider));
+            }
         }
         #endregion
 

@@ -3,7 +3,7 @@ namespace PresenceLight.Core.Graph
 {
     public static class PresenceConstants
     {
-        private static string Base = "Presence Light Status";
+        private static string Base = "PresenceLight Status";
         public static string Available = $"{Base} - Available";
         public static string Busy = $"{Base} - Busy";
         public static string BeRightBack = $"{Base} - Be Right Back";

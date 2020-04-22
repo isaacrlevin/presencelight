@@ -4,6 +4,7 @@ using System.Windows.Media;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using LifxCloud.NET.Models;
+using PresenceLight.Telemetry;
 
 namespace PresenceLight
 {
@@ -13,8 +14,10 @@ namespace PresenceLight
 
         private async void SaveLifxSettings_Click(object sender, RoutedEventArgs e)
         {
+            btnLifx.IsEnabled = false;
             await SettingsService.SaveSettings(Config);
             lblLifxSaved.Visibility = Visibility.Visible;
+            btnLifx.IsEnabled = true;
         }
 
         private async void CheckLifxSettings()
@@ -51,7 +54,7 @@ namespace PresenceLight
 
                     if (ddlLifxLights.SelectedItem != null)
                     {
-                        
+
                         ddlLifxLights.Visibility = Visibility.Visible;
                         lblLifxMessage.Text = "Connected to Lifx Cloud";
                         fontBrush.Color = MapColor("#009933");
@@ -59,8 +62,10 @@ namespace PresenceLight
                     }
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                DiagnosticsClient.TrackException(ex);
+
                 lblLifxMessage.Text = "Error Occured Connecting to Lifx, please try again";
                 fontBrush.Color = MapColor("#ff3300");
                 lblLifxMessage.Foreground = fontBrush;
@@ -85,12 +90,13 @@ namespace PresenceLight
                 _options.SelectedLifxItemId = Config.SelectedLifxItemId;
 
             }
+            e.Handled = true;
         }
 
         private async void CheckLifx_Click(object sender, RoutedEventArgs e)
         {
             SolidColorBrush fontBrush = new SolidColorBrush();
-
+           
             if (!string.IsNullOrEmpty(lifxApiKey.Text))
             {
                 try
@@ -112,8 +118,10 @@ namespace PresenceLight
                     fontBrush.Color = MapColor("#009933");
                     lblLifxMessage.Foreground = fontBrush;
                 }
-                catch
+                catch (Exception ex)
                 {
+                    DiagnosticsClient.TrackException(ex);
+
                     ddlLifxLights.Visibility = Visibility.Collapsed;
                     lblLifxMessage.Text = "Error Occured Connecting to Lifx, please try again";
                     fontBrush.Color = MapColor("#ff3300");
@@ -152,10 +160,9 @@ namespace PresenceLight
             {
                 pnlLifx.Visibility = Visibility.Collapsed;
             }
+            e.Handled = true;
         }
 
         #endregion
-
-
     }
 }
