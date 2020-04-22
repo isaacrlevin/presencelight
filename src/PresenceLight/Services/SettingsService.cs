@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using PresenceLight.Core;
+using PresenceLight.Telemetry;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,11 +21,14 @@ namespace PresenceLight
                 StorageFile sf = await _settingsFolder.GetFileAsync(SETTINGS_FILENAME);
                 if (sf == null) return null;
 
-                string content = await FileIO.ReadTextAsync(sf);
+                string content = await FileIO.ReadTextAsync(sf, Windows.Storage.Streams.UnicodeEncoding.Utf8);
                 return JsonConvert.DeserializeObject<ConfigWrapper>(content);
             }
             catch (Exception e)
-            { return null; }
+            {
+                DiagnosticsClient.TrackException(e);
+                return null;
+            }
         }
 
         public async static Task<bool> SaveSettings(ConfigWrapper data)
@@ -32,12 +36,13 @@ namespace PresenceLight
             try
             {
                 StorageFile file = await _settingsFolder.CreateFileAsync(SETTINGS_FILENAME, CreationCollisionOption.ReplaceExisting);
-                string content = JsonConvert.SerializeObject(data);
-                await FileIO.WriteTextAsync(file, content);
+                string content = JsonConvert.SerializeObject(data, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { });
+                await FileIO.WriteTextAsync(file, content, Windows.Storage.Streams.UnicodeEncoding.Utf8);
                 return true;
             }
             catch (Exception e)
             {
+                DiagnosticsClient.TrackException(e);
                 return false;
             }
         }
@@ -52,6 +57,7 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
+                DiagnosticsClient.TrackException(e);
                 return false;
             }
         }
@@ -79,6 +85,7 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
+                DiagnosticsClient.TrackException(e);
                 return false;
             }
         }

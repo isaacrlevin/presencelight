@@ -6,12 +6,13 @@
         xmlns:l="clr-namespace:PresenceLight"
         xmlns:gif="http://wpfanimatedgif.codeplex.com"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-        mc:Ignorable="d" Title="Presence Light" Height="550" Width="600">
+        xmlns:s="clr-namespace:System;assembly=mscorlib"
+        mc:Ignorable="d" Title="PresenceLight" Icon="Icons/Icon.ico" Height="550" Width="600">
     <Grid>
-        <TabControl SelectionChanged="TabControl_SelectionChanged">
+        <TabControl x:Name="tabControl" SelectionChanged="TabControl_SelectionChanged">
             <TabItem Header="Set Graph Presence">
                 <Grid>
-                    <Grid x:Name="configErrorPanel" Visibility="Hidden" >
+                    <Grid x:Name="configErrorPanel" Visibility="Visible" >
                         <Label Margin="50,130,4.667,200" RenderTransformOrigin="0.5,0.5" >
                             <TextBlock TextWrapping="Wrap" TextAlignment="Center">
                               Your Application is not configured to login, please go to below link for more information.
@@ -56,7 +57,7 @@
                             </ContextMenu>
                         </l:NotifyIcon.ContextMenu>
                     </l:NotifyIcon>
-                    <Grid x:Name="signInPanel" Visibility="Visible">
+                    <Grid x:Name="signInPanel" Visibility="Collapsed">
                         <Button Content="Sign In" Margin="90,130,90,200" Click="CallGraphButton_Click" Height="45" Width="170" />
                         <Label Content="Login to Microsoft Account to Sync Presence" Margin="160,100,90,200" VerticalAlignment="Top"/>
                     </Grid>
@@ -95,7 +96,7 @@
                         </Label>
                         <ComboBox x:Name="ddlHueLights" DisplayMemberPath="Name" Visibility="Collapsed" SelectionChanged="ddlHueLights_SelectionChanged"  HorizontalAlignment="Center" Margin="0,250,0,0" VerticalAlignment="Top" Width="150"/>
                         <Image x:Name="imgLoading" Visibility="Collapsed" gif:ImageBehavior.AnimatedSource="Icons/loading.gif" Width="75" Margin="143,17,143,-17" />
-                        <Button Height="45" Width="170" Content="Save" Margin="0,250,1,69" Click="SaveHueSettings_Click"/>
+                        <Button x:Name="btnHue" Height="45" Width="170" Content="Save" Margin="0,250,1,69" Click="SaveHueSettings_Click"/>
                         <Label x:Name="lblHueSaved" Visibility="Collapsed" Content="Settings Updated" Foreground="Green" Margin="230,380,136,10"/>
                     </Grid>
                 </Grid>
@@ -115,13 +116,13 @@
                         <TextBox Text="{Binding LifxApiKey}" x:Name="lifxApiKey" HorizontalAlignment="Left" Height="23" Margin="100,60,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="450" Grid.ColumnSpan="2"/>
                         <Button x:Name="btnGetLifxLights" Height="45" Width="170" Content="Get Lights" Margin="-200,60,1,193" Click="CheckLifx_Click"/>
                         <Button x:Name="btnGetLifxGroups" Height="45" Width="170" Content="Get Groups" Margin="200,60,1,193" Click="CheckLifx_Click"/>
-                        <Label Margin="220,220,0,0" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Left" >
+                        <Label Margin="0,220,0,0" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Center" >
                             <TextBlock  x:Name="lblLifxMessage" TextWrapping="Wrap"  TextAlignment="Center">
                             </TextBlock>
                         </Label>
                         <ComboBox x:Name="ddlLifxLights" DisplayMemberPath="Label" Visibility="Collapsed" SelectionChanged="ddlLifxLights_SelectionChanged"  HorizontalAlignment="Left" Margin="200,250,0,0" VerticalAlignment="Top" Width="150"/>
                         <Image x:Name="imgLifxLoading" Visibility="Collapsed" gif:ImageBehavior.AnimatedSource="Icons/loading.gif" Width="75" Margin="160,17,49,-17" />
-                        <Button Height="45" Width="170" Content="Save" Margin="0,250,1,69" Click="SaveLifxSettings_Click"/>
+                        <Button x:Name="btnLifx" Height="45" Width="170" Content="Save" Margin="0,250,1,69" Click="SaveLifxSettings_Click"/>
                         <Label x:Name="lblLifxSaved" Visibility="Collapsed" Content="Settings Updated" Foreground="Green" Margin="230,380,136,10"/>
                     </Grid>
                 </Grid>
@@ -129,29 +130,41 @@
             <TabItem Header="Settings" >
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="87*"/>
-                        <ColumnDefinition Width="32*"/>
-                        <ColumnDefinition Width="91*"/>
-                        <ColumnDefinition Width="184*"/>
+                        <ColumnDefinition Width="15*"/>
+                        <ColumnDefinition Width="78*"/>
+                        <ColumnDefinition Width="52*"/>
+                        <ColumnDefinition Width="138*"/>
+                        <ColumnDefinition Width="111*"/>
                     </Grid.ColumnDefinitions>
-                    <Label Content="Azure App Client ID" Margin="5,34,16,319" Grid.ColumnSpan="3"/>
-                    <TextBox Text="{Binding ClientId}" x:Name="clientId" HorizontalAlignment="Left" Height="23" Margin="15,34,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="230" Grid.Column="2" Grid.ColumnSpan="2"/>
+                    <Grid x:Name="pnlSettings" Grid.Column="1" Grid.ColumnSpan="4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="352*"/>
+                            <ColumnDefinition Width="18*"/>
+                            <ColumnDefinition Width="201*"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Content="Azure App Client ID" Margin="5,30,16,319" Grid.ColumnSpan="3"/>
+                        <TextBox Text="{Binding ClientId}" x:Name="clientId" HorizontalAlignment="Left" Height="23" Margin="200,30,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="230" Grid.ColumnSpan="3"/>
 
-                    <Label Content="Azure App Tenant ID" Margin="5,62,16,291" Grid.ColumnSpan="3"/>
-                    <TextBox Text="{Binding TenantId}" x:Name="tenantId" HorizontalAlignment="Left" Height="23" Margin="15,62,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="230" Grid.Column="2" Grid.ColumnSpan="2"/>
+                        <Label Content="Azure App Tenant ID" Margin="5,60,16,291" Grid.ColumnSpan="3"/>
+                        <TextBox Text="{Binding TenantId}" x:Name="tenantId" HorizontalAlignment="Left" Height="23" Margin="200,60,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="230" Grid.ColumnSpan="3"/>
 
-                    <Label Content="Icon Type" Margin="5,97,4,254" Grid.ColumnSpan="3"/>
-                    <RadioButton GroupName="IconType" x:Name="Transparent" Content="Transparent" HorizontalAlignment="Left" Margin="15,104,0,0" VerticalAlignment="Top" Height="27" Grid.Column="2" Grid.ColumnSpan="2"/>
-                    <RadioButton GroupName="IconType" x:Name="White" Content="White" HorizontalAlignment="Left" Margin="15,137,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.43,-0.627" Height="23" Grid.Column="2"/>
-                    <Button Height="45" Width="170" Content="Save" Margin="-106,250,1,69" Click="SaveSettings_Click" Grid.ColumnSpan="4" Grid.Column="1"/>
-                    <Label x:Name="lblSettingSaved" Visibility="Collapsed" Content="Settings Updated" Foreground="Green" Margin="70,360,136,10" Grid.Column="2" Grid.ColumnSpan="2"/>
+                        <Label Content="Graph and Theme Polling Interval " Margin="5,90,16,291" Grid.ColumnSpan="3"/>
+                        <xctk:DecimalUpDown FormatString="F2" Value="{Binding PollingInterval}" x:Name="pollingInterval"  Height="23" Margin="200,90,125,0"  VerticalAlignment="Top" Width="230" Grid.ColumnSpan="3" Increment=".1" Maximum="5" Minimum="1" />
+
+                        <Label Content="Icon Type" Margin="5,150,4,254" Grid.ColumnSpan="3"/>
+                        <RadioButton GroupName="IconType" x:Name="Transparent" Content="Transparent" HorizontalAlignment="Left" Margin="200,150,0,0" VerticalAlignment="Top" Height="27"/>
+                        <RadioButton GroupName="IconType" x:Name="White" Content="White" HorizontalAlignment="Left" Margin="200,170,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.43,-0.627" Height="23"/>
+                        <Button Height="45" x:Name="btnSettings" Width="170" Content="Save" Margin="0,280,0,100" Click="SaveSettings_Click" Grid.ColumnSpan="3" />
+                        <Label x:Name="lblSettingSaved" Visibility="Visible" Content="Settings Updated" Foreground="Green" Margin="230,380,0,0" Grid.ColumnSpan="3"/>
+                    </Grid>
                 </Grid>
             </TabItem>
             <TabItem Header="About" >
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="119*"/>
+                        <ColumnDefinition Width="73*"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="200" />
@@ -165,12 +178,12 @@
                     </Grid.RowDefinitions>
 
 
-                    <Border Grid.Row="0" Grid.Column="1" Margin="0,50,0,0">
-                        <TextBlock FontSize="25" Text="Presence Light by Isaac Levin">
+                    <Border Grid.Row="0" Grid.Column="1" Margin="0,50,0,0" Grid.ColumnSpan="2">
+                        <TextBlock FontSize="25" Text="PresenceLight by Isaac Levin">
                         </TextBlock>
                     </Border>
 
-                    <Border Grid.Row="0" Grid.Column="1" Margin="0,100,0,0">
+                    <Border Grid.Row="0" Grid.Column="1" Margin="0,100,0,0" Grid.ColumnSpan="2">
                         <TextBlock>
                             <Hyperlink FontSize="15" NavigateUri="https://github.com/isaacrlevin/presencelight" RequestNavigate="Hyperlink_RequestNavigate">
                                 https://github.com/isaacrlevin/presencelight
@@ -183,25 +196,25 @@
                     <Image HorizontalAlignment="Left" Height="100" Margin="45,45,0,0" Source="/Images/profileimage.jpg" VerticalAlignment="Top" Width="100"/>
 
                     <Label Grid.Row="1" FontSize="15" Content="Package Name" Target="{Binding ElementName=packageName}" VerticalAlignment="Center" />
-                    <TextBlock Grid.Row="1" FontSize="15" x:Name="packageName" Grid.Column="1" Margin="20,0,0,0" VerticalAlignment="Center"  />
+                    <TextBlock Grid.Row="1" FontSize="15" x:Name="packageName" Grid.Column="1" Margin="20,0,0,0" VerticalAlignment="Center" Grid.ColumnSpan="2"  />
 
                     <Label Grid.Row="2" FontSize="15" Content="Package Version" Target="{Binding ElementName=packageVersion}" VerticalAlignment="Center" />
-                    <TextBlock Grid.Row="2" FontSize="15" x:Name="packageVersion" Grid.Column="1" Margin="20,0,0,0" VerticalAlignment="Center" />
+                    <TextBlock Grid.Row="2" FontSize="15" x:Name="packageVersion" Grid.Column="1" Margin="20,0,0,0" VerticalAlignment="Center" Grid.ColumnSpan="2" />
 
                     <Label Grid.Row="3" FontSize="15" Content="Installed from" Target="{Binding ElementName=installedFrom}" VerticalAlignment="Center" />
-                    <TextBlock Grid.Row="3" FontSize="15" TextWrapping="Wrap" x:Name="installedFrom" Grid.Column="1" Margin="20,0,0,0" VerticalAlignment="Center"  />
+                    <TextBlock Grid.Row="3" FontSize="15" TextWrapping="Wrap" x:Name="installedFrom" Grid.Column="1" Margin="20,0,0,0" VerticalAlignment="Center" Grid.ColumnSpan="2"  />
 
                     <Label Grid.Row="4" FontSize="15" Content="AssemblyVersion" Target="{Binding ElementName=assemblyVersion}" VerticalAlignment="Center" />
-                    <TextBlock Grid.Row="4" FontSize="15" x:Name="assemblyVersion" Grid.Column="1" Margin="20,0,0,0" VerticalAlignment="Center" />
+                    <TextBlock Grid.Row="4" FontSize="15" x:Name="assemblyVersion" Grid.Column="1" Margin="20,0,0,0" VerticalAlignment="Center" Grid.ColumnSpan="2" />
 
-                    <Label Grid.Row="5" FontSize="15" Content="Install Location" Target="{Binding ElementName=installLocation}" />
-                    <TextBlock Grid.Row="5" FontSize="15" TextWrapping="Wrap" x:Name="installLocation" Margin="20,0,0,0" Grid.Column="1" VerticalAlignment="Center"  />
+                    <Label Grid.Row="5" FontSize="15" Content="Install Location" Target="{Binding ElementName=installLocation}" Margin="0,0,0,30" Grid.RowSpan="2" />
+                    <TextBlock Grid.Row="5" FontSize="15" TextWrapping="Wrap" x:Name="installLocation" Margin="20,0,0,0" Grid.Column="1" VerticalAlignment="Center" Grid.ColumnSpan="2"  />
 
-                    <Label Grid.Row="6" FontSize="15" Content="Install Date" Target="{Binding ElementName=installedDate}" />
-                    <TextBlock Grid.Row="6" FontSize="15" TextWrapping="Wrap" x:Name="installedDate" Margin="20,0,0,0" Grid.Column="1" VerticalAlignment="Center"  />
+                    <Label Grid.Row="6" FontSize="15" Content="Install Date" Target="{Binding ElementName=installedDate}" Margin="0,0,0,60" Grid.RowSpan="2" />
+                    <TextBlock Grid.Row="6" FontSize="15" TextWrapping="Wrap" x:Name="installedDate" Margin="20,0,0,0" Grid.Column="1" VerticalAlignment="Center" Grid.ColumnSpan="2"  />
 
                     <Button x:Name="ButtonShowRuntimeVersionInfo" FontSize="15" Grid.Row="7" Click="Button_Click" Height="40" Margin="0,20,0,0"  Width="210">Show Runtime Info</Button>
-                    <TextBlock x:Name="RuntimeVersionInfo" FontSize="15" Grid.Row="7" Grid.Column="1" Margin="20,20,0,0"  />
+                    <TextBlock x:Name="RuntimeVersionInfo" FontSize="15" Grid.Row="7" Grid.Column="1" Margin="20,20,0,0" Grid.ColumnSpan="2"  />
 
                 </Grid>
             </TabItem>

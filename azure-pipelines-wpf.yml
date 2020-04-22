@@ -81,18 +81,6 @@ jobs:
 
   - powershell: |
       # Update App Insights instrumentation key
-      [xml]$doc = Get-Content ".\src\PresenceLight\App.config"
-      $node=$doc.configuration.appSettings
-      $node.InnerText = "$(AppInsightsKey)"
-      $doc.save(".\src\PresenceLight\App.config")
-    displayName: Set AppInsights Config in App.config
-    env:
-      AppInsightsKey: $(AppInsightsKey)
-    condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')), not(eq(variables['AppInsightsKey'], '')))
-
-
-  - powershell: |
-      # Update App Insights instrumentation key
       [xml]$doc = Get-Content ".\src\PresenceLight\ApplicationInsights.config"
       $doc.ApplicationInsights.InstrumentationKey = "$(AppInsightsKey)"
       $doc.save(".\src\PresenceLight\ApplicationInsights.config")

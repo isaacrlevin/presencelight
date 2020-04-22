@@ -5,6 +5,7 @@ using System.Windows.Media;
 using PresenceLight.Core.Helpers;
 using System.Text.RegularExpressions;
 using System.Windows.Controls;
+using PresenceLight.Telemetry;
 
 namespace PresenceLight
 {
@@ -14,10 +15,12 @@ namespace PresenceLight
 
         private async void SaveHueSettings_Click(object sender, RoutedEventArgs e)
         {
+            btnHue.IsEnabled = false;
             await SettingsService.SaveSettings(Config);
             _hueService = new HueService(Config);
             CheckHueSettings();
             lblHueSaved.Visibility = Visibility.Visible;
+            btnHue.IsEnabled = true;
         }
 
         private void ddlHueLights_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -27,6 +30,7 @@ namespace PresenceLight
                 Config.SelectedHueLightId = ((Q42.HueApi.Light)ddlHueLights.SelectedItem).Id;
                 _options.SelectedHueLightId = Config.SelectedHueLightId;
             }
+            e.Handled = true;
         }
 
         private void HueIpAddress_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
@@ -43,28 +47,12 @@ namespace PresenceLight
                 }
             }
             CheckHueSettings();
+            e.Handled = true;
         }
         private async void CheckHueSettings()
         {
             if (Config != null)
             {
-                if (!CheckAAD())
-                {
-                    configErrorPanel.Visibility = Visibility.Visible;
-                    dataPanel.Visibility = Visibility.Hidden;
-                    signInPanel.Visibility = Visibility.Hidden;
-                }
-                else
-                {
-                    configErrorPanel.Visibility = Visibility.Hidden;
-                    signInPanel.Visibility = Visibility.Visible;
-
-                    if (_graphServiceClient == null)
-                    {
-                        _graphServiceClient = _graphservice.GetAuthenticatedGraphClient(typeof(WPFAuthorizationProvider));
-                    }
-                }
-
                 SolidColorBrush fontBrush = new SolidColorBrush();
 
 
@@ -129,21 +117,6 @@ namespace PresenceLight
             return true;
         }
 
-        private bool CheckAAD()
-        {
-            Regex r = new Regex(@"^(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}$");
-            if (string.IsNullOrEmpty(Config.ClientId) || string.IsNullOrEmpty(Config.TenantId) || string.IsNullOrEmpty(Config.RedirectUri) || !r.IsMatch(Config.ClientId) || !r.IsMatch(Config.TenantId))
-            {
-                return false;
-            }
-
-            _options.ClientId = Config.ClientId;
-            _options.TenantId = Config.TenantId;
-            _options.RedirectUri = Config.RedirectUri;
-
-            return true;
-        }
-
         private async void FindBridge_Click(object sender, RoutedEventArgs e)
         {
             hueIpAddress.Text = await _hueService.FindBridge();
@@ -159,6 +132,7 @@ namespace PresenceLight
             {
                 pnlPhillips.Visibility = Visibility.Collapsed;
             }
+            e.Handled = true;
         }
 
         private async void RegisterBridge_Click(object sender, RoutedEventArgs e)
@@ -185,6 +159,8 @@ namespace PresenceLight
             }
             catch (Exception ex)
             {
+                DiagnosticsClient.TrackException(ex);
+
                 lblHueMessage.Text = "Error Occured registering bridge, please try again";
                 fontBrush.Color = MapColor("#ff3300");
                 lblHueMessage.Foreground = fontBrush;

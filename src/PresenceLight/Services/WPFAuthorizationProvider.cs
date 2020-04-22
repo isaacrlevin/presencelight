@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Interop;
 using System.Windows;
 using System.Net.Http.Headers;
+using PresenceLight.Telemetry;
 
 namespace PresenceLight.Core.Helpers
 {
@@ -47,7 +48,10 @@ namespace PresenceLight.Core.Helpers
                             .ExecuteAsync();
                      });
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                   
+                }
             }
 
             if (authResult != null)
