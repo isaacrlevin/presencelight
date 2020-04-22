@@ -116,7 +116,7 @@
                         <TextBox Text="{Binding LifxApiKey}" x:Name="lifxApiKey" HorizontalAlignment="Left" Height="23" Margin="100,60,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="450" Grid.ColumnSpan="2"/>
                         <Button x:Name="btnGetLifxLights" Height="45" Width="170" Content="Get Lights" Margin="-200,60,1,193" Click="CheckLifx_Click"/>
                         <Button x:Name="btnGetLifxGroups" Height="45" Width="170" Content="Get Groups" Margin="200,60,1,193" Click="CheckLifx_Click"/>
-                        <Label Margin="130,220,0,0" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Left" >
+                        <Label Margin="0,220,0,0" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Center" >
                             <TextBlock  x:Name="lblLifxMessage" TextWrapping="Wrap"  TextAlignment="Center">
                             </TextBlock>
                         </Label>
