@@ -440,6 +440,7 @@ namespace PresenceLight
         #region Settings Panel
         private async void SaveSettings_Click(object sender, RoutedEventArgs e)
         {
+            btnSettings.IsEnabled = false;
             if (Transparent.IsChecked == true)
             {
                 Config.IconType = "Transparent";
@@ -453,7 +454,7 @@ namespace PresenceLight
 
             await SettingsService.SaveSettings(Config);
             lblSettingSaved.Visibility = Visibility.Visible;
-
+            btnSettings.IsEnabled = true;
         }
 
         private void CheckAAD()
@@ -477,7 +478,7 @@ namespace PresenceLight
             if (_graphServiceClient == null)
             {
                 _graphServiceClient = _graphservice.GetAuthenticatedGraphClient(typeof(WPFAuthorizationProvider));
-            } 
+            }
         }
         #endregion
 
