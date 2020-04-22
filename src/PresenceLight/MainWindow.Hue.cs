@@ -15,10 +15,12 @@ namespace PresenceLight
 
         private async void SaveHueSettings_Click(object sender, RoutedEventArgs e)
         {
+            btnHue.IsEnabled = false;
             await SettingsService.SaveSettings(Config);
             _hueService = new HueService(Config);
             CheckHueSettings();
             lblHueSaved.Visibility = Visibility.Visible;
+            btnHue.IsEnabled = true;
         }
 
         private void ddlHueLights_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -28,6 +30,7 @@ namespace PresenceLight
                 Config.SelectedHueLightId = ((Q42.HueApi.Light)ddlHueLights.SelectedItem).Id;
                 _options.SelectedHueLightId = Config.SelectedHueLightId;
             }
+            e.Handled = true;
         }
 
         private void HueIpAddress_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
@@ -44,6 +47,7 @@ namespace PresenceLight
                 }
             }
             CheckHueSettings();
+            e.Handled = true;
         }
         private async void CheckHueSettings()
         {
@@ -128,6 +132,7 @@ namespace PresenceLight
             {
                 pnlPhillips.Visibility = Visibility.Collapsed;
             }
+            e.Handled = true;
         }
 
         private async void RegisterBridge_Click(object sender, RoutedEventArgs e)

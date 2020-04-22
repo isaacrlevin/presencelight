@@ -14,8 +14,10 @@ namespace PresenceLight
 
         private async void SaveLifxSettings_Click(object sender, RoutedEventArgs e)
         {
+            btnLifx.IsEnabled = false;
             await SettingsService.SaveSettings(Config);
             lblLifxSaved.Visibility = Visibility.Visible;
+            btnLifx.IsEnabled = true;
         }
 
         private async void CheckLifxSettings()
@@ -88,12 +90,13 @@ namespace PresenceLight
                 _options.SelectedLifxItemId = Config.SelectedLifxItemId;
 
             }
+            e.Handled = true;
         }
 
         private async void CheckLifx_Click(object sender, RoutedEventArgs e)
         {
             SolidColorBrush fontBrush = new SolidColorBrush();
-
+           
             if (!string.IsNullOrEmpty(lifxApiKey.Text))
             {
                 try
@@ -157,6 +160,7 @@ namespace PresenceLight
             {
                 pnlLifx.Visibility = Visibility.Collapsed;
             }
+            e.Handled = true;
         }
 
         #endregion
