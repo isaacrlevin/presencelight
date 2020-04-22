@@ -52,7 +52,7 @@ namespace PresenceLight.Worker
                         await GetData();
                     }
                     catch { }
-                    await Task.Delay(5000, stoppingToken);
+                    await Task.Delay(Convert.ToInt32(Config.PollingInterval * 1000), stoppingToken);
                 }
                 await Task.Delay(1000, stoppingToken);
             }

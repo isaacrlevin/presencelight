@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Interop;
 using System.Windows;
 using System.Net.Http.Headers;
+using PresenceLight.Telemetry;
 
 namespace PresenceLight.Core.Helpers
 {
@@ -42,11 +43,15 @@ namespace PresenceLight.Core.Helpers
                     await Application.Current.Dispatcher.Invoke(async () =>
                      {
                          authResult = await _application.AcquireTokenInteractive(_scopes)
-                            .WithParentActivityOrWindow(new WindowInteropHelper(Application.Current.MainWindow).Handle)
+                             //.WithParentActivityOrWindow(new WindowInteropHelper(Application.Current.MainWindow).Handle)
+                             .WithUseEmbeddedWebView(false)
                             .ExecuteAsync();
                      });
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                   
+                }
             }
 
             if (authResult != null)
