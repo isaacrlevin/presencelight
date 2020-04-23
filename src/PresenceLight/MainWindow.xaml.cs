@@ -208,8 +208,14 @@ namespace PresenceLight
             var (profile, presence) = await System.Threading.Tasks.Task.Run(() => GetBatchContent());
             var photo = await System.Threading.Tasks.Task.Run(() => GetPhoto());
 
-            MapUI(presence, profile, LoadImage(photo));
-
+            if (photo == null)
+            {
+                MapUI(presence, profile, new BitmapImage(new Uri("pack://application:,,,/PresenceLight;component/images/UnknownProfile.png")));
+            }
+            else
+            {
+                MapUI(presence, profile, LoadImage(photo));
+            }
             if (!string.IsNullOrEmpty(Config.HueApiKey) && !string.IsNullOrEmpty(Config.HueIpAddress) && !string.IsNullOrEmpty(Config.SelectedHueLightId))
             {
                 await _hueService.SetColor(presence.Availability, Config.SelectedHueLightId);
@@ -223,8 +229,7 @@ namespace PresenceLight
             loadingPanel.Visibility = Visibility.Collapsed;
             this.signInPanel.Visibility = Visibility.Collapsed;
             hueIpAddress.IsEnabled = false;
-            clientId.IsEnabled = false;
-            tenantId.IsEnabled = false;
+
             dataPanel.Visibility = Visibility.Visible;
             while (true)
             {
@@ -270,8 +275,6 @@ namespace PresenceLight
                     notificationIcon.Text = PresenceConstants.Inactive;
                     notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(string.Empty, IconConstants.Inactive)));
                     hueIpAddress.IsEnabled = true;
-                    clientId.IsEnabled = true;
-                    tenantId.IsEnabled = true;
 
                     if (Config.IsPhillipsEnabled && !string.IsNullOrEmpty(Config.HueApiKey) && !string.IsNullOrEmpty(Config.HueIpAddress) && !string.IsNullOrEmpty(Config.SelectedHueLightId))
                     {
@@ -280,14 +283,14 @@ namespace PresenceLight
 
                     if (Config.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LIFXApiKey))
                     {
-                        if (ddlLIFXLights.SelectedItem.GetType() == typeof(LifxCloud.NET.Models.Group))
+                        if (ddlLIFXLights.SelectedItem != null && ddlLIFXLights.SelectedItem.GetType() == typeof(LifxCloud.NET.Models.Group))
                         {
-                            Config.SelectedHueLightId = ((LifxCloud.NET.Models.Group)ddlLIFXLights.SelectedItem).Id;
+                            Config.SelectedLIFXItemId = ((LifxCloud.NET.Models.Group)ddlLIFXLights.SelectedItem).Id;
                         }
 
-                        if (ddlLIFXLights.SelectedItem.GetType() == typeof(LifxCloud.NET.Models.Light))
+                        if (ddlLIFXLights.SelectedItem != null && ddlLIFXLights.SelectedItem.GetType() == typeof(LifxCloud.NET.Models.Light))
                         {
-                            Config.SelectedHueLightId = ((LifxCloud.NET.Models.Light)ddlLIFXLights.SelectedItem).Id;
+                            Config.SelectedLIFXItemId = ((LifxCloud.NET.Models.Light)ddlLIFXLights.SelectedItem).Id;
 
                         }
 
@@ -402,7 +405,23 @@ namespace PresenceLight
 
         public async Task<byte[]> GetPhoto()
         {
-            return ReadFully(await _graphServiceClient.Me.Photo.Content.Request().GetAsync());
+            try
+            {
+                var photo = await _graphServiceClient.Me.Photo.Content.Request().GetAsync();
+
+                if (photo == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    return ReadFully(photo);
+                }
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public static byte[] ReadFully(Stream input)
@@ -461,7 +480,7 @@ namespace PresenceLight
         private void CheckAAD()
         {
             Regex r = new Regex(@"^(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}$");
-            if (string.IsNullOrEmpty(Config.ClientId) || string.IsNullOrEmpty(Config.TenantId) || string.IsNullOrEmpty(Config.RedirectUri) || !r.IsMatch(Config.ClientId) || !r.IsMatch(Config.TenantId))
+            if (string.IsNullOrEmpty(Config.ClientId) || string.IsNullOrEmpty(Config.RedirectUri) || !r.IsMatch(Config.ClientId))
             {
                 configErrorPanel.Visibility = Visibility.Visible;
                 dataPanel.Visibility = Visibility.Hidden;
@@ -470,7 +489,6 @@ namespace PresenceLight
             }
 
             _options.ClientId = Config.ClientId;
-            _options.TenantId = Config.TenantId;
             _options.RedirectUri = Config.RedirectUri;
 
             configErrorPanel.Visibility = Visibility.Hidden;
