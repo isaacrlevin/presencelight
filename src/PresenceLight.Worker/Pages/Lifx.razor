@@ -1,0 +1,104 @@
+﻿@page "/lifx"
+
+@using Newtonsoft.Json
+@using PresenceLight.Core
+@using Microsoft.Extensions.Options
+@inject LifxService _lifxService
+@inject AppState appState
+@inject IModalService Modal
+@inject IOptionsMonitor<ConfigWrapper> Config
+
+
+
+<h1>Lifx Setup</h1>
+
+
+
+<EditForm Model="@tempConfig" OnValidSubmit="GetLights">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <InputText id="name" @bind-Value="@tempConfig.LifxApiKey" />
+    <br />
+    <br />
+    <button class="btn btn-primary" type="submit">Get Lights</button>
+</EditForm>
+
+<br />
+<br />
+
+@ResultMessage
+
+<p>
+    @if (appState.LifxLights != null)
+    {
+        <div class="form-group">
+            <select class="form-control" @onchange="OnChange" style="width:20%">
+                <option disabled="disabled">Select</option>
+                @foreach (var light in appState.LifxLights)
+                {
+                    @if (tempConfig.SelectedLifxItemId == light.Id)
+                    {
+                        <option selected="selected" value=@light.Id>@light.Label</option>
+                    }
+                    else
+                    {
+                        <option value=@light.Id>@light.Label</option>
+                    }
+                }
+            </select>
+        </div>
+    }
+</p>
+
+<br />
+
+<button class="btn btn-primary" @onclick="Save">Save</button>
+
+
+@code {
+    private ConfigWrapper tempConfig;
+
+    private void Save()
+    {
+        System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/AADSettings.json", JsonConvert.SerializeObject(Config.CurrentValue));
+        //_hueService = new HueService(Config.CurrentValue);
+    }
+
+    private string ResultMessage;
+
+    async Task GetLights()
+    {
+        appState.SetLifxLights(await _lifxService.GetAllLightsAsync());
+    }
+
+    private void OnChange(ChangeEventArgs e)
+    {
+        var light = e.Value.ToString();
+        tempConfig.SelectedLifxItemId = light;
+        Config.CurrentValue.SelectedLifxItemId = light;
+        appState.SetHueLight(light);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        tempConfig = Config.CurrentValue;
+
+        if (!string.IsNullOrEmpty(tempConfig.HueIpAddress) && !string.IsNullOrEmpty(tempConfig.HueApiKey))
+        {
+            appState.SetLifxLights(await _lifxService.GetAllLightsAsync());
+        }
+
+        appState.OnChange += RaiseStateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        appState.OnChange -= RaiseStateHasChanged;
+    }
+
+    private void RaiseStateHasChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+}

@@ -30,12 +30,12 @@
 @ResultMessage
 
 <p>
-    @if (appState.Lights != null)
+    @if (appState.HueLights != null)
     {
         <div class="form-group">
             <select class="form-control" @onchange="OnChange" style="width:20%">
                 <option disabled="disabled">Select</option>
-                @foreach (var light in appState.Lights)
+                @foreach (var light in appState.HueLights)
                 {
                     @if (tempConfig.SelectedHueLightId == light.Id)
                     {
@@ -98,7 +98,7 @@
 
             System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/AADSettings.json", JsonConvert.SerializeObject(Config.CurrentValue));
 
-            appState.SetLights(await _hueService.CheckLights());
+            appState.SetHueLights(await _hueService.CheckLights());
         }
     }
 
@@ -107,7 +107,7 @@
         var light = e.Value.ToString();
         tempConfig.SelectedHueLightId = light;
         Config.CurrentValue.SelectedHueLightId = light;
-        appState.SetLight(light);
+        appState.SetHueLight(light);
     }
 
     protected override async Task OnInitializedAsync()
@@ -116,7 +116,7 @@
 
         if (!string.IsNullOrEmpty(tempConfig.HueIpAddress) && !string.IsNullOrEmpty(tempConfig.HueApiKey))
         {
-            appState.SetLights(await _hueService.CheckLights());
+            appState.SetHueLights(await _hueService.CheckLights());
         }
 
         appState.OnChange += RaiseStateHasChanged;
