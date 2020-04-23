@@ -1,29 +1,17 @@
 ﻿using Blazored.Modal;
-using IdentityModel.Client;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.Server;
-using Microsoft.AspNetCore.Hosting.Server.Features;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
-using Microsoft.Graph;
+using Microsoft.IdentityModel.Tokens;
 using PresenceLight.Core;
 using PresenceLight.Core.Graph;
-using System;
-using System.Diagnostics;
-using System.Globalization;
-using System.Linq;
-using System.Net.Http;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace PresenceLight.Worker
@@ -39,25 +27,57 @@ namespace PresenceLight.Worker
 
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
                     .AddAzureAD(options => Configuration.Bind(options));
 
-
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddHttpContextAccessor();
             services.Configure<ConfigWrapper>(Configuration);
+            var userAuthService = new UserAuthService(Configuration);
+            services.AddSingleton(userAuthService);
 
             services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>
             {
-                options.ResponseType = "code";
-                options.SaveTokens = true;
+                options.ResponseType = "id_token code";
+                options.Authority = $"{Configuration["Instance"]}common/v2.0";
                 options.Scope.Add("offline_access");
                 options.Scope.Add("User.Read");
-                options.Resource = "https://graph.microsoft.com";
+                
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    // Azure ID tokens give name in "name"
+                    NameClaimType = "name",
+                    ValidateIssuer = false
+                };
+
+                // Hook into the OpenID events to wire up MSAL
+                options.Events = new OpenIdConnectEvents
+                {
+                    OnRedirectToIdentityProviderForSignOut = async (context) =>
+                    {
+                        await userAuthService.SignOut();
+                    },
+                    OnAuthenticationFailed = context =>
+                    {
+                        context.Response.Redirect("/Error");
+                        context.HandleResponse();
+                        return Task.FromResult(0);
+                    },
+                    OnAuthorizationCodeReceived = async (context) =>
+                    {
+                        // Prevent ASP.NET Core from handling the code redemption itself
+                        context.HandleCodeRedemption();
+
+                        var idToken = await userAuthService
+                            .AddUserToTokenCache(context.ProtocolMessage.Code);
+
+                        // Pass the ID token on to the middleware, but
+                        // leave access token management to MSAL
+                        context.HandleCodeRedemption(null, idToken);
+                    }
+                };
             });
 
             services.AddHttpClient();
-            services.AddScoped<TokenProvider>();
 
             services.AddControllersWithViews(options =>
             {
@@ -72,6 +92,7 @@ namespace PresenceLight.Worker
             services.AddOptions();
 
             services.AddSingleton<IGraphService, GraphService>();
+            services.AddSingleton<LIFXService, LIFXService>();
             services.AddSingleton<IHueService, HueService>();
             services.AddSingleton<AppState, AppState>();
             services.AddBlazoredModal();

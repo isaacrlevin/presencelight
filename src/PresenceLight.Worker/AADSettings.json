@@ -1,14 +1,17 @@
 {
   "ClientId": "",
+  "LIFXApiKey": "",
   "ClientSecret": "",
-  "Domain": "",
   "Instance": "https://login.microsoftonline.com/",
-  "TenantId": "",
-  "RedirectUri": null,
+  "RedirectUri": "https://localhost:5001/signin-oidc",
   "CallbackPath": "/signin-oidc",
   "HueApiKey": "",
+  "ApiScopes": "User.Read offline_access",
+  "PollingInterval": 5.0,
+  "SelectedHueLightId": "",
+  "SelectedLIFXItemId": "",
   "HueIpAddress": "",
-  "IconType": "",
-  "SelectedLightId": "",
-  "ApiScopes": "User.Read offline_access"
+  "IconType": "White",
+  "IsLIFXEnabled": false,
+  "IsPhillipsEnabled": false
 }

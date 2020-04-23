@@ -1,6 +1,5 @@
-﻿using Microsoft.Graph;
-using Q42.HueApi;
-using Q42.HueApi.Models;
+﻿using LifxCloud.NET.Models;
+using Microsoft.Graph;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -17,21 +16,17 @@ namespace PresenceLight.Worker
 
         public User User { get; set; }
 
-        public IEnumerable<Light> Lights { get; set; }
+        public IEnumerable<Q42.HueApi.Light> HueLights { get; set; }
 
-        public string LightId { get; set; }
+        public string HueLightId { get; set; }
+
+        public IEnumerable<LifxCloud.NET.Models.Light> LIFXLights { get; set; }
+
+        public string LIFXLightId { get; set; }
 
         public string ProfileImage { get; set; }
 
         public Presence Presence { get; set; }
-
-        public string AccessToken { get; set; }
-
-        public void SetToken(string token)
-        {
-            AccessToken = token;
-            NotifyStateChanged();
-        }
 
         public void SetUserInfo(User user, string photo, Presence presence)
         {
@@ -47,15 +42,27 @@ namespace PresenceLight.Worker
             NotifyStateChanged();
         }
 
-        public void SetLights(IEnumerable<Light> lights)
+        public void SetHueLights(IEnumerable<Q42.HueApi.Light> lights)
         {
-            Lights = lights;
+            HueLights = lights;
             NotifyStateChanged();
         }
 
-        public void SetLight(string lightId)
+        public void SetHueLight(string lightId)
         {
-            LightId = lightId;
+            HueLightId = lightId;
+            NotifyStateChanged();
+        }
+
+        public void SetLIFXLights(IEnumerable<LifxCloud.NET.Models.Light> lights)
+        {
+            LIFXLights = lights;
+            NotifyStateChanged();
+        }
+
+        public void SetLIFXLight(string lightId)
+        {
+            LIFXLightId = lightId;
             NotifyStateChanged();
         }
     }

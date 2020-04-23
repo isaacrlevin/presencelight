@@ -2,21 +2,14 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Graph;
-using Newtonsoft.Json;
 using PresenceLight.Core;
-using PresenceLight.Core.Graph;
-using PresenceLight.Core.Helpers;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+using LifxCloud.NET.Models;
 
 namespace PresenceLight.Worker
 {
@@ -26,12 +19,26 @@ namespace PresenceLight.Worker
         private readonly IHueService _hueService;
         private readonly AppState _appState;
         private readonly ILogger<Worker> _logger;
-        public Worker(IGraphService graphService, IHueService hueService, ILogger<Worker> logger, IOptionsMonitor<ConfigWrapper> optionsAccessor, AppState appState)
+        private readonly UserAuthService _userAuthService;
+        private readonly GraphServiceClient _graphClient;
+
+        private LIFXService _lifxService;
+
+        public Worker(IHueService hueService,
+                      ILogger<Worker> logger,
+                      IOptionsMonitor<ConfigWrapper> optionsAccessor,
+                      AppState appState,
+                      LIFXService lifxService,
+                      UserAuthService userAuthService)
         {
             Config = optionsAccessor.CurrentValue;
             _hueService = hueService;
+            _lifxService = lifxService;
             _logger = logger;
             _appState = appState;
+            _userAuthService = userAuthService;
+
+            _graphClient = new GraphServiceClient(userAuthService);
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -43,11 +50,11 @@ namespace PresenceLight.Worker
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                if (!string.IsNullOrEmpty(_appState.AccessToken))
+                if (await _userAuthService.IsUserAuthenticated())
                 {
                     try
                     {
-                        await GetData(_appState.AccessToken);
+                        await GetData();
                     }
                     catch { }
                     await Task.Delay(Convert.ToInt32(Config.PollingInterval * 1000), stoppingToken);
@@ -84,8 +91,10 @@ namespace PresenceLight.Worker
             }
         }
 
-        private async Task GetData(string token)
+        private async Task GetData()
         {
+            var token = await _userAuthService.GetAccessToken();
+
             var user = await GetUserInformation(token);
 
             var photo = await GetPhotoAsBase64Async(token);
@@ -99,9 +108,14 @@ namespace PresenceLight.Worker
                 await _hueService.SetColor(presence.Availability, Config.SelectedHueLightId);
             }
 
-            while (true)
+            if (Config.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LIFXApiKey))
             {
+                await _lifxService.SetColor(presence.Availability, (Selector)Config.SelectedLIFXItemId);
+            }
 
+            while (await _userAuthService.IsUserAuthenticated())
+            {
+                token = await _userAuthService.GetAccessToken();
                 presence = await GetPresence(token);
 
                 _appState.SetPresence(presence);
@@ -111,73 +125,66 @@ namespace PresenceLight.Worker
                     await _hueService.SetColor(presence.Availability, Config.SelectedHueLightId);
                 }
 
+                if (Config.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LIFXApiKey))
+                {
+                    await _lifxService.SetColor(presence.Availability, (Selector)Config.SelectedLIFXItemId);
+                }
+
                 Thread.Sleep(5000);
             }
+
+            _logger.LogInformation("User logged out, no longer polling for presence.");
         }
 
         public async Task<User> GetUserInformation(string accessToken)
         {
-            HttpClient httpClient = new HttpClient();
-
-            httpClient.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer",
-            accessToken);
-            var response = await httpClient.GetAsync($"https://graph.microsoft.com//beta/me");
-            if (response.StatusCode == HttpStatusCode.OK)
+            try
             {
-                var content = await response.Content.ReadAsStringAsync();
-                var me = JsonConvert.DeserializeObject<User>
-                    (content);
+                var me = await _graphClient.Me.Request().GetAsync();
                 _logger.LogInformation($"User is {me.DisplayName}");
                 return me;
             }
-
-            throw new
-            HttpRequestException($"Invalid status code in the HttpResponseMessage: {response.StatusCode}.");
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception getting me: {ex.Message}");
+                throw ex;
+            }
         }
 
         public async Task<string> GetPhotoAsBase64Async(string accessToken)
         {
-            HttpClient httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer",
-            accessToken);
-
-            var response = await httpClient.GetAsync($"https://graph.microsoft.com/beta/me/photo/$value");
-            if (response.StatusCode == HttpStatusCode.OK)
+            try
             {
-                byte[] photo = await response.Content.ReadAsByteArrayAsync();
-                var base64 = Convert.ToBase64String(photo);
-                var photoBase64 = String.Format("data:image/gif;base64,{0}", base64);
+                var photoStream = await _graphClient.Me.Photo.Content.Request().GetAsync();
+                var memoryStream = new MemoryStream();
+                photoStream.CopyTo(memoryStream);
 
-                return photoBase64;
+                var photoBytes = memoryStream.ToArray();
+                var base64Photo = $"data:image/gif;base64,{Convert.ToBase64String(photoBytes)}";
+
+                return base64Photo;
             }
-            else
+            catch (Exception ex)
             {
-                return null;
+                _logger.LogError($"Exception getting photo: {ex.Message}");
             }
+
+            return null;
         }
 
         public async Task<Presence> GetPresence(string accessToken)
         {
-            HttpClient httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer",
-            accessToken);
-
-            var response = await httpClient.GetAsync($"https://graph.microsoft.com//beta/me/presence");
-            if (response.StatusCode == HttpStatusCode.OK)
+            try
             {
-                var content = await response.Content.ReadAsStringAsync();
-                var presence = JsonConvert.DeserializeObject<Presence>
-                    (content);
+                var presence = await _graphClient.Me.Presence.Request().GetAsync();
                 _logger.LogInformation($"Presence is {presence.Availability}");
                 return presence;
             }
-
-            throw new
-            HttpRequestException($"Invalid status code in the HttpResponseMessage: {response.StatusCode}.");
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception getting presence: {ex.Message}");
+                throw ex;
+            }
         }
-
     }
 }

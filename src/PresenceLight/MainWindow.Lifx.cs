@@ -10,55 +10,55 @@ namespace PresenceLight
 {
     public partial class MainWindow : Window
     {
-        #region Lifx Panel
+        #region LIFX Panel
 
-        private async void SaveLifxSettings_Click(object sender, RoutedEventArgs e)
+        private async void SaveLIFXSettings_Click(object sender, RoutedEventArgs e)
         {
-            btnLifx.IsEnabled = false;
+            btnLIFX.IsEnabled = false;
             await SettingsService.SaveSettings(Config);
-            lblLifxSaved.Visibility = Visibility.Visible;
-            btnLifx.IsEnabled = true;
+            lblLIFXSaved.Visibility = Visibility.Visible;
+            btnLIFX.IsEnabled = true;
         }
 
-        private async void CheckLifxSettings()
+        private async void CheckLIFXSettings()
         {
             SolidColorBrush fontBrush = new SolidColorBrush();
             try
             {
-                if (Config.IsLifxEnabled && !string.IsNullOrEmpty(Config.LifxApiKey) && !string.IsNullOrEmpty(Config.SelectedLifxItemId))
+                if (Config.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LIFXApiKey) && !string.IsNullOrEmpty(Config.SelectedLIFXItemId))
                 {
-                    ddlLifxLights.ItemsSource = await _lifxService.GetAllLightsAsync();
+                    ddlLIFXLights.ItemsSource = await _lifxService.GetAllLightsAsync();
 
-                    foreach (var item in ddlLifxLights.Items)
+                    foreach (var item in ddlLIFXLights.Items)
                     {
                         var light = (Light)item;
-                        if ($"id:{light.Id}" == Config.SelectedLifxItemId)
+                        if ($"id:{light.Id}" == Config.SelectedLIFXItemId)
                         {
-                            ddlLifxLights.SelectedItem = item;
+                            ddlLIFXLights.SelectedItem = item;
                         }
                     }
 
-                    if (ddlLifxLights.SelectedItem == null)
+                    if (ddlLIFXLights.SelectedItem == null)
                     {
-                        ddlLifxLights.ItemsSource = await _lifxService.GetAllGroupsAsync();
+                        ddlLIFXLights.ItemsSource = await _lifxService.GetAllGroupsAsync();
 
-                        foreach (var item in ddlLifxLights.Items)
+                        foreach (var item in ddlLIFXLights.Items)
                         {
                             var group = (LifxCloud.NET.Models.Group)item;
-                            if ($"group_id:{group.Id}" == Config.SelectedLifxItemId)
+                            if ($"group_id:{group.Id}" == Config.SelectedLIFXItemId)
                             {
-                                ddlLifxLights.SelectedItem = item;
+                                ddlLIFXLights.SelectedItem = item;
                             }
                         }
                     }
 
-                    if (ddlLifxLights.SelectedItem != null)
+                    if (ddlLIFXLights.SelectedItem != null)
                     {
 
-                        ddlLifxLights.Visibility = Visibility.Visible;
-                        lblLifxMessage.Text = "Connected to Lifx Cloud";
+                        ddlLIFXLights.Visibility = Visibility.Visible;
+                        lblLIFXMessage.Text = "Connected to LIFX Cloud";
                         fontBrush.Color = MapColor("#009933");
-                        lblLifxMessage.Foreground = fontBrush;
+                        lblLIFXMessage.Foreground = fontBrush;
                     }
                 }
             }
@@ -66,34 +66,34 @@ namespace PresenceLight
             {
                 DiagnosticsClient.TrackException(ex);
 
-                lblLifxMessage.Text = "Error Occured Connecting to Lifx, please try again";
+                lblLIFXMessage.Text = "Error Occured Connecting to LIFX, please try again";
                 fontBrush.Color = MapColor("#ff3300");
-                lblLifxMessage.Foreground = fontBrush;
+                lblLIFXMessage.Foreground = fontBrush;
             }
         }
 
-        private void ddlLifxLights_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ddlLIFXLights_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (ddlLifxLights.SelectedItem != null)
+            if (ddlLIFXLights.SelectedItem != null)
             {
                 // Get whether item is group or light
-                if (ddlLifxLights.SelectedItem.GetType() == typeof(LifxCloud.NET.Models.Group))
+                if (ddlLIFXLights.SelectedItem.GetType() == typeof(LifxCloud.NET.Models.Group))
                 {
-                    Config.SelectedLifxItemId = $"group_id:{((LifxCloud.NET.Models.Group)ddlLifxLights.SelectedItem).Id}";
+                    Config.SelectedLIFXItemId = $"group_id:{((LifxCloud.NET.Models.Group)ddlLIFXLights.SelectedItem).Id}";
                 }
 
-                if (ddlLifxLights.SelectedItem.GetType() == typeof(LifxCloud.NET.Models.Light))
+                if (ddlLIFXLights.SelectedItem.GetType() == typeof(LifxCloud.NET.Models.Light))
                 {
-                    Config.SelectedLifxItemId = $"id:{((LifxCloud.NET.Models.Light)ddlLifxLights.SelectedItem).Id}";
+                    Config.SelectedLIFXItemId = $"id:{((LifxCloud.NET.Models.Light)ddlLIFXLights.SelectedItem).Id}";
 
                 }
-                _options.SelectedLifxItemId = Config.SelectedLifxItemId;
+                _options.SelectedLIFXItemId = Config.SelectedLIFXItemId;
 
             }
             e.Handled = true;
         }
 
-        private async void CheckLifx_Click(object sender, RoutedEventArgs e)
+        private async void CheckLIFX_Click(object sender, RoutedEventArgs e)
         {
             SolidColorBrush fontBrush = new SolidColorBrush();
            
@@ -101,37 +101,37 @@ namespace PresenceLight
             {
                 try
                 {
-                    _options.LifxApiKey = lifxApiKey.Text;
-                    Config.LifxApiKey = lifxApiKey.Text;
+                    _options.LIFXApiKey = lifxApiKey.Text;
+                    Config.LIFXApiKey = lifxApiKey.Text;
 
-                    if (((System.Windows.Controls.Button)sender).Name == "btnGetLifxGroups")
+                    if (((System.Windows.Controls.Button)sender).Name == "btnGetLIFXGroups")
                     {
-                        ddlLifxLights.ItemsSource = await _lifxService.GetAllGroupsAsync();
+                        ddlLIFXLights.ItemsSource = await _lifxService.GetAllGroupsAsync();
                     }
                     else
                     {
-                        ddlLifxLights.ItemsSource = await _lifxService.GetAllLightsAsync();
+                        ddlLIFXLights.ItemsSource = await _lifxService.GetAllLightsAsync();
                     }
 
-                    ddlLifxLights.Visibility = Visibility.Visible;
-                    lblLifxMessage.Text = "Connected to Lifx Cloud";
+                    ddlLIFXLights.Visibility = Visibility.Visible;
+                    lblLIFXMessage.Text = "Connected to LIFX Cloud";
                     fontBrush.Color = MapColor("#009933");
-                    lblLifxMessage.Foreground = fontBrush;
+                    lblLIFXMessage.Foreground = fontBrush;
                 }
                 catch (Exception ex)
                 {
                     DiagnosticsClient.TrackException(ex);
 
-                    ddlLifxLights.Visibility = Visibility.Collapsed;
-                    lblLifxMessage.Text = "Error Occured Connecting to Lifx, please try again";
+                    ddlLIFXLights.Visibility = Visibility.Collapsed;
+                    lblLIFXMessage.Text = "Error Occured Connecting to LIFX, please try again";
                     fontBrush.Color = MapColor("#ff3300");
-                    lblLifxMessage.Foreground = fontBrush;
+                    lblLIFXMessage.Foreground = fontBrush;
                 }
             }
             else
             {
 
-                Run run1 = new Run("Valid Lifx Key Required ");
+                Run run1 = new Run("Valid LIFX Key Required ");
                 Run run2 = new Run(" https://cloud.lifx.com/settings");
 
                 Hyperlink hyperlink = new Hyperlink(run2)
@@ -139,26 +139,26 @@ namespace PresenceLight
                     NavigateUri = new Uri("https://cloud.lifx.com/settings")
                 };
                 hyperlink.RequestNavigate += new System.Windows.Navigation.RequestNavigateEventHandler(Hyperlink_RequestNavigate); //to be implemented
-                lblLifxMessage.Inlines.Clear();
-                lblLifxMessage.Inlines.Add(run1);
-                lblLifxMessage.Inlines.Add(hyperlink);
+                lblLIFXMessage.Inlines.Clear();
+                lblLIFXMessage.Inlines.Add(run1);
+                lblLIFXMessage.Inlines.Add(hyperlink);
 
 
                 fontBrush.Color = MapColor("#ff3300");
-                lblLifxMessage.Foreground = fontBrush;
+                lblLIFXMessage.Foreground = fontBrush;
 
             }
         }
 
-        private void cbIsLifxEnabledChanged(object sender, RoutedEventArgs e)
+        private void cbIsLIFXEnabledChanged(object sender, RoutedEventArgs e)
         {
-            if (Config.IsLifxEnabled)
+            if (Config.IsLIFXEnabled)
             {
-                pnlLifx.Visibility = Visibility.Visible;
+                pnlLIFX.Visibility = Visibility.Visible;
             }
             else
             {
-                pnlLifx.Visibility = Visibility.Collapsed;
+                pnlLIFX.Visibility = Visibility.Collapsed;
             }
             e.Handled = true;
         }
