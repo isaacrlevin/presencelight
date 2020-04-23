@@ -19,7 +19,7 @@ namespace PresenceLight.Core
         public string CallbackPath { get; set; }
         public string HueApiKey { get; set; }
 
-        public string Authority => $"https://login.microsoftonline.com/{TenantId}";
+        public string Authority { get; set; }
 
         public string ApiScopes { get; set; }
 

@@ -32,18 +32,14 @@ namespace PresenceLight.Core.Graph
 
         private IAuthenticationProvider CreateAuthorizationProvider(Type t)
         {
-            var clientId = _options.ClientId;
-            var redirectUri = _options.RedirectUri;
-            var authority = $"https://login.microsoftonline.com/{_options.TenantId}";
-
             List<string> scopes = new List<string>
             {
                 "https://graph.microsoft.com/.default"
             };
 
-            var pca = PublicClientApplicationBuilder.Create(clientId)
-                                                    .WithAuthority(authority)
-                                                    .WithRedirectUri(redirectUri)
+            var pca = PublicClientApplicationBuilder.Create(_options.ClientId)
+                                                    .WithAuthority(_options.Authority)
+                                                    .WithRedirectUri(_options.RedirectUri)
                                                     .Build();
 
             TokenCacheHelper.EnableSerialization(pca.UserTokenCache);

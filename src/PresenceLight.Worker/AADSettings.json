@@ -1,14 +1,20 @@
 {
   "ClientId": "",
+  "LifxApiKey": "",
   "ClientSecret": "",
   "Domain": "",
   "Instance": "https://login.microsoftonline.com/",
   "TenantId": "",
-  "RedirectUri": null,
+  "RedirectUri": "",
   "CallbackPath": "/signin-oidc",
   "HueApiKey": "",
+  "Authority": "https://login.microsoftonline.com/common",
+  "ApiScopes": "User.Read offline_access",
+  "PollingInterval": 5.0,
+  "SelectedHueLightId": "",
+  "SelectedLifxItemId": "",
   "HueIpAddress": "",
-  "IconType": "",
-  "SelectedLightId": "",
-  "ApiScopes": "User.Read offline_access"
+  "IconType": "White",
+  "IsLifxEnabled": false,
+  "IsPhillipsEnabled": false
 }
