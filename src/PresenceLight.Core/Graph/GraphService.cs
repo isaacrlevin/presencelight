@@ -38,7 +38,7 @@ namespace PresenceLight.Core.Graph
             };
 
             var pca = PublicClientApplicationBuilder.Create(_options.ClientId)
-                                                    .WithAuthority(_options.Authority)
+                                                    .WithAuthority($"{_options.Instance}common/")
                                                     .WithRedirectUri(_options.RedirectUri)
                                                     .Build();
 

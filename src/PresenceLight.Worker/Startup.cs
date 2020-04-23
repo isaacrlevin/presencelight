@@ -38,14 +38,15 @@ namespace PresenceLight.Worker
             services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>
             {
                 options.ResponseType = "id_token code";
-                options.Authority = $"{options.Authority}/v2.0";
+                options.Authority = $"{Configuration["Instance"]}common/v2.0";
                 options.Scope.Add("offline_access");
                 options.Scope.Add("User.Read");
-
+                
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     // Azure ID tokens give name in "name"
-                    NameClaimType = "name"
+                    NameClaimType = "name",
+                    ValidateIssuer = false
                 };
 
                 // Hook into the OpenID events to wire up MSAL

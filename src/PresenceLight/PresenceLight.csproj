@@ -32,6 +32,10 @@
     <NuGetDependencyVersion>5.6.0-xprivate.60020</NuGetDependencyVersion>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="Images\UnknownProfile.png" />
+  </ItemGroup>
+
 
   
   
@@ -106,6 +110,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Images\profileimage.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\UnknownProfile.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>

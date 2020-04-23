@@ -23,7 +23,7 @@ namespace PresenceLight.Worker
             _msalClient = ConfidentialClientApplicationBuilder
                 .Create(config.ClientId)
                 .WithClientSecret(config.ClientSecret)
-                .WithAuthority($"{config.Authority}/v2.0")
+                .WithAuthority($"{config.Instance}common/v2.0")
                 .WithRedirectUri(config.RedirectUri)
                 .Build();
 

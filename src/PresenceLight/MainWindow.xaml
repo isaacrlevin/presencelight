@@ -14,7 +14,7 @@
                     <Grid x:Name="configErrorPanel" Visibility="Collapsed" >
                         <Label Margin="50,130,4.667,200" RenderTransformOrigin="0.5,0.5" >
                             <TextBlock TextWrapping="Wrap" TextAlignment="Center">
-                              Your Application is not configured to login, please go to below link for more information.
+                              Your Application is not configured properly, please contact PresenceLight Creator.
                             </TextBlock>
                         </Label>
                         <TextBlock Margin="250,179,163.667,183">           
@@ -141,12 +141,6 @@
                             <ColumnDefinition Width="18*"/>
                             <ColumnDefinition Width="201*"/>
                         </Grid.ColumnDefinitions>
-                        <Label Content="Azure App Client ID" Margin="5,30,16,319" Grid.ColumnSpan="3"/>
-                        <TextBox Text="{Binding ClientId}" x:Name="clientId" HorizontalAlignment="Left" Height="23" Margin="200,30,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="230" Grid.ColumnSpan="3"/>
-
-                        <Label Content="Azure App Tenant ID" Margin="5,60,16,291" Grid.ColumnSpan="3"/>
-                        <TextBox Text="{Binding TenantId}" x:Name="tenantId" HorizontalAlignment="Left" Height="23" Margin="200,60,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="230" Grid.ColumnSpan="3"/>
-
                         <Label Content="Graph and Theme Polling Interval " Margin="5,90,16,291" Grid.ColumnSpan="3"/>
                         <xctk:DecimalUpDown FormatString="F2" Value="{Binding PollingInterval}" x:Name="pollingInterval"  Height="23" Margin="200,90,125,0"  VerticalAlignment="Top" Width="230" Grid.ColumnSpan="3" Increment=".1" Maximum="5" Minimum="1" />
 
