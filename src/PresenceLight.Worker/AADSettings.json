@@ -1,6 +1,6 @@
 {
   "ClientId": "",
-  "LifxApiKey": "",
+  "LIFXApiKey": "",
   "ClientSecret": "",
   "Domain": "",
   "Instance": "https://login.microsoftonline.com/",
@@ -12,9 +12,9 @@
   "ApiScopes": "User.Read offline_access",
   "PollingInterval": 5.0,
   "SelectedHueLightId": "",
-  "SelectedLifxItemId": "",
+  "SelectedLIFXItemId": "",
   "HueIpAddress": "",
   "IconType": "White",
-  "IsLifxEnabled": false,
+  "IsLIFXEnabled": false,
   "IsPhillipsEnabled": false
 }

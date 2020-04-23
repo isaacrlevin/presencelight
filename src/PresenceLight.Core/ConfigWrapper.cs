@@ -6,7 +6,7 @@ namespace PresenceLight.Core
     {
         public string ClientId { get; set; }
 
-        public string LifxApiKey { get; set; }
+        public string LIFXApiKey { get; set; }
 
         public string ClientSecret { get; set; }
 
@@ -27,7 +27,7 @@ namespace PresenceLight.Core
 
         public string SelectedHueLightId { get; set; }
 
-        public string SelectedLifxItemId { get; set; }
+        public string SelectedLIFXItemId { get; set; }
 
         [Required]
         [RegularExpression(@"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b",
@@ -35,7 +35,7 @@ namespace PresenceLight.Core
         public string HueIpAddress { get; set; }
         public string IconType { get; set; }
 
-        public bool IsLifxEnabled { get; set; }
+        public bool IsLIFXEnabled { get; set; }
 
         public bool IsPhillipsEnabled { get; set; }
     }

@@ -6,13 +6,12 @@
         xmlns:l="clr-namespace:PresenceLight"
         xmlns:gif="http://wpfanimatedgif.codeplex.com"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-        xmlns:s="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d" Title="PresenceLight" Icon="Icons/Icon.ico" Height="550" Width="600">
     <Grid>
         <TabControl x:Name="tabControl" SelectionChanged="TabControl_SelectionChanged">
             <TabItem Header="Set Graph Presence">
                 <Grid>
-                    <Grid x:Name="configErrorPanel" Visibility="Visible" >
+                    <Grid x:Name="configErrorPanel" Visibility="Collapsed" >
                         <Label Margin="50,130,4.667,200" RenderTransformOrigin="0.5,0.5" >
                             <TextBlock TextWrapping="Wrap" TextAlignment="Center">
                               Your Application is not configured to login, please go to below link for more information.
@@ -24,7 +23,7 @@
                             </Hyperlink>
                         </TextBlock>
                     </Grid>
-                    <Grid x:Name="dataPanel" Visibility="Hidden" >
+                    <Grid x:Name="dataPanel" Visibility="Collapsed" >
                         <Grid VerticalAlignment="Top">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                                 <Button x:Name="SignOutButton" Height="30" Width="60" Content="Sign-Out" HorizontalAlignment="Right" Click="SignOutButton_Click" Padding="5" Margin="5"  FontFamily="Segoe Ui"/>
@@ -101,7 +100,7 @@
                     </Grid>
                 </Grid>
             </TabItem>
-            <TabItem Header="Configure Lifx" >
+            <TabItem Header="Configure LIFX" >
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="15*"/>
@@ -110,20 +109,20 @@
                         <ColumnDefinition Width="138*"/>
                         <ColumnDefinition Width="111*"/>
                     </Grid.ColumnDefinitions>
-                    <CheckBox x:Name="cbIsLifxEnabled" IsChecked="{Binding IsLifxEnabled}" Content="Connect to Lifx Light" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbIsLifxEnabledChanged" Checked="cbIsLifxEnabledChanged" Grid.Column="1" Grid.ColumnSpan="4" />
-                    <Grid x:Name="pnlLifx" Grid.Column="1" Grid.ColumnSpan="4">
-                        <Label Content="Lifx Api Key" Margin="0,60,90,244"/>
-                        <TextBox Text="{Binding LifxApiKey}" x:Name="lifxApiKey" HorizontalAlignment="Left" Height="23" Margin="100,60,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="450" Grid.ColumnSpan="2"/>
-                        <Button x:Name="btnGetLifxLights" Height="45" Width="170" Content="Get Lights" Margin="-200,60,1,193" Click="CheckLifx_Click"/>
-                        <Button x:Name="btnGetLifxGroups" Height="45" Width="170" Content="Get Groups" Margin="200,60,1,193" Click="CheckLifx_Click"/>
+                    <CheckBox x:Name="cbIsLIFXEnabled" IsChecked="{Binding IsLIFXEnabled}" Content="Connect to LIFX Light" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbIsLIFXEnabledChanged" Checked="cbIsLIFXEnabledChanged" Grid.Column="1" Grid.ColumnSpan="4" />
+                    <Grid x:Name="pnlLIFX" Grid.Column="1" Grid.ColumnSpan="4">
+                        <Label Content="LIFX Api Key" Margin="0,60,90,244"/>
+                        <TextBox Text="{Binding LIFXApiKey}" x:Name="lifxApiKey" HorizontalAlignment="Left" Height="23" Margin="100,60,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="450" Grid.ColumnSpan="2"/>
+                        <Button x:Name="btnGetLIFXLights" Height="45" Width="170" Content="Get Lights" Margin="-200,60,1,193" Click="CheckLIFX_Click"/>
+                        <Button x:Name="btnGetLIFXGroups" Height="45" Width="170" Content="Get Groups" Margin="200,60,1,193" Click="CheckLIFX_Click"/>
                         <Label Margin="0,220,0,0" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Center" >
-                            <TextBlock  x:Name="lblLifxMessage" TextWrapping="Wrap"  TextAlignment="Center">
+                            <TextBlock  x:Name="lblLIFXMessage" TextWrapping="Wrap"  TextAlignment="Center">
                             </TextBlock>
                         </Label>
-                        <ComboBox x:Name="ddlLifxLights" DisplayMemberPath="Label" Visibility="Collapsed" SelectionChanged="ddlLifxLights_SelectionChanged"  HorizontalAlignment="Left" Margin="200,250,0,0" VerticalAlignment="Top" Width="150"/>
-                        <Image x:Name="imgLifxLoading" Visibility="Collapsed" gif:ImageBehavior.AnimatedSource="Icons/loading.gif" Width="75" Margin="160,17,49,-17" />
-                        <Button x:Name="btnLifx" Height="45" Width="170" Content="Save" Margin="0,250,1,69" Click="SaveLifxSettings_Click"/>
-                        <Label x:Name="lblLifxSaved" Visibility="Collapsed" Content="Settings Updated" Foreground="Green" Margin="230,380,136,10"/>
+                        <ComboBox x:Name="ddlLIFXLights" DisplayMemberPath="Label" Visibility="Collapsed" SelectionChanged="ddlLIFXLights_SelectionChanged"  HorizontalAlignment="Left" Margin="200,250,0,0" VerticalAlignment="Top" Width="150"/>
+                        <Image x:Name="imgLIFXLoading" Visibility="Collapsed" gif:ImageBehavior.AnimatedSource="Icons/loading.gif" Width="75" Margin="160,17,49,-17" />
+                        <Button x:Name="btnLIFX" Height="45" Width="170" Content="Save" Margin="0,250,1,69" Click="SaveLIFXSettings_Click"/>
+                        <Label x:Name="lblLIFXSaved" Visibility="Collapsed" Content="Settings Updated" Foreground="Green" Margin="230,380,136,10"/>
                     </Grid>
                 </Grid>
             </TabItem>
@@ -155,7 +154,7 @@
                         <RadioButton GroupName="IconType" x:Name="Transparent" Content="Transparent" HorizontalAlignment="Left" Margin="200,150,0,0" VerticalAlignment="Top" Height="27"/>
                         <RadioButton GroupName="IconType" x:Name="White" Content="White" HorizontalAlignment="Left" Margin="200,170,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.43,-0.627" Height="23"/>
                         <Button Height="45" x:Name="btnSettings" Width="170" Content="Save" Margin="0,280,0,100" Click="SaveSettings_Click" Grid.ColumnSpan="3" />
-                        <Label x:Name="lblSettingSaved" Visibility="Visible" Content="Settings Updated" Foreground="Green" Margin="230,380,0,0" Grid.ColumnSpan="3"/>
+                        <Label x:Name="lblSettingSaved" Visibility="Collapsed" Content="Settings Updated" Foreground="Green" Margin="230,380,0,0" Grid.ColumnSpan="3"/>
                     </Grid>
                 </Grid>
             </TabItem>

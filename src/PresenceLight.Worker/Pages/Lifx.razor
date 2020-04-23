@@ -3,14 +3,14 @@
 @using Newtonsoft.Json
 @using PresenceLight.Core
 @using Microsoft.Extensions.Options
-@inject LifxService _lifxService
+@inject LIFXService _lifxService
 @inject AppState appState
 @inject IModalService Modal
 @inject IOptionsMonitor<ConfigWrapper> Config
 
 
 
-<h1>Lifx Setup</h1>
+<h1>LIFX Setup</h1>
 
 
 
@@ -18,7 +18,7 @@
     <DataAnnotationsValidator />
     <ValidationSummary />
 
-    <InputText id="name" @bind-Value="@tempConfig.LifxApiKey" />
+    <InputText id="name" @bind-Value="@tempConfig.LIFXApiKey" />
     <br />
     <br />
     <button class="btn btn-primary" type="submit">Get Lights</button>
@@ -30,14 +30,14 @@
 @ResultMessage
 
 <p>
-    @if (appState.LifxLights != null)
+    @if (appState.LIFXLights != null)
     {
         <div class="form-group">
             <select class="form-control" @onchange="OnChange" style="width:20%">
                 <option disabled="disabled">Select</option>
-                @foreach (var light in appState.LifxLights)
+                @foreach (var light in appState.LIFXLights)
                 {
-                    @if (tempConfig.SelectedLifxItemId == light.Id)
+                    @if (tempConfig.SelectedLIFXItemId == light.Id)
                     {
                         <option selected="selected" value=@light.Id>@light.Label</option>
                     }
@@ -69,14 +69,14 @@
 
     async Task GetLights()
     {
-        appState.SetLifxLights(await _lifxService.GetAllLightsAsync());
+        appState.SetLIFXLights(await _lifxService.GetAllLightsAsync());
     }
 
     private void OnChange(ChangeEventArgs e)
     {
         var light = e.Value.ToString();
-        tempConfig.SelectedLifxItemId = light;
-        Config.CurrentValue.SelectedLifxItemId = light;
+        tempConfig.SelectedLIFXItemId = light;
+        Config.CurrentValue.SelectedLIFXItemId = light;
         appState.SetHueLight(light);
     }
 
@@ -86,7 +86,7 @@
 
         if (!string.IsNullOrEmpty(tempConfig.HueIpAddress) && !string.IsNullOrEmpty(tempConfig.HueApiKey))
         {
-            appState.SetLifxLights(await _lifxService.GetAllLightsAsync());
+            appState.SetLIFXLights(await _lifxService.GetAllLightsAsync());
         }
 
         appState.OnChange += RaiseStateHasChanged;
