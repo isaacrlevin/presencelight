@@ -61,6 +61,9 @@ namespace PresenceLight.Core
                 case "DoNotDisturb":
                     command.SetColor(new RGBColor("#800000"));
                     break;
+                case "Offline":
+                    command.SetColor(new RGBColor("#FFFFFF"));
+                    break;
                 case "Off":
                     command.SetColor(new RGBColor("#FFFFFF"));
                     break;

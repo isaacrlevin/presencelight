@@ -33,13 +33,13 @@ namespace PresenceLight
         private bool stopGraphPolling;
         private bool stopThemePolling;
         private IHueService _hueService;
-        private LifxService _lifxService;
+        private LIFXService _lifxService;
         private GraphServiceClient _graphServiceClient;
         private readonly IGraphService _graphservice;
         private WindowState lastWindowState;
 
         #region Init
-        public MainWindow(IGraphService graphService, IHueService hueService, LifxService lifxService, IOptionsMonitor<ConfigWrapper> optionsAccessor)
+        public MainWindow(IGraphService graphService, IHueService hueService, LIFXService lifxService, IOptionsMonitor<ConfigWrapper> optionsAccessor)
         {
             InitializeComponent();
 
@@ -80,7 +80,9 @@ namespace PresenceLight
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
             if (ButtonShowRuntimeVersionInfo.Content.ToString().StartsWith("Show"))
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
             {
                 RuntimeVersionInfo.Text = ThisAppInfo.GetDotNetRuntimeInfo();
                 ButtonShowRuntimeVersionInfo.Content = "Hide Runtime Info";
@@ -95,7 +97,7 @@ namespace PresenceLight
         private void LoadApp()
         {
             CheckHueSettings();
-            CheckLifxSettings();
+            CheckLIFXSettings();
             CheckAAD();
 
             if (Config.IconType == "Transparent")
@@ -144,17 +146,17 @@ namespace PresenceLight
                 pnlPhillips.Visibility = Visibility.Collapsed;
             }
 
-            if (Config.IsLifxEnabled)
+            if (Config.IsLIFXEnabled)
             {
-                pnlLifx.Visibility = Visibility.Visible;
+                pnlLIFX.Visibility = Visibility.Visible;
                 if (!string.IsNullOrEmpty(Config.HueApiKey))
                 {
-                    _options.LifxApiKey = Config.LifxApiKey;
+                    _options.LIFXApiKey = Config.LIFXApiKey;
                 }
             }
             else
             {
-                pnlLifx.Visibility = Visibility.Collapsed;
+                pnlLIFX.Visibility = Visibility.Collapsed;
             }
         }
         #endregion
@@ -206,23 +208,28 @@ namespace PresenceLight
             var (profile, presence) = await System.Threading.Tasks.Task.Run(() => GetBatchContent());
             var photo = await System.Threading.Tasks.Task.Run(() => GetPhoto());
 
-            MapUI(presence, profile, LoadImage(photo));
-
+            if (photo == null)
+            {
+                MapUI(presence, profile, new BitmapImage(new Uri("pack://application:,,,/PresenceLight;component/images/UnknownProfile.png")));
+            }
+            else
+            {
+                MapUI(presence, profile, LoadImage(photo));
+            }
             if (!string.IsNullOrEmpty(Config.HueApiKey) && !string.IsNullOrEmpty(Config.HueIpAddress) && !string.IsNullOrEmpty(Config.SelectedHueLightId))
             {
                 await _hueService.SetColor(presence.Availability, Config.SelectedHueLightId);
             }
 
-            if (Config.IsLifxEnabled && !string.IsNullOrEmpty(Config.LifxApiKey))
+            if (Config.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LIFXApiKey))
             {
-                await _lifxService.SetColor(presence.Availability, (Selector)Config.SelectedLifxItemId);
+                await _lifxService.SetColor(presence.Availability, (Selector)Config.SelectedLIFXItemId);
             }
 
             loadingPanel.Visibility = Visibility.Collapsed;
             this.signInPanel.Visibility = Visibility.Collapsed;
             hueIpAddress.IsEnabled = false;
-            clientId.IsEnabled = false;
-            tenantId.IsEnabled = false;
+
             dataPanel.Visibility = Visibility.Visible;
             while (true)
             {
@@ -242,9 +249,9 @@ namespace PresenceLight
                         await _hueService.SetColor(presence.Availability, Config.SelectedHueLightId);
                     }
 
-                    if (Config.IsLifxEnabled && !string.IsNullOrEmpty(Config.LifxApiKey))
+                    if (Config.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LIFXApiKey))
                     {
-                        await _lifxService.SetColor(presence.Availability, (Selector)Config.SelectedLifxItemId);
+                        await _lifxService.SetColor(presence.Availability, (Selector)Config.SelectedLIFXItemId);
                     }
 
                     MapUI(presence, null, null);
@@ -268,28 +275,26 @@ namespace PresenceLight
                     notificationIcon.Text = PresenceConstants.Inactive;
                     notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(string.Empty, IconConstants.Inactive)));
                     hueIpAddress.IsEnabled = true;
-                    clientId.IsEnabled = true;
-                    tenantId.IsEnabled = true;
 
                     if (Config.IsPhillipsEnabled && !string.IsNullOrEmpty(Config.HueApiKey) && !string.IsNullOrEmpty(Config.HueIpAddress) && !string.IsNullOrEmpty(Config.SelectedHueLightId))
                     {
                         await _hueService.SetColor("Off", Config.SelectedHueLightId);
                     }
 
-                    if (Config.IsLifxEnabled && !string.IsNullOrEmpty(Config.LifxApiKey))
+                    if (Config.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LIFXApiKey))
                     {
-                        if (ddlLifxLights.SelectedItem.GetType() == typeof(LifxCloud.NET.Models.Group))
+                        if (ddlLIFXLights.SelectedItem != null && ddlLIFXLights.SelectedItem.GetType() == typeof(LifxCloud.NET.Models.Group))
                         {
-                            Config.SelectedHueLightId = ((LifxCloud.NET.Models.Group)ddlLifxLights.SelectedItem).Id;
+                            Config.SelectedLIFXItemId = ((LifxCloud.NET.Models.Group)ddlLIFXLights.SelectedItem).Id;
                         }
 
-                        if (ddlLifxLights.SelectedItem.GetType() == typeof(LifxCloud.NET.Models.Light))
+                        if (ddlLIFXLights.SelectedItem != null && ddlLIFXLights.SelectedItem.GetType() == typeof(LifxCloud.NET.Models.Light))
                         {
-                            Config.SelectedHueLightId = ((LifxCloud.NET.Models.Light)ddlLifxLights.SelectedItem).Id;
+                            Config.SelectedLIFXItemId = ((LifxCloud.NET.Models.Light)ddlLIFXLights.SelectedItem).Id;
 
                         }
 
-                        await _lifxService.SetColor("Off", (Selector)Config.SelectedLifxItemId);
+                        await _lifxService.SetColor("Off", (Selector)Config.SelectedLIFXItemId);
                     }
                 }
                 catch (MsalException)
@@ -400,7 +405,23 @@ namespace PresenceLight
 
         public async Task<byte[]> GetPhoto()
         {
-            return ReadFully(await _graphServiceClient.Me.Photo.Content.Request().GetAsync());
+            try
+            {
+                var photo = await _graphServiceClient.Me.Photo.Content.Request().GetAsync();
+
+                if (photo == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    return ReadFully(photo);
+                }
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public static byte[] ReadFully(Stream input)
@@ -436,7 +457,6 @@ namespace PresenceLight
         }
         #endregion
 
-
         #region Settings Panel
         private async void SaveSettings_Click(object sender, RoutedEventArgs e)
         {
@@ -460,7 +480,7 @@ namespace PresenceLight
         private void CheckAAD()
         {
             Regex r = new Regex(@"^(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}$");
-            if (string.IsNullOrEmpty(Config.ClientId) || string.IsNullOrEmpty(Config.TenantId) || string.IsNullOrEmpty(Config.RedirectUri) || !r.IsMatch(Config.ClientId) || !r.IsMatch(Config.TenantId))
+            if (string.IsNullOrEmpty(Config.ClientId) || string.IsNullOrEmpty(Config.RedirectUri) || !r.IsMatch(Config.ClientId))
             {
                 configErrorPanel.Visibility = Visibility.Visible;
                 dataPanel.Visibility = Visibility.Hidden;
@@ -469,7 +489,6 @@ namespace PresenceLight
             }
 
             _options.ClientId = Config.ClientId;
-            _options.TenantId = Config.TenantId;
             _options.RedirectUri = Config.RedirectUri;
 
             configErrorPanel.Visibility = Visibility.Hidden;
@@ -485,7 +504,7 @@ namespace PresenceLight
         private void TabControl_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             lblHueSaved.Visibility = Visibility.Collapsed;
-            lblLifxSaved.Visibility = Visibility.Collapsed;
+            lblLIFXSaved.Visibility = Visibility.Collapsed;
             lblSettingSaved.Visibility = Visibility.Collapsed;
         }
 
@@ -517,10 +536,10 @@ namespace PresenceLight
                 await _hueService.SetColor("Off", Config.SelectedHueLightId);
             }
 
-            if (Config.IsLifxEnabled && !string.IsNullOrEmpty(Config.LifxApiKey))
+            if (Config.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LIFXApiKey))
             {
 
-                await _lifxService.SetColor("Off", (Selector)Config.SelectedLifxItemId);
+                await _lifxService.SetColor("Off", (Selector)Config.SelectedLIFXItemId);
             }
 
             System.Windows.Application.Current.Shutdown();
