@@ -43,9 +43,9 @@ namespace PresenceLight
                 await _hueService.SetColor(color, Config.SelectedHueLightId);
             }
 
-            if (Config.IsLifxEnabled && !string.IsNullOrEmpty(Config.LifxApiKey))
+            if (Config.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LIFXApiKey))
             {
-                await _lifxService.SetColor(color, (Selector)Config.SelectedLifxItemId);
+                await _lifxService.SetColor(color, (Selector)Config.SelectedLIFXItemId);
             }
 
             while (true)
@@ -70,9 +70,9 @@ namespace PresenceLight
                         await _hueService.SetColor(color, Config.SelectedHueLightId);
                     }
 
-                    if (Config.IsLifxEnabled && !string.IsNullOrEmpty(Config.LifxApiKey))
+                    if (Config.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LIFXApiKey))
                     {
-                        await _lifxService.SetColor(color, (Selector)Config.SelectedLifxItemId);
+                        await _lifxService.SetColor(color, (Selector)Config.SelectedLIFXItemId);
                     }
                 }
                 catch (Exception ex)
@@ -98,10 +98,10 @@ namespace PresenceLight
                     await _hueService.SetColor(color, Config.SelectedHueLightId);
                 }
 
-                if (Config.IsLifxEnabled && !string.IsNullOrEmpty(Config.LifxApiKey))
+                if (Config.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LIFXApiKey))
                 {
 
-                    await _lifxService.SetColor(color, (Selector)Config.SelectedLifxItemId);
+                    await _lifxService.SetColor(color, (Selector)Config.SelectedLIFXItemId);
                 }
             }
         }

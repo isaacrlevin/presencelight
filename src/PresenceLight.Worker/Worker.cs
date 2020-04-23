@@ -22,13 +22,13 @@ namespace PresenceLight.Worker
         private readonly UserAuthService _userAuthService;
         private readonly GraphServiceClient _graphClient;
 
-        private LifxService _lifxService;
+        private LIFXService _lifxService;
 
         public Worker(IHueService hueService,
                       ILogger<Worker> logger,
                       IOptionsMonitor<ConfigWrapper> optionsAccessor,
                       AppState appState,
-                      LifxService lifxService,
+                      LIFXService lifxService,
                       UserAuthService userAuthService)
         {
             Config = optionsAccessor.CurrentValue;
@@ -108,9 +108,9 @@ namespace PresenceLight.Worker
                 await _hueService.SetColor(presence.Availability, Config.SelectedHueLightId);
             }
 
-            if (Config.IsLifxEnabled && !string.IsNullOrEmpty(Config.LifxApiKey))
+            if (Config.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LIFXApiKey))
             {
-                await _lifxService.SetColor(presence.Availability, (Selector)Config.SelectedLifxItemId);
+                await _lifxService.SetColor(presence.Availability, (Selector)Config.SelectedLIFXItemId);
             }
 
             while (await _userAuthService.IsUserAuthenticated())
@@ -125,9 +125,9 @@ namespace PresenceLight.Worker
                     await _hueService.SetColor(presence.Availability, Config.SelectedHueLightId);
                 }
 
-                if (Config.IsLifxEnabled && !string.IsNullOrEmpty(Config.LifxApiKey))
+                if (Config.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LIFXApiKey))
                 {
-                    await _lifxService.SetColor(presence.Availability, (Selector)Config.SelectedLifxItemId);
+                    await _lifxService.SetColor(presence.Availability, (Selector)Config.SelectedLIFXItemId);
                 }
 
                 Thread.Sleep(5000);
