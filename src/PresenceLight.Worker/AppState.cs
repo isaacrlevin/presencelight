@@ -1,6 +1,5 @@
-﻿using Microsoft.Graph;
-using Q42.HueApi;
-using Q42.HueApi.Models;
+﻿using LifxCloud.NET.Models;
+using Microsoft.Graph;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -17,9 +16,13 @@ namespace PresenceLight.Worker
 
         public User User { get; set; }
 
-        public IEnumerable<Light> Lights { get; set; }
+        public IEnumerable<Q42.HueApi.Light> HueLights { get; set; }
 
-        public string LightId { get; set; }
+        public string HueLightId { get; set; }
+
+        public IEnumerable<LifxCloud.NET.Models.Light> LifxLights { get; set; }
+
+        public string LifxLightId { get; set; }
 
         public string ProfileImage { get; set; }
 
@@ -39,15 +42,27 @@ namespace PresenceLight.Worker
             NotifyStateChanged();
         }
 
-        public void SetLights(IEnumerable<Light> lights)
+        public void SetHueLights(IEnumerable<Q42.HueApi.Light> lights)
         {
-            Lights = lights;
+            HueLights = lights;
             NotifyStateChanged();
         }
 
-        public void SetLight(string lightId)
+        public void SetHueLight(string lightId)
         {
-            LightId = lightId;
+            HueLightId = lightId;
+            NotifyStateChanged();
+        }
+
+        public void SetLifxLights(IEnumerable<LifxCloud.NET.Models.Light> lights)
+        {
+            LifxLights = lights;
+            NotifyStateChanged();
+        }
+
+        public void SetLifxLight(string lightId)
+        {
+            LifxLightId = lightId;
             NotifyStateChanged();
         }
     }

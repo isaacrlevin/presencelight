@@ -9,6 +9,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+using LifxCloud.NET.Models;
 
 namespace PresenceLight.Worker
 {
@@ -21,14 +22,18 @@ namespace PresenceLight.Worker
         private readonly UserAuthService _userAuthService;
         private readonly GraphServiceClient _graphClient;
 
+        private LifxService _lifxService;
+
         public Worker(IHueService hueService,
                       ILogger<Worker> logger,
                       IOptionsMonitor<ConfigWrapper> optionsAccessor,
                       AppState appState,
+                      LifxService lifxService,
                       UserAuthService userAuthService)
         {
             Config = optionsAccessor.CurrentValue;
             _hueService = hueService;
+            _lifxService = lifxService;
             _logger = logger;
             _appState = appState;
             _userAuthService = userAuthService;
@@ -103,6 +108,11 @@ namespace PresenceLight.Worker
                 await _hueService.SetColor(presence.Availability, Config.SelectedHueLightId);
             }
 
+            if (Config.IsLifxEnabled && !string.IsNullOrEmpty(Config.LifxApiKey))
+            {
+                await _lifxService.SetColor(presence.Availability, (Selector)Config.SelectedLifxItemId);
+            }
+
             while (await _userAuthService.IsUserAuthenticated())
             {
                 token = await _userAuthService.GetAccessToken();
@@ -113,6 +123,11 @@ namespace PresenceLight.Worker
                 if (!string.IsNullOrEmpty(Config.HueApiKey) && !string.IsNullOrEmpty(Config.HueIpAddress) && !string.IsNullOrEmpty(Config.SelectedHueLightId))
                 {
                     await _hueService.SetColor(presence.Availability, Config.SelectedHueLightId);
+                }
+
+                if (Config.IsLifxEnabled && !string.IsNullOrEmpty(Config.LifxApiKey))
+                {
+                    await _lifxService.SetColor(presence.Availability, (Selector)Config.SelectedLifxItemId);
                 }
 
                 Thread.Sleep(5000);
