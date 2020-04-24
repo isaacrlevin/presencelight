@@ -121,7 +121,7 @@ stages:
         msbuildArguments: /t:publish /p:PublishProfile=Properties/PublishProfiles/WinX86.pubxml
         configuration: $(BuildConfiguration)
         maximumCpuCount: true
-      condition: and(succeeded(), or(eq(variables['ChannelName'], 'Zip')))
+      condition: and(succeeded(), or(eq(variables['ChannelName'], 'Zip'))
 
     - task: ArchiveFiles@1
       displayName: Zip PresenceLight files
