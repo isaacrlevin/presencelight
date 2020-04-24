@@ -157,7 +157,8 @@ stages:
     pool:
       vmImage: windows-latest
     environment: Code Sign - CI
-
+    variables:
+    - group: Sign Client Credentials
     strategy:
       runOnce:
         deploy:
