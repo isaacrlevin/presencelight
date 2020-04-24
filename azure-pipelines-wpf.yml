@@ -112,7 +112,7 @@ stages:
         msbuildArguments: /p:AppxPackageDir="$(Build.ArtifactStagingDirectory)\$(ChannelName)\\"
         configuration: $(BuildConfiguration)
         maximumCpuCount: true
-      condition: and(succeeded(), or(eq(variables['ChannelName'], 'Nightly'), eq(variables['ChannelName'], 'Store')))
+      condition: and(succeeded(), or(eq(variables['ChannelName'], 'Nightly'), eq(variables['ChannelName'], 'Store')
 
     - task: MSBuild@1
       displayName: Build for Zip
