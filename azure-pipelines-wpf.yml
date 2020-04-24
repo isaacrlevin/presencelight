@@ -158,8 +158,7 @@ stages:
     pool:
       vmImage: windows-latest
     environment: Code Sign - CI
-    variables:
-    - group: PresenceLight Sign Client
+
     strategy:
       runOnce:
         deploy:
