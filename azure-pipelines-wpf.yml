@@ -27,11 +27,11 @@ stages:
     strategy:
       matrix:
         Channel_Zip:
-          ReleaseChannel: Zip
+          ChannelName: Zip
         Channel_Store:
-          ReleaseChannel: Store
+          ChannelName: Store
         Channel_Nightly:
-          ReleaseChannel: Nightly
+          ChannelName: Nightly
           DistributionUrl: https://presencelight.z5.web.core.windows.net/Nightly
 
     steps:
