@@ -40,14 +40,6 @@ jobs:
         MsixPackageDisplayName: PresenceLight
         MsixBuildMode: SideLoadOnly
         MsixGenerateAppInstaller: true
-      Channel_MS_Prod_Web:
-        ChannelName: MS-Prod-Web
-        DistributionUrl: https://presencelight.z5.web.core.windows.net/MSFT
-        MsixPackageId: PresenceLight
-        MsixPublisherId: CN=Presence Light, O=Isaac Levin, C=US
-        MsixPackageDisplayName: PresenceLight
-        MsixBuildMode: SideLoadOnly
-        MsixGenerateAppInstaller: true
 
   steps:
   - task: UseDotNet@2
@@ -99,10 +91,6 @@ jobs:
 
     env:
      ApplicationId: $(ApplicationId)
-    condition: and(succeeded(), eq(variables['ChannelName'], 'MS-Prod-Web'))
-  
-  - script: dotnet --info
-    displayName: Get dotnet version
 
   - task: MSBuild@1
     displayName: Build Presence Light for $(BuildConfiguration)
