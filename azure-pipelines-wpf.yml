@@ -121,12 +121,12 @@ stages:
         msbuildArguments: /t:publish /p:PublishProfile=Properties/PublishProfiles/WinX86.pubxml
         configuration: $(BuildConfiguration)
         maximumCpuCount: true
-      condition: and(succeeded(), (eq(variables['ChannelName'], 'Zip'))
+      condition: and(succeeded(), eq(variables['ChannelName'], 'Zip'))
 
     - task: ArchiveFiles@1
       displayName: Zip PresenceLight files
       inputs:
-        archiveType: zip
+        archiveType: default
         rootFolder: '.\src\PresenceLight\bin\$(BuildConfiguration)\netcoreapp5.0\win-x86\publish'
         archiveFile: $(Build.ArtifactStagingDirectory)\$(ChannelName)\PresenceLight.$(Build.BuildNumber).zip
         includeRootFolder: false
