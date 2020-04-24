@@ -492,7 +492,11 @@ namespace PresenceLight
             _options.RedirectUri = Config.RedirectUri;
 
             configErrorPanel.Visibility = Visibility.Hidden;
-            signInPanel.Visibility = Visibility.Visible;
+
+            if (dataPanel.Visibility != Visibility.Visible)
+            {
+                signInPanel.Visibility = Visibility.Visible;
+            }
 
             if (_graphServiceClient == null)
             {
