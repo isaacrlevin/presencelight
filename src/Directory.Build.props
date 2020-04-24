@@ -15,7 +15,7 @@
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
 
 
-    <RuntimeIdentifiers>win-x64;win-x86</RuntimeIdentifiers>
+    <RuntimeIdentifiers>win-x86</RuntimeIdentifiers>
 
     <UseWpf>true</UseWpf>
     <UseWindowsForms>true</UseWindowsForms>
