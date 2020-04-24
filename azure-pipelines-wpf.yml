@@ -14,195 +14,197 @@ trigger:
    - src/PresenceLight.Worker/*
 
 
-variables:
-  BuildConfiguration: Release
-  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+stages:
+- stage: Build
+  variables:
+    DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+    BuildConfiguration: Release
 
-jobs:
-- job: Build
-  pool:
-    vmImage: windows-latest
-  strategy:
-    matrix:
-      Channel_Zip:
-        ReleaseChannel: Zip
-      Channel_Store:
-        ReleaseChannel: Store
-      Channel_Nightly:
-        ReleaseChannel: Nightly
-        DistributionUrl: https://presencelight.z5.web.core.windows.net/Nightly
-
-  steps:
-  - task: UseDotNet@2
-    displayName: 'Use .NET Core SDK 5.0.x'
-    inputs:
-      version: 5.0.x
-      includePreviewVersions: true
-
-  - task: DotNetCoreCLI@2
-    inputs:
-      command: custom
-      custom: tool
-      arguments: install -g nbgv
-    displayName: Install NBGV tool
-
-  - script: nbgv cloud -c -a
-    displayName: Set Version
-
-  - powershell: |
-      mkdir $(Build.ArtifactStagingDirectory)\$(ChannelName)
-
-      # Update appxmanifest. This must be done before build.
-      # Set the per-channel values into the appxmanifest, replacing the checked-in values
-      [xml]$manifest= get-content ".\src\PresenceLight.Package\Package.appxmanifest"
-      $manifest.Package.Identity.Version = "$(GitBuildVersionSimple).0"
-      $manifest.save(".\src\PresenceLight.Package\Package.appxmanifest")
-
-      [xml]$manifest = Get-Content ".\src\PresenceLight.Package\Package-Nightly.appxmanifest"
-      $manifest.Package.Identity.Version = "$(GitBuildVersionSimple).0"
-      $manifest.Save(".\src\PresenceLight.Package\Package-Nightly.appxmanifest")
-
-    displayName: Update manifest version
-
-  - powershell: |
-      # Update App Insights instrumentation key
-      [xml]$doc = Get-Content ".\src\PresenceLight\ApplicationInsights.config"
-      $doc.ApplicationInsights.InstrumentationKey = "$(AppInsightsKey)"
-      $doc.save(".\src\PresenceLight\ApplicationInsights.config")
-    displayName: Set AppInsights Config in ApplicationInsightsConfig
-    env:
-      AppInsightsKey: $(AppInsightsKey)
-    condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')), not(eq(variables['AppInsightsKey'], '')))
-
-  - powershell: |
-      # Update appsettings.json. This must be done before build.
-      $appsettings= get-content ".\src\PresenceLight\appsettings.json" -raw | ConvertFrom-Json
-      $appsettings.clientId = "$env:ApplicationId"
-      $appsettings | ConvertTo-Json -depth 32| set-content '.\src\PresenceLight\appsettings.json'
-    displayName: Update appsettings.json
-    env:
-     ApplicationId: $(ApplicationId)
-
-  - powershell: |
-      # Update badges
-      [xml]$badge = Get-Content ".\Build\ci_badge.svg"
-      $badge.svg.g[1].text[2].InnerText = "$(GitBuildVersionSimple).0"
-      $badge.svg.g[1].text[3].InnerText = "$(GitBuildVersionSimple).0"
-      $badge.Save("$(Build.ArtifactStagingDirectory)\$(ChannelName)\ci_badge.svg")
-      [xml]$badge = Get-Content ".\Build\store_badge.svg"
-      $badge.svg.g[1].text[2].InnerText = "$(GitBuildVersionSimple).0"
-      $badge.svg.g[1].text[3].InnerText = "$(GitBuildVersionSimple).0"
-      $badge.Save("$(Build.ArtifactStagingDirectory)\$(ChannelName)\stable_badge.svg")
-    displayName: Update badge versions
-
-  - task: MSBuild@1
-    displayName: Build Presence Light for $(ChannelName)
-    inputs:
-      solution: '.\src\PresenceLight\PresenceLight.csproj'
-      msbuildArguments: /restore
-      configuration: $(BuildConfiguration)
-      maximumCpuCount: true
-
-  - task: MSBuild@1
-    displayName: Build Package
-    inputs:
-      solution: '.\src\PresenceLight.Package\PresenceLight.Package.wapproj'
-      msbuildArguments: /p:AppxPackageDir="$(Build.ArtifactStagingDirectory)\$(ChannelName)\\"
-      configuration: $(BuildConfiguration)
-      maximumCpuCount: true
-    condition: and(succeeded(), or(eq(variables['ChannelName'], 'Nightly'), eq(variables['ChannelName'], 'Store')))
-
-  - task: MSBuild@1
-    displayName: Build for Zip
-    inputs:
-      solution: '.\src\PresenceLight\PresenceLight.csproj'
-      msbuildArguments: /t:publish /p:PublishProfile=Properties/PublishProfiles/WinX86.pubxml
-      configuration: $(BuildConfiguration)
-      maximumCpuCount: true
-    condition: and(succeeded(), or(eq(variables['ChannelName'], 'Zip')))
-
-  - task: ArchiveFiles@1
-    displayName: Zip PresenceLight files
-    inputs:
-      archiveType: zip
-      rootFolder: '.\src\PresenceLight\bin\$(BuildConfiguration)\netcoreapp5.0\win-x86\publish'
-      archiveFile: $(Build.ArtifactStagingDirectory)\$(ChannelName)\PresenceLight.$(Build.BuildNumber).zip
-      includeRootFolder: false
-    condition: and(succeeded(), eq(variables['ChannelName'], 'Zip'))
-
-  - task: PublishSymbols@2
-    inputs:
-      symbolsFolder: '$(Build.SourcesDirectory)' # Optional
-      searchPattern: '**/bin/**/*.pdb'
-      indexSources: true # Optional
-      publishSymbols: true # Optional
-      symbolServerType: 'teamServices' # Required when publishSymbols == True# Options:  , teamServices, fileShare
-      detailedLog: true # Optional
-      treatNotIndexedAsWarning: false # Optional
-      symbolsArtifactName: 'Symbols_$(BuildConfiguration)' # Optional
-
-  - publish: $(Build.ArtifactStagingDirectory)\$(ChannelName)
-    displayName: Publish Build Packages
-    artifact: $(ChannelName)
-
-  - publish: Build
-    displayName: Publish signing scripts
-    artifact: SigningScripts
-
-
-- stage: CodeSign
-  condition: and(succeeded('Build'), not(eq(variables['build.reason'], 'PullRequest')))
   jobs:
-  - deployment: CodeSign
-    displayName: Code Signing
+  - job: Build
     pool:
       vmImage: windows-latest
-    environment: Code Sign - CI
-    variables:
-    - group: PresenceLight Sign Client
     strategy:
-      runOnce:
-        deploy:
-          steps:
+      matrix:
+        Channel_Zip:
+          ReleaseChannel: Zip
+        Channel_Store:
+          ReleaseChannel: Store
+        Channel_Nightly:
+          ReleaseChannel: Nightly
+          DistributionUrl: https://presencelight.z5.web.core.windows.net/Nightly
 
-          - task: DownloadPipelineArtifact@2
-            displayName: Download Zip Artifacts
-            inputs:
-              artifactName: Zip
-              targetPath: $(Pipeline.Workspace)/ToSign/Zip
+    steps:
+    - task: UseDotNet@2
+      displayName: 'Use .NET Core SDK 5.0.x'
+      inputs:
+        version: 5.0.x
+        includePreviewVersions: true
 
-          - task: DownloadPipelineArtifact@2
-            displayName: Download Nightly Artifacts
-            inputs:
-              artifactName: Nightly
-              targetPath: $(Pipeline.Workspace)/ToSign/Nightly
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: custom
+        custom: tool
+        arguments: install -g nbgv
+      displayName: Install NBGV tool
 
-          - download: current
-            artifact: SigningScripts
+    - script: nbgv cloud -c -a
+      displayName: Set Version
 
-          - task: DotNetCoreCLI@2
-            inputs:
-              command: custom
-              custom: tool
-              arguments: install --tool-path . SignClient
-            displayName: Install SignTool tool
+    - powershell: |
+        mkdir $(Build.ArtifactStagingDirectory)\$(ChannelName)
 
-          - pwsh: |
-              .\SignClient "Sign" `
-              --baseDirectory "$(Pipeline.Workspace)\ToSign" `
-              --input "**/*.{appxbundle,appinstaller,zip,nupkg}" `
-              --config "$(Pipeline.Workspace)\SigningScripts\appsettings.json" `
-              --filelist "$(Pipeline.Workspace)\SigningScripts\filelist.txt" `
-              --user "$(SignClientUser)" `
-              --secret "$(SignClientSecret)" `
-              --name "PresenceLight" `
-              --description "PresenceLight" `
-              --descriptionUrl "https://github.com/isaacrlevin/PresenceLight"
-            displayName: Authenticode Sign artifacts
-          - publish: $(Pipeline.Workspace)/ToSign/Zip
-            displayName: Publish Signed Zip Packages
-            artifact: ZipSigned
+        # Update appxmanifest. This must be done before build.
+        # Set the per-channel values into the appxmanifest, replacing the checked-in values
+        [xml]$manifest= get-content ".\src\PresenceLight.Package\Package.appxmanifest"
+        $manifest.Package.Identity.Version = "$(GitBuildVersionSimple).0"
+        $manifest.save(".\src\PresenceLight.Package\Package.appxmanifest")
 
-          - publish: $(Pipeline.Workspace)/ToSign/Nightly
-            displayName: Publish Signed Nightly Packages
-            artifact: NightlySigned
+        [xml]$manifest = Get-Content ".\src\PresenceLight.Package\Package-Nightly.appxmanifest"
+        $manifest.Package.Identity.Version = "$(GitBuildVersionSimple).0"
+        $manifest.Save(".\src\PresenceLight.Package\Package-Nightly.appxmanifest")
+
+      displayName: Update manifest version
+
+    - powershell: |
+        # Update App Insights instrumentation key
+        [xml]$doc = Get-Content ".\src\PresenceLight\ApplicationInsights.config"
+        $doc.ApplicationInsights.InstrumentationKey = "$(AppInsightsKey)"
+        $doc.save(".\src\PresenceLight\ApplicationInsights.config")
+      displayName: Set AppInsights Config in ApplicationInsightsConfig
+      env:
+        AppInsightsKey: $(AppInsightsKey)
+      condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')), not(eq(variables['AppInsightsKey'], '')))
+
+    - powershell: |
+        # Update appsettings.json. This must be done before build.
+        $appsettings= get-content ".\src\PresenceLight\appsettings.json" -raw | ConvertFrom-Json
+        $appsettings.clientId = "$env:ApplicationId"
+        $appsettings | ConvertTo-Json -depth 32| set-content '.\src\PresenceLight\appsettings.json'
+      displayName: Update appsettings.json
+      env:
+      ApplicationId: $(ApplicationId)
+
+    - powershell: |
+        # Update badges
+        [xml]$badge = Get-Content ".\Build\ci_badge.svg"
+        $badge.svg.g[1].text[2].InnerText = "$(GitBuildVersionSimple).0"
+        $badge.svg.g[1].text[3].InnerText = "$(GitBuildVersionSimple).0"
+        $badge.Save("$(Build.ArtifactStagingDirectory)\$(ChannelName)\ci_badge.svg")
+        [xml]$badge = Get-Content ".\Build\store_badge.svg"
+        $badge.svg.g[1].text[2].InnerText = "$(GitBuildVersionSimple).0"
+        $badge.svg.g[1].text[3].InnerText = "$(GitBuildVersionSimple).0"
+        $badge.Save("$(Build.ArtifactStagingDirectory)\$(ChannelName)\stable_badge.svg")
+      displayName: Update badge versions
+
+    - task: MSBuild@1
+      displayName: Build Presence Light for $(ChannelName)
+      inputs:
+        solution: '.\src\PresenceLight\PresenceLight.csproj'
+        msbuildArguments: /restore
+        configuration: $(BuildConfiguration)
+        maximumCpuCount: true
+
+    - task: MSBuild@1
+      displayName: Build Package
+      inputs:
+        solution: '.\src\PresenceLight.Package\PresenceLight.Package.wapproj'
+        msbuildArguments: /p:AppxPackageDir="$(Build.ArtifactStagingDirectory)\$(ChannelName)\\"
+        configuration: $(BuildConfiguration)
+        maximumCpuCount: true
+      condition: and(succeeded(), or(eq(variables['ChannelName'], 'Nightly'), eq(variables['ChannelName'], 'Store')))
+
+    - task: MSBuild@1
+      displayName: Build for Zip
+      inputs:
+        solution: '.\src\PresenceLight\PresenceLight.csproj'
+        msbuildArguments: /t:publish /p:PublishProfile=Properties/PublishProfiles/WinX86.pubxml
+        configuration: $(BuildConfiguration)
+        maximumCpuCount: true
+      condition: and(succeeded(), or(eq(variables['ChannelName'], 'Zip')))
+
+    - task: ArchiveFiles@1
+      displayName: Zip PresenceLight files
+      inputs:
+        archiveType: zip
+        rootFolder: '.\src\PresenceLight\bin\$(BuildConfiguration)\netcoreapp5.0\win-x86\publish'
+        archiveFile: $(Build.ArtifactStagingDirectory)\$(ChannelName)\PresenceLight.$(Build.BuildNumber).zip
+        includeRootFolder: false
+      condition: and(succeeded(), eq(variables['ChannelName'], 'Zip'))
+
+    - task: PublishSymbols@2
+      inputs:
+        symbolsFolder: '$(Build.SourcesDirectory)' # Optional
+        searchPattern: '**/bin/**/*.pdb'
+        indexSources: true # Optional
+        publishSymbols: true # Optional
+        symbolServerType: 'teamServices' # Required when publishSymbols == True# Options:  , teamServices, fileShare
+        detailedLog: true # Optional
+        treatNotIndexedAsWarning: false # Optional
+        symbolsArtifactName: 'Symbols_$(BuildConfiguration)' # Optional
+
+    - publish: $(Build.ArtifactStagingDirectory)\$(ChannelName)
+      displayName: Publish Build Packages
+      artifact: $(ChannelName)
+
+    - publish: Build
+      displayName: Publish signing scripts
+      artifact: SigningScripts
+
+
+  - stage: CodeSign
+    condition: and(succeeded('Build'), not(eq(variables['build.reason'], 'PullRequest')))
+    jobs:
+    - deployment: CodeSign
+      displayName: Code Signing
+      pool:
+        vmImage: windows-latest
+      environment: Code Sign - CI
+      variables:
+      - group: PresenceLight Sign Client
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - task: DownloadPipelineArtifact@2
+              displayName: Download Zip Artifacts
+              inputs:
+                artifactName: Zip
+                targetPath: $(Pipeline.Workspace)/ToSign/Zip
+
+            - task: DownloadPipelineArtifact@2
+              displayName: Download Nightly Artifacts
+              inputs:
+                artifactName: Nightly
+                targetPath: $(Pipeline.Workspace)/ToSign/Nightly
+
+            - download: current
+              artifact: SigningScripts
+
+            - task: DotNetCoreCLI@2
+              inputs:
+                command: custom
+                custom: tool
+                arguments: install --tool-path . SignClient
+              displayName: Install SignTool tool
+
+            - pwsh: |
+                .\SignClient "Sign" `
+                --baseDirectory "$(Pipeline.Workspace)\ToSign" `
+                --input "**/*.{appxbundle,appinstaller,zip,nupkg}" `
+                --config "$(Pipeline.Workspace)\SigningScripts\appsettings.json" `
+                --filelist "$(Pipeline.Workspace)\SigningScripts\filelist.txt" `
+                --user "$(SignClientUser)" `
+                --secret "$(SignClientSecret)" `
+                --name "PresenceLight" `
+                --description "PresenceLight" `
+                --descriptionUrl "https://github.com/isaacrlevin/PresenceLight"
+              displayName: Authenticode Sign artifacts
+            - publish: $(Pipeline.Workspace)/ToSign/Zip
+              displayName: Publish Signed Zip Packages
+              artifact: ZipSigned
+
+            - publish: $(Pipeline.Workspace)/ToSign/Nightly
+              displayName: Publish Signed Nightly Packages
+              artifact: NightlySigned
