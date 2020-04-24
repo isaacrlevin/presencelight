@@ -34,6 +34,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(ChannelName)' == 'Nightly'">
     <GenerateAppInstallerFile>True</GenerateAppInstallerFile>
+    <AppInstallerUri>https://presencelight.blob.core.windows.net/nightly</AppInstallerUri>
     <AppInstallerUpdateFrequency>0</AppInstallerUpdateFrequency>
     <AppInstallerCheckForUpdateFrequency>OnApplicationRun</AppInstallerCheckForUpdateFrequency>
   </PropertyGroup>

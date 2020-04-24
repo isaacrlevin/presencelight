@@ -32,7 +32,6 @@ stages:
           ChannelName: Store
         Channel_Nightly:
           ChannelName: Nightly
-          DistributionUrl: https://presencelight.z5.web.core.windows.net/Nightly
 
     steps:
     - task: UseDotNet@2
@@ -101,7 +100,7 @@ stages:
       displayName: Build Presence Light for $(ChannelName)
       inputs:
         solution: '.\src\PresenceLight\PresenceLight.csproj'
-        msbuildArguments: /restore
+        msbuildArguments: /restore /p:IncludeSymbols=true
         configuration: $(BuildConfiguration)
         maximumCpuCount: true
 
@@ -109,7 +108,7 @@ stages:
       displayName: Build Package
       inputs:
         solution: '.\src\PresenceLight.Package\PresenceLight.Package.wapproj'
-        msbuildArguments: /p:AppxPackageDir="$(Build.ArtifactStagingDirectory)\$(ChannelName)\\"
+        msbuildArguments: /p:IncludeSymbols=true /p:AppxPackageDir="$(Build.ArtifactStagingDirectory)\$(ChannelName)\\"
         configuration: $(BuildConfiguration)
         maximumCpuCount: true
       condition: and(succeeded(), or(eq(variables['ChannelName'], 'Nightly'), eq(variables['ChannelName'], 'Store')))
@@ -118,7 +117,7 @@ stages:
       displayName: Build for Zip
       inputs:
         solution: '.\src\PresenceLight\PresenceLight.csproj'
-        msbuildArguments: /t:publish /p:PublishProfile=Properties/PublishProfiles/WinX86.pubxml
+        msbuildArguments: /t:publish /p:IncludeSymbols=true /p:PublishProfile=Properties/PublishProfiles/WinX86.pubxml
         configuration: $(BuildConfiguration)
         maximumCpuCount: true
       condition: and(succeeded(), eq(variables['ChannelName'], 'Zip'))
@@ -127,7 +126,7 @@ stages:
       displayName: Zip PresenceLight files
       inputs:
         archiveType: default
-        rootFolder: '.\src\PresenceLight\bin\$(BuildConfiguration)\netcoreapp5.0\win-x86\publish'
+        rootFolder: '.\src\PresenceLight\bin\$(BuildConfiguration)\netcoreapp5.0\publish'
         archiveFile: $(Build.ArtifactStagingDirectory)\$(ChannelName)\PresenceLight.$(Build.BuildNumber).zip
         includeRootFolder: false
       condition: and(succeeded(), eq(variables['ChannelName'], 'Zip'))
