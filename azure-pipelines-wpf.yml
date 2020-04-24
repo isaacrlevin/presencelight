@@ -150,8 +150,6 @@ stages:
     - publish: Build
       displayName: Publish signing scripts
       artifact: SigningScripts
-
-
 - stage: CodeSign
   condition: and(succeeded('Build'), not(eq(variables['build.reason'], 'PullRequest')))
   jobs:
