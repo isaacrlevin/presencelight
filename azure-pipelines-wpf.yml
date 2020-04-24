@@ -152,59 +152,59 @@ stages:
       artifact: SigningScripts
 
 
-  - stage: CodeSign
-    condition: and(succeeded('Build'), not(eq(variables['build.reason'], 'PullRequest')))
-    jobs:
-    - deployment: CodeSign
-      displayName: Code Signing
-      pool:
-        vmImage: windows-latest
-      environment: Code Sign - CI
-      variables:
-      - group: PresenceLight Sign Client
-      strategy:
-        runOnce:
-          deploy:
-            steps:
+- stage: CodeSign
+  condition: and(succeeded('Build'), not(eq(variables['build.reason'], 'PullRequest')))
+  jobs:
+  - deployment: CodeSign
+    displayName: Code Signing
+    pool:
+      vmImage: windows-latest
+    environment: Code Sign - CI
+    variables:
+    - group: PresenceLight Sign Client
+    strategy:
+      runOnce:
+        deploy:
+          steps:
 
-            - task: DownloadPipelineArtifact@2
-              displayName: Download Zip Artifacts
-              inputs:
-                artifactName: Zip
-                targetPath: $(Pipeline.Workspace)/ToSign/Zip
+          - task: DownloadPipelineArtifact@2
+            displayName: Download Zip Artifacts
+            inputs:
+              artifactName: Zip
+              targetPath: $(Pipeline.Workspace)/ToSign/Zip
 
-            - task: DownloadPipelineArtifact@2
-              displayName: Download Nightly Artifacts
-              inputs:
-                artifactName: Nightly
-                targetPath: $(Pipeline.Workspace)/ToSign/Nightly
+          - task: DownloadPipelineArtifact@2
+            displayName: Download Nightly Artifacts
+            inputs:
+              artifactName: Nightly
+              targetPath: $(Pipeline.Workspace)/ToSign/Nightly
 
-            - download: current
-              artifact: SigningScripts
+          - download: current
+            artifact: SigningScripts
 
-            - task: DotNetCoreCLI@2
-              inputs:
-                command: custom
-                custom: tool
-                arguments: install --tool-path . SignClient
-              displayName: Install SignTool tool
+          - task: DotNetCoreCLI@2
+            inputs:
+              command: custom
+              custom: tool
+              arguments: install --tool-path . SignClient
+            displayName: Install SignTool tool
 
-            - pwsh: |
-                .\SignClient "Sign" `
-                --baseDirectory "$(Pipeline.Workspace)\ToSign" `
-                --input "**/*.{appxbundle,appinstaller,zip,nupkg}" `
-                --config "$(Pipeline.Workspace)\SigningScripts\appsettings.json" `
-                --filelist "$(Pipeline.Workspace)\SigningScripts\filelist.txt" `
-                --user "$(SignClientUser)" `
-                --secret "$(SignClientSecret)" `
-                --name "PresenceLight" `
-                --description "PresenceLight" `
-                --descriptionUrl "https://github.com/isaacrlevin/PresenceLight"
-              displayName: Authenticode Sign artifacts
-            - publish: $(Pipeline.Workspace)/ToSign/Zip
-              displayName: Publish Signed Zip Packages
-              artifact: ZipSigned
+          - pwsh: |
+              .\SignClient "Sign" `
+              --baseDirectory "$(Pipeline.Workspace)\ToSign" `
+              --input "**/*.{appxbundle,appinstaller,zip,nupkg}" `
+              --config "$(Pipeline.Workspace)\SigningScripts\appsettings.json" `
+              --filelist "$(Pipeline.Workspace)\SigningScripts\filelist.txt" `
+              --user "$(SignClientUser)" `
+              --secret "$(SignClientSecret)" `
+              --name "PresenceLight" `
+              --description "PresenceLight" `
+              --descriptionUrl "https://github.com/isaacrlevin/PresenceLight"
+            displayName: Authenticode Sign artifacts
+          - publish: $(Pipeline.Workspace)/ToSign/Zip
+            displayName: Publish Signed Zip Packages
+            artifact: ZipSigned
 
-            - publish: $(Pipeline.Workspace)/ToSign/Nightly
-              displayName: Publish Signed Nightly Packages
-              artifact: NightlySigned
+          - publish: $(Pipeline.Workspace)/ToSign/Nightly
+            displayName: Publish Signed Nightly Packages
+            artifact: NightlySigned
