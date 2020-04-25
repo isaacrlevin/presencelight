@@ -114,13 +114,19 @@ stages:
       condition: and(succeeded(), or(eq(variables['ChannelName'], 'Nightly'), eq(variables['ChannelName'], 'Store')))
 
     - task: MSBuild@1
-      displayName: Build for Zip
+      displayName: Build for Zip and Choco
       inputs:
         solution: '.\src\PresenceLight\PresenceLight.csproj'
         msbuildArguments: /t:publish /p:IncludeSymbols=true /p:PublishProfile=Properties/PublishProfiles/WinX86.pubxml
         configuration: $(BuildConfiguration)
         maximumCpuCount: true
-      condition: and(succeeded(), eq(variables['ChannelName'], 'Zip'))
+      condition: and(succeeded(), or(eq(variables['ChannelName'], 'Zip'), eq(variables['ChannelName'], 'Choco')))
+
+    - powershell: |
+        # Chocolatey
+        & choco.exe pack .\src\PresenceLight\PresenceLight.nuspec --version $(NBGV_ChocolateyPackageVersion) --OutputDirectory $(Build.ArtifactStagingDirectory)\$(ChannelName)
+      displayName: Create Choco package
+      condition: and(succeeded(), eq(variables['ReleaseChannel'], 'Choco'))
 
     - task: ArchiveFiles@1
       displayName: Zip PresenceLight files
@@ -171,6 +177,12 @@ stages:
               targetPath: $(Pipeline.Workspace)/ToSign/Zip
 
           - task: DownloadPipelineArtifact@2
+            displayName: Download Choco Artifacts
+            inputs:
+              artifactName: Choco
+              targetPath: $(Pipeline.Workspace)/ToSign/Choco
+
+          - task: DownloadPipelineArtifact@2
             displayName: Download Nightly Artifacts
             inputs:
               artifactName: Nightly
@@ -204,4 +216,12 @@ stages:
 
           - publish: $(Pipeline.Workspace)/ToSign/Nightly
             displayName: Publish Signed Nightly Packages
+            artifact: NightlySigned
+
+          - publish: $(Pipeline.Workspace)/ToSign/Choco
+            displayName: Publish Signed Choco Packages
+            artifact: ChocoSigned
+
+          - publish: $(Pipeline.Workspace)/ToSign/Nightly
+            displayName: Publish Signed Choco Packages
             artifact: NightlySigned

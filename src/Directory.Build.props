@@ -42,7 +42,7 @@
   <PropertyGroup>
     <DefineConstants Condition="'$(ChannelName)' == 'Store' ">$(DefineConstants);STORE</DefineConstants>
     <DefineConstants Condition="'$(ChannelName)' == 'Nightly' ">$(DefineConstants);NIGHTLY</DefineConstants>
-    <DefineConstants Condition="'$(ChannelName)' == 'MSFT' ">$(DefineConstants);MSFT</DefineConstants>
+    <DefineConstants Condition="'$(ChannelName)' == 'Choco' ">$(DefineConstants);CHOCO</DefineConstants>
     <DefineConstants Condition="'$(ChannelName)' == 'Release' ">$(DefineConstants);ZIP</DefineConstants>
     <DefineConstants Condition="'$(ChannelName)' == 'Debug' ">$(DefineConstants);ZIP</DefineConstants>
   </PropertyGroup>
