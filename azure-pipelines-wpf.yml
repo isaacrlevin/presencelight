@@ -32,6 +32,8 @@ stages:
           ChannelName: Store
         Channel_Nightly:
           ChannelName: Nightly
+        Channel_Choco:
+          ChannelName: Choco
 
     steps:
     - task: UseDotNet@2
