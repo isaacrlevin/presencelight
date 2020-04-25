@@ -4,7 +4,7 @@
 
 ### Stable WPF Installs
 
-| Persona | Build Number | Link |
+| Release Channel | Build Number | Link |
 |--- | ------------ | ---- |
 | Nightly | [![Nightly build number](https://presencelight.blob.core.windows.net/nightly/ci_badge.svg)](https://presencelight.blob.core.windows.net/nightly/index.html)| [Install](https://presencelight.blob.core.windows.net/nightly/index.html)
 
@@ -87,6 +87,16 @@ Once you have the IP of the bridge, you will need to register a developer accoun
 When PresenceLight is configured, you will see a dropdown of Hue Bulbs connected to the bridge for you to set your presence to.
 
  ![Registered Bridge](static/registered-bridge.png)
+
+## Wire up LIFX
+
+To connect PresenceLight to LIFX colored bulbs, you need to obtain a LIFX Developer Token. When you first arrive at the LIFX tab, you will see a message like this if you try to get Lights or Groups
+
+ ![LIFX Unconfigured](static/lifx-unconfigured.png)
+
+After entering an obtained token, you will be able to get a list of either individual lights or groups of lights, selecting one of the options and saving gives you a message like this
+
+ ![LIFX Configured](static/lifx-configured.png)
 
 ## Done
 

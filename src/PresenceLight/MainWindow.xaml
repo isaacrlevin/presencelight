@@ -109,9 +109,16 @@
                         <ColumnDefinition Width="138*"/>
                         <ColumnDefinition Width="111*"/>
                     </Grid.ColumnDefinitions>
-                    <CheckBox x:Name="cbIsLIFXEnabled" IsChecked="{Binding IsLIFXEnabled}" Content="Connect to LIFX Light" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbIsLIFXEnabledChanged" Checked="cbIsLIFXEnabledChanged" Grid.Column="1" Grid.ColumnSpan="4" />
+                    <Grid Grid.Column="1" Grid.ColumnSpan="4">
+                        <CheckBox x:Name="cbIsLIFXEnabled" IsChecked="{Binding IsLIFXEnabled}" Content="Connect to LIFX Light" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbIsLIFXEnabledChanged" Checked="cbIsLIFXEnabledChanged" Grid.Column="1" Grid.ColumnSpan="4" />
+                        <TextBlock Grid.Column="4"  Margin="200,20,0,0" >
+                            <Hyperlink NavigateUri="https://cloud.lifx.com/settings"  RequestNavigate="Hyperlink_RequestNavigate">
+                            Get Token
+                        </Hyperlink>
+                        </TextBlock>
+                    </Grid>
                     <Grid x:Name="pnlLIFX" Grid.Column="1" Grid.ColumnSpan="4">
-                        <Label Content="LIFX Api Key" Margin="0,60,90,244"/>
+                        <Label Content="LIFX Token" Margin="0,60,90,244"/>
                         <TextBox Text="{Binding LIFXApiKey}" x:Name="lifxApiKey" HorizontalAlignment="Left" Height="23" Margin="100,60,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="450" Grid.ColumnSpan="2"/>
                         <Button x:Name="btnGetLIFXLights" Height="45" Width="170" Content="Get Lights" Margin="-200,60,1,193" Click="CheckLIFX_Click"/>
                         <Button x:Name="btnGetLIFXGroups" Height="45" Width="170" Content="Get Groups" Margin="200,60,1,193" Click="CheckLIFX_Click"/>
