@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>PresenceLight</id>
+    <version>$version$</version>
+    <title>PresenceLight</title>
+    <authors>Isaac Levin</authors>
+    <owners>Isaac Levin</owners>
+    <licenseUrl>https://github.com/isaacrlevin/PresenceLight/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/isaacrlevin/PresenceLight/</projectUrl>
+    <iconUrl>https://github.com/isaacrlevin/PresenceLight/raw/master/Icon.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>
+      PresenceLight is a solution to broadcast your various statuses to a Phillips Hue or LIFX light bulb.
+      Some statuses you can broadcast are: your availability in Microsoft Teams, your current Windows 10 theme, and a theme or color of your choosing.
+    </description>
+    <summary>Broadcasts colors to various Smart Lights</summary>
+    <releaseNotes>https://github.com/isaacrlevin/PresenceLight/releases</releaseNotes>
+    <tags>presence lifx hue phillips teams</tags>
+  </metadata>
+  <files>
+    <file src="ChocolateyInstall.ps1"  />
+    <file src="PresenceLight.exe.gui"  />
+    <file src="bin\Release\netcoreapp5.0\win-x86\publish\**\*.*" target=""  />
+    <file src="..\..\LICENSE" target="legal\LICENSE.txt" />
+    <file src="..\..\Build\Verification.txt" target="legal\Verification.txt" />
+  </files>
+</package>

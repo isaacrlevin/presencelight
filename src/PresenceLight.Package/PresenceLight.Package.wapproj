@@ -39,7 +39,7 @@
     <AppInstallerCheckForUpdateFrequency>OnApplicationRun</AppInstallerCheckForUpdateFrequency>
   </PropertyGroup>
 
-
+    
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest" Condition="'$(ChannelName)' == 'Store'">
       <SubType>Designer</SubType>
@@ -54,7 +54,7 @@
     <None Include="*.appinstaller" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Images\*.png" />
+      <Content Include="Images\*.png" />
     <None Include="Package.xml" />
   </ItemGroup>
   <ItemGroup>
@@ -65,10 +65,3 @@
   </ItemGroup>
   <Import Project="$(WapProjPath)\Microsoft.DesktopBridge.targets" />
 </Project>
-
-
-
-
-
-
-
