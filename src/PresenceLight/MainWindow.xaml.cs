@@ -199,7 +199,7 @@ namespace PresenceLight
             {
                 _graphServiceClient = _graphservice.GetAuthenticatedGraphClient(typeof(WPFAuthorizationProvider));
             }
-            await SettingsService.SaveSettings(Config);
+            
             stopThemePolling = true;
             stopGraphPolling = false;
             signInPanel.Visibility = Visibility.Collapsed;
@@ -231,6 +231,7 @@ namespace PresenceLight
             hueIpAddress.IsEnabled = false;
 
             dataPanel.Visibility = Visibility.Visible;
+            await SettingsService.SaveSettings(Config);
             while (true)
             {
                 if (stopGraphPolling)
@@ -546,7 +547,7 @@ namespace PresenceLight
 
                 await _lifxService.SetColor("Off", (Selector)Config.SelectedLIFXItemId);
             }
-
+            await SettingsService.SaveSettings(Config);
             System.Windows.Application.Current.Shutdown();
         }
         #endregion
