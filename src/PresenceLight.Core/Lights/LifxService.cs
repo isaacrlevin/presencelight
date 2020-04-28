@@ -1,8 +1,7 @@
-﻿using LifxCloud.NET;
+﻿using System;
+using LifxCloud.NET;
 using LifxCloud.NET.Models;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace PresenceLight.Core
@@ -10,7 +9,7 @@ namespace PresenceLight.Core
     public class LIFXService
     {
         private readonly ConfigWrapper _options;
-        private LifxCloudClient client;
+        private LifxCloudClient _client;
 
         public LIFXService(Microsoft.Extensions.Options.IOptionsMonitor<ConfigWrapper> optionsAccessor)
         {
@@ -19,18 +18,31 @@ namespace PresenceLight.Core
 
         public async Task<List<Light>> GetAllLightsAsync()
         {
-            client = await LifxCloudClient.CreateAsync(_options.LIFXApiKey);
-            return await client.ListLights(Selector.All);
+            if (!_options.IsLIFXEnabled || string.IsNullOrEmpty(_options.LIFXApiKey))
+            {
+                return new List<Light>();
+            }
+
+            _client = await LifxCloudClient.CreateAsync(_options.LIFXApiKey);
+            return await _client.ListLights(Selector.All);
         }
 
         public async Task<List<Group>> GetAllGroupsAsync()
         {
-            client = await LifxCloudClient.CreateAsync(_options.LIFXApiKey);
-            return await client.ListGroups(Selector.All);
+            if (!_options.IsLIFXEnabled || string.IsNullOrEmpty(_options.LIFXApiKey))
+            {
+                return new List<Group>();
+            }
+            _client = await LifxCloudClient.CreateAsync(_options.LIFXApiKey);
+            return await _client.ListGroups(Selector.All);
         }
         public async Task SetColor(string availability, Selector selector)
         {
-            client = await LifxCloudClient.CreateAsync(_options.LIFXApiKey);
+            if (!_options.IsLIFXEnabled || string.IsNullOrEmpty(_options.LIFXApiKey))
+            {
+                return;
+            }
+            _client = await LifxCloudClient.CreateAsync(_options.LIFXApiKey);
             string color = "";
             switch (availability)
             {
@@ -60,7 +72,7 @@ namespace PresenceLight.Core
                     break;
             }
 
-            var result = await client.SetState(selector,new LifxCloud.NET.Models.SetStateRequest
+            var result = await _client.SetState(selector,new LifxCloud.NET.Models.SetStateRequest
             {
                 Color = color
             });
