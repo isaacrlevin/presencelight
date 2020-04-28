@@ -199,7 +199,7 @@ namespace PresenceLight
             {
                 _graphServiceClient = _graphservice.GetAuthenticatedGraphClient(typeof(WPFAuthorizationProvider));
             }
-
+            await SettingsService.SaveSettings(Config);
             stopThemePolling = true;
             stopGraphPolling = false;
             signInPanel.Visibility = Visibility.Collapsed;
@@ -301,6 +301,7 @@ namespace PresenceLight
                 {
                 }
             }
+            await SettingsService.SaveSettings(Config);
         }
         #endregion
 
