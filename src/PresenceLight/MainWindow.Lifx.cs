@@ -5,12 +5,25 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using LifxCloud.NET.Models;
 using PresenceLight.Telemetry;
+using System.Windows.Navigation;
 
 namespace PresenceLight
 {
     public partial class MainWindow : Window
     {
         #region LIFX Panel
+
+        private async void LIFXToken_Get(object sender, RequestNavigateEventArgs e)
+        {
+            string accessToken = await _lIFXOAuthHelper.InitiateTokenRetrieval();
+            if (!string.IsNullOrEmpty(accessToken))
+            {
+                lifxApiKey.Text = accessToken;
+                Config.LIFXApiKey = accessToken;
+                _options.LIFXApiKey = accessToken;
+            }
+            this.Activate();
+        }
 
         private async void SaveLIFXSettings_Click(object sender, RoutedEventArgs e)
         {
@@ -31,10 +44,13 @@ namespace PresenceLight
 
                     foreach (var item in ddlLIFXLights.Items)
                     {
-                        var light = (Light)item;
-                        if ($"id:{light.Id}" == Config.SelectedLIFXItemId)
+                        if (item != null)
                         {
-                            ddlLIFXLights.SelectedItem = item;
+                            var light = (Light)item;
+                            if ($"id:{light?.Id}" == Config.SelectedLIFXItemId)
+                            {
+                                ddlLIFXLights.SelectedItem = item;
+                            }
                         }
                     }
 
@@ -44,10 +60,13 @@ namespace PresenceLight
 
                         foreach (var item in ddlLIFXLights.Items)
                         {
-                            var group = (LifxCloud.NET.Models.Group)item;
-                            if ($"group_id:{group.Id}" == Config.SelectedLIFXItemId)
+                            if (item != null)
                             {
-                                ddlLIFXLights.SelectedItem = item;
+                                var group = (LifxCloud.NET.Models.Group)item;
+                                if ($"group_id:{group?.Id}" == Config.SelectedLIFXItemId)
+                                {
+                                    ddlLIFXLights.SelectedItem = item;
+                                }
                             }
                         }
                     }
@@ -96,7 +115,7 @@ namespace PresenceLight
         private async void CheckLIFX_Click(object sender, RoutedEventArgs e)
         {
             SolidColorBrush fontBrush = new SolidColorBrush();
-           
+
             if (!string.IsNullOrEmpty(lifxApiKey.Text))
             {
                 try
@@ -160,6 +179,7 @@ namespace PresenceLight
             {
                 pnlLIFX.Visibility = Visibility.Collapsed;
             }
+            _options.IsLIFXEnabled = Config.IsLIFXEnabled;
             e.Handled = true;
         }
 

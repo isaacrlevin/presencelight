@@ -7,6 +7,10 @@
     <AssemblyName>PresenceLight</AssemblyName>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>1701;1702;1705;1591;NU1701;CS8618;CS8603;CS8600;CS8604;CS8602;CS8618;CS0649;CS8601;CS8625</NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Blazored.Modal" Version="4.1.0" />
     <PackageReference Include="IdentityModel" Version="4.2.0" />

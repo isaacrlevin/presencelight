@@ -14,12 +14,12 @@ namespace PresenceLight.Core.Helpers
 {
     public class WPFAuthorizationProvider : MSGraph.IAuthenticationProvider
     {
-        public static IPublicClientApplication _application;
+        public static IPublicClientApplication Application;
         private readonly List<string> _scopes;
 
         public WPFAuthorizationProvider(IPublicClientApplication application, List<string> scopes)
         {
-            _application = application;
+            Application = application;
             _scopes = scopes;
         }
 
@@ -27,12 +27,12 @@ namespace PresenceLight.Core.Helpers
         {
             AuthenticationResult authResult = null;
 
-            var accounts = await _application.GetAccountsAsync();
+            var accounts = await Application.GetAccountsAsync();
             var firstAccount = accounts.FirstOrDefault();
 
             try
             {
-                authResult = await _application.AcquireTokenSilent(_scopes, accounts.FirstOrDefault())
+                authResult = await Application.AcquireTokenSilent(_scopes, accounts.FirstOrDefault())
                 .ExecuteAsync();
 
             }
@@ -40,14 +40,14 @@ namespace PresenceLight.Core.Helpers
             {
                 try
                 {
-                    await Application.Current.Dispatcher.Invoke(async () =>
+                    await System.Windows.Application.Current.Dispatcher.Invoke<Task>(async () =>
                      {
-                         authResult = await _application.AcquireTokenInteractive(_scopes)
+                         authResult = await Application.AcquireTokenInteractive(_scopes)
                             .WithUseEmbeddedWebView(false)
                             .ExecuteAsync();
                      });
                 }
-                catch (Exception ex)
+                catch 
                 {
 
                 }

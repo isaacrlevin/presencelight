@@ -61,7 +61,7 @@ dotnet_style_predefined_type_for_locals_parameters_members = true:suggestion
 dotnet_style_predefined_type_for_member_access = true:suggestion
 
 # Prefer read-only on fields
-dotnet_style_readonly_field = true:warning
+dotnet_style_readonly_field = false:warning
 
 # Suggest more modern language features when available
 dotnet_style_object_initializer = true:suggestion
@@ -271,3 +271,6 @@ dotnet_diagnostic.CA1816.severity = silent
 # CA1054: Uri parameters should not be strings
 dotnet_diagnostic.CA1054.severity = none
 dotnet_diagnostic.CA1056.severity = none
+
+# Default severity for analyzer diagnostics with category 'Style'
+dotnet_analyzer_diagnostic.category-Style.severity = silent

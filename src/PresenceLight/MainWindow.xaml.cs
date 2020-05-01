@@ -20,6 +20,7 @@ using System.Windows.Documents;
 using LifxCloud.NET.Models;
 using System.Windows.Input;
 using System.Runtime.InteropServices;
+using PresenceLight.Services;
 
 namespace PresenceLight
 {
@@ -32,14 +33,16 @@ namespace PresenceLight
         public ConfigWrapper Config { get; set; }
         private bool stopGraphPolling;
         private bool stopThemePolling;
+
         private IHueService _hueService;
+        private LIFXOAuthHelper _lIFXOAuthHelper;
         private LIFXService _lifxService;
         private GraphServiceClient _graphServiceClient;
         private readonly IGraphService _graphservice;
         private WindowState lastWindowState;
 
         #region Init
-        public MainWindow(IGraphService graphService, IHueService hueService, LIFXService lifxService, IOptionsMonitor<ConfigWrapper> optionsAccessor)
+        public MainWindow(IGraphService graphService, IHueService hueService, LIFXService lifxService, IOptionsMonitor<ConfigWrapper> optionsAccessor, LIFXOAuthHelper lifxOAuthHelper)
         {
             InitializeComponent();
 
@@ -50,7 +53,7 @@ namespace PresenceLight
             _lifxService = lifxService;
             _hueService = hueService;
             _options = optionsAccessor.CurrentValue;
-
+            _lIFXOAuthHelper = lifxOAuthHelper;
             LoadSettings().ContinueWith(
         t =>
         {
@@ -76,23 +79,10 @@ namespace PresenceLight
             installedFrom.Text = ThisAppInfo.GetAppInstallerUri();
             installLocation.Text = ThisAppInfo.GetInstallLocation();
             installedDate.Text = ThisAppInfo.GetInstallationDate();
+            RuntimeVersionInfo.Text = ThisAppInfo.GetDotNetRuntimeInfo();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
-            if (ButtonShowRuntimeVersionInfo.Content.ToString().StartsWith("Show"))
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
-            {
-                RuntimeVersionInfo.Text = ThisAppInfo.GetDotNetRuntimeInfo();
-                ButtonShowRuntimeVersionInfo.Content = "Hide Runtime Info";
-            }
-            else
-            {
-                RuntimeVersionInfo.Text = "";
-                ButtonShowRuntimeVersionInfo.Content = "Show Runtime Info";
-            }
-        }
+
 
         private void LoadApp()
         {
@@ -263,12 +253,12 @@ namespace PresenceLight
 
         private async void SignOutButton_Click(object sender, RoutedEventArgs e)
         {
-            var accounts = await WPFAuthorizationProvider._application.GetAccountsAsync();
+            var accounts = await WPFAuthorizationProvider.Application.GetAccountsAsync();
             if (accounts.Any())
             {
                 try
                 {
-                    await WPFAuthorizationProvider._application.RemoveAsync(accounts.FirstOrDefault());
+                    await WPFAuthorizationProvider.Application.RemoveAsync(accounts.FirstOrDefault());
                     this.signInPanel.Visibility = Visibility.Visible;
                     dataPanel.Visibility = Visibility.Collapsed;
                     stopGraphPolling = true;
@@ -551,5 +541,7 @@ namespace PresenceLight
             System.Windows.Application.Current.Shutdown();
         }
         #endregion
+
+
     }
 }
