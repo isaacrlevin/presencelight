@@ -134,7 +134,7 @@ stages:
       displayName: Zip PresenceLight files
       inputs:
         archiveType: default
-        rootFolder: '.\src\PresenceLight\bin\$(BuildConfiguration)\netcoreapp5.0\publish'
+        rootFolder: '.\src\PresenceLight\bin\$(BuildConfiguration)\netcoreapp5.0\win-x86\publish'
         archiveFile: $(Build.ArtifactStagingDirectory)\$(ChannelName)\PresenceLight.$(Build.BuildNumber).zip
         includeRootFolder: false
       condition: and(succeeded(), eq(variables['ChannelName'], 'Zip'))
