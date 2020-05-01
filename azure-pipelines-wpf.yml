@@ -128,7 +128,7 @@ stages:
         # Chocolatey
         & choco.exe pack .\src\PresenceLight\PresenceLight.nuspec --version $(NBGV_ChocolateyPackageVersion) --OutputDirectory $(Build.ArtifactStagingDirectory)\$(ChannelName)
       displayName: Create Choco package
-      condition: and(succeeded(), eq(variables['ReleaseChannel'], 'Choco'))
+      condition: and(succeeded(), eq(variables['ChannelName'], 'Choco'))
 
     - task: ArchiveFiles@1
       displayName: Zip PresenceLight files
