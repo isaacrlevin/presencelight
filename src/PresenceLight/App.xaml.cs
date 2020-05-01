@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.IO;
 using Microsoft.Win32;
 using PresenceLight.Telemetry;
+using PresenceLight.Services;
 
 namespace PresenceLight
 {
@@ -15,9 +16,9 @@ namespace PresenceLight
     /// </summary>
     public partial class App : System.Windows.Application
     {
-        public IServiceProvider ServiceProvider { get; private set; }
+        public IServiceProvider? ServiceProvider { get; private set; }
 
-        public IConfiguration Configuration { get; private set; }
+        public IConfiguration? Configuration { get; private set; }
 
         public App()
         {
@@ -36,6 +37,7 @@ namespace PresenceLight
             services.AddSingleton<IGraphService, GraphService>();
             services.AddSingleton<IHueService, HueService>();
             services.AddSingleton<LIFXService, LIFXService>();
+            services.AddSingleton<LIFXOAuthHelper, LIFXOAuthHelper>();
             services.AddSingleton<MainWindow>();
 
             DiagnosticsClient.Initialize();

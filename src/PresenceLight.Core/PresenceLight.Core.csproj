@@ -6,6 +6,10 @@
         <RuntimeIdentifiers>win-x86</RuntimeIdentifiers>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>1701;1702;1705;1591;NU1701;CS8618;CS8603;CS8600;CS8604;CS8602;CS8618</NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Remove="Graph\MsalAuthenticationProvider.cs" />
   </ItemGroup>

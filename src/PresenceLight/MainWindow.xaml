@@ -11,26 +11,38 @@
         <TabControl x:Name="tabControl" SelectionChanged="TabControl_SelectionChanged">
             <TabItem Header="Set Graph Presence">
                 <Grid>
-                    <Grid x:Name="configErrorPanel" Visibility="Collapsed" >
-                        <Label Margin="50,130,4.667,200" RenderTransformOrigin="0.5,0.5" >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="50"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="50"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="50" />
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Column="1" Grid.Row="1" x:Name="configErrorPanel" Visibility="Collapsed" >
+                        <Label RenderTransformOrigin="0.5,0.5" >
                             <TextBlock TextWrapping="Wrap" TextAlignment="Center">
                               Your Application is not configured properly, please contact PresenceLight Creator.
                             </TextBlock>
                         </Label>
-                        <TextBlock Margin="250,179,163.667,183">           
+                        <TextBlock >           
                             <Hyperlink NavigateUri="https://github.com/isaacrlevin/PresenceLight"  RequestNavigate="Hyperlink_RequestNavigate">
                                 Click here
                             </Hyperlink>
                         </TextBlock>
                     </Grid>
-                    <Grid x:Name="dataPanel" Visibility="Collapsed" >
-                        <Grid VerticalAlignment="Top">
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                <Button x:Name="SignOutButton" Height="30" Width="60" Content="Sign-Out" HorizontalAlignment="Right" Click="SignOutButton_Click" Padding="5" Margin="5"  FontFamily="Segoe Ui"/>
-                            </StackPanel>
+                    <Grid Grid.Column="1" Grid.Row="1" x:Name="dataPanel" Visibility="Collapsed" >
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="50" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <Grid VerticalAlignment="Top" Grid.Row="0">
+                            <Button x:Name="SignOutButton" Height="30" Width="60" Content="Sign-Out" HorizontalAlignment="Right" Click="SignOutButton_Click"  FontFamily="Segoe Ui"/>
                         </Grid>
-                        <Grid Margin="0,39,-0.333,-10">
-                            <Label x:Name="userName" FontSize="40" MinHeight="120" Margin="5" FontFamily="Segoe Ui"/>
+                        <Grid  Grid.Row="1">
+                            <Label x:Name="userName" FontSize="40" MinHeight="120" FontFamily="Segoe Ui"/>
                             <Border BorderThickness="3" CornerRadius="10" Padding="2" HorizontalAlignment="Center" VerticalAlignment="Center">
                                 <Grid>
                                     <Border Name="mask" Background="White" CornerRadius="100"/>
@@ -42,13 +54,18 @@
                                     </StackPanel>
                                 </Grid>
                             </Border>
-                            <Ellipse x:Name="status" Height="75" Width="75" StrokeThickness="5" Margin="150,200,25,70"/>
+                            <Ellipse x:Name="status" Height="75" Width="75" StrokeThickness="5" Margin="150,200,25,60"/>
                         </Grid>
                     </Grid>
-                    <l:NotifyIcon
-			x:Name="notificationIcon"
-			Text="{Binding ElementName=tipText,Path=Text}"
-			MouseDoubleClick="OnNotifyIconDoubleClick">
+                    <Grid Grid.Column="1" Grid.Row="1" x:Name="signInPanel" Visibility="Collapsed">
+                        <Button Content="Sign In" Click="CallGraphButton_Click" Height="45" Width="170" />
+                        <Label VerticalAlignment="Center" Margin="0,-100,0,0" HorizontalAlignment="Center" Content="Login to Microsoft Account to Sync Presence" />
+                    </Grid>
+                    <Grid Grid.Column="1" Grid.Row="1" x:Name="loadingPanel" Visibility="Collapsed">
+                        <Image gif:ImageBehavior.AnimatedSource="Icons/loading.gif" Width="100" />
+                        <Label HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-150,0,0" Content="If you are adding new lights, this may take up to a minute" />
+                    </Grid>
+                    <l:NotifyIcon x:Name="notificationIcon" Text="{Binding ElementName=tipText,Path=Text}" MouseDoubleClick="OnNotifyIconDoubleClick">
                         <l:NotifyIcon.ContextMenu>
                             <ContextMenu>
                                 <MenuItem Header="Open" Click="OnOpenClick" />
@@ -56,118 +73,171 @@
                             </ContextMenu>
                         </l:NotifyIcon.ContextMenu>
                     </l:NotifyIcon>
-                    <Grid x:Name="signInPanel" Visibility="Collapsed">
-                        <Button Content="Sign In" Margin="90,130,90,200" Click="CallGraphButton_Click" Height="45" Width="170" />
-                        <Label Content="Login to Microsoft Account to Sync Presence" Margin="160,100,90,200" VerticalAlignment="Top"/>
-                    </Grid>
-                    <Grid x:Name="loadingPanel" Visibility="Collapsed">
-                        <Image gif:ImageBehavior.AnimatedSource="Icons/loading.gif" Width="100" />
-                        <Label Content="If you are adding new lights, this may take up to a minute"  Margin="150,300,36.667,50"/>
-                    </Grid>
                 </Grid>
             </TabItem>
             <TabItem Header="Set Light Colors">
                 <Grid>
-                    <xctk:ColorCanvas x:Name="ColorGrid" Width="300" Height="300" Margin="0,-150,0,0" ></xctk:ColorCanvas>
-                    <Button Content="Set Color" Margin="-100,250,90, 0" Click="SetColor_Click"  Height="45" Width="170" />
-                    <Button Content="Sync Windows Theme" Margin="300,250,90, 0" Click="SyncTheme_Click"  Height="45" Width="170" />
-                    <Label x:Name="lblTheme" Margin="210,400,90,0" Visibility="Collapsed" VerticalAlignment="Top"/>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="50"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="50"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <xctk:ColorCanvas Grid.Row="1" Grid.RowSpan="3" Grid.Column="0" VerticalAlignment="Top" Grid.ColumnSpan="5" x:Name="ColorGrid" Width="300" Height="300"  ></xctk:ColorCanvas>
+                    <Button Grid.Row="4" Grid.ColumnSpan="1" Grid.Column="1" VerticalAlignment="Top" Content="Set Color" Click="SetColor_Click"  Height="45" Width="170" />
+                    <Button Grid.Row="4" Grid.ColumnSpan="1" Grid.Column="2" VerticalAlignment="Top" Content="Sync Windows Theme" Click="SyncTheme_Click"  Height="45" Width="170" />
+                    <Label Grid.Row="4" Grid.ColumnSpan="2" Grid.Column="1" Margin="0,20,0,0"  HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="lblTheme" Visibility="Visible"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Configure Phillips Hue" >
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="15*"/>
-                        <ColumnDefinition Width="78*"/>
-                        <ColumnDefinition Width="52*"/>
-                        <ColumnDefinition Width="138*"/>
-                        <ColumnDefinition Width="111*"/>
+                        <ColumnDefinition Width="50"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="50"/>
                     </Grid.ColumnDefinitions>
-                    <CheckBox x:Name="cbIsPhillipsEnabled" IsChecked="{Binding IsPhillipsEnabled}" Content="Connect to Phillips Light" Grid.Column="1" Grid.ColumnSpan="4" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbIsPhillipsEnabledChanged" Checked="cbIsPhillipsEnabledChanged" />
-                    <Grid x:Name="pnlPhillips"  Grid.Column="1" Grid.ColumnSpan="4">
-                        <Button x:Name="btnRegister" Height="45" Width="170" Content="Register Bridge" Margin="0,60,1,193" Click="RegisterBridge_Click"/>
-                        <Label  Content="Hue Bridge IP Address" Margin="0,60,426,244"/>
-                        <TextBox Text="{Binding HueIpAddress}" x:Name="hueIpAddress" HorizontalAlignment="Left" Height="23" Margin="150,60,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" TextChanged="HueIpAddress_TextChanged"/>
-                        <Button Height="23" Width="120" Content="Find Bridge" Margin="165,-340,0,0" Click="FindBridge_Click"/>
-                        <Label Margin="5,220,5,172" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Center" >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Column="1" Grid.ColumnSpan="4">
+                        <CheckBox x:Name="cbIsPhillipsEnabled" IsChecked="{Binding IsPhillipsEnabled}" Content="Connect to Phillips Light" Grid.Column="1" Grid.ColumnSpan="4" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbIsPhillipsEnabledChanged" Checked="cbIsPhillipsEnabledChanged" />
+                    </Grid>
+                    <Grid x:Name="pnlPhillips"  Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="10" />
+                            <RowDefinition Height="100" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <Label Grid.Row="1" Grid.Column="0"  Content="Hue Bridge IP Address" />
+                        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding HueIpAddress}" x:Name="hueIpAddress" HorizontalAlignment="Left" Height="23"  TextWrapping="Wrap" VerticalAlignment="Top" Width="120" TextChanged="HueIpAddress_TextChanged"/>
+                        <Button Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Left" Grid.Column="2" Height="23" Width="120" Content="Find Bridge" Click="FindBridge_Click"/>
+
+                        <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" x:Name="btnRegister" Height="45" Width="170" Content="Register Bridge"  Click="RegisterBridge_Click"/>
+
+
+                        <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Center" >
                             <TextBlock  x:Name="lblHueMessage" TextWrapping="Wrap"  TextAlignment="Center">
                             </TextBlock>
                         </Label>
-                        <ComboBox x:Name="ddlHueLights" DisplayMemberPath="Name" Visibility="Collapsed" SelectionChanged="ddlHueLights_SelectionChanged"  HorizontalAlignment="Center" Margin="0,250,0,0" VerticalAlignment="Top" Width="150"/>
-                        <Image x:Name="imgLoading" Visibility="Collapsed" gif:ImageBehavior.AnimatedSource="Icons/loading.gif" Width="75" Margin="143,17,143,-17" />
-                        <Button x:Name="btnHue" Height="45" Width="170" Content="Save" Margin="0,250,1,69" Click="SaveHueSettings_Click"/>
-                        <Label x:Name="lblHueSaved" Visibility="Collapsed" Content="Settings Updated" Foreground="Green" Margin="230,380,136,10"/>
+                        <ComboBox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" x:Name="ddlHueLights" DisplayMemberPath="Name" Visibility="Visible" SelectionChanged="ddlHueLights_SelectionChanged"  HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="150"/>
+                        <Image Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" x:Name="imgLoading" Visibility="Collapsed" gif:ImageBehavior.AnimatedSource="Icons/loading.gif" Width="75"  />
+                        <Button Grid.Row="4" VerticalAlignment="Bottom" Grid.Column="0" Grid.ColumnSpan="3" x:Name="btnHue" Height="45" Width="170" Content="Save"  Click="SaveHueSettings_Click"/>
+                        <Label Grid.Row="5" Grid.Column="1" x:Name="lblHueSaved" HorizontalAlignment="Center" Visibility="Visible" Content="Settings Updated" Foreground="Green" />
                     </Grid>
                 </Grid>
             </TabItem>
             <TabItem Header="Configure LIFX" >
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="15*"/>
-                        <ColumnDefinition Width="78*"/>
-                        <ColumnDefinition Width="52*"/>
-                        <ColumnDefinition Width="138*"/>
-                        <ColumnDefinition Width="111*"/>
+                        <ColumnDefinition Width="50"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="50"/>
                     </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
                     <Grid Grid.Column="1" Grid.ColumnSpan="4">
                         <CheckBox x:Name="cbIsLIFXEnabled" IsChecked="{Binding IsLIFXEnabled}" Content="Connect to LIFX Light" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbIsLIFXEnabledChanged" Checked="cbIsLIFXEnabledChanged" Grid.Column="1" Grid.ColumnSpan="4" />
                         <TextBlock Grid.Column="4"  Margin="200,20,0,0" >
-                            <Hyperlink NavigateUri="https://cloud.lifx.com/settings"  RequestNavigate="Hyperlink_RequestNavigate">
+                            <Hyperlink NavigateUri="https://cloud.lifx.com/settings"  RequestNavigate="LIFXToken_Get">
                             Get Token
                         </Hyperlink>
                         </TextBlock>
                     </Grid>
-                    <Grid x:Name="pnlLIFX" Grid.Column="1" Grid.ColumnSpan="4">
-                        <Label Content="LIFX Token" Margin="0,60,90,244"/>
-                        <TextBox Text="{Binding LIFXApiKey}" x:Name="lifxApiKey" HorizontalAlignment="Left" Height="23" Margin="100,60,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="450" Grid.ColumnSpan="2"/>
-                        <Button x:Name="btnGetLIFXLights" Height="45" Width="170" Content="Get Lights" Margin="-200,60,1,193" Click="CheckLIFX_Click"/>
-                        <Button x:Name="btnGetLIFXGroups" Height="45" Width="170" Content="Get Groups" Margin="200,60,1,193" Click="CheckLIFX_Click"/>
-                        <Label Margin="0,220,0,0" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Center" >
+                    <Grid x:Name="pnlLIFX" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="10" />
+                            <RowDefinition Height="100" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <Label Grid.Row="1" Grid.Column="0" Content="LIFX Token" />
+                        <TextBox  Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" Margin="80,0,0,0" Text="{Binding LIFXApiKey}" x:Name="lifxApiKey" HorizontalAlignment="Left" Height="50" TextWrapping="Wrap" VerticalAlignment="Top" Width="400" />
+                        <Button Grid.Row="2" Grid.ColumnSpan="1" Grid.Column="0" VerticalAlignment="Top" x:Name="btnGetLIFXLights" Height="45" Width="170" Content="Get Lights"  Click="CheckLIFX_Click"/>
+                        <Button Grid.Row="2" Grid.ColumnSpan="1" Grid.Column="2" VerticalAlignment="Top" x:Name="btnGetLIFXGroups" Height="45" Width="170" Content="Get Groups" Click="CheckLIFX_Click"/>
+                        <Label HorizontalAlignment="Center" VerticalAlignment="Top" Grid.Row="3" Grid.ColumnSpan="2" Grid.Column="0" >
                             <TextBlock  x:Name="lblLIFXMessage" TextWrapping="Wrap"  TextAlignment="Center">
                             </TextBlock>
                         </Label>
-                        <ComboBox x:Name="ddlLIFXLights" DisplayMemberPath="Label" Visibility="Collapsed" SelectionChanged="ddlLIFXLights_SelectionChanged"  HorizontalAlignment="Left" Margin="200,250,0,0" VerticalAlignment="Top" Width="150"/>
-                        <Image x:Name="imgLIFXLoading" Visibility="Collapsed" gif:ImageBehavior.AnimatedSource="Icons/loading.gif" Width="75" Margin="160,17,49,-17" />
-                        <Button x:Name="btnLIFX" Height="45" Width="170" Content="Save" Margin="0,250,1,69" Click="SaveLIFXSettings_Click"/>
-                        <Label x:Name="lblLIFXSaved" Visibility="Collapsed" Content="Settings Updated" Foreground="Green" Margin="230,380,136,10"/>
+                        <ComboBox Grid.Row="3" Grid.ColumnSpan="2" Grid.Column="0" x:Name="ddlLIFXLights" DisplayMemberPath="Label" Visibility="Collapsed" SelectionChanged="ddlLIFXLights_SelectionChanged"  HorizontalAlignment="Center" VerticalAlignment="center" Width="150"/>
+                        <Image x:Name="imgLIFXLoading" Visibility="Collapsed" gif:ImageBehavior.AnimatedSource="Icons/loading.gif" Width="75"  />
+                        <Button Grid.Row="4" Grid.ColumnSpan="2" Grid.Column="0" VerticalAlignment="Center" x:Name="btnLIFX" Height="45" Width="170" Content="Save" Click="SaveLIFXSettings_Click"/>
+                        <Label Grid.Row="4" Margin="0,20,0,0" Grid.RowSpan="4" Grid.ColumnSpan="2" Grid.Column="0" VerticalAlignment="Center" x:Name="lblLIFXSaved" HorizontalAlignment="Center" Visibility="Collapsed" Content="Settings Updated" Foreground="Green"/>
                     </Grid>
                 </Grid>
             </TabItem>
             <TabItem Header="Settings" >
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="15*"/>
-                        <ColumnDefinition Width="78*"/>
-                        <ColumnDefinition Width="52*"/>
-                        <ColumnDefinition Width="138*"/>
-                        <ColumnDefinition Width="111*"/>
+                        <ColumnDefinition Width="50"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="50"/>
                     </Grid.ColumnDefinitions>
-                    <Grid x:Name="pnlSettings" Grid.Column="1" Grid.ColumnSpan="4">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="352*"/>
-                            <ColumnDefinition Width="18*"/>
-                            <ColumnDefinition Width="201*"/>
-                        </Grid.ColumnDefinitions>
-                        <Label Content="Graph and Theme Polling Interval " Margin="5,90,16,291" Grid.ColumnSpan="3"/>
-                        <xctk:DecimalUpDown FormatString="F2" Value="{Binding PollingInterval}" x:Name="pollingInterval"  Height="23" Margin="200,90,125,0"  VerticalAlignment="Top" Width="230" Grid.ColumnSpan="3" Increment=".1" Maximum="5" Minimum="1" />
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50" />
+                        <RowDefinition Height="50" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Label Grid.Column="1" Grid.Row="1" Content="Graph and Theme Polling Interval "  Grid.ColumnSpan="3" />
+                    <xctk:DecimalUpDown Grid.Column="2" Grid.Row="1"  FormatString="F2" Value="{Binding PollingInterval}" x:Name="pollingInterval"  Height="23" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="230" Increment=".1" Maximum="5" Minimum="1" />
 
-                        <Label Content="Icon Type" Margin="5,150,4,254" Grid.ColumnSpan="3"/>
-                        <RadioButton GroupName="IconType" x:Name="Transparent" Content="Transparent" HorizontalAlignment="Left" Margin="200,150,0,0" VerticalAlignment="Top" Height="27"/>
-                        <RadioButton GroupName="IconType" x:Name="White" Content="White" HorizontalAlignment="Left" Margin="200,170,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.43,-0.627" Height="23"/>
-                        <Button Height="45" x:Name="btnSettings" Width="170" Content="Save" Margin="0,280,0,100" Click="SaveSettings_Click" Grid.ColumnSpan="3" />
-                        <Label x:Name="lblSettingSaved" Visibility="Collapsed" Content="Settings Updated" Foreground="Green" Margin="230,380,0,0" Grid.ColumnSpan="3"/>
-                    </Grid>
+                    <Label Grid.Column="1" Grid.Row="2" Content="Icon Type" />
+                    <RadioButton Grid.Column="2" Grid.Row="2" GroupName="IconType" x:Name="Transparent" Content="Transparent" HorizontalAlignment="Left" VerticalAlignment="Top" Height="27"/>
+                    <RadioButton Grid.Column="2" Grid.Row="2" GroupName="IconType" x:Name="White" Margin="0,20,0,0" Content="White" HorizontalAlignment="Left"  VerticalAlignment="Top" Height="23"/>
+                    <Button Grid.Column="0" Grid.Row="3" Height="45" x:Name="btnSettings" Width="170" Content="Save" Click="SaveSettings_Click" Grid.ColumnSpan="4" />
+                    <Label Grid.Column="0"  HorizontalAlignment="Center" Grid.Row="4" x:Name="lblSettingSaved" Visibility="Visible" Content="Settings Updated" Foreground="Green" Grid.ColumnSpan="4"/>
                 </Grid>
             </TabItem>
             <TabItem Header="About" >
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="119*"/>
-                        <ColumnDefinition Width="73*"/>
+                        <ColumnDefinition Width="50"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="50"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="200" />
+                        <RowDefinition Height="50" />
+                        <RowDefinition Height="120" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
@@ -178,12 +248,12 @@
                     </Grid.RowDefinitions>
 
 
-                    <Border Grid.Row="0" Grid.Column="1" Margin="0,50,0,0" Grid.ColumnSpan="2">
+                    <Border Grid.Row="1" VerticalAlignment="Top" Grid.Column="2" Grid.ColumnSpan="2">
                         <TextBlock FontSize="25" Text="PresenceLight by Isaac Levin">
                         </TextBlock>
                     </Border>
 
-                    <Border Grid.Row="0" Grid.Column="1" Margin="0,100,0,0" Grid.ColumnSpan="2">
+                    <Border VerticalAlignment="Top" Margin="0,40,0,0" Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2">
                         <TextBlock>
                             <Hyperlink FontSize="15" NavigateUri="https://github.com/isaacrlevin/presencelight" RequestNavigate="Hyperlink_RequestNavigate">
                                 https://github.com/isaacrlevin/presencelight
@@ -193,28 +263,28 @@
 
 
 
-                    <Image HorizontalAlignment="Left" Height="100" Margin="45,45,0,0" Source="/Images/profileimage.jpg" VerticalAlignment="Top" Width="100"/>
+                    <Image Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Left" Grid.Column="1" Height="100"  Source="/Images/profileimage.jpg"  Width="100"/>
 
-                    <Label Grid.Row="1" FontSize="15" Content="Package Name" Target="{Binding ElementName=packageName}" VerticalAlignment="Center" />
-                    <TextBlock Grid.Row="1" FontSize="15" x:Name="packageName" Grid.Column="1" Margin="20,0,0,0" VerticalAlignment="Center" Grid.ColumnSpan="2"  />
+                    <Label Grid.Column="1" Grid.Row="2" FontSize="15" Content="Package Name" Target="{Binding ElementName=packageName}" VerticalAlignment="Center" />
+                    <TextBlock Grid.ColumnSpan="2" Grid.Row="2" FontSize="15" x:Name="packageName" Grid.Column="2"  VerticalAlignment="Center"  />
 
-                    <Label Grid.Row="2" FontSize="15" Content="Package Version" Target="{Binding ElementName=packageVersion}" VerticalAlignment="Center" />
-                    <TextBlock Grid.Row="2" FontSize="15" x:Name="packageVersion" Grid.Column="1" Margin="20,0,0,0" VerticalAlignment="Center" Grid.ColumnSpan="2" />
+                    <Label Grid.Column="1" Grid.Row="4" FontSize="15" Content="Package Version" Target="{Binding ElementName=packageVersion}" VerticalAlignment="Center" />
+                    <TextBlock Grid.ColumnSpan="2" Grid.Row="4" FontSize="15" x:Name="packageVersion" Grid.Column="2"  VerticalAlignment="Center" />
 
-                    <Label Grid.Row="3" FontSize="15" Content="Installed from" Target="{Binding ElementName=installedFrom}" VerticalAlignment="Center" />
-                    <TextBlock Grid.Row="3" FontSize="15" TextWrapping="Wrap" x:Name="installedFrom" Grid.Column="1" Margin="20,0,0,0" VerticalAlignment="Center" Grid.ColumnSpan="2"  />
+                    <Label Grid.Column="1" Grid.Row="6" FontSize="15" Content="Installed from" Target="{Binding ElementName=installedFrom}" VerticalAlignment="Center" />
+                    <TextBlock Grid.ColumnSpan="2" Grid.Row="6" FontSize="15" TextWrapping="Wrap" x:Name="installedFrom" Grid.Column="2" VerticalAlignment="Center"  />
 
-                    <Label Grid.Row="4" FontSize="15" Content="AssemblyVersion" Target="{Binding ElementName=assemblyVersion}" VerticalAlignment="Center" />
-                    <TextBlock Grid.Row="4" FontSize="15" x:Name="assemblyVersion" Grid.Column="1" Margin="20,0,0,0" VerticalAlignment="Center" Grid.ColumnSpan="2" />
+                    <Label Grid.Column="1" Grid.Row="8" FontSize="15" Content="AssemblyVersion" Target="{Binding ElementName=assemblyVersion}" VerticalAlignment="Center" />
+                    <TextBlock Grid.ColumnSpan="2" Grid.Row="8" FontSize="15" x:Name="assemblyVersion" Grid.Column="2"  VerticalAlignment="Center"  />
 
-                    <Label Grid.Row="5" FontSize="15" Content="Install Location" Target="{Binding ElementName=installLocation}" Margin="0,0,0,30" Grid.RowSpan="2" />
-                    <TextBlock Grid.Row="5" FontSize="15" TextWrapping="Wrap" x:Name="installLocation" Margin="20,0,0,0" Grid.Column="1" VerticalAlignment="Center" Grid.ColumnSpan="2"  />
+                    <Label Grid.Column="1" Grid.Row="10" FontSize="15" Content="Install Location" Target="{Binding ElementName=installLocation}"  />
+                    <TextBlock Grid.ColumnSpan="2" Grid.Row="10" FontSize="15" TextWrapping="Wrap" x:Name="installLocation"  Grid.Column="2" VerticalAlignment="Center"  />
 
-                    <Label Grid.Row="6" FontSize="15" Content="Install Date" Target="{Binding ElementName=installedDate}" Margin="0,0,0,60" Grid.RowSpan="2" />
-                    <TextBlock Grid.Row="6" FontSize="15" TextWrapping="Wrap" x:Name="installedDate" Margin="20,0,0,0" Grid.Column="1" VerticalAlignment="Center" Grid.ColumnSpan="2"  />
+                    <Label Grid.Column="1" Grid.Row="12" FontSize="15" Content="Install Date" Target="{Binding ElementName=installedDate}"  />
+                    <TextBlock Grid.ColumnSpan="2" Grid.Row="12" FontSize="15" TextWrapping="Wrap" x:Name="installedDate" Grid.Column="2" VerticalAlignment="Center"   />
 
-                    <Button x:Name="ButtonShowRuntimeVersionInfo" FontSize="15" Grid.Row="7" Click="Button_Click" Height="40" Margin="0,20,0,0"  Width="210">Show Runtime Info</Button>
-                    <TextBlock x:Name="RuntimeVersionInfo" FontSize="15" Grid.Row="7" Grid.Column="1" Margin="20,20,0,0" Grid.ColumnSpan="2"  />
+                    <Label Grid.Column="1" Grid.Row="14" FontSize="15" Content="Runtime Version" Target="{Binding ElementName=RuntimeVersionInfo}"  />
+                    <TextBlock Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Left" x:Name="RuntimeVersionInfo" FontSize="15" Grid.Row="14" Grid.Column="2" />
 
                 </Grid>
             </TabItem>

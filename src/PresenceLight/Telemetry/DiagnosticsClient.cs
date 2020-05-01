@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
 
@@ -10,7 +11,7 @@ namespace PresenceLight.Telemetry
     public static class DiagnosticsClient
     {
         private static bool _initialized;
-        private static TelemetryClient _client;
+        private static TelemetryClient _client = new TelemetryClient();
 
         public static void Initialize()
         {
@@ -19,7 +20,7 @@ namespace PresenceLight.Telemetry
 
             _initialized = true;
             _client = new TelemetryClient();
-           
+
 
             System.Windows.Application.Current.Startup += Application_Startup;
             System.Windows.Application.Current.Exit += Application_Exit;

@@ -90,7 +90,7 @@ namespace PresenceLight
                         foreach (var item in ddlHueLights.Items)
                         {
                             var light = (Q42.HueApi.Light)item;
-                            if (light.Id == Config.SelectedHueLightId)
+                            if (light?.Id == Config.SelectedHueLightId)
                             {
                                 ddlHueLights.SelectedItem = item;
                             }
@@ -132,6 +132,7 @@ namespace PresenceLight
             {
                 pnlPhillips.Visibility = Visibility.Collapsed;
             }
+            _options.IsPhillipsEnabled = Config.IsPhillipsEnabled;
             e.Handled = true;
         }
 

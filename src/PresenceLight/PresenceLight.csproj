@@ -32,6 +32,10 @@
     <NuGetDependencyVersion>5.6.0-xprivate.60020</NuGetDependencyVersion>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>1701;1702;1705;1591;NU1701,CS8625,CS8603,CS8618;CS8604;CS8600;CS0649;CS8602</NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Remove="Images\UnknownProfile.png" />
   </ItemGroup>
@@ -42,10 +46,16 @@
   <ItemGroup>
     <PackageReference Include="AppInsights.WindowsDesktop" Version="2.10.55" />
     <PackageReference Include="Extended.Wpf.Toolkit" Version="3.8.1" />
+    <PackageReference Include="IdentityModel.OidcClient" Version="3.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OAuth" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.2.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.2.0" />
     <PackageReference Include="Microsoft.Graph.Beta" Version="0.15.0-preview" />
     <PackageReference Include="Microsoft.Graph.Core" Version="2.0.0-preview.2" />
     <PackageReference Include="Microsoft.Identity.Client" Version="4.11.0" />
     <PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.19041.1-preview.vb-release" />
+    <PackageReference Include="NETStandard.HttpListener" Version="1.0.3.5" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="OSVersionHelper" Version="1.0.11" />
     <PackageReference Include="Q42.HueApi" Version="3.15.2" />
@@ -118,11 +128,23 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="ApplicationInsights.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
 

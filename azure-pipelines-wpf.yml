@@ -139,17 +139,6 @@ stages:
         includeRootFolder: false
       condition: and(succeeded(), eq(variables['ChannelName'], 'Zip'))
 
-    - task: PublishSymbols@2
-      inputs:
-        symbolsFolder: '$(Build.SourcesDirectory)' # Optional
-        searchPattern: '**/bin/**/*.pdb'
-        indexSources: true # Optional
-        publishSymbols: true # Optional
-        symbolServerType: 'teamServices' # Required when publishSymbols == True# Options:  , teamServices, fileShare
-        detailedLog: true # Optional
-        treatNotIndexedAsWarning: false # Optional
-        symbolsArtifactName: 'Symbols_$(BuildConfiguration)' # Optional
-
     - publish: $(Build.ArtifactStagingDirectory)\$(ChannelName)
       displayName: Publish Build Packages
       artifact: $(ChannelName)
