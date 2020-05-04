@@ -1,14 +1,9 @@
 ﻿@page "/hue"
 
-@using Newtonsoft.Json
-@using PresenceLight.Core
-@using Microsoft.Extensions.Options
 @inject IHueService _hueService
 @inject AppState appState
 @inject IModalService Modal
 @inject IOptionsMonitor<ConfigWrapper> Config
-
-
 
 <h1>Hue Setup</h1>
 

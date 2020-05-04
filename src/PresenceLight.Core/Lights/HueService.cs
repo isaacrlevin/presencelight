@@ -1,11 +1,9 @@
-﻿using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
+﻿using System;
+using Microsoft.Extensions.Options;
 using Q42.HueApi;
 using Q42.HueApi.ColorConverters;
 using Q42.HueApi.ColorConverters.HSB;
 using Q42.HueApi.Interfaces;
-using Q42.HueApi.Models.Bridge;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;

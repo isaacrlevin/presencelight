@@ -2,21 +2,13 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Net.Sockets;
-using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-
 using Newtonsoft.Json;
-
 using PresenceLight.Core;
-
-using Windows.ApplicationModel.Background;
-
 namespace PresenceLight.Services
 {
     public class LIFXOAuthHelper
@@ -33,19 +25,13 @@ namespace PresenceLight.Services
 
         public async Task<string> InitiateTokenRetrieval()
         {
-            // Generates state and PKCE values.
             string state = RandomDataBase64Url(32);
 
-            // Creates a redirect URI using an available port on the loopback address.
             string redirectURI = string.Format("http://{0}:{1}/", IPAddress.Loopback, 3333);
 
-            // Creates an HttpListener to listen for requests on that redirect URI.
-            //var http = new TcpListener(IPAddress.Loopback, 3333);
             var http = new HttpListener();
             http.Prefixes.Add(redirectURI);
-
             http.Start();
-
 
             // Creates the OAuth 2.0 authorization request.
             string authorizationRequest = string.Format("{0}?response_type=code&scope=remote_control:all&client_id={1}&state={2}&redirect_uri={3}",
@@ -55,32 +41,7 @@ namespace PresenceLight.Services
               HttpUtility.UrlEncode(_options.LIFXRedirectUri)
                 );
 
-            // Opens request in the browser.
-            try
-            {
-                System.Diagnostics.Process.Start(new ProcessStartInfo(authorizationRequest));
-            }
-            catch
-            {
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                {
-                    authorizationRequest = authorizationRequest.Replace("&", "^&");
-                    System.Diagnostics.Process.Start(new ProcessStartInfo("cmd", $"/c start {authorizationRequest}") { CreateNoWindow = true });
-                }
-                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                {
-                    System.Diagnostics.Process.Start("xdg-open", authorizationRequest);
-                }
-                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                {
-                    System.Diagnostics.Process.Start("open", authorizationRequest);
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+            Helpers.OpenBrowser(authorizationRequest);
 
             // Waits for the OAuth authorization response.
 

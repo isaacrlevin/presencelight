@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Text;
 using OSVersionHelper;
 using Windows.ApplicationModel;
 using Windows.Foundation.Metadata;
@@ -19,18 +17,6 @@ namespace PresenceLight
                 return Package.Current.DisplayName;
             }
             return "Not packaged";
-        }
-
-        internal static string GetThisAssemblyVersion()
-        {
-            if (typeof(MainWindow).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>() == null)
-            {
-                return "";
-            }
-            else
-            {
-                return typeof(MainWindow).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
-            }
         }
 
         internal static string GetInstallLocation()

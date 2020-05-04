@@ -1,12 +1,11 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using System;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Graph;
 using PresenceLight.Core;
-using System;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using LifxCloud.NET.Models;
@@ -45,7 +44,7 @@ namespace PresenceLight.Worker
         {
             if (!Debugger.IsAttached)
             {
-                OpenBrowser("https://localhost:5001");
+                Helpers.OpenBrowser("https://localhost:5001");
             }
 
             while (!stoppingToken.IsCancellationRequested)
@@ -60,34 +59,6 @@ namespace PresenceLight.Worker
                     await Task.Delay(Convert.ToInt32(Config.PollingInterval * 1000), stoppingToken);
                 }
                 await Task.Delay(1000, stoppingToken);
-            }
-        }
-
-        private void OpenBrowser(string url)
-        {
-            try
-            {
-                System.Diagnostics.Process.Start(url);
-            }
-            catch
-            {
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                {
-                    url = url.Replace("&", "^&");
-                    System.Diagnostics.Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
-                }
-                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                {
-                    System.Diagnostics.Process.Start("xdg-open", url);
-                }
-                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                {
-                    System.Diagnostics.Process.Start("open", url);
-                }
-                else
-                {
-                    throw;
-                }
             }
         }
 

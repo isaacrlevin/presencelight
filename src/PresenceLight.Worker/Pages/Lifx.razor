@@ -1,18 +1,11 @@
 ﻿@page "/lifx"
 
-@using Newtonsoft.Json
-@using PresenceLight.Core
-@using Microsoft.Extensions.Options
 @inject LIFXService _lifxService
 @inject AppState appState
 @inject IModalService Modal
 @inject IOptionsMonitor<ConfigWrapper> Config
 
-
-
 <h1>LIFX Setup</h1>
-
-
 
 <EditForm Model="@tempConfig" OnValidSubmit="GetLights">
     <DataAnnotationsValidator />

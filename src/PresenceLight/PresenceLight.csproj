@@ -28,7 +28,7 @@
   <PropertyGroup>
     <TargetPlatformMinVersion>10.0.17134.0</TargetPlatformMinVersion>
     <TargetPlatformVersion>10.0.18362.0</TargetPlatformVersion>
-    
+
     <NuGetDependencyVersion>5.6.0-xprivate.60020</NuGetDependencyVersion>
   </PropertyGroup>
 
@@ -41,9 +41,10 @@
   </ItemGroup>
 
 
-  
-  
+
+
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration.AzureKeyVault" Version="3.1.0" />
     <PackageReference Include="AppInsights.WindowsDesktop" Version="2.10.55" />
     <PackageReference Include="Extended.Wpf.Toolkit" Version="3.8.1" />
     <PackageReference Include="IdentityModel.OidcClient" Version="3.1.2" />

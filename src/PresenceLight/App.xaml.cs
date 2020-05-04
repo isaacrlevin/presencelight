@@ -1,13 +1,14 @@
-﻿using PresenceLight.Core;
+﻿using System;
+using PresenceLight.Core;
 using PresenceLight.Core.Graph;
-using System;
 using System.Windows;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.IO;
-using Microsoft.Win32;
 using PresenceLight.Telemetry;
 using PresenceLight.Services;
+using Microsoft.Azure.Services.AppAuthentication;
+using Microsoft.Azure.KeyVault;
+using Microsoft.Extensions.Configuration.AzureKeyVault;
 
 namespace PresenceLight
 {
@@ -28,6 +29,20 @@ namespace PresenceLight
         {
             var builder = new Microsoft.Extensions.Configuration.ConfigurationBuilder()
                   .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
+
+            var builtConfig = builder.Build();
+
+            var azureServiceTokenProvider = new AzureServiceTokenProvider();
+            var keyVaultClient = new KeyVaultClient(
+                new KeyVaultClient.AuthenticationCallback(
+                    azureServiceTokenProvider.KeyVaultTokenCallback));
+
+            builder.AddAzureKeyVault(
+                $"https://{builtConfig["KeyVaultName"]}.vault.azure.net/",
+                keyVaultClient,
+                new DefaultKeyVaultSecretManager());
+
 
             Configuration = builder.Build();
 

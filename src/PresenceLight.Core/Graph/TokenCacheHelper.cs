@@ -1,10 +1,9 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Security.Cryptography;
 using Microsoft.Identity.Client;
 using Windows.Storage;
-using System;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace PresenceLight.Core.Graph
