@@ -1,4 +1,5 @@
-﻿using Blazored.Modal;
+﻿using System;
+using Blazored.Modal;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;

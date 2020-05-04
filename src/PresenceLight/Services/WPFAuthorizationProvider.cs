@@ -1,16 +1,13 @@
-﻿using MSGraph = Microsoft.Graph;
+﻿using System;
+using MSGraph = Microsoft.Graph;
 using Microsoft.Identity.Client;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.Windows.Interop;
-using System.Windows;
 using System.Net.Http.Headers;
-using PresenceLight.Telemetry;
 
-namespace PresenceLight.Core.Helpers
+namespace PresenceLight.Core.Services
 {
     public class WPFAuthorizationProvider : MSGraph.IAuthenticationProvider
     {

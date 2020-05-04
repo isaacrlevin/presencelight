@@ -1,12 +1,10 @@
-﻿using Microsoft.Graph;
-using System;
-using System.Collections.Generic;
+﻿using System;
+using Microsoft.Graph;
 using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PresenceLight.Core.Helpers
+namespace PresenceLight.Core
 {
     // This class allows an implementation of IAuthenticationProvider to be inserted into the DelegatingHandler
     // pipeline of an HttpClient instance.  In future versions of GraphSDK, many cross-cutting concerns will

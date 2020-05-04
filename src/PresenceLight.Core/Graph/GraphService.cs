@@ -1,12 +1,8 @@
-﻿using Microsoft.Graph;
+﻿using System;
+using Microsoft.Graph;
 using Microsoft.Identity.Client;
-using PresenceLight.Core.Helpers;
-using System;
 using System.Collections.Generic;
-using System.Net.Http;
-using System.Text;
 using Microsoft.Extensions.Options;
-using System.Threading.Tasks;
 
 namespace PresenceLight.Core.Graph
 {

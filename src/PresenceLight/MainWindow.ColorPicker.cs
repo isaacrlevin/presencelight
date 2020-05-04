@@ -1,24 +1,8 @@
-﻿using Microsoft.Graph;
-using Microsoft.Identity.Client;
-using PresenceLight.Core;
-using PresenceLight.Core.Graph;
+﻿using System;
 using System.Windows;
-using System.Linq;
-using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
-using System.Windows.Media.Imaging;
-using System.IO;
 using System.Windows.Media;
-using Media = System.Windows.Media;
-using System.Diagnostics;
-using System.Windows.Navigation;
-using PresenceLight.Core.Helpers;
-using System.Text.RegularExpressions;
-using System.Windows.Controls;
-using System.Windows.Documents;
 using LifxCloud.NET.Models;
-using System.Windows.Input;
 using PresenceLight.Telemetry;
 
 namespace PresenceLight

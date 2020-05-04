@@ -1,26 +1,22 @@
-﻿using Microsoft.Graph;
+﻿using System;
+using Microsoft.Graph;
 using Microsoft.Identity.Client;
 using PresenceLight.Core;
 using PresenceLight.Core.Graph;
 using System.Windows;
 using System.Linq;
-using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using System.Windows.Media.Imaging;
 using System.IO;
 using System.Windows.Media;
 using Media = System.Windows.Media;
-using System.Diagnostics;
 using System.Windows.Navigation;
-using PresenceLight.Core.Helpers;
 using System.Text.RegularExpressions;
-using System.Windows.Controls;
-using System.Windows.Documents;
 using LifxCloud.NET.Models;
 using System.Windows.Input;
-using System.Runtime.InteropServices;
 using PresenceLight.Services;
+using PresenceLight.Core.Services;
 
 namespace PresenceLight
 {
@@ -74,15 +70,12 @@ namespace PresenceLight
         private void LoadAboutMe()
         {
             packageName.Text = ThisAppInfo.GetDisplayName();
-            assemblyVersion.Text = ThisAppInfo.GetThisAssemblyVersion();
             packageVersion.Text = ThisAppInfo.GetPackageVersion();
             installedFrom.Text = ThisAppInfo.GetAppInstallerUri();
             installLocation.Text = ThisAppInfo.GetInstallLocation();
             installedDate.Text = ThisAppInfo.GetInstallationDate();
             RuntimeVersionInfo.Text = ThisAppInfo.GetDotNetRuntimeInfo();
         }
-
-
 
         private void LoadApp()
         {
@@ -156,30 +149,7 @@ namespace PresenceLight
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
             var url = e.Uri.AbsoluteUri;
-            try
-            {
-                System.Diagnostics.Process.Start(new ProcessStartInfo(url));
-            }
-            catch
-            {
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                {
-                    url = url.Replace("&", "^&");
-                    System.Diagnostics.Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
-                }
-                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                {
-                    System.Diagnostics.Process.Start("xdg-open", url);
-                }
-                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                {
-                    System.Diagnostics.Process.Start("open", url);
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            Helpers.OpenBrowser(url);
             e.Handled = true;
         }
 
@@ -189,7 +159,7 @@ namespace PresenceLight
             {
                 _graphServiceClient = _graphservice.GetAuthenticatedGraphClient(typeof(WPFAuthorizationProvider));
             }
-            
+
             stopThemePolling = true;
             stopGraphPolling = false;
             signInPanel.Visibility = Visibility.Collapsed;
