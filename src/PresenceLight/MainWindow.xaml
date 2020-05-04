@@ -58,7 +58,7 @@
                         </Grid>
                     </Grid>
                     <Grid Grid.Column="1" Grid.Row="1" x:Name="signInPanel" Visibility="Collapsed">
-                        <Button Content="Sign In" Click="CallGraphButton_Click" Height="45" Width="170" />
+                        <Button Content="Sign In" Click="SignIn_Click" Height="45" Width="170" />
                         <Label VerticalAlignment="Center" Margin="0,-100,0,0" HorizontalAlignment="Center" Content="Login to Microsoft Account to Sync Presence" />
                     </Grid>
                     <Grid Grid.Column="1" Grid.Row="1" x:Name="loadingPanel" Visibility="Collapsed">

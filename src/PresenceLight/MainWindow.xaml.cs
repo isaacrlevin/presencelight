@@ -62,7 +62,7 @@ namespace PresenceLight
 
                 var tbContext = notificationIcon.DataContext;
                 DataContext = Config;
-                notificationIcon.DataContext = tbContext;
+                notificationIcon.DataContext = tbContext;                
             });
         });
         }
@@ -94,6 +94,8 @@ namespace PresenceLight
 
             notificationIcon.Text = PresenceConstants.Inactive;
             notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(String.Empty, IconConstants.Inactive)));
+
+            CallGraph();
         }
 
         private async Task LoadSettings()
@@ -153,7 +155,12 @@ namespace PresenceLight
             e.Handled = true;
         }
 
-        private async void CallGraphButton_Click(object sender, RoutedEventArgs e)
+        private async void SignIn_Click(object sender, RoutedEventArgs e)
+        {
+            await CallGraph();
+        }
+
+        private async Task CallGraph()
         {
             if (_graphServiceClient == null)
             {
