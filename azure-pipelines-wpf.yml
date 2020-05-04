@@ -128,13 +128,13 @@ stages:
         # Chocolatey
         & choco.exe pack .\src\PresenceLight\PresenceLight.nuspec --version $(NBGV_ChocolateyPackageVersion) --OutputDirectory $(Build.ArtifactStagingDirectory)\$(ChannelName)
       displayName: Create Choco package
-      condition: and(succeeded(), eq(variables['ReleaseChannel'], 'Choco'))
+      condition: and(succeeded(), eq(variables['ChannelName'], 'Choco'))
 
     - task: ArchiveFiles@1
       displayName: Zip PresenceLight files
       inputs:
         archiveType: default
-        rootFolder: '.\src\PresenceLight\bin\$(BuildConfiguration)\netcoreapp5.0\publish'
+        rootFolder: '.\src\PresenceLight\bin\$(BuildConfiguration)\netcoreapp5.0\win-x86\publish'
         archiveFile: $(Build.ArtifactStagingDirectory)\$(ChannelName)\PresenceLight.$(Build.BuildNumber).zip
         includeRootFolder: false
       condition: and(succeeded(), eq(variables['ChannelName'], 'Zip'))
