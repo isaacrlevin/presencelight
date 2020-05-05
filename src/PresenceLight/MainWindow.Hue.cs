@@ -77,7 +77,7 @@ namespace PresenceLight
                     btnRegister.IsEnabled = true;
                     if (string.IsNullOrEmpty(Config.HueApiKey))
                     {
-                        lblHueMessage.Text = "Missing App Registration, please button on bridge than click 'Register Bridge'";
+                        lblHueMessage.Text = "Missing App Registration, please press button on bridge then click 'Register Bridge'";
                         fontBrush.Color = MapColor("#ff3300");
                         ddlHueLights.Visibility = Visibility.Collapsed;
                         lblHueMessage.Foreground = fontBrush;
