@@ -104,7 +104,6 @@ namespace PresenceLight
                 if (ddlLIFXLights.SelectedItem.GetType() == typeof(LifxCloud.NET.Models.Light))
                 {
                     Config.SelectedLIFXItemId = $"id:{((LifxCloud.NET.Models.Light)ddlLIFXLights.SelectedItem).Id}";
-
                 }
                 _options.SelectedLIFXItemId = Config.SelectedLIFXItemId;
 

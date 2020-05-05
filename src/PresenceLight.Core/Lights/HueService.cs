@@ -38,10 +38,19 @@ namespace PresenceLight.Core
             _client = new LocalHueClient(_options.HueIpAddress);
             _client.Initialize(_options.HueApiKey);
 
-            var command = new LightCommand
+
+            var command = new LightCommand();
+
+            if (_options.Brightness == 0)
             {
-                On = true
-            };
+                command.On = false;
+            }
+            else
+            {
+                command.On = true;
+                command.Brightness = Convert.ToByte(((_options.Brightness / 100) * 254));
+            }
+
             switch (availability)
             {
                 case "Available":
@@ -92,12 +101,13 @@ namespace PresenceLight.Core
                     return String.Empty;
                 }
             }
-            return String.Empty;        
+            return String.Empty;
         }
 
         public async Task<string> FindBridge()
         {
-            try {
+            try
+            {
                 IBridgeLocator locator = new HttpBridgeLocator(); //Or: LocalNetworkScanBridgeLocator, MdnsBridgeLocator, MUdpBasedBridgeLocator
                 var bridges = await locator.LocateBridgesAsync(TimeSpan.FromSeconds(5));
                 if (bridges.Count() > 0)
@@ -105,7 +115,8 @@ namespace PresenceLight.Core
                     return bridges.FirstOrDefault().IpAddress;
                 }
             }
-            catch {
+            catch
+            {
                 return String.Empty;
             }
             return String.Empty;

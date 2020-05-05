@@ -15,7 +15,6 @@ namespace PresenceLight.Core
 
         public string? RedirectUri { get; set; }
 
-        public string? LIFXRedirectUri { get; set; }
         public string? CallbackPath { get; set; }
         public string? HueApiKey { get; set; }
 
@@ -26,6 +25,8 @@ namespace PresenceLight.Core
         public string? ApiScopes { get; set; }
 
         public double? PollingInterval { get; set; }
+
+        public double? Brightness { get; set; }
 
         public string? SelectedHueLightId { get; set; }
 
