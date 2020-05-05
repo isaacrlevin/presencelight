@@ -54,7 +54,7 @@
                                     </StackPanel>
                                 </Grid>
                             </Border>
-                            <Ellipse x:Name="status" Height="75" Width="75" StrokeThickness="5" Margin="150,200,25,60"/>
+                            <Ellipse x:Name="status" Height="75" Width="75" StrokeThickness="5" Margin="150,200,25,50"/>
                         </Grid>
                     </Grid>
                     <Grid Grid.Column="1" Grid.Row="1" x:Name="signInPanel" Visibility="Collapsed">
