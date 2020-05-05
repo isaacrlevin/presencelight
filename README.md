@@ -45,7 +45,7 @@ In order for the desktop app to work, you need to be running Windows 10, version
 
 ### Install App
 
-After you have followed the above steps (enable side-loading, installing the certificate and installing app), you will have be welcomed with a message like this
+After you have followed the above steps (enable side-loading and installing app), you will have be welcomed with a message like this
 
    ![Configured](static/configured.png)
 
@@ -54,6 +54,16 @@ PresenceLight obtains your Microsoft Teams Availability using a multi-tenant Azu
    ![Profile Image](static/profile.png)
 
 The application "polls" the Presence Api at a configured value, whican you can set bewteen 1 and 5 seconds on the Settings page. This means that the light and app will update based on your Teams presence with a slight delay.
+
+### Broadcasting to Lights
+
+There are three main ways to currently update your lights using PresenceLight
+
+ - Updating with Teams Presence (status)
+ - Syncing with your Windows 10 Theme
+ - Setting a fixed color using color picker
+
+You can only do one of these at a time, so if you for instance are syncing with Teams, choosing anohter option will sign you out of Teams. This will happen with the other options as well.
 
 ## Customize Icons
 
