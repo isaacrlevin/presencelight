@@ -71,11 +71,21 @@ namespace PresenceLight.Core
                     color = availability;
                     break;
             }
-
-            var result = await _client.SetState(selector,new LifxCloud.NET.Models.SetStateRequest
+            if (_options.Brightness == 0)
             {
-                Color = color
-            });
+                var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
+                {
+                    Power = PowerState.Off
+                }); ;
+            }
+            else
+            {
+                var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
+                {
+                    Brightness = (_options.Brightness / 100),
+                    Color = color
+                }); ;
+            }
         }
     }
 }

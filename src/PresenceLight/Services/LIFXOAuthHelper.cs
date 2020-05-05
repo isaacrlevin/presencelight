@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+
 using Newtonsoft.Json;
+
 using PresenceLight.Core;
 namespace PresenceLight.Services
 {
@@ -27,18 +30,31 @@ namespace PresenceLight.Services
         {
             string state = RandomDataBase64Url(32);
 
-            string redirectURI = string.Format("http://{0}:{1}/", IPAddress.Loopback, 3333);
-
+            string redirectURI = "";
             var http = new HttpListener();
-            http.Prefixes.Add(redirectURI);
-            http.Start();
+
+            foreach (var i in new int[] { 17236, 17284, 17287, 17291, 17296 })
+            {
+                try
+                {
+                    redirectURI = string.Format("http://{0}:{1}/", IPAddress.Loopback, i);
+                    http.Prefixes.Add(redirectURI);
+                    http.Start();
+
+                    break;
+                }
+                catch (Exception e)
+                {
+                    http = new HttpListener();
+                }
+            }
 
             // Creates the OAuth 2.0 authorization request.
             string authorizationRequest = string.Format("{0}?response_type=code&scope=remote_control:all&client_id={1}&state={2}&redirect_uri={3}",
                 _lIFXAuthorizationEndpoint,
                 _options.LIFXClientId,
                 state,
-              HttpUtility.UrlEncode(_options.LIFXRedirectUri)
+              HttpUtility.UrlEncode(redirectURI)
                 );
 
             Helpers.OpenBrowser(authorizationRequest);

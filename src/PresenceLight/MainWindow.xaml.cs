@@ -62,7 +62,7 @@ namespace PresenceLight
 
                 var tbContext = notificationIcon.DataContext;
                 DataContext = Config;
-                notificationIcon.DataContext = tbContext;                
+                notificationIcon.DataContext = tbContext;
             });
         });
         }
@@ -253,13 +253,12 @@ namespace PresenceLight
                     {
                         if (ddlLIFXLights.SelectedItem != null && ddlLIFXLights.SelectedItem.GetType() == typeof(LifxCloud.NET.Models.Group))
                         {
-                            Config.SelectedLIFXItemId = ((LifxCloud.NET.Models.Group)ddlLIFXLights.SelectedItem).Id;
+                            Config.SelectedLIFXItemId = $"group_id:{((LifxCloud.NET.Models.Group)ddlLIFXLights.SelectedItem).Id}";
                         }
 
                         if (ddlLIFXLights.SelectedItem != null && ddlLIFXLights.SelectedItem.GetType() == typeof(LifxCloud.NET.Models.Light))
                         {
-                            Config.SelectedLIFXItemId = ((LifxCloud.NET.Models.Light)ddlLIFXLights.SelectedItem).Id;
-
+                            Config.SelectedLIFXItemId = $"id:{((LifxCloud.NET.Models.Light)ddlLIFXLights.SelectedItem).Id}";
                         }
 
                         await _lifxService.SetColor("Off", (Selector)Config.SelectedLIFXItemId);
@@ -440,7 +439,9 @@ namespace PresenceLight
             }
 
             CheckAAD();
+            Config.Brightness = brightness.Value;
 
+            _options.Brightness = brightness.Value;
             await SettingsService.SaveSettings(Config);
             lblSettingSaved.Visibility = Visibility.Visible;
             btnSettings.IsEnabled = true;
@@ -518,7 +519,5 @@ namespace PresenceLight
             System.Windows.Application.Current.Shutdown();
         }
         #endregion
-
-
     }
 }
