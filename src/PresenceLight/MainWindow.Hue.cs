@@ -27,7 +27,7 @@ namespace PresenceLight
             if (ddlHueLights.SelectedItem != null)
             {
                 Config.SelectedHueLightId = ((Q42.HueApi.Light)ddlHueLights.SelectedItem).Id;
-                _options.SelectedHueLightId = Config.SelectedHueLightId;
+                SyncOptions();
             }
             e.Handled = true;
         }
@@ -36,14 +36,11 @@ namespace PresenceLight
         {
             if (((TextBox)e.OriginalSource).Text.Trim() != ((TextBox)e.Source).Text.Trim())
             {
-                if (_options != null)
-                {
-                    _options.HueApiKey = String.Empty;
-                }
                 if (Config != null)
                 {
                     Config.HueApiKey = String.Empty;
                 }
+                SyncOptions();
             }
             CheckHueSettings();
             e.Handled = true;
@@ -65,15 +62,11 @@ namespace PresenceLight
                 }
                 else
                 {
-                    if (string.IsNullOrEmpty(Config.HueIpAddress))
-                    {
-                        Config.HueIpAddress = hueIpAddress.Text;
-                    }
 
-                    if (string.IsNullOrEmpty(_options.HueIpAddress))
-                    {
-                        _options.HueIpAddress = hueIpAddress.Text;
-                    }
+                    Config.HueIpAddress = hueIpAddress.Text;
+
+                    SyncOptions();
+
                     btnRegister.IsEnabled = true;
                     if (string.IsNullOrEmpty(Config.HueApiKey))
                     {
@@ -131,7 +124,7 @@ namespace PresenceLight
             {
                 pnlPhillips.Visibility = Visibility.Collapsed;
             }
-            _options.IsPhillipsEnabled = Config.IsPhillipsEnabled;
+            SyncOptions();
             e.Handled = true;
         }
 
@@ -146,13 +139,10 @@ namespace PresenceLight
             {
                 imgLoading.Visibility = Visibility.Visible;
                 lblHueMessage.Visibility = Visibility.Collapsed;
-                if (string.IsNullOrEmpty(_options.HueIpAddress))
-                {
-                    _options.HueIpAddress = Config.HueIpAddress;
-                }
+
                 Config.HueApiKey = await _hueService.RegisterBridge();
                 ddlHueLights.ItemsSource = await _hueService.CheckLights();
-                _options.HueApiKey = Config.HueApiKey;
+                SyncOptions();
                 ddlHueLights.Visibility = Visibility.Visible;
                 imgLoading.Visibility = Visibility.Collapsed;
                 lblHueMessage.Visibility = Visibility.Visible;

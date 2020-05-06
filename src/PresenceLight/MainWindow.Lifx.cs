@@ -20,7 +20,7 @@ namespace PresenceLight
             {
                 lifxApiKey.Text = accessToken;
                 Config.LIFXApiKey = accessToken;
-                _options.LIFXApiKey = accessToken;
+                SyncOptions();
             }
             this.Activate();
         }
@@ -105,8 +105,8 @@ namespace PresenceLight
                 {
                     Config.SelectedLIFXItemId = $"id:{((LifxCloud.NET.Models.Light)ddlLIFXLights.SelectedItem).Id}";
                 }
-                _options.SelectedLIFXItemId = Config.SelectedLIFXItemId;
-
+                
+                SyncOptions();
             }
             e.Handled = true;
         }
@@ -119,9 +119,9 @@ namespace PresenceLight
             {
                 try
                 {
-                    _options.LIFXApiKey = lifxApiKey.Text;
                     Config.LIFXApiKey = lifxApiKey.Text;
 
+                    SyncOptions();
                     if (((System.Windows.Controls.Button)sender).Name == "btnGetLIFXGroups")
                     {
                         ddlLIFXLights.ItemsSource = await _lifxService.GetAllGroupsAsync();
@@ -178,7 +178,8 @@ namespace PresenceLight
             {
                 pnlLIFX.Visibility = Visibility.Collapsed;
             }
-            _options.IsLIFXEnabled = Config.IsLIFXEnabled;
+            
+            SyncOptions();
             e.Handled = true;
         }
 
