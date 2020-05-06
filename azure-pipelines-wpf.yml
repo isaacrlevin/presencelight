@@ -201,6 +201,7 @@ stages:
               --description "PresenceLight" `
               --descriptionUrl "https://github.com/isaacrlevin/PresenceLight"
             displayName: Authenticode Sign artifacts
+
           - publish: $(Pipeline.Workspace)/ToSign/Zip
             displayName: Publish Signed Zip Packages
             artifact: ZipSigned
@@ -212,7 +213,3 @@ stages:
           - publish: $(Pipeline.Workspace)/ToSign/Choco
             displayName: Publish Signed Choco Packages
             artifact: ChocoSigned
-
-          - publish: $(Pipeline.Workspace)/ToSign/Nightly
-            displayName: Publish Signed Choco Packages
-            artifact: NightlySigned
