@@ -11,11 +11,11 @@ namespace PresenceLight
     {
         private async void SyncTheme_Click(object sender, RoutedEventArgs e)
         {
-            SignOutButton_Click(null, null);
+            lightMode = "Theme";
+            //SignOutButton_Click(null, null);
 
             var theme = ((SolidColorBrush)SystemParameters.WindowGlassBrush).Color;
-            stopGraphPolling = true;
-            stopThemePolling = false;
+
             string color = $"#{theme.ToString().Substring(3)}";
 
             lblTheme.Content = $"Theme Color is {color}";
@@ -34,11 +34,6 @@ namespace PresenceLight
 
             while (true)
             {
-                if (stopThemePolling)
-                {
-                    stopThemePolling = false;
-                    return;
-                }
                 await Task.Delay(Convert.ToInt32(Config.PollingInterval * 1000));
                 try
                 {
@@ -49,14 +44,9 @@ namespace PresenceLight
                     lblTheme.Foreground = (SolidColorBrush)SystemParameters.WindowGlassBrush;
                     lblTheme.Visibility = Visibility.Visible;
 
-                    if (!string.IsNullOrEmpty(Config.HueApiKey) && !string.IsNullOrEmpty(Config.HueIpAddress) && !string.IsNullOrEmpty(Config.SelectedHueLightId))
+                    if (lightMode == "Theme")
                     {
-                        await _hueService.SetColor(color, Config.SelectedHueLightId);
-                    }
-
-                    if (Config.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LIFXApiKey))
-                    {
-                        await _lifxService.SetColor(color, (Selector)Config.SelectedLIFXItemId);
+                        await SetColor(color);
                     }
                 }
                 catch (Exception ex)
@@ -71,21 +61,26 @@ namespace PresenceLight
         {
             if (ColorGrid.SelectedColor.HasValue)
             {
-                SignOutButton_Click(null, null);
+                lightMode = "Custom";
+                //SignOutButton_Click(null, null);
 
-                stopGraphPolling = true;
-                stopThemePolling = true;
+                //stopGraphPolling = true;
+                //stopThemePolling = true;
                 string color = $"#{ColorGrid.HexadecimalString.ToString().Substring(3)}";
 
-                if (!string.IsNullOrEmpty(Config.HueApiKey) && !string.IsNullOrEmpty(Config.HueIpAddress) && !string.IsNullOrEmpty(Config.SelectedHueLightId))
-                {
-                    await _hueService.SetColor(color, Config.SelectedHueLightId);
-                }
+                //if (!string.IsNullOrEmpty(Config.HueApiKey) && !string.IsNullOrEmpty(Config.HueIpAddress) && !string.IsNullOrEmpty(Config.SelectedHueLightId))
+                //{
+                //    await _hueService.SetColor(color, Config.SelectedHueLightId);
+                //}
 
-                if (Config.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LIFXApiKey))
-                {
+                //if (Config.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LIFXApiKey))
+                //{
 
-                    await _lifxService.SetColor(color, (Selector)Config.SelectedLIFXItemId);
+                //    await _lifxService.SetColor(color, (Selector)Config.SelectedLIFXItemId);
+                //}
+                if (lightMode == "Custom")
+                {
+                    await SetColor(color);
                 }
             }
         }
