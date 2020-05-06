@@ -37,7 +37,7 @@ namespace PresenceLight.Services
             {
                 try
                 {
-                    redirectURI = string.Format("http://{0}:{1}/", IPAddress.Loopback, i);
+                    redirectURI = string.Format("http://localhost:{0}/", i);
                     http.Prefixes.Add(redirectURI);
                     http.Start();
 
