@@ -9,10 +9,20 @@ namespace PresenceLight
 {
     public partial class MainWindow : Window
     {
+        private async void SetTeamsPresence_Click(object sender, RoutedEventArgs e)
+        {
+            lightMode = "Graph";
+            syncTeamsButton.IsEnabled = false;
+            syncThemeButton.IsEnabled = true;
+            setColorButton.IsEnabled = true;
+        }
+
         private async void SyncTheme_Click(object sender, RoutedEventArgs e)
         {
             lightMode = "Theme";
-            //SignOutButton_Click(null, null);
+            syncTeamsButton.IsEnabled = true;
+            syncThemeButton.IsEnabled = false;
+            setColorButton.IsEnabled = true;
 
             var theme = ((SolidColorBrush)SystemParameters.WindowGlassBrush).Color;
 
@@ -22,15 +32,7 @@ namespace PresenceLight
             lblTheme.Foreground = (SolidColorBrush)SystemParameters.WindowGlassBrush;
             lblTheme.Visibility = Visibility.Visible;
 
-            if (!string.IsNullOrEmpty(Config.HueApiKey) && !string.IsNullOrEmpty(Config.HueIpAddress) && !string.IsNullOrEmpty(Config.SelectedHueLightId))
-            {
-                await _hueService.SetColor(color, Config.SelectedHueLightId);
-            }
-
-            if (Config.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LIFXApiKey))
-            {
-                await _lifxService.SetColor(color, (Selector)Config.SelectedLIFXItemId);
-            }
+            await SetColor(color);
 
             while (true)
             {
@@ -62,28 +64,17 @@ namespace PresenceLight
             if (ColorGrid.SelectedColor.HasValue)
             {
                 lightMode = "Custom";
-                //SignOutButton_Click(null, null);
+                syncTeamsButton.IsEnabled = true;
+                syncThemeButton.IsEnabled = true;
+                setColorButton.IsEnabled = false;
 
-                //stopGraphPolling = true;
-                //stopThemePolling = true;
                 string color = $"#{ColorGrid.HexadecimalString.ToString().Substring(3)}";
 
-                //if (!string.IsNullOrEmpty(Config.HueApiKey) && !string.IsNullOrEmpty(Config.HueIpAddress) && !string.IsNullOrEmpty(Config.SelectedHueLightId))
-                //{
-                //    await _hueService.SetColor(color, Config.SelectedHueLightId);
-                //}
-
-                //if (Config.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LIFXApiKey))
-                //{
-
-                //    await _lifxService.SetColor(color, (Selector)Config.SelectedLIFXItemId);
-                //}
                 if (lightMode == "Custom")
                 {
                     await SetColor(color);
                 }
             }
         }
-
     }
 }

@@ -172,10 +172,12 @@ namespace PresenceLight
         {
             if (Config.IsLIFXEnabled)
             {
+                getTokenLink.Visibility = Visibility.Visible;
                 pnlLIFX.Visibility = Visibility.Visible;
             }
             else
             {
+                getTokenLink.Visibility = Visibility.Collapsed;
                 pnlLIFX.Visibility = Visibility.Collapsed;
             }
             

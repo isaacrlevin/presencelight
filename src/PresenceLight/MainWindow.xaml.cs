@@ -136,12 +136,14 @@ namespace PresenceLight
 
             if (Config.IsLIFXEnabled)
             {
+                getTokenLink.Visibility = Visibility.Visible;
                 pnlLIFX.Visibility = Visibility.Visible;
 
                 SyncOptions();
             }
             else
             {
+                getTokenLink.Visibility = Visibility.Collapsed;
                 pnlLIFX.Visibility = Visibility.Collapsed;
             }
         }
@@ -164,6 +166,10 @@ namespace PresenceLight
         private async Task CallGraph()
         {
             lightMode = "Graph";
+            syncTeamsButton.IsEnabled = false;
+            syncThemeButton.IsEnabled = true;
+            setColorButton.IsEnabled = true;
+
             if (_graphServiceClient == null)
             {
                 _graphServiceClient = _graphservice.GetAuthenticatedGraphClient(typeof(WPFAuthorizationProvider));
