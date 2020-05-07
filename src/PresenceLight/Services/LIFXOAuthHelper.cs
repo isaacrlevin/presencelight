@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
@@ -12,6 +14,7 @@ using System.Web;
 using Newtonsoft.Json;
 
 using PresenceLight.Core;
+
 namespace PresenceLight.Services
 {
     public class LIFXOAuthHelper
@@ -20,10 +23,13 @@ namespace PresenceLight.Services
         private readonly string _lIFXTokenEndpoint = $"{LIFXAuthority}/token";
         private readonly string _lIFXAuthorizationEndpoint = $"{LIFXAuthority}/authorize";
         private readonly ConfigWrapper _options;
+        private string _lifxClientId;
+        private string _lifxClientSecret;
 
         public LIFXOAuthHelper(Microsoft.Extensions.Options.IOptionsMonitor<ConfigWrapper> optionsAccessor)
         {
             _options = optionsAccessor.CurrentValue;
+
         }
 
         public async Task<string> InitiateTokenRetrieval()
@@ -31,7 +37,7 @@ namespace PresenceLight.Services
             string state = RandomDataBase64Url(32);
 
             string redirectURI = "";
-            var http = new HttpListener();
+            var http = new System.Net.HttpListener();
 
             foreach (var i in new int[] { 17236, 17284, 17287, 17291, 17296 })
             {
@@ -45,14 +51,23 @@ namespace PresenceLight.Services
                 }
                 catch (Exception e)
                 {
-                    http = new HttpListener();
+                    http = new System.Net.HttpListener();
                 }
             }
+
+            var client = new HttpClient();
+            string json = await client.GetStringAsync("https://presence-light.azurewebsites.net/api/KeyVault?code=0UGo7xdQmumEzoCV8vRNXv6Z8pGxWvtu7b6a0meOtDlQCB43oxIEfw==");
+
+            var secretResponse = JsonConvert.DeserializeObject<List<SecretResponse>>(json);
+
+            _lifxClientId = secretResponse.FirstOrDefault(a => a.Secret == "LIFXClientId").Value;
+            _lifxClientSecret = secretResponse.FirstOrDefault(a => a.Secret == "LIFXClientSecret").Value;
+
 
             // Creates the OAuth 2.0 authorization request.
             string authorizationRequest = string.Format("{0}?response_type=code&scope=remote_control:all&client_id={1}&state={2}&redirect_uri={3}",
                 _lIFXAuthorizationEndpoint,
-                _options.LIFXClientId,
+                _lifxClientId,
                 state,
               HttpUtility.UrlEncode(redirectURI)
                 );
@@ -108,8 +123,8 @@ namespace PresenceLight.Services
 
             string tokenRequestBody = string.Format("code={0}&client_id={1}&client_secret={2}&grant_type=authorization_code",
                 code,
-                _options.LIFXClientId,
-                _options.LIFXClientSecret
+               _lifxClientId,
+               _lifxClientSecret
                 );
 
             // sends the request
