@@ -18,10 +18,6 @@ namespace PresenceLight.Core
         public string? CallbackPath { get; set; }
         public string? HueApiKey { get; set; }
 
-        public string? LIFXClientId { get; set; }
-
-        public string? LIFXClientSecret { get; set; }
-
         public string? ApiScopes { get; set; }
 
         public double? PollingInterval { get; set; }
