@@ -27,6 +27,7 @@ namespace PresenceLight.Telemetry
         private static void DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
             TrackException(e.Exception);
+            e.Handled = true;
         }
 
         private static void Application_Exit(object sender, System.Windows.ExitEventArgs e)

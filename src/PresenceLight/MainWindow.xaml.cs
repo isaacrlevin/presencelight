@@ -43,6 +43,8 @@ namespace PresenceLight
         {
             InitializeComponent();
 
+            System.Windows.Application.Current.SessionEnding += new SessionEndingCancelEventHandler(Current_SessionEnding);
+
             LoadAboutMe();
 
             _graphservice = graphService;
@@ -168,7 +170,6 @@ namespace PresenceLight
             lightMode = "Graph";
             syncTeamsButton.IsEnabled = false;
             syncThemeButton.IsEnabled = true;
-            setColorButton.IsEnabled = true;
 
             if (_graphServiceClient == null)
             {
@@ -518,6 +519,20 @@ namespace PresenceLight
             }
             await SettingsService.SaveSettings(Config);
             System.Windows.Application.Current.Shutdown();
+        }
+        private async void Current_SessionEnding(object sender, SessionEndingCancelEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(Config.HueApiKey) && !string.IsNullOrEmpty(Config.HueIpAddress) && !string.IsNullOrEmpty(Config.SelectedHueLightId))
+            {
+                await _hueService.SetColor("Off", Config.SelectedHueLightId);
+            }
+
+            if (Config.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LIFXApiKey))
+            {
+
+                await _lifxService.SetColor("Off", (Selector)Config.SelectedLIFXItemId);
+            }
+            await SettingsService.SaveSettings(Config);
         }
         #endregion
     }

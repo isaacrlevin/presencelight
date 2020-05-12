@@ -14,7 +14,6 @@ namespace PresenceLight
             lightMode = "Graph";
             syncTeamsButton.IsEnabled = false;
             syncThemeButton.IsEnabled = true;
-            setColorButton.IsEnabled = true;
         }
 
         private async void SyncTheme_Click(object sender, RoutedEventArgs e)
@@ -22,7 +21,6 @@ namespace PresenceLight
             lightMode = "Theme";
             syncTeamsButton.IsEnabled = true;
             syncThemeButton.IsEnabled = false;
-            setColorButton.IsEnabled = true;
 
             var theme = ((SolidColorBrush)SystemParameters.WindowGlassBrush).Color;
 
@@ -66,7 +64,6 @@ namespace PresenceLight
                 lightMode = "Custom";
                 syncTeamsButton.IsEnabled = true;
                 syncThemeButton.IsEnabled = true;
-                setColorButton.IsEnabled = false;
 
                 string color = $"#{ColorGrid.HexadecimalString.ToString().Substring(3)}";
 
