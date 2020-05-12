@@ -48,6 +48,11 @@ namespace PresenceLight
                     {
                         await SetColor(color);
                     }
+
+                    if (DateTime.Now.Minute % 5 == 0)
+                    {
+                        await SettingsService.SaveSettings(Config);
+                    }
                 }
                 catch (Exception ex)
                 {

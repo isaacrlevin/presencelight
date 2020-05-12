@@ -213,6 +213,11 @@ namespace PresenceLight
                         await SetColor(presence.Availability);
                     }
 
+                    if (DateTime.Now.Minute % 5 == 0)
+                    {
+                        await SettingsService.SaveSettings(Config);
+                    }
+
                     MapUI(presence, null, null);
                 }
                 catch { }
