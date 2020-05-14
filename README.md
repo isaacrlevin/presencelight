@@ -115,3 +115,14 @@ At this point PresenceLight should be setup. Feel free to file an issue if you h
 ## Please Contribute
 
 I welcome all contributions here, as I am no expert in WPF/MSIX things.
+
+## Third Party Libraries
+
+Presence Light would not be possibke without the amazing work from the contributors to the following third party libraries!
+
+- [Q42.HueApi](https://github.com/Q42/Q42.HueApi)
+- [AppInsights.WindowsDesktop](https://github.com/novotnyllc/AppInsights.WindowsDesktop)
+- [IdentityModel.OidcClient](https://github.com/IdentityModel/IdentityModel.OidcClient)
+- [wpftoolkit](https://github.com/xceedsoftware/wpftoolkit)
+- [OSVersionHelper](https://github.com/onovotny/OSVersionHelper)
+- [WpfAnimatedGif](https://github.com/XamlAnimatedGif/WpfAnimatedGif)
