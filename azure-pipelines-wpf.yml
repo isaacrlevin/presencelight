@@ -213,3 +213,7 @@ stages:
           - publish: $(Pipeline.Workspace)/ToSign/Choco
             displayName: Publish Signed Choco Packages
             artifact: ChocoSigned
+            
+          - publish: $(Pipeline.Workspace)/ToSign/Store
+            displayName: Publish Signed Store Packages
+            artifact: StoreSigned
