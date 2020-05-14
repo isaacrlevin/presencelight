@@ -29,7 +29,7 @@
     <AppxBundlePlatforms>x86</AppxBundlePlatforms>
     <AppxPackageIncludePrivateSymbols>true</AppxPackageIncludePrivateSymbols>
     <UapAppxPackageBuildMode>SideLoadOnly</UapAppxPackageBuildMode>
-    <UapAppxPackageBuildMode Condition="'$(ChannelName)' == 'Store'">CI</UapAppxPackageBuildMode>
+    <UapAppxPackageBuildMode Condition="'$(ChannelName)' == 'Store'">StoreUpload</UapAppxPackageBuildMode>
     <EntryPointProjectUniqueName>..\PresenceLight\PresenceLight.csproj</EntryPointProjectUniqueName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(ChannelName)' == 'Nightly'">
