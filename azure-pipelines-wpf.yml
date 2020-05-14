@@ -168,6 +168,12 @@ stages:
               targetPath: $(Pipeline.Workspace)/ToSign/Zip
 
           - task: DownloadPipelineArtifact@2
+            displayName: Download Store Artifacts
+            inputs:
+              artifactName: Store
+              targetPath: $(Pipeline.Workspace)/ToSign/Store
+
+          - task: DownloadPipelineArtifact@2
             displayName: Download Choco Artifacts
             inputs:
               artifactName: Choco
