@@ -26,14 +26,10 @@ stages:
       vmImage: windows-latest
     strategy:
       matrix:
-        Channel_Zip:
-          ChannelName: Zip
-        Channel_Store:
-          ChannelName: Store
+        Channel_Release:
+          ChannelName: Release
         Channel_Nightly:
           ChannelName: Nightly
-        Channel_Choco:
-          ChannelName: Choco
 
     steps:
     - task: UseDotNet@2
@@ -113,31 +109,29 @@ stages:
         msbuildArguments: /p:IncludeSymbols=true /p:AppxPackageDir="$(Build.ArtifactStagingDirectory)\$(ChannelName)\\"
         configuration: $(BuildConfiguration)
         maximumCpuCount: true
-      condition: and(succeeded(), or(eq(variables['ChannelName'], 'Nightly'), eq(variables['ChannelName'], 'Store')))
 
     - task: MSBuild@1
-      displayName: Build for Zip and Choco
+      displayName: Build and Zip
       inputs:
         solution: '.\src\PresenceLight\PresenceLight.csproj'
         msbuildArguments: /t:publish /p:IncludeSymbols=true /p:PublishProfile=Properties/PublishProfiles/WinX86.pubxml
         configuration: $(BuildConfiguration)
         maximumCpuCount: true
-      condition: and(succeeded(), or(eq(variables['ChannelName'], 'Zip'), eq(variables['ChannelName'], 'Choco')))
 
     - powershell: |
         # Chocolatey
-        & choco.exe pack .\src\PresenceLight\PresenceLight.nuspec --version $(NBGV_ChocolateyPackageVersion) --OutputDirectory $(Build.ArtifactStagingDirectory)\$(ChannelName)
+        & choco.exe pack .\.chocolatey\PresenceLight.nuspec --version $(NBGV_ChocolateyPackageVersion) --OutputDirectory $(Build.ArtifactStagingDirectory)\$(ChannelName)
       displayName: Create Choco package
-      condition: and(succeeded(), eq(variables['ChannelName'], 'Choco'))
+      condition: and(succeeded(), eq(variables['ChannelName'], 'Release'))
 
     - task: ArchiveFiles@1
       displayName: Zip PresenceLight files
       inputs:
         archiveType: default
         rootFolder: '.\src\PresenceLight\bin\$(BuildConfiguration)\netcoreapp5.0\win-x86\publish'
-        archiveFile: $(Build.ArtifactStagingDirectory)\$(ChannelName)\PresenceLight.$(Build.BuildNumber).zip
+        archiveFile: $(Build.ArtifactStagingDirectory)\$(ChannelName)\Release.zip
         includeRootFolder: false
-      condition: and(succeeded(), eq(variables['ChannelName'], 'Zip'))
+      condition: and(succeeded(), eq(variables['ChannelName'], 'Release'))
 
     - publish: $(Build.ArtifactStagingDirectory)\$(ChannelName)
       displayName: Publish Build Packages
@@ -162,22 +156,10 @@ stages:
           steps:
 
           - task: DownloadPipelineArtifact@2
-            displayName: Download Zip Artifacts
+            displayName: Download Release Artifacts
             inputs:
-              artifactName: Zip
-              targetPath: $(Pipeline.Workspace)/ToSign/Zip
-
-          - task: DownloadPipelineArtifact@2
-            displayName: Download Store Artifacts
-            inputs:
-              artifactName: Store
-              targetPath: $(Pipeline.Workspace)/ToSign/Store
-
-          - task: DownloadPipelineArtifact@2
-            displayName: Download Choco Artifacts
-            inputs:
-              artifactName: Choco
-              targetPath: $(Pipeline.Workspace)/ToSign/Choco
+              artifactName: Release
+              targetPath: $(Pipeline.Workspace)/ToSign/Release
 
           - task: DownloadPipelineArtifact@2
             displayName: Download Nightly Artifacts
@@ -208,18 +190,10 @@ stages:
               --descriptionUrl "https://github.com/isaacrlevin/PresenceLight"
             displayName: Authenticode Sign artifacts
 
-          - publish: $(Pipeline.Workspace)/ToSign/Zip
-            displayName: Publish Signed Zip Packages
-            artifact: ZipSigned
+          - publish: $(Pipeline.Workspace)/ToSign/Release
+            displayName: Publish Signed Release Packages
+            artifact: ReleaseSigned
 
           - publish: $(Pipeline.Workspace)/ToSign/Nightly
             displayName: Publish Signed Nightly Packages
             artifact: NightlySigned
-
-          - publish: $(Pipeline.Workspace)/ToSign/Choco
-            displayName: Publish Signed Choco Packages
-            artifact: ChocoSigned
-            
-          - publish: $(Pipeline.Workspace)/ToSign/Store
-            displayName: Publish Signed Store Packages
-            artifact: StoreSigned
