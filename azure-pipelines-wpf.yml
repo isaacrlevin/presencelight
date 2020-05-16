@@ -46,11 +46,10 @@ stages:
       displayName: Install NBGV tool
 
     - script: nbgv cloud -c -a
-      displayName: Set Version
+      displayName: Set Build Version
 
     - powershell: |
         mkdir $(Build.ArtifactStagingDirectory)\$(ChannelName)
-
         # Update appxmanifest. This must be done before build.
         # Set the per-channel values into the appxmanifest, replacing the checked-in values
         [xml]$manifest= get-content ".\src\PresenceLight.Package\Package.appxmanifest"
@@ -61,7 +60,7 @@ stages:
         $manifest.Package.Identity.Version = "$(GitBuildVersionSimple).0"
         $manifest.Save(".\src\PresenceLight.Package\Package-Nightly.appxmanifest")
 
-      displayName: Update manifest version
+      displayName: Update AppxManifest version
 
     - powershell: |
         # Update App Insights instrumentation key
@@ -74,7 +73,7 @@ stages:
       condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')), not(eq(variables['AppInsightsKey'], '')))
 
     - powershell: |
-        # Update appsettings.json. This must be done before build.
+        # Update AppSettings.json. This must be done before build.
         $appsettings= get-content ".\src\PresenceLight\appsettings.json" -raw | ConvertFrom-Json
         $appsettings.clientId = "$env:ApplicationId"
         $appsettings | ConvertTo-Json -depth 32| set-content '.\src\PresenceLight\appsettings.json'
@@ -92,7 +91,7 @@ stages:
         $badge.svg.g[1].text[2].InnerText = "$(GitBuildVersionSimple).0"
         $badge.svg.g[1].text[3].InnerText = "$(GitBuildVersionSimple).0"
         $badge.Save("$(Build.ArtifactStagingDirectory)\$(ChannelName)\stable_badge.svg")
-      displayName: Update badge versions
+      displayName: Update Badge Versions
 
     - task: MSBuild@1
       displayName: Build Presence Light for $(ChannelName)
@@ -103,29 +102,21 @@ stages:
         maximumCpuCount: true
 
     - task: MSBuild@1
-      displayName: Build Package
+      displayName: Build Appx Package
       inputs:
         solution: '.\src\PresenceLight.Package\PresenceLight.Package.wapproj'
         msbuildArguments: /p:IncludeSymbols=true /p:AppxPackageDir="$(Build.ArtifactStagingDirectory)\$(ChannelName)\\"
         configuration: $(BuildConfiguration)
         maximumCpuCount: true
 
-    - task: MSBuild@1
-      displayName: Build and Zip
-      inputs:
-        solution: '.\src\PresenceLight\PresenceLight.csproj'
-        msbuildArguments: /t:publish /p:IncludeSymbols=true /p:PublishProfile=Properties/PublishProfiles/WinX86.pubxml
-        configuration: $(BuildConfiguration)
-        maximumCpuCount: true
-
     - powershell: |
         # Chocolatey
         & choco.exe pack .\.chocolatey\PresenceLight.nuspec --version $(NBGV_ChocolateyPackageVersion) --OutputDirectory $(Build.ArtifactStagingDirectory)\$(ChannelName)
-      displayName: Create Choco package
+      displayName: Create Choco Package
       condition: and(succeeded(), eq(variables['ChannelName'], 'Release'))
 
     - task: ArchiveFiles@1
-      displayName: Zip PresenceLight files
+      displayName: Zip PresenceLight Files
       inputs:
         archiveType: default
         rootFolder: '.\src\PresenceLight\bin\$(BuildConfiguration)\netcoreapp5.0\win-x86\publish'
@@ -134,12 +125,14 @@ stages:
       condition: and(succeeded(), eq(variables['ChannelName'], 'Release'))
 
     - publish: $(Build.ArtifactStagingDirectory)\$(ChannelName)
-      displayName: Publish Build Packages
+      displayName: Publish Arifacts
       artifact: $(ChannelName)
 
     - publish: Build
       displayName: Publish signing scripts
       artifact: SigningScripts
+      condition: and(succeeded(), eq(variables['ChannelName'], 'Release'))
+
 - stage: CodeSign
   condition: and(succeeded('Build'), not(eq(variables['build.reason'], 'PullRequest')))
   jobs:
