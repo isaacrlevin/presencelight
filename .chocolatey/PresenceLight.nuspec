@@ -8,7 +8,8 @@
     <owners>Isaac Levin</owners>
     <licenseUrl>https://github.com/isaacrlevin/PresenceLight/blob/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/isaacrlevin/PresenceLight/</projectUrl>
-    <iconUrl>https://github.com/isaacrlevin/PresenceLight/raw/master/Icon.png</iconUrl>
+    <projectSourceUrl>https://github.com/isaacrlevin/PresenceLight/</projectSourceUrl>
+    <iconUrl>https://raw.githubusercontent.com/isaacrlevin/PresenceLight/master/Icon.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>
       PresenceLight is a solution to broadcast your various statuses to a Phillips Hue or LIFX light bulb.
@@ -19,10 +20,6 @@
     <tags>presence lifx hue phillips teams</tags>
   </metadata>
   <files>
-    <file src="ChocolateyInstall.ps1"  />
-    <file src="PresenceLight.exe.gui"  />
-    <file src="bin\Release\netcoreapp5.0\win-x86\publish\**\*.*" target=""  />
-    <file src="..\..\LICENSE" target="legal\LICENSE.txt" />
-    <file src="..\..\Build\Verification.txt" target="legal\Verification.txt" />
+    <file src="tools\**" target="tools" />
   </files>
 </package>
