@@ -63,6 +63,10 @@ stages:
       displayName: Update AppxManifest version
 
     - powershell: |
+        ((Get-Content -path .\.chocolatey\tools\ChocolateyInstall.ps1 -Raw) -replace 'Release','PresenceLight.$(Build.BuildNumber).zip') | Set-Content -Path .\.chocolatey\tools\ChocolateyInstall.ps1
+      displayName: Update ChocolateyInstall.ps1
+
+    - powershell: |
         # Update App Insights instrumentation key
         [xml]$doc = Get-Content ".\src\PresenceLight\ApplicationInsights.config"
         $doc.ApplicationInsights.InstrumentationKey = "$(AppInsightsKey)"
@@ -120,7 +124,7 @@ stages:
       inputs:
         archiveType: default
         rootFolder: '.\src\PresenceLight\bin\$(BuildConfiguration)\netcoreapp5.0\win-x86\publish'
-        archiveFile: $(Build.ArtifactStagingDirectory)\$(ChannelName)\Release.zip
+        archiveFile: $(Build.ArtifactStagingDirectory)\$(ChannelName)\PresenceLight.$(Build.BuildNumber).zip
         includeRootFolder: false
       condition: and(succeeded(), eq(variables['ChannelName'], 'Release'))
 
