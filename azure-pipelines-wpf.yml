@@ -170,6 +170,14 @@ stages:
               arguments: install --tool-path . SignClient
             displayName: Install SignTool tool
 
+          - task: AzureCLI@2
+            displayName: Scale Up Sign Service
+            inputs:
+              azureSubscription: 'Isaac Levin MSDN (a07802f5-f8df-47d8-9b88-79ba55cfb396)'
+              scriptType: 'ps'
+              scriptLocation: 'inlineScript'
+              inlineScript: 'az appservice plan update --name levin-signserv-asp-2dnwx6q6jwiay --resource-group SignService --sku P1V2'
+
           - pwsh: |
               .\SignClient "Sign" `
               --baseDirectory "$(Pipeline.Workspace)\ToSign" `
@@ -182,6 +190,14 @@ stages:
               --description "PresenceLight" `
               --descriptionUrl "https://github.com/isaacrlevin/PresenceLight"
             displayName: Authenticode Sign artifacts
+
+          - task: AzureCLI@2
+            displayName: Scale Down Sign Service
+            inputs:
+              azureSubscription: 'Isaac Levin MSDN (a07802f5-f8df-47d8-9b88-79ba55cfb396)'
+              scriptType: 'ps'
+              scriptLocation: 'inlineScript'
+              inlineScript: 'az appservice plan update --name levin-signserv-asp-2dnwx6q6jwiay --resource-group SignService --sku S1'
 
           - publish: $(Pipeline.Workspace)/ToSign/Release
             displayName: Publish Signed Release Packages
