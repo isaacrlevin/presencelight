@@ -1,7 +1,7 @@
 $ErrorActionPreference = 'Stop'
 $toolsDir   = "$(Split-Path -parent $MyInvocation.MyCommand.Definition)"
 $installPath = Join-Path $toolsDir 'PresenceLight'
-$exePath = Join-Path $toolsDir 'PresenceLight\PresenceLight.exe'
+$exePath = Join-Path $toolsDir 'PresenceLight.exe'
 $zipPath = Join-Path $toolsDir 'Release.zip'
 
 Install-ChocolateyZipPackage -PackageName "$packageName" `
