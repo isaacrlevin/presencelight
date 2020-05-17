@@ -63,7 +63,7 @@ stages:
       displayName: Update AppxManifest version
 
     - powershell: |
-        ((Get-Content -path .\.chocolatey\tools\ChocolateyInstall.ps1 -Raw) -replace 'Release','PresenceLight.$(Build.BuildNumber).zip') | Set-Content -Path .\.chocolatey\tools\ChocolateyInstall.ps1
+        ((Get-Content -path .\.chocolatey\tools\ChocolateyInstall.ps1 -Raw) -replace 'Release','PresenceLight.$(Build.BuildNumber)') | Set-Content -Path .\.chocolatey\tools\ChocolateyInstall.ps1
       displayName: Update ChocolateyInstall.ps1
 
     - powershell: |
