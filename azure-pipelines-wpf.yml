@@ -97,7 +97,7 @@ stages:
       displayName: Build Presence Light for $(ChannelName)
       inputs:
         solution: '.\src\PresenceLight\PresenceLight.csproj'
-        msbuildArguments: /restore /p:IncludeSymbols=true /p:PublishProfile=Properties/PublishProfiles/WinX86.pubxml
+        msbuildArguments: /restore /t:publish /p:IncludeSymbols=true /p:PublishProfile=Properties/PublishProfiles/WinX86.pubxml
         configuration: $(BuildConfiguration)
         maximumCpuCount: true
 
