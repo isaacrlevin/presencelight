@@ -1,5 +1,5 @@
 {
-  "ClientId": "",
+  "ClientId": "f8119f58-4523-44c1-ab72-b2e0c815bd6a",
   "LIFXApiKey": "",
   "ClientSecret": "",
   "Instance": "https://login.microsoftonline.com/",
@@ -8,6 +8,7 @@
   "HueApiKey": "",
   "ApiScopes": "User.Read offline_access",
   "PollingInterval": 5.0,
+  "Brightness": 100,
   "SelectedHueLightId": "",
   "SelectedLIFXItemId": "",
   "HueIpAddress": "",
