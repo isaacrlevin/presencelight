@@ -14,6 +14,9 @@ using Microsoft.IdentityModel.Tokens;
 using PresenceLight.Core;
 using PresenceLight.Core.Graph;
 using System.Threading.Tasks;
+using Blazorise;
+using Blazorise.Bootstrap;
+using Blazorise.Icons.FontAwesome;
 
 namespace PresenceLight.Worker
 {
@@ -42,7 +45,7 @@ namespace PresenceLight.Worker
                 options.Authority = $"{Configuration["Instance"]}common/v2.0";
                 options.Scope.Add("offline_access");
                 options.Scope.Add("User.Read");
-                
+
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     // Azure ID tokens give name in "name"
@@ -88,6 +91,13 @@ namespace PresenceLight.Worker
                 options.Filters.Add(new AuthorizeFilter(policy));
             });
 
+            services.AddBlazorise(options =>
+            {
+                options.ChangeTextOnKeyPress = true; // optional
+            })
+            .AddBootstrapProviders()
+            .AddFontAwesomeIcons();
+
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddOptions();
@@ -121,6 +131,10 @@ namespace PresenceLight.Worker
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.ApplicationServices
+                .UseBootstrapProviders()
+                .UseFontAwesomeIcons();
 
             app.UseEndpoints(endpoints =>
             {

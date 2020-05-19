@@ -30,7 +30,12 @@
         bool isUserAuth = await _userAuthService.IsUserAuthenticated();
         if (!isUserAuth)
         {
+            appState.SetLightMode("");
             await _httpContextAccessor.HttpContext.ChallengeAsync();
+        }
+        else
+        {
+            appState.SetLightMode("Graph");
         }
     }
 

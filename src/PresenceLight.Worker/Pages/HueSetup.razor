@@ -7,49 +7,52 @@
 
 <h1>Hue Setup</h1>
 
+<input type="checkbox" checked="@Config.CurrentValue.IsPhillipsEnabled" @bind-value="@Config.CurrentValue.IsPhillipsEnabled" /> Connect to Phillips Hue
 
+@if (Config.CurrentValue.IsPhillipsEnabled)
+{
 
-<EditForm Model="@tempConfig" OnValidSubmit="RegisterBridge">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+    <EditForm Model="@tempConfig" OnValidSubmit="RegisterBridge">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
 
-    <InputText id="name" @bind-Value="@tempConfig.HueIpAddress" />
+        <InputText id="name" @bind-Value="@tempConfig.HueIpAddress" />
+        <br />
+        <br />
+        <button class="btn btn-primary" type="submit">Register Bridge</button>
+    </EditForm>
+
     <br />
     <br />
-    <button class="btn btn-primary" type="submit">Register Bridge</button>
-</EditForm>
 
-<br />
-<br />
+    @ResultMessage
 
-@ResultMessage
-
-<p>
-    @if (appState.HueLights != null)
-    {
-        <div class="form-group">
-            <select class="form-control" @onchange="OnChange" style="width:20%">
-                <option disabled="disabled">Select</option>
-                @foreach (var light in appState.HueLights)
-                {
-                    @if (tempConfig.SelectedHueLightId == light.Id)
+    <p>
+        @if (appState.HueLights != null)
+        {
+            <div class="form-group">
+                <select class="form-control" @onchange="OnChange" style="width:20%">
+                    <option disabled="disabled">Select</option>
+                    @foreach (var light in appState.HueLights)
                     {
-                        <option selected="selected" value=@light.Id>@light.Name</option>
+                        @if (tempConfig.SelectedHueLightId == light.Id)
+                        {
+                            <option selected="selected" value=@light.Id>@light.Name</option>
+                        }
+                        else
+                        {
+                            <option value=@light.Id>@light.Name</option>
+                        }
                     }
-                    else
-                    {
-                        <option value=@light.Id>@light.Name</option>
-                    }
-                }
-            </select>
-        </div>
-    }
-</p>
+                </select>
+            </div>
+        }
+    </p>
 
-<br />
+    <br />
 
-<button class="btn btn-primary" @onclick="Save">Save</button>
-
+    <button class="btn btn-primary" @onclick="Save">Save</button>
+}
 
 @code {
 

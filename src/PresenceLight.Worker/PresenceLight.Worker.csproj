@@ -13,6 +13,8 @@
 
   <ItemGroup>
     <PackageReference Include="Blazored.Modal" Version="4.1.0" />
+    <PackageReference Include="Blazorise.Bootstrap" Version="0.9.0.2" />
+    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.0.2" />
     <PackageReference Include="IdentityModel" Version="4.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="3.1.4" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="3.1.3" />
@@ -28,5 +30,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PresenceLight.Core\PresenceLight.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="wwwroot\images\profileimage.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 </Project>

@@ -1,0 +1,48 @@
+﻿@page "/about"
+
+<img src="images/profileimage.jpg"
+
+<h1>PresenceLight by Isaac Levin</h1>
+<a href="https://github.com/isaacrlevin/presencelight" target="_blank">https://github.com/isaacrlevin/presencelight</a>
+
+
+<table style="width:50%">
+    <tr>
+        <td>
+            Install Location
+        </td>
+        <td style="width:50%">
+            @installLocation
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Install Date
+        </td>
+        <td style="width:50%">
+            @installedDate
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Runtime Version
+        </td>
+        <td style="width:50%">
+            @RuntimeVersionInfo
+        </td>
+    </tr>
+</table>
+
+
+@code {
+    string installLocation;
+    string installedDate;
+    string RuntimeVersionInfo;
+
+    protected override void OnInitialized()
+    {
+        installLocation = ThisAppInfo.GetInstallLocation();
+        installedDate = ThisAppInfo.GetInstallationDate();
+        RuntimeVersionInfo = ThisAppInfo.GetDotNetRuntimeInfo();
+    }
+}

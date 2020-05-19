@@ -1,0 +1,65 @@
+﻿@page "/color"
+
+@using LifxCloud.NET.Models 
+@inject AppState appState
+@inject IOptionsMonitor<ConfigWrapper> Config
+@inject IHueService _hueService;
+@inject LIFXService _lifxService;
+<h1>Set Light Colors</h1>
+
+<ColorEdit Color="#00000" ColorChanged="@(e => color = e)" />
+
+
+<button @onclick="SetColor" class="btn btn-primary">Set Color</button>
+<button disabled="@isGraphDisabled" @onclick="SyncTeamsPresence" class="btn btn-primary">Sync Teams Presence</button>
+@code {
+
+    bool isGraphDisabled = false;
+    string color;
+
+
+    async Task SetColor()
+    {
+        appState.SetLightMode("Custom");
+        isGraphDisabled = false;
+
+        if (appState.LightMode == "Custom")
+        {
+            appState.SetCustomColor(color);
+        }
+
+        if (appState.LightMode == "Custom")
+        {
+            if (!string.IsNullOrEmpty(Config.CurrentValue.HueApiKey) && !string.IsNullOrEmpty(Config.CurrentValue.HueIpAddress) && !string.IsNullOrEmpty(Config.CurrentValue.SelectedHueLightId))
+            {
+                await _hueService.SetColor(appState.CustomColor, Config.CurrentValue.SelectedHueLightId);
+            }
+
+            if (Config.CurrentValue.IsLIFXEnabled && !string.IsNullOrEmpty(Config.CurrentValue.LIFXApiKey))
+            {
+                await _lifxService.SetColor(appState.CustomColor, (Selector)Config.CurrentValue.SelectedLIFXItemId);
+            }
+        }
+    }
+
+    void SyncTeamsPresence()
+    {
+        isGraphDisabled = true;
+        appState.SetLightMode("Graph");
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        appState.OnChange += RaiseStateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        appState.OnChange -= RaiseStateHasChanged;
+    }
+
+    private void RaiseStateHasChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+}
