@@ -24,6 +24,10 @@ namespace PresenceLight.Worker
 
         public Presence Presence { get; set; }
 
+        public string LightMode { get; set; }
+
+        public string CustomColor { get; set; }
+
         public void SetUserInfo(User user, string photo, Presence presence)
         {
             User = user;
@@ -35,6 +39,18 @@ namespace PresenceLight.Worker
         public void SetPresence(Presence presence)
         {
             Presence = presence;
+            NotifyStateChanged();
+        }
+
+        public void SetCustomColor(string color)
+        {
+            CustomColor = color;
+            NotifyStateChanged();
+        }
+
+        public void SetLightMode(string lightMode)
+        {
+            LightMode = lightMode;
             NotifyStateChanged();
         }
 

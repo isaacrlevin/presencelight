@@ -107,7 +107,7 @@ namespace PresenceLight
             foreach (PropertyInfo property in properties)
             {
                 object value = property.GetValue(Config);
-                property.SetValue(_options, value );
+                property.SetValue(_options, value);
             }
         }
 
@@ -119,7 +119,7 @@ namespace PresenceLight
             }
 
             Config = await SettingsService.LoadSettings();
-         
+
             if (string.IsNullOrEmpty(Config.RedirectUri))
             {
                 await SettingsService.DeleteSettings();
@@ -447,7 +447,7 @@ namespace PresenceLight
             }
 
             CheckAAD();
-            Config.Brightness = brightness.Value;
+            Config.Brightness = Convert.ToInt32(brightness.Value);
 
             SyncOptions();
             await SettingsService.SaveSettings(Config);

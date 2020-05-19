@@ -7,15 +7,12 @@
 
 <h1>LIFX Setup</h1>
 
-<EditForm Model="@tempConfig" OnValidSubmit="GetLights">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+<input type="checkbox" checked="@Config.CurrentValue.IsLIFXEnabled"  @bind-value="@Config.CurrentValue.IsLIFXEnabled" /> Connect to LIFX
 
-    <InputText id="name" @bind-Value="@tempConfig.LIFXApiKey" />
-    <br />
-    <br />
-    <button class="btn btn-primary" type="submit">Get Lights</button>
-</EditForm>
+@if (Config.CurrentValue.IsLIFXEnabled)
+{
+<input @bind-value="@Config.CurrentValue.LIFXApiKey" type="text" />
+<button @onclick="GetLights" class="btn btn-primary" type="submit">Get Lights</button>
 
 <br />
 <br />
@@ -30,7 +27,7 @@
                 <option disabled="disabled">Select</option>
                 @foreach (var light in appState.LIFXLights)
                 {
-                    @if (tempConfig.SelectedLIFXItemId == light.Id)
+                    @if (Config.CurrentValue.SelectedLIFXItemId == light.Id)
                     {
                         <option selected="selected" value=@light.Id>@light.Label</option>
                     }
@@ -47,15 +44,12 @@
 <br />
 
 <button class="btn btn-primary" @onclick="Save">Save</button>
-
+}
 
 @code {
-    private ConfigWrapper tempConfig;
-
     private void Save()
     {
         System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/AADSettings.json", JsonConvert.SerializeObject(Config.CurrentValue));
-        //_hueService = new HueService(Config.CurrentValue);
     }
 
     private string ResultMessage;
@@ -68,16 +62,14 @@
     private void OnChange(ChangeEventArgs e)
     {
         var light = e.Value.ToString();
-        tempConfig.SelectedLIFXItemId = light;
         Config.CurrentValue.SelectedLIFXItemId = light;
-        appState.SetHueLight(light);
+        appState.SetLIFXLight(light);
     }
 
     protected override async Task OnInitializedAsync()
     {
-        tempConfig = Config.CurrentValue;
 
-        if (!string.IsNullOrEmpty(tempConfig.HueIpAddress) && !string.IsNullOrEmpty(tempConfig.HueApiKey))
+        if (!string.IsNullOrEmpty(Config.CurrentValue.LIFXApiKey))
         {
             appState.SetLIFXLights(await _lifxService.GetAllLightsAsync());
         }

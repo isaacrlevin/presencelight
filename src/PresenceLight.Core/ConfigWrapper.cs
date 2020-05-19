@@ -9,8 +9,6 @@ namespace PresenceLight.Core
 
         public string? LIFXApiKey { get; set; }
 
-        public string? ClientSecret { get; set; }
-
         public string? Instance { get; set; }
 
         public string? RedirectUri { get; set; }
@@ -20,9 +18,9 @@ namespace PresenceLight.Core
 
         public string? ApiScopes { get; set; }
 
-        public double? PollingInterval { get; set; }
+        public double PollingInterval { get; set; }
 
-        public double? Brightness { get; set; }
+        public int Brightness { get; set; }
 
         public string? SelectedHueLightId { get; set; }
 
