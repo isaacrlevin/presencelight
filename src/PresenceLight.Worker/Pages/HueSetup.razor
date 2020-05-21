@@ -5,54 +5,77 @@
 @inject IModalService Modal
 @inject IOptionsMonitor<ConfigWrapper> Config
 
-<h1>Hue Setup</h1>
 
-<input type="checkbox" checked="@Config.CurrentValue.IsPhillipsEnabled" @bind-value="@Config.CurrentValue.IsPhillipsEnabled" /> Connect to Phillips Hue
-
-@if (Config.CurrentValue.IsPhillipsEnabled)
-{
-
-    <EditForm Model="@tempConfig" OnValidSubmit="RegisterBridge">
-        <DataAnnotationsValidator />
-        <ValidationSummary />
-
-        <InputText id="name" @bind-Value="@tempConfig.HueIpAddress" />
-        <br />
-        <br />
-        <button class="btn btn-primary" type="submit">Register Bridge</button>
-    </EditForm>
-
-    <br />
-    <br />
-
-    @ResultMessage
-
-    <p>
-        @if (appState.HueLights != null)
-        {
-            <div class="form-group">
-                <select class="form-control" @onchange="OnChange" style="width:20%">
-                    <option disabled="disabled">Select</option>
-                    @foreach (var light in appState.HueLights)
+<div class="container text-body" style="overflow:hidden">
+    <div class="row">
+        <div class="container-fluid">
+            <div class="row-fluid">
+                <div class="centering text-center">
+                    <h1 class="centering text-center">Configure Phillips Hue</h1>
+                    <br />
+                    <br />
+                    <input type="checkbox" checked="@Config.CurrentValue.IsPhillipsEnabled" @bind-value="@Config.CurrentValue.IsPhillipsEnabled" /> Connect to Phillips Hue
+                    <br />
+                    <br />
+                    @if (Config.CurrentValue.IsPhillipsEnabled)
                     {
-                        @if (tempConfig.SelectedHueLightId == light.Id)
+                        <EditForm Model="@tempConfig" OnValidSubmit="RegisterBridge">
+
+
+                            <InputText id="name" @bind-Value="@tempConfig.HueIpAddress" />
+                            <br />
+                            <DataAnnotationsValidator />
+                            <ValidationSummary />
+                            <br />
+                            <br />
+                            <button class="btn btn-primary" type="submit">Register Bridge</button>
+                        </EditForm>
+
+                        <br />
+
+                        @if (showHueMessage)
                         {
-                            <option selected="selected" value=@light.Id>@light.Name</option>
+                            <span class="@hueMessageClass">@hueMessage</span>
                         }
-                        else
+                        <br />
+                        <br />
+                        @if (appState.HueLights != null)
                         {
-                            <option value=@light.Id>@light.Name</option>
+                            <div class="form-group col-3 centering text-center">
+                                <select class="form-control" @onchange="OnChange">
+                                    <option disabled="disabled">Select</option>
+                                    @foreach (var light in appState.HueLights)
+                                    {
+                                        @if (tempConfig.SelectedHueLightId == light.Id)
+                                        {
+                                            <option selected="selected" value=@light.Id>@light.Name</option>
+                                        }
+                                        else
+                                        {
+                                            <option value=@light.Id>@light.Name</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        }
+
+                        <br />
+                        @if (!string.IsNullOrEmpty(tempConfig.HueApiKey))
+                        {
+                            <button class="btn btn-primary" @onclick="Save">Save Hue Settings</button>
+                        }
+                        <br />
+                        <br />
+                        @if (settingsSaved)
+                        {
+                            <span class="text-success">@message</span>
                         }
                     }
-                </select>
+                </div>
             </div>
-        }
-    </p>
-
-    <br />
-
-    <button class="btn btn-primary" @onclick="Save">Save</button>
-}
+        </div>
+    </div>
+</div>
 
 @code {
 
@@ -62,9 +85,16 @@
     {
         System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/AADSettings.json", JsonConvert.SerializeObject(Config.CurrentValue));
         _hueService = new HueService(Config.CurrentValue);
+        message = "Settings Saved";
+        settingsSaved = true;
     }
 
-    private string ResultMessage;
+    bool settingsSaved = false;
+    string message;
+    string hueMessageClass;
+
+    bool showHueMessage = false;
+    string hueMessage;
 
     async Task RegisterBridge()
     {
@@ -83,20 +113,30 @@
             }
             catch
             {
-                ResultMessage = "Error Occured registering bridge, please try again";
+                hueMessage = "Error Occured registering bridge, please try again";
+                showHueMessage = true;
+                hueMessageClass = "text-danger";
             }
 
             if (!string.IsNullOrEmpty(tempConfig.HueApiKey))
             {
-                ResultMessage = "App Registered with Bridge";
+                showHueMessage = true;
+                hueMessage = "App Registered with Bridge";
+                hueMessageClass = "text-success";
+
+                Config.CurrentValue.HueIpAddress = tempConfig.HueIpAddress;
+                Config.CurrentValue.HueApiKey = tempConfig.HueApiKey;
+
+                System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/AADSettings.json", JsonConvert.SerializeObject(Config.CurrentValue));
+
+                appState.SetHueLights(await _hueService.CheckLights());
             }
-
-            Config.CurrentValue.HueIpAddress = tempConfig.HueIpAddress;
-            Config.CurrentValue.HueApiKey = tempConfig.HueApiKey;
-
-            System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/AADSettings.json", JsonConvert.SerializeObject(Config.CurrentValue));
-
-            appState.SetHueLights(await _hueService.CheckLights());
+            else
+            {
+                hueMessage = "Api Key Not Created, please try again and ensure you press the sync button on your bridge";
+                showHueMessage = true;
+                hueMessageClass = "text-danger";
+            }
         }
     }
 
@@ -112,7 +152,7 @@
     {
         tempConfig = Config.CurrentValue;
 
-        if (!string.IsNullOrEmpty(tempConfig.HueIpAddress) && !string.IsNullOrEmpty(tempConfig.HueApiKey))
+        if (!string.IsNullOrEmpty(tempConfig.HueApiKey))
         {
             appState.SetHueLights(await _hueService.CheckLights());
         }
