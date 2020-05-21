@@ -1,38 +1,51 @@
 ﻿@page "/about"
 
-<img src="images/profileimage.jpg"
-
-<h1>PresenceLight by Isaac Levin</h1>
-<a href="https://github.com/isaacrlevin/presencelight" target="_blank">https://github.com/isaacrlevin/presencelight</a>
-
-
-<table style="width:50%">
-    <tr>
-        <td>
-            Install Location
-        </td>
-        <td style="width:50%">
+<div class="container text-body" style="overflow:hidden">
+    <div class="row">
+        <div class="container-fluid">
+            <div class="row-fluid">
+                <div class="centering text-center">
+                    <div class="w-20">
+                        <img src="images/profileimage.jpg" width="300" />
+                    </div>
+                    <div class="w-20">
+                        &nbsp;
+                    </div>
+                    <div class="w-70">
+                        <h2>PresenceLight by Isaac Levin</h2>
+                        <br />
+                        <h4><a href="https://github.com/isaacrlevin/presencelight" target="_blank">https://github.com/isaacrlevin/presencelight</a></h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br /><br /><br />
+    <div class="row">
+        <div class="w-25">
+            <h4>Install Location</h4>
+        </div>
+        <div class="w-75">
             @installLocation
-        </td>
-    </tr>
-    <tr>
-        <td>
-            Install Date
-        </td>
-        <td style="width:50%">
+        </div>
+    </div>
+    <div class="row">
+        <div class="w-25">
+            <h4>Install Date</h4>
+        </div>
+        <div class="w-75">
             @installedDate
-        </td>
-    </tr>
-    <tr>
-        <td>
-            Runtime Version
-        </td>
-        <td style="width:50%">
+        </div>
+    </div>
+    <div class="row">
+        <div class="w-25">
+            <h4>Runtime Version</h4>
+        </div>
+        <div class="w-75">
             @RuntimeVersionInfo
-        </td>
-    </tr>
-</table>
-
+        </div>
+    </div>
+</div>
 
 @code {
     string installLocation;

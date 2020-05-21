@@ -9,6 +9,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using LifxCloud.NET.Models;
+using System.Text.RegularExpressions;
 
 namespace PresenceLight.Worker
 {
@@ -155,6 +156,15 @@ namespace PresenceLight.Worker
             try
             {
                 var presence = await _graphClient.Me.Presence.Request().GetAsync();
+
+                var r = new Regex(@"
+                (?<=[A-Z])(?=[A-Z][a-z]) |
+                 (?<=[^A-Z])(?=[A-Z]) |
+                 (?<=[A-Za-z])(?=[^A-Za-z])", RegexOptions.IgnorePatternWhitespace);
+
+                presence.Activity = r.Replace(presence.Activity, " ");
+
+
                 _logger.LogInformation($"Presence is {presence.Availability}");
                 return presence;
             }

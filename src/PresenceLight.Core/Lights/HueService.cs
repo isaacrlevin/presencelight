@@ -49,6 +49,7 @@ namespace PresenceLight.Core
             {
                 command.On = true;
                 command.Brightness = Convert.ToByte(((_options.Brightness / 100) * 254));
+                command.TransitionTime = new TimeSpan(0);
             }
 
             switch (availability)

@@ -16,7 +16,7 @@ namespace PresenceLight.Worker
 
         public string HueLightId { get; set; }
 
-        public IEnumerable<LifxCloud.NET.Models.Light> LIFXLights { get; set; }
+        public IEnumerable<object> LIFXLights { get; set; }
 
         public string LIFXLightId { get; set; }
 
@@ -66,7 +66,7 @@ namespace PresenceLight.Worker
             NotifyStateChanged();
         }
 
-        public void SetLIFXLights(IEnumerable<LifxCloud.NET.Models.Light> lights)
+        public void SetLIFXLights(IEnumerable<object> lights)
         {
             LIFXLights = lights;
             NotifyStateChanged();
