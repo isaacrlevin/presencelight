@@ -28,6 +28,8 @@ namespace PresenceLight.Core
 
         public string? SelectedLIFXItemId { get; set; }
 
+        public string? SelectedYeeLightId { get; set; }
+
         [Required]
         [RegularExpression(@"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b",
         ErrorMessage = "Characters are not allowed.")]
@@ -37,5 +39,7 @@ namespace PresenceLight.Core
         public bool IsLIFXEnabled { get; set; }
 
         public bool IsPhillipsEnabled { get; set; }
+
+        public bool IsYeelightEnabled { get; set; }
     }
 }
