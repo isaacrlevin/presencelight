@@ -12,6 +12,7 @@ trigger:
    - azure-pipelines-wpf.yml
    - .github/workflows/main.yml
    - src/PresenceLight/*
+   - *.md
 
 pool:
   vmImage: 'ubuntu-latest'
