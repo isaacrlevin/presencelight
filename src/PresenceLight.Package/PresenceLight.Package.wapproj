@@ -28,8 +28,7 @@
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>x86</AppxBundlePlatforms>
     <AppxPackageIncludePrivateSymbols>true</AppxPackageIncludePrivateSymbols>
-    <UapAppxPackageBuildMode>SideLoadOnly</UapAppxPackageBuildMode>
-    <UapAppxPackageBuildMode Condition="'$(ChannelName)' == 'Store'">StoreUpload</UapAppxPackageBuildMode>
+    <UapAppxPackageBuildMode Condition="'$(ChannelName)' == 'Release'">StoreUpload</UapAppxPackageBuildMode>
     <EntryPointProjectUniqueName>..\PresenceLight\PresenceLight.csproj</EntryPointProjectUniqueName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(ChannelName)' == 'Nightly'">
@@ -39,15 +38,15 @@
     <AppInstallerCheckForUpdateFrequency>OnApplicationRun</AppInstallerCheckForUpdateFrequency>
   </PropertyGroup>
 
-    
+
   <ItemGroup>
-    <AppxManifest Include="Package.appxmanifest" Condition="'$(ChannelName)' == 'Store'">
+    <AppxManifest Include="Package.appxmanifest" Condition="'$(ChannelName)' == 'Release'">
       <SubType>Designer</SubType>
     </AppxManifest>
     <AppxManifest Include="Package-Nightly.appxmanifest" Condition="'$(ChannelName)' == 'Nightly'">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <AppxManifest Include="Package-Local.appxmanifest" Condition="'$(ChannelName)' != 'Store' and '$(ChannelName)' != 'Nightly'">
+    <AppxManifest Include="Package-Local.appxmanifest" Condition="'$(ChannelName)' != 'Release' and '$(ChannelName)' != 'Nightly'">
       <SubType>Designer</SubType>
     </AppxManifest>
     <None Include="*.appxmanifest" />

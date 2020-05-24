@@ -8,7 +8,7 @@
 |--- | ------------ | ---- |
 | Nightly | [![Nightly build number](https://presencelight.blob.core.windows.net/nightly/ci_badge.svg)](https://presencelight.blob.core.windows.net/nightly/index.html)| [Install](https://presencelight.blob.core.windows.net/nightly/index.html)
 | Microsoft Store | [![Stable build number](https://presencelight.blob.core.windows.net/store/stable_badge.svg)](https://www.microsoft.com/en-us/p/presencelight/9nffkd8gznl7)| [![Install](static/store.svg)](https://www.microsoft.com/en-us/p/presencelight/9nffkd8gznl7)
-| Chocolatey | [![Stable build number](https://presencelight.blob.core.windows.net/store/stable_badge.svg)](https://www.microsoft.com/en-us/p/presencelight/9nffkd8gznl7)| [Install](https://chocolatey.org/packages/PresenceLight/)
+| **Do Not Install Until it is updated to 2.0.1** Chocolatey | [![Stable build number](https://presencelight.blob.core.windows.net/store/stable_badge.svg)](https://www.microsoft.com/en-us/p/presencelight/9nffkd8gznl7)| [Install](https://chocolatey.org/packages/PresenceLight/)
 | [Windows Package Manager](https://docs.microsoft.com/en-us/windows/package-manager) | [![Stable build number](https://presencelight.blob.core.windows.net/store/stable_badge.svg)](https://www.microsoft.com/en-us/p/presencelight/9nffkd8gznl7)| winget install isaaclevin.presencelight
 
 

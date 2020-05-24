@@ -15,7 +15,7 @@ namespace PresenceLight.Core.Graph
         /// </summary>
         private static readonly string CacheFilePath = System.Reflection.Assembly.GetExecutingAssembly().Location + ".msalcache.bin";
 
-        private const string SETTINGS_FILENAME = "settings.json";
+        private const string SETTINGS_FILENAME = "token.json";
         private static readonly StorageFolder _settingsFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
         private static readonly object FileLock = new object();
 
