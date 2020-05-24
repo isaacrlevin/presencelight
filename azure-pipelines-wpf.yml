@@ -12,6 +12,8 @@ trigger:
    - azure-pipelines-worker.yml
    - .github/workflows/main.yml
    - src/PresenceLight.Worker/*
+   - README.md
+      
 
 
 stages:
@@ -26,14 +28,10 @@ stages:
       vmImage: windows-latest
     strategy:
       matrix:
-        Channel_Zip:
-          ChannelName: Zip
-        Channel_Store:
-          ChannelName: Store
+        Channel_Release:
+          ChannelName: Release
         Channel_Nightly:
           ChannelName: Nightly
-        Channel_Choco:
-          ChannelName: Choco
 
     steps:
     - task: UseDotNet@2
@@ -50,11 +48,10 @@ stages:
       displayName: Install NBGV tool
 
     - script: nbgv cloud -c -a
-      displayName: Set Version
+      displayName: Set Build Version
 
     - powershell: |
         mkdir $(Build.ArtifactStagingDirectory)\$(ChannelName)
-
         # Update appxmanifest. This must be done before build.
         # Set the per-channel values into the appxmanifest, replacing the checked-in values
         [xml]$manifest= get-content ".\src\PresenceLight.Package\Package.appxmanifest"
@@ -65,7 +62,11 @@ stages:
         $manifest.Package.Identity.Version = "$(GitBuildVersionSimple).0"
         $manifest.Save(".\src\PresenceLight.Package\Package-Nightly.appxmanifest")
 
-      displayName: Update manifest version
+      displayName: Update AppxManifest version
+
+    - powershell: |
+        ((Get-Content -path .\.chocolatey\tools\ChocolateyInstall.ps1 -Raw) -replace 'Release','PresenceLight.$(Build.BuildNumber)') | Set-Content -Path .\.chocolatey\tools\ChocolateyInstall.ps1
+      displayName: Update ChocolateyInstall.ps1
 
     - powershell: |
         # Update App Insights instrumentation key
@@ -78,7 +79,7 @@ stages:
       condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')), not(eq(variables['AppInsightsKey'], '')))
 
     - powershell: |
-        # Update appsettings.json. This must be done before build.
+        # Update AppSettings.json. This must be done before build.
         $appsettings= get-content ".\src\PresenceLight\appsettings.json" -raw | ConvertFrom-Json
         $appsettings.clientId = "$env:ApplicationId"
         $appsettings | ConvertTo-Json -depth 32| set-content '.\src\PresenceLight\appsettings.json'
@@ -96,56 +97,48 @@ stages:
         $badge.svg.g[1].text[2].InnerText = "$(GitBuildVersionSimple).0"
         $badge.svg.g[1].text[3].InnerText = "$(GitBuildVersionSimple).0"
         $badge.Save("$(Build.ArtifactStagingDirectory)\$(ChannelName)\stable_badge.svg")
-      displayName: Update badge versions
+      displayName: Update Badge Versions
 
     - task: MSBuild@1
       displayName: Build Presence Light for $(ChannelName)
       inputs:
         solution: '.\src\PresenceLight\PresenceLight.csproj'
-        msbuildArguments: /restore /p:IncludeSymbols=true /p:PublishProfile=Properties/PublishProfiles/WinX86.pubxml
+        msbuildArguments: /restore /t:publish /p:IncludeSymbols=true /p:PublishProfile=Properties/PublishProfiles/WinX86.pubxml
         configuration: $(BuildConfiguration)
         maximumCpuCount: true
 
     - task: MSBuild@1
-      displayName: Build Package
+      displayName: Build Appx Package
       inputs:
         solution: '.\src\PresenceLight.Package\PresenceLight.Package.wapproj'
         msbuildArguments: /p:IncludeSymbols=true /p:AppxPackageDir="$(Build.ArtifactStagingDirectory)\$(ChannelName)\\"
         configuration: $(BuildConfiguration)
         maximumCpuCount: true
-      condition: and(succeeded(), or(eq(variables['ChannelName'], 'Nightly'), eq(variables['ChannelName'], 'Store')))
-
-    - task: MSBuild@1
-      displayName: Build for Zip and Choco
-      inputs:
-        solution: '.\src\PresenceLight\PresenceLight.csproj'
-        msbuildArguments: /t:publish /p:IncludeSymbols=true /p:PublishProfile=Properties/PublishProfiles/WinX86.pubxml
-        configuration: $(BuildConfiguration)
-        maximumCpuCount: true
-      condition: and(succeeded(), or(eq(variables['ChannelName'], 'Zip'), eq(variables['ChannelName'], 'Choco')))
 
     - powershell: |
         # Chocolatey
-        & choco.exe pack .\src\PresenceLight\PresenceLight.nuspec --version $(NBGV_ChocolateyPackageVersion) --OutputDirectory $(Build.ArtifactStagingDirectory)\$(ChannelName)
-      displayName: Create Choco package
-      condition: and(succeeded(), eq(variables['ChannelName'], 'Choco'))
+        & choco.exe pack .\.chocolatey\PresenceLight.nuspec --version $(NBGV_ChocolateyPackageVersion) --OutputDirectory $(Build.ArtifactStagingDirectory)\$(ChannelName)
+      displayName: Create Choco Package
+      condition: and(succeeded(), eq(variables['ChannelName'], 'Release'))
 
     - task: ArchiveFiles@1
-      displayName: Zip PresenceLight files
+      displayName: Zip PresenceLight Files
       inputs:
         archiveType: default
         rootFolder: '.\src\PresenceLight\bin\$(BuildConfiguration)\netcoreapp5.0\win-x86\publish'
         archiveFile: $(Build.ArtifactStagingDirectory)\$(ChannelName)\PresenceLight.$(Build.BuildNumber).zip
         includeRootFolder: false
-      condition: and(succeeded(), eq(variables['ChannelName'], 'Zip'))
+      condition: and(succeeded(), eq(variables['ChannelName'], 'Release'))
 
     - publish: $(Build.ArtifactStagingDirectory)\$(ChannelName)
-      displayName: Publish Build Packages
+      displayName: Publish Arifacts
       artifact: $(ChannelName)
 
     - publish: Build
       displayName: Publish signing scripts
       artifact: SigningScripts
+      condition: and(succeeded(), eq(variables['ChannelName'], 'Release'))
+
 - stage: CodeSign
   condition: and(succeeded('Build'), not(eq(variables['build.reason'], 'PullRequest')))
   jobs:
@@ -162,22 +155,10 @@ stages:
           steps:
 
           - task: DownloadPipelineArtifact@2
-            displayName: Download Zip Artifacts
+            displayName: Download Release Artifacts
             inputs:
-              artifactName: Zip
-              targetPath: $(Pipeline.Workspace)/ToSign/Zip
-
-          - task: DownloadPipelineArtifact@2
-            displayName: Download Store Artifacts
-            inputs:
-              artifactName: Store
-              targetPath: $(Pipeline.Workspace)/ToSign/Store
-
-          - task: DownloadPipelineArtifact@2
-            displayName: Download Choco Artifacts
-            inputs:
-              artifactName: Choco
-              targetPath: $(Pipeline.Workspace)/ToSign/Choco
+              artifactName: Release
+              targetPath: $(Pipeline.Workspace)/ToSign/Release
 
           - task: DownloadPipelineArtifact@2
             displayName: Download Nightly Artifacts
@@ -195,6 +176,14 @@ stages:
               arguments: install --tool-path . SignClient
             displayName: Install SignTool tool
 
+          - task: AzureCLI@2
+            displayName: Scale Up Sign Service
+            inputs:
+              azureSubscription: 'Isaac Levin MSDN (a07802f5-f8df-47d8-9b88-79ba55cfb396)'
+              scriptType: 'ps'
+              scriptLocation: 'inlineScript'
+              inlineScript: 'az appservice plan update --name levin-signserv-asp-2dnwx6q6jwiay --resource-group SignService --sku P1V2'
+
           - pwsh: |
               .\SignClient "Sign" `
               --baseDirectory "$(Pipeline.Workspace)\ToSign" `
@@ -208,18 +197,18 @@ stages:
               --descriptionUrl "https://github.com/isaacrlevin/PresenceLight"
             displayName: Authenticode Sign artifacts
 
-          - publish: $(Pipeline.Workspace)/ToSign/Zip
-            displayName: Publish Signed Zip Packages
-            artifact: ZipSigned
+          - task: AzureCLI@2
+            displayName: Scale Down Sign Service
+            inputs:
+              azureSubscription: 'Isaac Levin MSDN (a07802f5-f8df-47d8-9b88-79ba55cfb396)'
+              scriptType: 'ps'
+              scriptLocation: 'inlineScript'
+              inlineScript: 'az appservice plan update --name levin-signserv-asp-2dnwx6q6jwiay --resource-group SignService --sku S1'
+
+          - publish: $(Pipeline.Workspace)/ToSign/Release
+            displayName: Publish Signed Release Packages
+            artifact: ReleaseSigned
 
           - publish: $(Pipeline.Workspace)/ToSign/Nightly
             displayName: Publish Signed Nightly Packages
             artifact: NightlySigned
-
-          - publish: $(Pipeline.Workspace)/ToSign/Choco
-            displayName: Publish Signed Choco Packages
-            artifact: ChocoSigned
-            
-          - publish: $(Pipeline.Workspace)/ToSign/Store
-            displayName: Publish Signed Store Packages
-            artifact: StoreSigned
