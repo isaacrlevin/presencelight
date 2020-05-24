@@ -2,7 +2,7 @@
   "ClientId": "f8119f58-4523-44c1-ab72-b2e0c815bd6a",
   "LIFXApiKey": "",
   "Instance": "https://login.microsoftonline.com/",
-  "RedirectUri": "https://localhost:5001/signin-oidc",
+  "RedirectUri": "https://raspberrypi:5002/signin-oidc",
   "CallbackPath": "/signin-oidc",
   "HueApiKey": "",
   "ApiScopes": "User.Read offline_access",

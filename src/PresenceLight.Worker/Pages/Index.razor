@@ -28,7 +28,6 @@
 }
 
 @code {
-
     protected override async Task OnInitializedAsync()
     {
         appState.OnChange += RaiseStateHasChanged;
@@ -50,7 +49,10 @@
         }
         else
         {
-            appState.SetLightMode("Graph");
+            if (appState.LightMode != "Custom")
+            {
+                appState.SetLightMode("Graph");
+            }
         }
     }
 
