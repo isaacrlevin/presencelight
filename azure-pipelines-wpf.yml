@@ -12,7 +12,7 @@ trigger:
    - azure-pipelines-worker.yml
    - .github/workflows/main.yml
    - src/PresenceLight.Worker/*
-   - *.md
+   - README.md
       
 
 
