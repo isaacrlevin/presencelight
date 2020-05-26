@@ -44,6 +44,13 @@ strategy:
         ChannelName: Linux_Musl_ARM_x64
         RID: linux-musl-x64
 steps:
+
+  - task: UseDotNet@2
+    displayName: 'Use .NET Core SDK 5.0.x'
+    inputs:
+      version: 5.0.x
+      includePreviewVersions: true
+      
   - task: DotNetCoreCLI@2
     inputs:
       command: 'publish'
