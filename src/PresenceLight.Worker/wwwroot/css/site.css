@@ -12,11 +12,23 @@ a, .btn-link {
     position: relative;
     color: white;
 }
+
 .bottom-right {
     position: relative;
     bottom: 120px;
-    left: 180px;
+    left: 620px;
 }
+
+.validation-message {
+    list-style-type: none;
+}
+
+select.selectpicker {
+    display: block;
+    margin: 0 auto;
+    padding-left: 20px;
+}
+
 .circle {
     height: 120px;
     width: 120px;
@@ -24,6 +36,32 @@ a, .btn-link {
     border-style: solid;
     border-width: 5px;
     border-color: white;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0
+}
+
+.container-fluid {
+    height: 100%;
+    display: table;
+    width: 100%;
+    padding: 0;
+}
+
+.row-fluid {
+    height: 100%;
+    display: table-cell;
+    vertical-align: middle;
+}
+
+
+
+.centering {
+    float: none;
+    margin: 0 auto;
 }
 
 .image {

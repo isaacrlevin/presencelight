@@ -1,0 +1,90 @@
+﻿@page "/color"
+
+@using LifxCloud.NET.Models
+@inject AppState appState
+@inject IOptionsMonitor<ConfigWrapper> Config
+@inject IHueService _hueService;
+@inject LIFXService _lifxService;
+@inject IJSRuntime jsRuntime;
+
+<div class="container text-body">
+    <div class="row">
+        <div class="container-fluid">
+            <div class="row-fluid">
+                <div class="centering text-center">
+                    <h1 class="centering text-center">Set Light Colors</h1>
+                    <br />
+                    <br />
+                    <div id="extraPicker" class="colorPicker"></div>
+                    <br />
+                    <button @onclick="SetColor" class="btn btn-primary">Set Color</button>
+                    <button disabled="@isGraphDisabled" @onclick="SyncTeamsPresence" class="btn btn-primary">Sync Teams Presence</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+
+    bool isGraphDisabled = false;
+    string color;
+
+
+    async Task SetColor()
+    {
+        color = await jsRuntime.InvokeAsync<string>("getColor");
+
+        appState.SetLightMode("Custom");
+        isGraphDisabled = false;
+
+        if (appState.LightMode == "Custom")
+        {
+            appState.SetCustomColor(color);
+        }
+
+        if (appState.LightMode == "Custom")
+        {
+            if (!string.IsNullOrEmpty(Config.CurrentValue.HueApiKey) && !string.IsNullOrEmpty(Config.CurrentValue.HueIpAddress) && !string.IsNullOrEmpty(Config.CurrentValue.SelectedHueLightId))
+            {
+                await _hueService.SetColor(appState.CustomColor, Config.CurrentValue.SelectedHueLightId);
+            }
+
+            if (Config.CurrentValue.IsLIFXEnabled && !string.IsNullOrEmpty(Config.CurrentValue.LIFXApiKey))
+            {
+                await _lifxService.SetColor(appState.CustomColor, (Selector)Config.CurrentValue.SelectedLIFXItemId);
+            }
+        }
+    }
+
+    protected override async void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await jsRuntime.InvokeVoidAsync("loadColor");
+        }
+        base.OnAfterRender(firstRender);
+    }
+
+    void SyncTeamsPresence()
+    {
+        isGraphDisabled = true;
+        appState.SetLightMode("Graph");
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        appState.OnChange += RaiseStateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        appState.OnChange -= RaiseStateHasChanged;
+    }
+
+    private void RaiseStateHasChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+}

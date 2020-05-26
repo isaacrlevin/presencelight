@@ -16,13 +16,17 @@ namespace PresenceLight.Worker
 
         public string HueLightId { get; set; }
 
-        public IEnumerable<LifxCloud.NET.Models.Light> LIFXLights { get; set; }
+        public IEnumerable<object> LIFXLights { get; set; }
 
         public string LIFXLightId { get; set; }
 
         public string ProfileImage { get; set; }
 
         public Presence Presence { get; set; }
+
+        public string LightMode { get; set; }
+
+        public string CustomColor { get; set; }
 
         public void SetUserInfo(User user, string photo, Presence presence)
         {
@@ -38,6 +42,18 @@ namespace PresenceLight.Worker
             NotifyStateChanged();
         }
 
+        public void SetCustomColor(string color)
+        {
+            CustomColor = color;
+            NotifyStateChanged();
+        }
+
+        public void SetLightMode(string lightMode)
+        {
+            LightMode = lightMode;
+            NotifyStateChanged();
+        }
+
         public void SetHueLights(IEnumerable<Q42.HueApi.Light> lights)
         {
             HueLights = lights;
@@ -50,7 +66,7 @@ namespace PresenceLight.Worker
             NotifyStateChanged();
         }
 
-        public void SetLIFXLights(IEnumerable<LifxCloud.NET.Models.Light> lights)
+        public void SetLIFXLights(IEnumerable<object> lights)
         {
             LIFXLights = lights;
             NotifyStateChanged();
