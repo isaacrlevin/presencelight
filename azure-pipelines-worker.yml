@@ -18,7 +18,9 @@ pool:
   vmImage: 'windows-latest'
 
 variables:
-  buildConfiguration: 'Release'
+  - group: Sign Client Credentials
+
+  
 
 strategy:
     matrix:
@@ -44,7 +46,6 @@ strategy:
         ChannelName: Linux_Musl_ARM_x64
         RID: linux-musl-x64
 steps:
-
   - task: UseDotNet@2
     displayName: 'Use .NET Core SDK 5.0.x'
     inputs:
@@ -65,7 +66,7 @@ steps:
     inputs:
       command: 'publish'
       workingDirectory: src/PresenceLight.Worker
-      arguments: -r $(RID) -c $(buildConfiguration) /p:PublishSingleFile=true -o $(Build.ArtifactStagingDirectory)/$(GitBuildVersionSimple)_$(ChannelName)
+      arguments: -r $(RID) -c Release /p:PublishSingleFile=true -o $(Build.ArtifactStagingDirectory)/$(GitBuildVersionSimple)_$(ChannelName)
       publishWebProjects: false
 
   - task: DotNetCoreCLI@2
@@ -95,6 +96,7 @@ steps:
       --description "PresenceLight" `
       --descriptionUrl "https://github.com/isaacrlevin/PresenceLight"
     displayName: Authenticode Sign artifacts
+    
 
   - task: AzureCLI@2
     displayName: Scale Down Sign Service
