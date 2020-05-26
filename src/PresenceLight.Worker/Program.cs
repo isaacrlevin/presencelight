@@ -34,27 +34,29 @@ namespace PresenceLight.Worker
                    .ConfigureAppConfiguration(ConfigureConfiguration)
                    .ConfigureWebHostDefaults(webBuilder =>
                    {
-                       webBuilder
-                       .ConfigureKestrel(options =>
+                       if (Convert.ToBoolean(configForMain["DeployedToServer"]))
                        {
-                           var server = Dns.GetHostName();
-                           IPHostEntry heserver = Dns.GetHostEntry(server);
-                           var ip = heserver.AddressList.Where(a => a.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork).FirstOrDefault();
-
-                           if (ip != null)
+                           webBuilder
+                           .ConfigureKestrel(options =>
                            {
-                               options.Listen(ip, 5001);
-                               if (Convert.ToBoolean(configForMain["DeployedToServer"]))
+
+                               var server = Dns.GetHostName();
+                               IPHostEntry heserver = Dns.GetHostEntry(server);
+                               var ip = heserver.AddressList.Where(a => a.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork).FirstOrDefault();
+
+                               if (ip != null)
                                {
+                                   options.Listen(ip, 5001);
                                    options.Listen(ip, 5002, listenOptions =>
                                    {
                                        listenOptions.UseHttps();
                                        listenOptions.UseHttps("presencelight.pfx", "presencelight");
                                    });
+
                                }
-                           }
-                       })
-                       .UseStartup<Startup>();
+                           });
+                       }
+                       webBuilder.UseStartup<Startup>();
                    });
         }
     }
