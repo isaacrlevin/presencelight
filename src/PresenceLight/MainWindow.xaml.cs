@@ -31,6 +31,7 @@ namespace PresenceLight
 
         private string lightMode;
 
+        private IYeelightService _yeelightService;
         private IHueService _hueService;
         private LIFXOAuthHelper _lIFXOAuthHelper;
         private LIFXService _lifxService;
@@ -39,7 +40,7 @@ namespace PresenceLight
         private WindowState lastWindowState;
 
         #region Init
-        public MainWindow(IGraphService graphService, IHueService hueService, LIFXService lifxService, IOptionsMonitor<ConfigWrapper> optionsAccessor, LIFXOAuthHelper lifxOAuthHelper)
+        public MainWindow(IGraphService graphService, IHueService hueService, LIFXService lifxService, IYeelightService yeelightService, IOptionsMonitor<ConfigWrapper> optionsAccessor, LIFXOAuthHelper lifxOAuthHelper)
         {
             InitializeComponent();
 
@@ -48,7 +49,7 @@ namespace PresenceLight
             LoadAboutMe();
 
             _graphservice = graphService;
-
+            _yeelightService = yeelightService;
             _lifxService = lifxService;
             _hueService = hueService;
             _options = optionsAccessor.CurrentValue;
@@ -84,6 +85,7 @@ namespace PresenceLight
         {
             CheckHueSettings();
             CheckLIFXSettings();
+            CheckYeelightSettings();
             CheckAAD();
 
             if (Config.IconType == "Transparent")
@@ -134,6 +136,16 @@ namespace PresenceLight
             else
             {
                 pnlPhillips.Visibility = Visibility.Collapsed;
+            }
+
+            if (Config.IsYeelightEnabled)
+            {
+                pnlYeelight.Visibility = Visibility.Visible;
+                SyncOptions();
+            }
+            else
+            {
+                pnlYeelight.Visibility = Visibility.Collapsed;
             }
 
             if (Config.IsLIFXEnabled)
@@ -234,6 +246,11 @@ namespace PresenceLight
             if (Config.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LIFXApiKey))
             {
                 await _lifxService.SetColor(color, (Selector)Config.SelectedLIFXItemId);
+            }
+
+            if(Config.IsYeelightEnabled && !string.IsNullOrEmpty(Config.SelectedYeeLightId))
+            {
+                await _yeelightService.SetColor(color, Config.SelectedYeeLightId);
             }
         }
 
