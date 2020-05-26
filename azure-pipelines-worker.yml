@@ -93,7 +93,7 @@ steps:
 
   - pwsh: |
       .\SignClient "Sign" `
-      --baseDirectory "$(Build.SourcesDirectory)" `
+      --baseDirectory "$(Build.ArtifactStagingDirectory)" `
       --input "**/*.{exe,zip}" `
       --config "$(Build.SourcesDirectory)\Build\ToSign\appsettings.json" `
       --filelist "$(Build.SourcesDirectory)\Build\ToSign\filelist.txt" `
