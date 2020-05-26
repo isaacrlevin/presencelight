@@ -68,9 +68,6 @@ steps:
       arguments: -r $(RID) -c $(buildConfiguration) /p:PublishSingleFile=true -o $(Build.ArtifactStagingDirectory)/$(GitBuildVersionSimple)_$(ChannelName)
       publishWebProjects: false
 
-  - download: current
-    artifact: SigningScripts
-
   - task: DotNetCoreCLI@2
     inputs:
       command: custom
@@ -90,8 +87,8 @@ steps:
       .\SignClient "Sign" `
       --baseDirectory "$(Pipeline.Workspace)" `
       --input "**/*.{exe}" `
-      --config "$(Pipeline.Workspace)\SigningScripts\appsettings.json" `
-      --filelist "$(Pipeline.Workspace)\SigningScripts\filelist.txt" `
+      --config ".\Build\appsettings.json" `
+      --filelist ".\Build\filelist.txt" `
       --user "$(SignClientUser)" `
       --secret "$(SignClientSecret)" `
       --name "PresenceLight" `
