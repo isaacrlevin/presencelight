@@ -70,12 +70,12 @@ stages:
 
       - publish: $(Build.ArtifactStagingDirectory)\$(GitBuildVersionSimple)_$(ChannelName)
         displayName: Publish Arifacts
-        artifact: $(GitBuildVersionSimple)_$(ChannelName)
+        artifact: $(ChannelName)
 
       - publish: Build
         displayName: Publish signing scripts
         artifact: SigningScripts
-        condition: and(succeeded(), eq(variables['ChannelName'], 'Release'))          
+        condition: and(succeeded(), eq(variables['ChannelName'], 'Windows_x64_x86'))          
 
 - stage: CodeSign
   condition: and(succeeded('Build'), not(eq(variables['build.reason'], 'PullRequest')))
@@ -91,48 +91,49 @@ stages:
       runOnce:
         deploy:
           steps:
+          
 
           - task: DownloadPipelineArtifact@2
             displayName: Download Windows_x64_x86 Artifacts
             inputs:
-              artifactName: $(GitBuildVersionSimple)_Windows_x64_x86
-              targetPath: $(Pipeline.Workspace)/ToSign/$(GitBuildVersionSimple)_Windows_x64_x86
+              artifactName: Windows_x64_x86
+              targetPath: $(Pipeline.Workspace)/ToSign/Windows_x64_x86
 
           - task: DownloadPipelineArtifact@2
             displayName: Download Windows_ARM Artifacts
             inputs:
-              artifactName: $(GitBuildVersionSimple)_Windows_ARM
-              targetPath: $(Pipeline.Workspace)/ToSign/$(GitBuildVersionSimple)_Windows_ARM
+              artifactName: Windows_ARM
+              targetPath: $(Pipeline.Workspace)/ToSign/Windows_ARM
 
           - task: DownloadPipelineArtifact@2
             displayName: Download macOS Artifacts
             inputs:
-              artifactName: $(GitBuildVersionSimple)_macOS
-              targetPath: $(Pipeline.Workspace)/ToSign/$(GitBuildVersionSimple)_macOS
+              artifactName: macOS
+              targetPath: $(Pipeline.Workspace)/ToSign/macOS
 
           - task: DownloadPipelineArtifact@2
             displayName: Download Linux_ARM Artifacts
             inputs:
-              artifactName: $(GitBuildVersionSimple)_Linux_ARM
-              targetPath: $(Pipeline.Workspace)/ToSign/$(GitBuildVersionSimple)_Linux_ARM
+              artifactName: Linux_ARM
+              targetPath: $(Pipeline.Workspace)/ToSign/Linux_ARM
 
           - task: DownloadPipelineArtifact@2
             displayName: Download Linux_ARM64 Artifacts
             inputs:
-              artifactName: $(GitBuildVersionSimple)_Linux_ARM64
-              targetPath: $(Pipeline.Workspace)/ToSign/$(GitBuildVersionSimple)_Linux_ARM64
+              artifactName: Linux_ARM64
+              targetPath: $(Pipeline.Workspace)/ToSign/Linux_ARM64
 
           - task: DownloadPipelineArtifact@2
             displayName: Download Linux_Musl_x64 Artifacts
             inputs:
-              artifactName: $(GitBuildVersionSimple)_Linux_Musl_x64
-              targetPath: $(Pipeline.Workspace)/ToSign/$(GitBuildVersionSimple)_Linux_Musl_x64
+              artifactName: Linux_Musl_x64
+              targetPath: $(Pipeline.Workspace)/ToSign/Linux_Musl_x64
 
           - task: DownloadPipelineArtifact@2
             displayName: Download Linux_Musl_ARM_x64 Artifacts
             inputs:
-              artifactName: $(GitBuildVersionSimple)_Linux_Musl_ARM_x64
-              targetPath: $(Pipeline.Workspace)/ToSign/$(GitBuildVersionSimple)_Linux_Musl_ARM_x64
+              artifactName: Linux_Musl_ARM_x64
+              targetPath: $(Pipeline.Workspace)/ToSign/Linux_Musl_ARM_x64
 
           - download: current
             artifact: SigningScripts
@@ -175,28 +176,28 @@ stages:
 
           - publish: $(Pipeline.Workspace)/ToSign/Windows_x64_x86
             displayName: Publish Signed Windows_x64_x86 Packages
-            artifact: $(GitBuildVersionSimple)_Windows_x64_x86_Signed
+            artifact: Windows_x64_x86_Signed
 
-          - publish: $(Pipeline.Workspace)/ToSign/$(GitBuildVersionSimple)_Windows_ARM
+          - publish: $(Pipeline.Workspace)/ToSign/Windows_ARM
             displayName: Publish Signed Windows_ARM Packages
-            artifact: $(GitBuildVersionSimple)_Windows_ARM_Signed
+            artifact: Windows_ARM_Signed
 
-          - publish: $(Pipeline.Workspace)/ToSign/$(GitBuildVersionSimple)_macOS
+          - publish: $(Pipeline.Workspace)/ToSign/macOS
             displayName: Publish Signed macOS Packages
-            artifact: $(GitBuildVersionSimple)_macOS_Signed
+            artifact: macOS_Signed
 
-          - publish: $(Pipeline.Workspace)/ToSign/$(GitBuildVersionSimple)_Linux_ARM
+          - publish: $(Pipeline.Workspace)/ToSign/Linux_ARM
             displayName: Publish Signed Linux_ARM Packages
-            artifact: $(GitBuildVersionSimple)_Linux_ARM_Signed
+            artifact: Linux_ARM_Signed
 
-          - publish: $(Pipeline.Workspace)/ToSign/$(GitBuildVersionSimple)_Linux_ARM64
+          - publish: $(Pipeline.Workspace)/ToSign/Linux_ARM64
             displayName: Publish Signed Linux_ARM64 Packages
-            artifact: $(GitBuildVersionSimple)_Linux_ARM64_Signed
+            artifact: Linux_ARM64_Signed
 
-          - publish: $(Pipeline.Workspace)/ToSign/$(GitBuildVersionSimple)_Linux_Musl_x64
+          - publish: $(Pipeline.Workspace)/ToSign/Linux_Musl_x64
             displayName: Publish Signed Linux_Musl_x64 Packages
-            artifact: $(GitBuildVersionSimple)_Linux_Musl_x64_Signed
+            artifact: Linux_Musl_x64_Signed
 
-          - publish: $(Pipeline.Workspace)/ToSign/$(GitBuildVersionSimple)_Linux_Musl_ARM_x64
+          - publish: $(Pipeline.Workspace)/ToSign/Linux_Musl_ARM_x64
             displayName: Publish Signed Linux_Musl_ARM_x64 Packages
-            artifact: $(GitBuildVersionSimple)_Linux_Musl_ARM_x64_Signed
+            artifact: Linux_Musl_ARM_x64_Signed
