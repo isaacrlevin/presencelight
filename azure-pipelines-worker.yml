@@ -84,12 +84,19 @@ steps:
       scriptLocation: 'inlineScript'
       inlineScript: 'az appservice plan update --name levin-signserv-asp-2dnwx6q6jwiay --resource-group SignService --sku P1V2'
 
+
+  - task: CopyFiles@2
+    inputs:
+      SourceFolder: '$(Build.SourcesDirectory)\Build\'
+      Contents: '**'
+      TargetFolder: '$(Build.SourcesDirectory)\Build\ToSign'
+
   - pwsh: |
       .\SignClient "Sign" `
       --baseDirectory "$(Build.SourcesDirectory)" `
       --input "**/*.{exe,zip}" `
-      --config "$(Build.SourcesDirectory)\Build\appsettings.json" `
-      --filelist "$(Build.SourcesDirectory)\Build\filelist.txt" `
+      --config "$(Build.SourcesDirectory)\Build\ToSign\appsettings.json" `
+      --filelist "$(Build.SourcesDirectory)\Build\ToSign\filelist.txt" `
       --user "$(SignClientUser)" `
       --secret "$(SignClientSecret)" `
       --name "PresenceLight" `
