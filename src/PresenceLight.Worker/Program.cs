@@ -1,8 +1,10 @@
 ﻿using System;
-
+using System.Net;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using System.Linq;
+using System.IO;
 
 namespace PresenceLight.Worker
 {
@@ -13,17 +15,47 @@ namespace PresenceLight.Worker
             CreateHostBuilder(args).Build().Run();
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration((hostingContext, config) =>
-                {
-                    config.AddJsonFile(
-                    "AADSettings.json", optional: false, reloadOnChange: false);
-                    config.AddUserSecrets<Startup>();
-                })
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
+        public static void ConfigureConfiguration(IConfigurationBuilder config)
+        {
+            config
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("AADSettings.json", optional: false, reloadOnChange: false)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
+                .AddUserSecrets<Startup>();
+        }
+
+        public static IHostBuilder CreateHostBuilder(string[] args)
+        {
+            IConfigurationBuilder configBuilderForMain = new ConfigurationBuilder();
+            ConfigureConfiguration(configBuilderForMain);
+            IConfiguration configForMain = configBuilderForMain.Build();
+
+            return Host.CreateDefaultBuilder(args)
+                   .ConfigureAppConfiguration(ConfigureConfiguration)
+                   .ConfigureWebHostDefaults(webBuilder =>
+                   {
+                       webBuilder
+                       .ConfigureKestrel(options =>
+                       {
+                           var server = Dns.GetHostName();
+                           IPHostEntry heserver = Dns.GetHostEntry(server);
+                           var ip = heserver.AddressList.Where(a => a.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork).FirstOrDefault();
+
+                           if (ip != null)
+                           {
+                               options.Listen(ip, 5001);
+                               if (Convert.ToBoolean(configForMain["DeployedToServer"]))
+                               {
+                                   options.Listen(ip, 5002, listenOptions =>
+                                   {
+                                       listenOptions.UseHttps();
+                                       listenOptions.UseHttps("presencelight.pfx", "presencelight");
+                                   });
+                               }
+                           }
+                       })
+                       .UseStartup<Startup>();
+                   });
+        }
     }
 }

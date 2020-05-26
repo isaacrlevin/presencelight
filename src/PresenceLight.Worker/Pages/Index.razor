@@ -5,15 +5,29 @@
 @inject IOptionsMonitor<ConfigWrapper> Config
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor _httpContextAccessor
 @inject UserAuthService _userAuthService
-<h1>@appState.User?.DisplayName</h1>
 
-<div class="container">
-    <img class="image" src="@appState.ProfileImage" />
-    <div class="circle bottom-right @appState.Presence?.Availability"></div>
+@if (@appState.Presence != null)
+{
+<div class="container text-body">
+    <div class="row">
+        <div class="container-fluid">
+            <div class="row-fluid">
+                <div class="centering text-center">
+                    <h1>@appState.User?.DisplayName</h1>
+                    <br />
+                    <br />
+                    <img class="image" src="@appState.ProfileImage" />
+                    <div class="circle bottom-right @appState.Presence?.Availability"></div>
+                    <h3>Availability: @appState.Presence?.Availability</h3>
+                    <h3>Activity: @appState.Presence?.Activity</h3>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+}
 
 @code {
-
     protected override async Task OnInitializedAsync()
     {
         appState.OnChange += RaiseStateHasChanged;
@@ -30,7 +44,15 @@
         bool isUserAuth = await _userAuthService.IsUserAuthenticated();
         if (!isUserAuth)
         {
+            appState.SetLightMode("");
             await _httpContextAccessor.HttpContext.ChallengeAsync();
+        }
+        else
+        {
+            if (appState.LightMode != "Custom")
+            {
+                appState.SetLightMode("Graph");
+            }
         }
     }
 

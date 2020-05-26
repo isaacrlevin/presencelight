@@ -15,6 +15,7 @@ namespace PresenceLight.Core
             }
             catch
             {
+                Console.WriteLine("Hello");
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
                     url = url.Replace("&", "^&");
