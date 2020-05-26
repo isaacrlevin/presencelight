@@ -79,7 +79,7 @@ steps:
     displayName: Scale Up Sign Service
     inputs:
       azureSubscription: 'Isaac Levin MSDN (a07802f5-f8df-47d8-9b88-79ba55cfb396)'
-      scriptType: 'ps'
+      scriptType: bash
       scriptLocation: 'inlineScript'
       inlineScript: 'az appservice plan update --name levin-signserv-asp-2dnwx6q6jwiay --resource-group SignService --sku P1V2'
 
