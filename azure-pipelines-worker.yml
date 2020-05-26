@@ -86,10 +86,10 @@ steps:
 
   - pwsh: |
       .\SignClient "Sign" `
-      --baseDirectory "$(Pipeline.Workspace)" `
-      --input "**/*.{exe}" `
-      --config "Build\appsettings.json" `
-      --filelist "Build\filelist.txt" `
+      --baseDirectory "$(Build.SourcesDirectory)" `
+      --input "**/*.{exe,zip}" `
+      --config "$(Build.SourcesDirectory)\Build\appsettings.json" `
+      --filelist "$(Build.SourcesDirectory)\Build\filelist.txt" `
       --user "$(SignClientUser)" `
       --secret "$(SignClientSecret)" `
       --name "PresenceLight" `
