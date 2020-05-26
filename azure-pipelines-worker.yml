@@ -68,6 +68,45 @@ steps:
       arguments: -r $(RID) -c $(buildConfiguration) /p:PublishSingleFile=true -o $(Build.ArtifactStagingDirectory)/$(GitBuildVersionSimple)_$(ChannelName)
       publishWebProjects: false
 
+  - download: current
+    artifact: SigningScripts
+
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: custom
+      custom: tool
+      arguments: install --tool-path . SignClient
+    displayName: Install SignTool tool
+
+  - task: AzureCLI@2
+    displayName: Scale Up Sign Service
+    inputs:
+      azureSubscription: 'Isaac Levin MSDN (a07802f5-f8df-47d8-9b88-79ba55cfb396)'
+      scriptType: 'ps'
+      scriptLocation: 'inlineScript'
+      inlineScript: 'az appservice plan update --name levin-signserv-asp-2dnwx6q6jwiay --resource-group SignService --sku P1V2'
+
+  - pwsh: |
+      .\SignClient "Sign" `
+      --baseDirectory "$(Pipeline.Workspace)" `
+      --input "**/*.{exe}" `
+      --config "$(Pipeline.Workspace)\SigningScripts\appsettings.json" `
+      --filelist "$(Pipeline.Workspace)\SigningScripts\filelist.txt" `
+      --user "$(SignClientUser)" `
+      --secret "$(SignClientSecret)" `
+      --name "PresenceLight" `
+      --description "PresenceLight" `
+      --descriptionUrl "https://github.com/isaacrlevin/PresenceLight"
+    displayName: Authenticode Sign artifacts
+
+  - task: AzureCLI@2
+    displayName: Scale Down Sign Service
+    inputs:
+      azureSubscription: 'Isaac Levin MSDN (a07802f5-f8df-47d8-9b88-79ba55cfb396)'
+      scriptType: 'ps'
+      scriptLocation: 'inlineScript'
+      inlineScript: 'az appservice plan update --name levin-signserv-asp-2dnwx6q6jwiay --resource-group SignService --sku S1'
+
   - task: PublishPipelineArtifact@0
     inputs:
       artifactName: $(GitBuildVersionSimple)_$(ChannelName)
