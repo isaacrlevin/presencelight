@@ -24,7 +24,7 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.4" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.4" />
     <PackageReference Include="Microsoft.Graph.Beta" Version="0.15.0-preview" />
-    <PackageReference Include="Microsoft.Identity.Client" Version="4.13.0" />
+    <PackageReference Include="Microsoft.Identity.Client" Version="4.14.0" />
     <PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.19041.1" />
     <PackageReference Include="Q42.HueApi" Version="3.15.4" />
     <PackageReference Include="Q42.HueApi.ColorConverters" Version="3.14.0" />
