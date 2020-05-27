@@ -145,6 +145,53 @@
                     </Grid>
                 </Grid>
             </TabItem>
+
+            <TabItem Header="Configure Yeelight" >
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="50"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="50"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Column="1" Grid.ColumnSpan="4">
+                        <CheckBox x:Name="cbIsYeelightEnabled" IsChecked="{Binding IsYeelightEnabled}" Content="Connect to Yeelight" Grid.Column="1" Grid.ColumnSpan="4" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbIsYeelightEnabledChanged"  Checked="cbIsYeelightEnabledChanged" />
+                    </Grid>
+                    <Grid x:Name="pnlYeelight"  Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="10" />
+                            <RowDefinition Height="100" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <Button Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center" Grid.Column="1" Height="23" Width="120" Content="Find Yeelight's" Click="FindYeelights_Click"/>
+                        <ComboBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" x:Name="ddlYeelightLights" Visibility="Visible" SelectionChanged="ddlYeelightLights_SelectionChanged"  HorizontalAlignment="Center" VerticalAlignment="Top"  Width="150">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock>
+                                        <TextBlock.Text>
+                                            <MultiBinding StringFormat="{}{0} ({1})">
+                                                <Binding Path="Name" />
+                                                <Binding Path="Hostname" />
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </Grid>
+                </Grid>
+            </TabItem>
+
             <TabItem Header="Configure LIFX" >
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -210,7 +257,7 @@
                         <RowDefinition Height="*" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
-                    
+
                     <Label Grid.Column="1" Grid.Row="1" Content="Brightness"  Grid.ColumnSpan="3" />
                     <Slider Grid.Column="2" Grid.Row="1" Width="180" HorizontalAlignment="Left" x:Name = "brightness" Value="{Binding Brightness}" IsSnapToTickEnabled="True"  Minimum = "0" Maximum = "100" TickFrequency = "10"  TickPlacement = "BottomRight" />
                     <TextBox Grid.Column="2" Grid.Row="1" Text="{Binding ElementName=brightness, Path=Value, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,10,0" HorizontalAlignment="Right" VerticalAlignment="Top" Height="20" TextAlignment="Center" Width="40" />
