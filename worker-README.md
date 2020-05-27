@@ -6,12 +6,14 @@
 http://presencelightapp.azurewebsites.net/
 
 ### App Setup
+TBD
 
 ### Running on a Remote Machine
+TBD
 
 ### Third Party Libraries
 
-Presence Light would not be possible without the amazing work from the contributors to the following third party libraries!
+PresenceLight would not be possible without the amazing work from the contributors to the following third party libraries!
 
 - [Blazored.Modal](https://github.com/Blazored/Modal)
 - [Blazorise](https://github.com/stsrki/Blazorise)
