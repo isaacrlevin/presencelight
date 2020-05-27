@@ -59,6 +59,7 @@ namespace PresenceLight
             services.AddSingleton<IGraphService, GraphService>();
             services.AddSingleton<IHueService, HueService>();
             services.AddSingleton<LIFXService, LIFXService>();
+            services.AddSingleton<IYeelightService, YeelightService>();
             services.AddSingleton<LIFXOAuthHelper, LIFXOAuthHelper>();
             services.AddSingleton<MainWindow>();
 
