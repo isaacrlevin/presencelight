@@ -32,6 +32,9 @@ PresenceLight is a solution to broadcast your various statuses to a Phillips Hue
 ## App Setup
 - [App Setup](https://github.com/isaacrlevin/PresenceLight/wiki/WPF-App-Setup)
 
+## FAQ
+- [FAQ](https://github.com/isaacrlevin/PresenceLight/wiki/FAQ)
+
 ## Please Contribute
 
 I welcome all contributions here, as I am no expert in WPF/MSIX things.
