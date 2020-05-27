@@ -13,6 +13,7 @@ trigger:
    - .github/workflows/main.yml
    - src/PresenceLight/*
    - README.md
+   - worker-README.md
 
 stages:
 - stage: Build
