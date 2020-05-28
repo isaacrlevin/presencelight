@@ -357,7 +357,7 @@ namespace PresenceLight
                     break;
                 case "DoNotDisturb":
                     image = new BitmapImage(new Uri(IconConstants.GetIcon(Config.IconType, IconConstants.DoNotDisturb)));
-                    color = MapColor("#800000");
+                    color = MapColor("#B03CDE");
                     notificationIcon.Text = PresenceConstants.DoNotDisturb;
                     break;
                 case "OutOfOffice":
