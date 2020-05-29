@@ -82,7 +82,7 @@ namespace PresenceLight.Core
             {
                 var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
                 {
-                    Brightness = (_options.Brightness / 100),
+                    Brightness = Convert.ToDouble(_options.Brightness) / 100,
                     Color = color,
                     Duration = 0
                 }); ;

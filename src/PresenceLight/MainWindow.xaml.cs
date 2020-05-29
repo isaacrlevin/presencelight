@@ -277,20 +277,6 @@ namespace PresenceLight
                         await _hueService.SetColor("Off", Config.SelectedHueLightId);
                     }
 
-                    //if (Config.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LIFXApiKey))
-                    //{
-                    //    if (ddlLIFXLights.SelectedItem != null && ddlLIFXLights.SelectedItem.GetType() == typeof(LifxCloud.NET.Models.Group))
-                    //    {
-                    //        Config.SelectedLIFXItemId = $"group_id:{((LifxCloud.NET.Models.Group)ddlLIFXLights.SelectedItem).Id}";
-                    //    }
-
-                    //    if (ddlLIFXLights.SelectedItem != null && ddlLIFXLights.SelectedItem.GetType() == typeof(LifxCloud.NET.Models.Light))
-                    //    {
-                    //        Config.SelectedLIFXItemId = $"id:{((LifxCloud.NET.Models.Light)ddlLIFXLights.SelectedItem).Id}";
-                    //    }
-
-                    //    await _lifxService.SetColor("Off", (Selector)Config.SelectedLIFXItemId);
-                    //}
                     if (lightMode == "Graph")
                     {
                         await SetColor("Off");

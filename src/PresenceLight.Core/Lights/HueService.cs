@@ -41,17 +41,6 @@ namespace PresenceLight.Core
 
             var command = new LightCommand();
 
-            if (_options.Brightness == 0)
-            {
-                command.On = false;
-            }
-            else
-            {
-                command.On = true;
-                command.Brightness = Convert.ToByte(((_options.Brightness / 100) * 254));
-                command.TransitionTime = new TimeSpan(0);
-            }
-
             switch (availability)
             {
                 case "Available":
@@ -78,6 +67,17 @@ namespace PresenceLight.Core
                 default:
                     command.SetColor(new RGBColor(availability));
                     break;
+            }
+
+            if (_options.Brightness == 0)
+            {
+                command.On = false;
+            }
+            else
+            {
+                command.On = true;
+                command.Brightness = Convert.ToByte(((Convert.ToDouble(_options.Brightness) / 100) * 254));
+                command.TransitionTime = new TimeSpan(0);
             }
 
             await _client.SendCommandAsync(command, new List<string> { lightId });
