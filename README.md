@@ -11,6 +11,8 @@
 | Chocolatey | [![Stable build number](https://presencelight.blob.core.windows.net/store/stable_badge.svg)](https://www.microsoft.com/en-us/p/presencelight/9nffkd8gznl7)| [Install](https://chocolatey.org/packages/PresenceLight/)
 | [Windows Package Manager](https://docs.microsoft.com/en-us/windows/package-manager) | [![Stable build number](https://presencelight.blob.core.windows.net/store/stable_badge.svg)](https://www.microsoft.com/en-us/p/presencelight/9nffkd8gznl7)| winget install isaaclevin.presencelight
 
+### [Cross Platform Blazor Version](worker-README.md)
+
 
 ## What is PresenceLight?
 
