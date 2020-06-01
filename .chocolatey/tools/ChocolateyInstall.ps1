@@ -1,7 +1,7 @@
 $ErrorActionPreference = 'Stop'
 $toolsDir   = "$(Split-Path -parent $MyInvocation.MyCommand.Definition)"
 $installPath = Join-Path $toolsDir 'PresenceLight'
-$exePath = Join-Path $toolsDir 'PresenceLight\PresenceLight.exe'
+$exePath = Join-Path $toolsDir '..\PresenceLight.exe'
 
 
 Write-Output "Adding shortcut to Start Menu"
