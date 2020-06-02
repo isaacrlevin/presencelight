@@ -14,7 +14,7 @@ trigger:
    - src/PresenceLight.Worker/*
    - README.md
    - worker-README.md
-      
+
 
 
 stages:
@@ -66,7 +66,8 @@ stages:
       displayName: Update AppxManifest version
 
     - powershell: |
-        ((Get-Content -path .\.chocolatey\tools\ChocolateyInstall.ps1 -Raw) -replace 'Release','PresenceLight.$(Build.BuildNumber)') | Set-Content -Path .\.chocolatey\tools\ChocolateyInstall.ps1
+        ((Get-Content -path .\.chocolatey\tools\ChocolateyInstall.ps1 -Raw) -replace '$ReplaceVersion','$(Build.BuildNumber)') | Set-Content -Path .\.chocolatey\tools\ChocolateyInstall.ps1
+        ((Get-Content -path .\.chocolatey\tools\ChocolateyInstall.ps1 -Raw) -replace '$PackagePath','PresenceLight.Package_$(Build.BuildNumber)_x86.appxbundle') | Set-Content -Path .\.chocolatey\tools\ChocolateyInstall.ps1
       displayName: Update ChocolateyInstall.ps1
 
     - powershell: |
@@ -117,6 +118,8 @@ stages:
         maximumCpuCount: true
 
     - powershell: |
+
+        copy-item -path "$(Build.ArtifactStagingDirectory)\$(ChannelName)\PresenceLight.Package_$(Build.BuildNumber)_x86.appxbundle" -destination .\.chocolatey\tools\
         # Chocolatey
         & choco.exe pack .\.chocolatey\PresenceLight.nuspec --version $(NBGV_ChocolateyPackageVersion) --OutputDirectory $(Build.ArtifactStagingDirectory)\$(ChannelName)
       displayName: Create Choco Package
