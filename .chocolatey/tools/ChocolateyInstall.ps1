@@ -1,11 +1,23 @@
-$ErrorActionPreference = 'Stop'
-$toolsDir   = "$(Split-Path -parent $MyInvocation.MyCommand.Definition)"
-$installPath = Join-Path $toolsDir 'PresenceLight'
-$exePath = Join-Path $toolsDir '..\PresenceLight.exe'
+$ErrorActionPreference = 'Stop';
 
+$toolsDir       = "$(Split-Path -parent $MyInvocation.MyCommand.Definition)"
+$fileName       = "$toolsDir\$PackagePath"
+$version        = "$ReplaceVersion"
 
-Write-Output "Adding shortcut to Start Menu"
-Install-ChocolateyShortcut -ShortcutFilePath "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\PresenceLight.lnk" -TargetPath $exePath
+$WindowsVersion=[Environment]::OSVersion.Version
+if ($WindowsVersion.Major -ne "10") {
+  throw "This package requires Windows 10."
+}
 
-Write-Output "Adding shortcut to Startup"
-Install-ChocolateyShortcut -ShortcutFilePath "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Startup\PresenceLight.lnk" -TargetPath $exePath
+if ((Get-AppxPackage -name 37828IsaacLevin.197278F15330A).Version -Match $version) {
+  if($env:ChocolateyForce) {
+    # you can't install the same version of an appx package, you need to remove it first
+    Write-Host Removing already installed version first.
+    Get-AppxPackage -Name 37828IsaacLevin.197278F15330A | Remove-AppxPackage
+  } else {
+    Write-Host The $version version of PresenceLight is already installed. If you want to reinstall use --force
+    return
+  }
+}
+
+Add-AppxPackage -Path $fileName

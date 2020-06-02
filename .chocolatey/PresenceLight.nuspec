@@ -21,6 +21,5 @@
   </metadata>
   <files>
     <file src="tools\**" target="tools" />
-    <file src="..\src\PresenceLight\bin\Release\netcoreapp5.0\win-x86\publish\**\*.*" target=""  />
   </files>
 </package>
