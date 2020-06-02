@@ -33,17 +33,12 @@ namespace PresenceLight.Core
 
         public async Task SetColor(string availability, string lightId)
         {
-
-            //var devices = await DeviceLocator.Discover();
-
             var device = this.deviceGroup.FirstOrDefault(x => x.Id == lightId);
 
             if (device == null)
             {
                 return;
             }
-
-            //var deviceGroup = new DeviceGroup(new[] { device });
 
             device.OnNotificationReceived += Device_OnNotificationReceived;
             device.OnError += Device_OnError;
