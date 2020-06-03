@@ -9,6 +9,11 @@ if ($WindowsVersion.Major -ne "10") {
   throw "This package requires Windows 10."
 }
 
+$IsCorrectBuild=[Environment]::OSVersion.Version.Build
+if ($IsCorrectBuild -lt "17134") {
+  throw "This package requires at least Windows 10 version build 17134.x."
+}
+
 if ((Get-AppxPackage -name 37828IsaacLevin.197278F15330A).Version -Match $version) {
   if($env:ChocolateyForce) {
     # you can't install the same version of an appx package, you need to remove it first
