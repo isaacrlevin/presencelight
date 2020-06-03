@@ -1,8 +1,8 @@
 $ErrorActionPreference = 'Stop';
 
 $toolsDir       = "$(Split-Path -parent $MyInvocation.MyCommand.Definition)"
-$fileName       = "$toolsDir\$PackagePath"
-$version        = "$ReplaceVersion"
+$fileName       = "$toolsDir\PackagePath"
+$version        = "ReplaceVersion"
 
 $WindowsVersion=[Environment]::OSVersion.Version
 if ($WindowsVersion.Major -ne "10") {
