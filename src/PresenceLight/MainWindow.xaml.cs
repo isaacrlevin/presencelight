@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.Graph;
 using Microsoft.Identity.Client;
 using PresenceLight.Core;
@@ -213,6 +213,7 @@ namespace PresenceLight
 
             dataPanel.Visibility = Visibility.Visible;
             await SettingsService.SaveSettings(Config);
+            string availability = string.Empty;
             while (true)
             {
                 await Task.Delay(Convert.ToInt32(Config.PollingInterval * 1000));
@@ -222,7 +223,10 @@ namespace PresenceLight
 
                     if (lightMode == "Graph")
                     {
-                        await SetColor(presence.Availability);
+                        if (presence.Availability != availability)
+                        {
+                            await SetColor(presence.Availability);
+                        }
                     }
 
                     if (DateTime.Now.Minute % 5 == 0)
@@ -231,6 +235,7 @@ namespace PresenceLight
                     }
 
                     MapUI(presence, null, null);
+                    availability = presence.Availability;
                 }
                 catch { }
             }
