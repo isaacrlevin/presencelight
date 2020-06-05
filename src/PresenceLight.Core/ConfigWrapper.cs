@@ -39,5 +39,35 @@ namespace PresenceLight.Core
         public bool IsPhillipsEnabled { get; set; }
 
         public bool IsYeelightEnabled { get; set; }
+
+        public bool IsCustomApiEnabled { get; set; }
+
+        public string? CustomApiAvailableMethod { get; set; }
+
+        public string? CustomApiAvailableUri { get; set; }
+
+        public string? CustomApiBusyMethod { get; set; }
+
+        public string? CustomApiBusyUri { get; set; }
+
+        public string? CustomApiBeRightBackMethod { get; set; }
+
+        public string? CustomApiBeRightBackUri { get; set; }
+
+        public string? CustomApiAwayMethod { get; set; }
+
+        public string? CustomApiAwayUri { get; set; }
+
+        public string? CustomApiDoNotDisturbMethod { get; set; }
+
+        public string? CustomApiDoNotDisturbUri { get; set; }
+
+        public string? CustomApiOfflineMethod { get; set; }
+
+        public string? CustomApiOfflineUri { get; set; }
+
+        public string? CustomApiOffMethod { get; set; }
+
+        public string? CustomApiOffUri { get; set; }
     }
 }

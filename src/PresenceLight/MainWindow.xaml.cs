@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Microsoft.Graph;
 using Microsoft.Identity.Client;
 using PresenceLight.Core;
@@ -33,6 +33,7 @@ namespace PresenceLight
 
         private IYeelightService _yeelightService;
         private IHueService _hueService;
+        private ICustomApiService _customApiService;
         private LIFXOAuthHelper _lIFXOAuthHelper;
         private LIFXService _lifxService;
         private GraphServiceClient _graphServiceClient;
@@ -40,7 +41,7 @@ namespace PresenceLight
         private WindowState lastWindowState;
 
         #region Init
-        public MainWindow(IGraphService graphService, IHueService hueService, LIFXService lifxService, IYeelightService yeelightService, IOptionsMonitor<ConfigWrapper> optionsAccessor, LIFXOAuthHelper lifxOAuthHelper)
+        public MainWindow(IGraphService graphService, IHueService hueService, LIFXService lifxService, IYeelightService yeelightService, ICustomApiService customApiService, IOptionsMonitor<ConfigWrapper> optionsAccessor, LIFXOAuthHelper lifxOAuthHelper)
         {
             InitializeComponent();
 
@@ -52,6 +53,7 @@ namespace PresenceLight
             _yeelightService = yeelightService;
             _lifxService = lifxService;
             _hueService = hueService;
+            _customApiService = customApiService;
             _options = optionsAccessor.CurrentValue;
             _lIFXOAuthHelper = lifxOAuthHelper;
             LoadSettings().ContinueWith(
@@ -160,6 +162,23 @@ namespace PresenceLight
                 getTokenLink.Visibility = Visibility.Collapsed;
                 pnlLIFX.Visibility = Visibility.Collapsed;
             }
+
+            if (Config.IsCustomApiEnabled)
+            {
+                pnlCustomApi.Visibility = Visibility.Visible;
+                customApiAvailableMethod.SelectedValue = Config.CustomApiAvailableMethod;
+                customApiBusyMethod.SelectedValue = Config.CustomApiBusyMethod;
+                customApiBeRightBackMethod.SelectedValue = Config.CustomApiBeRightBackMethod;
+                customApiAwayMethod.SelectedValue = Config.CustomApiAwayMethod;
+                customApiDoNotDisturbMethod.SelectedValue = Config.CustomApiDoNotDisturbMethod;
+                customApiOfflineMethod.SelectedValue = Config.CustomApiOfflineMethod;
+                customApiOffMethod.SelectedValue = Config.CustomApiOffMethod;
+                SyncOptions();
+            }
+            else
+            {
+                pnlCustomApi.Visibility = Visibility.Collapsed;
+            }
         }
         #endregion
 
@@ -256,6 +275,11 @@ namespace PresenceLight
             if(Config.IsYeelightEnabled && !string.IsNullOrEmpty(Config.SelectedYeeLightId))
             {
                 await _yeelightService.SetColor(color, Config.SelectedYeeLightId);
+            }
+
+            if (Config.IsCustomApiEnabled)
+            {
+                await _customApiService.SetColor(color);
             }
         }
 
@@ -548,5 +572,7 @@ namespace PresenceLight
             await SettingsService.SaveSettings(Config);
         }
         #endregion
+
+
     }
 }
