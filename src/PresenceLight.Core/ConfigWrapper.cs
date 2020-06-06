@@ -69,5 +69,7 @@ namespace PresenceLight.Core
         public string? CustomApiOffMethod { get; set; }
 
         public string? CustomApiOffUri { get; set; }
+
+        public double CustomApiTimeout { get; set; }
     }
 }
