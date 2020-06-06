@@ -279,11 +279,18 @@ namespace PresenceLight
 
             if (Config.IsCustomApiEnabled)
             {
-                await _customApiService.SetColor(color);
+                string response = await _customApiService.SetColor(color);
+                customApiLastResponse.Content = response;
+                if (response.StartsWith("Error:"))
+                {
+                    customApiLastResponse.Foreground = new SolidColorBrush(Colors.Red);
+                }
+                else
+                {
+                    customApiLastResponse.Foreground = new SolidColorBrush(Colors.Green);
+                }
             }
         }
-
-
 
         private async void SignOutButton_Click(object sender, RoutedEventArgs e)
         {

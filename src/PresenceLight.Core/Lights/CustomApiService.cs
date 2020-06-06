@@ -5,18 +5,23 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Net.Http;
+using Microsoft.Graph;
 
 namespace PresenceLight.Core
 {
     public interface ICustomApiService
     {
-        Task SetColor(string availability);
+        Task<string> SetColor(string availability);
     }
 
     public class CustomApiService : ICustomApiService
     {
-        static readonly HttpClient client = new HttpClient();
-
+        static readonly HttpClient client = new HttpClient
+        {
+            // TODO: Make this configurable
+            Timeout = TimeSpan.FromSeconds(10)
+        };
+        
         private readonly ConfigWrapper _options;
 
         public CustomApiService(IOptionsMonitor<ConfigWrapper> optionsAccessor)
@@ -29,10 +34,11 @@ namespace PresenceLight.Core
             _options = options;
         }
 
-        public async Task SetColor(string availability)
+        public async Task<string> SetColor(string availability)
         {
             string method = string.Empty;
             string uri = string.Empty;
+            string result = string.Empty;
 
             switch (availability)
             {
@@ -70,42 +76,29 @@ namespace PresenceLight.Core
 
             if (method != string.Empty && uri != string.Empty)
             {
-                switch (method)
+                try
                 {
-                    case "GET":
-                        try
-                        {
-                            HttpResponseMessage response = await client.GetAsync(uri);
-                            //response.EnsureSuccessStatusCode();
-                            //string responseBody = await response.Content.ReadAsStringAsync();
+                    HttpResponseMessage response = new HttpResponseMessage();
+                    switch (method)
+                    {
+                        case "GET":
+                            response = await client.GetAsync(uri);
+                            break;
+                        case "POST":
+                            response = await client.PostAsync(uri, null);
+                            break;
+                    }
 
-                            //Console.WriteLine(responseBody);
-                        }
-                        catch (HttpRequestException e)
-                        {
-                            //Console.WriteLine("\nException Caught!");
-                            //Console.WriteLine("Message :{0} ", e.Message);
-                        }
-                        break;
-                    case "POST":
-                        try
-                        {
-                            HttpResponseMessage response = await client.PostAsync(uri, null);
-                            //response.EnsureSuccessStatusCode();
-                            //string responseBody = await response.Content.ReadAsStringAsync();
-
-                            //Console.WriteLine(responseBody);
-                        }
-                        catch (HttpRequestException e)
-                        {
-                            //Console.WriteLine("\nException Caught!");
-                            //Console.WriteLine("Message :{0} ", e.Message);
-                        }
-                        break;
-                    default:
-                        break;
+                    string responseBody = await response.Content.ReadAsStringAsync();
+                    result = $"{(int)response.StatusCode} {response.StatusCode}: {responseBody}";
+                }
+                catch (Exception e)
+                {
+                    result = $"Error: {e.Message}";
                 }
             }
+
+            return result;
         }
     }
 }

@@ -13,5 +13,7 @@
   "HueIpAddress": "",
   "IconType": "White",
   "IsLIFXEnabled": false,
-  "IsPhillipsEnabled": false
+  "IsPhillipsEnabled": false,
+  "IsCustomApiEnabled": false,
+  "CustomApiTimeout": 10.0
 }
