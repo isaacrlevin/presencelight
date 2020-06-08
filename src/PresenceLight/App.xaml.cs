@@ -60,6 +60,7 @@ namespace PresenceLight
             services.AddSingleton<IHueService, HueService>();
             services.AddSingleton<LIFXService, LIFXService>();
             services.AddSingleton<IYeelightService, YeelightService>();
+            services.AddSingleton<ICustomApiService, CustomApiService>();
             services.AddSingleton<LIFXOAuthHelper, LIFXOAuthHelper>();
             services.AddSingleton<MainWindow>();
 
