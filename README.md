@@ -28,6 +28,7 @@
 | [Phillips Hue Bridge](https://www2.meethue.com/en-us/p/hue-bridge/046677458478)
 | [Phillips Hue Light Bulb](https://www2.meethue.com/en-us/p/hue-white-and-color-ambiance-1-pack-e26/046677548483) |
 | [Any LIFX Light](https://www.lifx.com/pages/all-products) |
+| Any light which can be controlled via a GET or POST call to a web API |
 
 ## Configure Hardware
 - [Configure Hardware](https://github.com/isaacrlevin/PresenceLight/wiki/Configure-Hardware)
