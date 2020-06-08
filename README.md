@@ -1,6 +1,6 @@
 ![Logo](Icon.png)
 # PresenceLight
-![Build Status](https://dev.azure.com/isaaclevin/PresenceLight/_apis/build/status/CI-build-wpf?branchName=master)
+![Build Status](https://dev.azure.com/isaaclevin/PresenceLight/_apis/build/status/CI-build-wpf?branchName=main)
 
 ### [Cross Platform Blazor Version](worker-README.md)
 

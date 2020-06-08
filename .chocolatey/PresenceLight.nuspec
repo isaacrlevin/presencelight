@@ -6,10 +6,10 @@
     <title>PresenceLight</title>
     <authors>Isaac Levin</authors>
     <owners>Isaac Levin</owners>
-    <licenseUrl>https://github.com/isaacrlevin/PresenceLight/blob/master/LICENSE</licenseUrl>
+    <licenseUrl>https://github.com/isaacrlevin/PresenceLight/blob/main/LICENSE</licenseUrl>
     <projectUrl>https://github.com/isaacrlevin/PresenceLight/</projectUrl>
     <projectSourceUrl>https://github.com/isaacrlevin/PresenceLight/</projectSourceUrl>
-    <iconUrl>https://raw.githubusercontent.com/isaacrlevin/PresenceLight/master/Icon.png</iconUrl>
+    <iconUrl>https://raw.githubusercontent.com/isaacrlevin/PresenceLight/main/Icon.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>
       PresenceLight is a solution to broadcast your various statuses to a Phillips Hue or LIFX light bulb.
