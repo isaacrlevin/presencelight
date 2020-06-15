@@ -58,7 +58,7 @@
     <PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.19041.1" />
     <PackageReference Include="NETStandard.HttpListener" Version="1.0.3.5" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="OSVersionHelper" Version="1.0.11" />
+    <PackageReference Include="OSVersionHelper" Version="1.0.64" />
     <PackageReference Include="Q42.HueApi" Version="3.15.4" />
     <PackageReference Include="Q42.HueApi.ColorConverters" Version="3.14.0" />
     <PackageReference Include="WpfAnimatedGif" Version="2.0.0" />
