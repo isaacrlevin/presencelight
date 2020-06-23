@@ -72,6 +72,7 @@ namespace PresenceLight
                 lightMode = "Custom";
                 syncTeamsButton.IsEnabled = true;
                 syncThemeButton.IsEnabled = true;
+                savedAvailability = string.Empty;
 
                 string color = $"#{ColorGrid.HexadecimalString.ToString().Substring(3)}";
 
