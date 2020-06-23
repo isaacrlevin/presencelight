@@ -4,6 +4,8 @@ using PresenceLight.Core;
 using PresenceLight.Telemetry;
 using System.Threading.Tasks;
 using Windows.Storage;
+using System.IO;
+using Windows.Storage.Streams;
 
 namespace PresenceLight
 {
@@ -32,9 +34,19 @@ namespace PresenceLight
         {
             try
             {
-                StorageFile file = await _settingsFolder.CreateFileAsync(SETTINGS_FILENAME, CreationCollisionOption.ReplaceExisting);
                 string content = JsonConvert.SerializeObject(data, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { });
-                await FileIO.WriteTextAsync(file, content, Windows.Storage.Streams.UnicodeEncoding.Utf8);
+
+                StorageFile f = await _settingsFolder.GetFileAsync(SETTINGS_FILENAME);
+                using (StorageStreamTransaction transaction = await f.OpenTransactedWriteAsync())
+                {
+
+                    using (DataWriter dataWriter = new DataWriter(transaction.Stream))
+                    {
+                        dataWriter.WriteString(content);
+                        transaction.Stream.Size = await dataWriter.StoreAsync();
+                        await transaction.CommitAsync();
+                    }
+                }
                 return true;
             }
             catch (Exception e)
