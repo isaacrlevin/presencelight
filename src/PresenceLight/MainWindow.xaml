@@ -6,7 +6,7 @@
         xmlns:l="clr-namespace:PresenceLight"
         xmlns:gif="http://wpfanimatedgif.codeplex.com"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-        mc:Ignorable="d" Title="PresenceLight" Icon="Icons/Icon.ico" Height="550" Width="600">
+        mc:Ignorable="d" Title="PresenceLight" Icon="Icons/Icon.ico" Height="700" Width="600">
     <Grid>
         <TabControl x:Name="tabControl" SelectionChanged="TabControl_SelectionChanged">
             <TabItem Header="Sign In">
@@ -37,12 +37,14 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="50" />
                             <RowDefinition Height="*" />
+                            <RowDefinition Height="50" />
                         </Grid.RowDefinitions>
                         <Grid VerticalAlignment="Top" Grid.Row="0">
+                            <CheckBox x:Name="cbTeamsSyncEnabled" IsChecked="{Binding SyncTeamsPresence}" Content="Teams Sync Enabled" Grid.Column="1" Grid.ColumnSpan="4" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbSyncTeamsPresence" Checked="cbSyncTeamsPresence" />
                             <Button x:Name="SignOutButton" Height="30" Width="60" Content="Sign-Out" HorizontalAlignment="Right" Click="SignOutButton_Click"  FontFamily="Segoe Ui"/>
                         </Grid>
-                        <Grid  Grid.Row="1">
-                            <Label x:Name="userName" FontSize="40" MinHeight="120" FontFamily="Segoe Ui"/>
+                        <Grid Grid.Row="1">
+                            <Label x:Name="userName" HorizontalAlignment="Center" FontSize="40" MinHeight="120" FontFamily="Segoe Ui"/>
                             <Border BorderThickness="3" CornerRadius="10" Padding="2" HorizontalAlignment="Center" VerticalAlignment="Center">
                                 <Grid>
                                     <Border Name="mask" Background="White" CornerRadius="100"/>
@@ -55,6 +57,10 @@
                                 </Grid>
                             </Border>
                             <Ellipse x:Name="status" Height="75" Width="75" StrokeThickness="5" Margin="150,200,25,50"/>
+                        </Grid>
+                        <Grid Grid.Row="2">
+                            <Label VerticalAlignment="Center" FontSize="20" Margin="0,-150,0,0" HorizontalAlignment="Center" x:Name="availability" />
+                            <Label VerticalAlignment="Center" FontSize="20" Margin="0,-100,0,0" HorizontalAlignment="Center" x:Name="activity" />
                         </Grid>
                     </Grid>
                     <Grid Grid.Column="1" Grid.Row="1" x:Name="signInPanel" Visibility="Collapsed">
@@ -145,7 +151,6 @@
                     </Grid>
                 </Grid>
             </TabItem>
-
             <TabItem Header="Configure Yeelight" >
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -191,7 +196,6 @@
                     </Grid>
                 </Grid>
             </TabItem>
-
             <TabItem Header="Configure LIFX" >
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -328,7 +332,7 @@
                             <ComboBoxItem Content="POST"></ComboBoxItem>
                         </ComboBox>
                         <TextBox x:Name="customApiOffUri" Grid.Row="7" TextWrapping="Wrap" VerticalAlignment="Center" Text="{Binding CustomApiOffUri}" Grid.Column="2" Margin="10,0,14,0"/>
-<!--
+                        <!--
                         <Label x:Name="lblCustomApiTimeout" Content="API Timeout (s):" Margin="10,0,0,0" Grid.Row="8" VerticalAlignment="Center"/>
                         <xctk:DecimalUpDown x:Name="customApiTimeout" Grid.Column="1" Grid.Row="8"  FormatString="F0" Value="{Binding CustomApiTimeout}" Height="23"  VerticalAlignment="Center" Increment="1" Maximum="30" Minimum="1" HorizontalAlignment="Left" Width="72" Margin="10,0,0,0" DefaultValue="10" />
 -->
@@ -363,6 +367,21 @@
 
                     <Label Grid.Column="1" Grid.Row="2" Content="Presence and Theme Polling Interval"  Grid.ColumnSpan="3" />
                     <xctk:DecimalUpDown Grid.Column="2" Grid.Row="2"  FormatString="F2" Value="{Binding PollingInterval}" x:Name="pollingInterval"  Height="23" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="230" Increment=".1" Maximum="5" Minimum="1" />
+
+                    <CheckBox x:Name="cbUseWorkingHours" Grid.Row="2" IsChecked="{Binding UseWorkingHours}" Content="Configure Working Hours" Grid.Column="1" Grid.ColumnSpan="4" HorizontalAlignment="Left" Margin="0,40,0,0" VerticalAlignment="Top" Unchecked="cbUseWorkingHoursChanged" Checked="cbUseWorkingHoursChanged" />
+
+                    <Grid Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="2" x:Name="pnlWorkingHours" Margin="0,30,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <Label Grid.Column="0" Margin="0,40,0,0" Grid.Row="2" Content="Light Syncing Schedule (Working Hours)"  Grid.ColumnSpan="3" />
+                        <xctk:TimePicker ValueChanged="time_ValueChanged" TimeInterval="0:15:0"  x:Name="startTime" Format="Custom" FormatString="HH:mm" Value="{Binding WorkingHoursStartTime}" Grid.Column="2" Margin="0,40,0,0" Grid.Row="2" Height="23" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="100" />
+                        <xctk:TimePicker ValueChanged="time_ValueChanged" TimeInterval="0:15:0"  x:Name="endTime" Format="Custom" FormatString="HH:mm" Value="{Binding WorkingHoursEndTime}" Grid.Column="2" Margin="130,40,0,0" Grid.Row="2" Height="23" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="100" />
+                    </Grid>
 
 
                     <Label Grid.Column="1" Grid.Row="3" Content="Icon Type" />
