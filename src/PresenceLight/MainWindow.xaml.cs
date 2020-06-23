@@ -18,6 +18,7 @@ using System.Windows.Input;
 using PresenceLight.Services;
 using PresenceLight.Core.Services;
 using System.Reflection;
+using PresenceLight.Telemetry;
 
 namespace PresenceLight
 {
@@ -30,6 +31,7 @@ namespace PresenceLight
         public ConfigWrapper Config { get; set; }
 
         private string lightMode;
+        private string savedAvailability = string.Empty;
 
         private IYeelightService _yeelightService;
         private IHueService _hueService;
@@ -242,22 +244,20 @@ namespace PresenceLight
 
             dataPanel.Visibility = Visibility.Visible;
             await SettingsService.SaveSettings(Config);
-            string availability = string.Empty;
+            savedAvailability = string.Empty;
             while (true)
             {
                 await Task.Delay(Convert.ToInt32(Config.PollingInterval * 1000));
-                if (!Config.UseWorkingHours || (Config.UseWorkingHours && IsInWorkingHours(Config.WorkingHoursStartTime, Config.WorkingHoursEndTime)))
+                if (lightMode == "Graph" && (!Config.UseWorkingHours || (Config.UseWorkingHours && IsInWorkingHours(Config.WorkingHoursStartTime, Config.WorkingHoursEndTime))))
                 {
                     try
                     {
                         presence = await System.Threading.Tasks.Task.Run(() => GetPresence());
 
-                        if (lightMode == "Graph")
+
+                        if (presence.Availability != savedAvailability)
                         {
-                            if (presence.Availability != availability)
-                            {
-                                await SetColor(presence.Availability);
-                            }
+                            await SetColor(presence.Availability);
                         }
 
                         if (DateTime.Now.Minute % 5 == 0)
@@ -266,9 +266,12 @@ namespace PresenceLight
                         }
 
                         MapUI(presence, null, null);
-                        availability = presence.Availability;
+                        savedAvailability = presence.Availability;
                     }
-                    catch { }
+                    catch (Exception e)
+                    {
+                        DiagnosticsClient.TrackException(e);
+                    }
                 }
             }
         }
@@ -557,6 +560,7 @@ namespace PresenceLight
                 lightMode = "Custom";
                 syncTeamsButton.IsEnabled = true;
                 syncThemeButton.IsEnabled = true;
+                savedAvailability = string.Empty;
             }
             SyncOptions();
             await SettingsService.SaveSettings(Config);
