@@ -246,32 +246,29 @@ namespace PresenceLight
             while (true)
             {
                 await Task.Delay(Convert.ToInt32(Config.PollingInterval * 1000));
-                if (Config.UseWorkingHours)
+                if (!Config.UseWorkingHours || (Config.UseWorkingHours && IsInWorkingHours(Config.WorkingHoursStartTime, Config.WorkingHoursEndTime)))
                 {
-                    if (IsInWorkingHours(Config.WorkingHoursStartTime, Config.WorkingHoursEndTime))
+                    try
                     {
-                        try
+                        presence = await System.Threading.Tasks.Task.Run(() => GetPresence());
+
+                        if (lightMode == "Graph")
                         {
-                            presence = await System.Threading.Tasks.Task.Run(() => GetPresence());
-
-                            if (lightMode == "Graph")
+                            if (presence.Availability != availability)
                             {
-                                if (presence.Availability != availability)
-                                {
-                                    await SetColor(presence.Availability);
-                                }
+                                await SetColor(presence.Availability);
                             }
-
-                            if (DateTime.Now.Minute % 5 == 0)
-                            {
-                                await SettingsService.SaveSettings(Config);
-                            }
-
-                            MapUI(presence, null, null);
-                            availability = presence.Availability;
                         }
-                        catch { }
+
+                        if (DateTime.Now.Minute % 5 == 0)
+                        {
+                            await SettingsService.SaveSettings(Config);
+                        }
+
+                        MapUI(presence, null, null);
+                        availability = presence.Availability;
                     }
+                    catch { }
                 }
             }
         }
