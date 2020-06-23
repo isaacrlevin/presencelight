@@ -129,6 +129,16 @@ namespace PresenceLight
                 await SettingsService.DeleteSettings();
                 await SettingsService.SaveSettings(_options);
             }
+            if (Config.UseWorkingHours)
+            {
+                pnlWorkingHours.Visibility = Visibility.Visible;
+                SyncOptions();
+            }
+            else
+            {
+                pnlWorkingHours.Visibility = Visibility.Collapsed;
+                SyncOptions();
+            }
 
             if (Config.IsPhillipsEnabled)
             {
@@ -236,27 +246,33 @@ namespace PresenceLight
             while (true)
             {
                 await Task.Delay(Convert.ToInt32(Config.PollingInterval * 1000));
-                try
+                if (Config.UseWorkingHours)
                 {
-                    presence = await System.Threading.Tasks.Task.Run(() => GetPresence());
-
-                    if (lightMode == "Graph")
+                    if (IsInWorkingHours(Config.WorkingHoursStartTime, Config.WorkingHoursEndTime))
                     {
-                        if (presence.Availability != availability)
+                        try
                         {
-                            await SetColor(presence.Availability);
+                            presence = await System.Threading.Tasks.Task.Run(() => GetPresence());
+
+                            if (lightMode == "Graph")
+                            {
+                                if (presence.Availability != availability)
+                                {
+                                    await SetColor(presence.Availability);
+                                }
+                            }
+
+                            if (DateTime.Now.Minute % 5 == 0)
+                            {
+                                await SettingsService.SaveSettings(Config);
+                            }
+
+                            MapUI(presence, null, null);
+                            availability = presence.Availability;
                         }
+                        catch { }
                     }
-
-                    if (DateTime.Now.Minute % 5 == 0)
-                    {
-                        await SettingsService.SaveSettings(Config);
-                    }
-
-                    MapUI(presence, null, null);
-                    availability = presence.Availability;
                 }
-                catch { }
             }
         }
 
@@ -272,7 +288,7 @@ namespace PresenceLight
                 await _lifxService.SetColor(color, (Selector)Config.SelectedLIFXItemId);
             }
 
-            if(Config.IsYeelightEnabled && !string.IsNullOrEmpty(Config.SelectedYeeLightId))
+            if (Config.IsYeelightEnabled && !string.IsNullOrEmpty(Config.SelectedYeeLightId))
             {
                 await _yeelightService.SetColor(color, Config.SelectedYeeLightId);
             }
@@ -409,6 +425,9 @@ namespace PresenceLight
             {
                 userName.Content = profile.DisplayName;
             }
+
+            activity.Content = "Activity: " + presence.Activity;
+            availability.Content = "Availability: " + presence.Availability;
         }
         #endregion
 
@@ -528,6 +547,49 @@ namespace PresenceLight
             lblSettingSaved.Visibility = Visibility.Collapsed;
         }
 
+        private async void cbSyncTeamsPresence(object sender, RoutedEventArgs e)
+        {
+            if (Config.SyncTeamsPresence)
+            {
+                lightMode = "Graph";
+                syncTeamsButton.IsEnabled = false;
+                syncThemeButton.IsEnabled = true;
+            }
+            else
+            {
+                lightMode = "Custom";
+                syncTeamsButton.IsEnabled = true;
+                syncThemeButton.IsEnabled = true;
+            }
+            SyncOptions();
+            await SettingsService.SaveSettings(Config);
+            e.Handled = true;
+        }
+
+        private void cbUseWorkingHoursChanged(object sender, RoutedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(Config.WorkingHoursStartTime))
+            {
+                Config.WorkingHoursStartTime = DateTime.Parse(Config.WorkingHoursStartTime).TimeOfDay.ToString();
+            }
+
+            if (!string.IsNullOrEmpty(Config.WorkingHoursEndTime))
+            {
+                Config.WorkingHoursEndTime = DateTime.Parse(Config.WorkingHoursEndTime).TimeOfDay.ToString();
+            }
+
+            if (Config.UseWorkingHours)
+            {
+                pnlWorkingHours.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                pnlWorkingHours.Visibility = Visibility.Collapsed;
+            }
+            SyncOptions();
+            e.Handled = true;
+        }
+
         #region Tray Methods
 
         protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
@@ -580,6 +642,30 @@ namespace PresenceLight
         }
         #endregion
 
+        bool IsInWorkingHours(string startString, string endString)
+        {
+            // convert datetime to a TimeSpan
+            TimeSpan start = TimeSpan.Parse(startString);
+            TimeSpan end = TimeSpan.Parse(endString);
+            TimeSpan now = DateTime.Now.TimeOfDay;
+            // see if start comes before end
+            if (start < end)
+                return start <= now && now <= end;
+            // start is after end, so do the inverse comparison
+            return !(end < now && now < start);
+        }
 
+        private void time_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            if (!string.IsNullOrEmpty(Config.WorkingHoursStartTime))
+            {
+                Config.WorkingHoursStartTime = DateTime.Parse(Config.WorkingHoursStartTime).TimeOfDay.ToString();
+            }
+
+            if (!string.IsNullOrEmpty(Config.WorkingHoursEndTime))
+            {
+                Config.WorkingHoursEndTime = DateTime.Parse(Config.WorkingHoursEndTime).TimeOfDay.ToString();
+            }
+        }
     }
 }

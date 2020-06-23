@@ -2,7 +2,6 @@
 using System.Windows;
 using System.Threading.Tasks;
 using System.Windows.Media;
-using LifxCloud.NET.Models;
 using PresenceLight.Telemetry;
 
 namespace PresenceLight
@@ -35,28 +34,35 @@ namespace PresenceLight
             while (true)
             {
                 await Task.Delay(Convert.ToInt32(Config.PollingInterval * 1000));
-                try
+
+                if (Config.UseWorkingHours)
                 {
-                    theme = ((SolidColorBrush)SystemParameters.WindowGlassBrush).Color;
-                    color = $"#{theme.ToString().Substring(3)}";
-
-                    lblTheme.Content = $"Theme Color is {color}";
-                    lblTheme.Foreground = (SolidColorBrush)SystemParameters.WindowGlassBrush;
-                    lblTheme.Visibility = Visibility.Visible;
-
-                    if (lightMode == "Theme")
+                    if (IsInWorkingHours(Config.WorkingHoursStartTime, Config.WorkingHoursEndTime))
                     {
-                        await SetColor(color);
-                    }
+                        try
+                        {
+                            theme = ((SolidColorBrush)SystemParameters.WindowGlassBrush).Color;
+                            color = $"#{theme.ToString().Substring(3)}";
 
-                    if (DateTime.Now.Minute % 5 == 0)
-                    {
-                        await SettingsService.SaveSettings(Config);
+                            lblTheme.Content = $"Theme Color is {color}";
+                            lblTheme.Foreground = (SolidColorBrush)SystemParameters.WindowGlassBrush;
+                            lblTheme.Visibility = Visibility.Visible;
+
+                            if (lightMode == "Theme")
+                            {
+                                await SetColor(color);
+                            }
+
+                            if (DateTime.Now.Minute % 5 == 0)
+                            {
+                                await SettingsService.SaveSettings(Config);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            DiagnosticsClient.TrackException(ex);
+                        }
                     }
-                }
-                catch (Exception ex)
-                {
-                    DiagnosticsClient.TrackException(ex);
                 }
             }
         }

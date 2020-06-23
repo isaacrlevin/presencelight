@@ -5,6 +5,14 @@ namespace PresenceLight.Core
 {
     public class ConfigWrapper
     {
+        public bool SyncTeamsPresence { get; set; }
+
+        public bool UseWorkingHours { get; set; }
+
+        public string WorkingHoursStartTime { get; set; }
+
+        public string WorkingHoursEndTime { get; set; }
+
         public string? ClientId { get; set; }
 
         public string? LIFXApiKey { get; set; }
