@@ -35,8 +35,15 @@ namespace PresenceLight
             try
             {
                 string content = JsonConvert.SerializeObject(data, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { });
-
-                StorageFile f = await _settingsFolder.GetFileAsync(SETTINGS_FILENAME);
+                StorageFile f;
+                if (await IsFilePresent())
+                {
+                    f = await _settingsFolder.GetFileAsync(SETTINGS_FILENAME);
+                }
+                else
+                {
+                    f = await _settingsFolder.CreateFileAsync(SETTINGS_FILENAME, CreationCollisionOption.ReplaceExisting);
+                }
                 using (StorageStreamTransaction transaction = await f.OpenTransactedWriteAsync())
                 {
 
