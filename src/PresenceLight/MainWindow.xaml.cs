@@ -118,6 +118,7 @@ namespace PresenceLight
                 object value = property.GetValue(Config);
                 property.SetValue(_options, value);
             }
+            savedAvailability = string.Empty;
         }
 
         private async Task LoadSettings()
@@ -525,6 +526,7 @@ namespace PresenceLight
 
         private async void cbSyncLights(object sender, RoutedEventArgs e)
         {
+            savedAvailability = string.Empty;
             SyncOptions();
             await SettingsService.SaveSettings(Config);
             e.Handled = true;
@@ -550,6 +552,8 @@ namespace PresenceLight
             {
                 pnlWorkingHours.Visibility = Visibility.Collapsed;
             }
+
+            savedAvailability = string.Empty;
             SyncOptions();
             e.Handled = true;
         }
@@ -646,6 +650,10 @@ namespace PresenceLight
             {
                 Config.WorkingHoursEndTime = DateTime.Parse(Config.WorkingHoursEndTime).TimeOfDay.ToString();
             }
+
+            savedAvailability = string.Empty;
+            SyncOptions();
+            e.Handled = true;
         }
 
         private async Task InteractWithLights()
