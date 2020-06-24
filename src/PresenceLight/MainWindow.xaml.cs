@@ -245,6 +245,7 @@ namespace PresenceLight
             dataPanel.Visibility = Visibility.Visible;
             await SettingsService.SaveSettings(Config);
             savedAvailability = string.Empty;
+            DateTime settingsLastSaved = DateTime.MinValue;
             while (true)
             {
                 await Task.Delay(Convert.ToInt32(Config.PollingInterval * 1000));
@@ -260,9 +261,10 @@ namespace PresenceLight
                             await SetColor(presence.Availability);
                         }
 
-                        if (DateTime.Now.Minute % 5 == 0)
+                        if (DateTime.Now.AddMinutes(-5) > settingsLastSaved)
                         {
                             await SettingsService.SaveSettings(Config);
+                            settingsLastSaved = DateTime.Now;
                         }
 
                         MapUI(presence, null, null);
@@ -593,10 +595,11 @@ namespace PresenceLight
 
         #region Tray Methods
 
-        protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+        protected override async void OnClosing(System.ComponentModel.CancelEventArgs e)
         {
-            this.Hide();
             e.Cancel = true;
+            await SettingsService.SaveSettings(Config);
+            this.Hide();
         }
 
         private void OnNotifyIconDoubleClick(object sender, MouseButtonEventArgs e)
@@ -639,6 +642,12 @@ namespace PresenceLight
 
                 await _lifxService.SetColor("Off", (Selector)Config.SelectedLIFXItemId);
             }
+
+            if (Config.IsCustomApiEnabled && !string.IsNullOrEmpty(Config.CustomApiOffMethod) && !string.IsNullOrEmpty(Config.CustomApiOffUri))
+            {
+                await _customApiService.SetColor("Off");
+            }
+
             await SettingsService.SaveSettings(Config);
         }
         #endregion
