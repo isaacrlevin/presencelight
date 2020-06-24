@@ -33,6 +33,9 @@ namespace PresenceLight
         private string lightMode;
         private string savedAvailability = string.Empty;
 
+        private Presence presence { get; set; }
+        private DateTime settingsLastSaved = DateTime.MinValue;
+
         private IYeelightService _yeelightService;
         private IHueService _hueService;
         private ICustomApiService _customApiService;
@@ -245,37 +248,8 @@ namespace PresenceLight
             dataPanel.Visibility = Visibility.Visible;
             await SettingsService.SaveSettings(Config);
             savedAvailability = string.Empty;
-            DateTime settingsLastSaved = DateTime.MinValue;
-            while (true)
-            {
-                await Task.Delay(Convert.ToInt32(Config.PollingInterval * 1000));
-                if (lightMode == "Graph" && (!Config.UseWorkingHours || (Config.UseWorkingHours && IsInWorkingHours(Config.WorkingHoursStartTime, Config.WorkingHoursEndTime))))
-                {
-                    try
-                    {
-                        presence = await System.Threading.Tasks.Task.Run(() => GetPresence());
 
-
-                        if (presence.Availability != savedAvailability)
-                        {
-                            await SetColor(presence.Availability);
-                        }
-
-                        if (DateTime.Now.AddMinutes(-5) > settingsLastSaved)
-                        {
-                            await SettingsService.SaveSettings(Config);
-                            settingsLastSaved = DateTime.Now;
-                        }
-
-                        MapUI(presence, null, null);
-                        savedAvailability = presence.Availability;
-                    }
-                    catch (Exception e)
-                    {
-                        DiagnosticsClient.TrackException(e);
-                    }
-                }
-            }
+            await InteractWithLights();
         }
 
         public async Task SetColor(string color)
@@ -549,21 +523,8 @@ namespace PresenceLight
             lblSettingSaved.Visibility = Visibility.Collapsed;
         }
 
-        private async void cbSyncTeamsPresence(object sender, RoutedEventArgs e)
+        private async void cbSyncLights(object sender, RoutedEventArgs e)
         {
-            if (Config.SyncTeamsPresence)
-            {
-                lightMode = "Graph";
-                syncTeamsButton.IsEnabled = false;
-                syncThemeButton.IsEnabled = true;
-            }
-            else
-            {
-                lightMode = "Custom";
-                syncTeamsButton.IsEnabled = true;
-                syncThemeButton.IsEnabled = true;
-                savedAvailability = string.Empty;
-            }
             SyncOptions();
             await SettingsService.SaveSettings(Config);
             e.Handled = true;
@@ -654,9 +615,18 @@ namespace PresenceLight
 
         bool IsInWorkingHours(string startString, string endString)
         {
+            if (string.IsNullOrEmpty(startString) || string.IsNullOrEmpty(endString))
+            {
+                return false;
+            }
             // convert datetime to a TimeSpan
-            TimeSpan start = TimeSpan.Parse(startString);
-            TimeSpan end = TimeSpan.Parse(endString);
+            bool validStart = TimeSpan.TryParse(startString, out TimeSpan start);
+            bool validEnd = TimeSpan.TryParse(endString, out TimeSpan end);
+            if (!validEnd || !validStart)
+            {
+                return false;
+            }
+
             TimeSpan now = DateTime.Now.TimeOfDay;
             // see if start comes before end
             if (start < end)
@@ -675,6 +645,77 @@ namespace PresenceLight
             if (!string.IsNullOrEmpty(Config.WorkingHoursEndTime))
             {
                 Config.WorkingHoursEndTime = DateTime.Parse(Config.WorkingHoursEndTime).TimeOfDay.ToString();
+            }
+        }
+
+        private async Task InteractWithLights()
+        {
+            while (true)
+            {
+                await Task.Delay(Convert.ToInt32(Config.PollingInterval * 1000));
+
+                if (Config.SyncLights)
+                {
+                    if (!Config.UseWorkingHours || (Config.UseWorkingHours && IsInWorkingHours(Config.WorkingHoursStartTime, Config.WorkingHoursEndTime)))
+                    {
+                        switch (lightMode)
+                        {
+                            case "Graph":
+                                try
+                                {
+                                    presence = await System.Threading.Tasks.Task.Run(() => GetPresence());
+
+                                    if (presence.Availability != savedAvailability)
+                                    {
+                                        await SetColor(presence.Availability);
+                                    }
+
+                                    if (DateTime.Now.AddMinutes(-5) > settingsLastSaved)
+                                    {
+                                        await SettingsService.SaveSettings(Config);
+                                        settingsLastSaved = DateTime.Now;
+                                    }
+
+                                    MapUI(presence, null, null);
+                                    savedAvailability = presence.Availability;
+                                }
+                                catch (Exception e)
+                                {
+                                    DiagnosticsClient.TrackException(e);
+                                }
+
+                                break;
+                            case "Theme":
+
+                                try
+                                {
+                                    var theme = ((SolidColorBrush)SystemParameters.WindowGlassBrush).Color;
+                                    var color = $"#{theme.ToString().Substring(3)}";
+
+                                    lblTheme.Content = $"Theme Color is {color}";
+                                    lblTheme.Foreground = (SolidColorBrush)SystemParameters.WindowGlassBrush;
+                                    lblTheme.Visibility = Visibility.Visible;
+
+                                    if (lightMode == "Theme")
+                                    {
+                                        await SetColor(color);
+                                    }
+
+                                    if (DateTime.Now.Minute % 5 == 0)
+                                    {
+                                        await SettingsService.SaveSettings(Config);
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    DiagnosticsClient.TrackException(ex);
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
             }
         }
     }

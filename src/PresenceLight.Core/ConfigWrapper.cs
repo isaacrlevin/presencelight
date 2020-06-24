@@ -5,7 +5,7 @@ namespace PresenceLight.Core
 {
     public class ConfigWrapper
     {
-        public bool SyncTeamsPresence { get; set; }
+        public bool SyncLights { get; set; }
 
         public bool UseWorkingHours { get; set; }
 

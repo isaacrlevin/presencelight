@@ -30,38 +30,6 @@ namespace PresenceLight
             lblTheme.Visibility = Visibility.Visible;
 
             await SetColor(color);
-
-            while (true)
-            {
-                await Task.Delay(Convert.ToInt32(Config.PollingInterval * 1000));
-
-                if (!Config.UseWorkingHours || (Config.UseWorkingHours && IsInWorkingHours(Config.WorkingHoursStartTime, Config.WorkingHoursEndTime)))
-                {
-                    try
-                    {
-                        theme = ((SolidColorBrush)SystemParameters.WindowGlassBrush).Color;
-                        color = $"#{theme.ToString().Substring(3)}";
-
-                        lblTheme.Content = $"Theme Color is {color}";
-                        lblTheme.Foreground = (SolidColorBrush)SystemParameters.WindowGlassBrush;
-                        lblTheme.Visibility = Visibility.Visible;
-
-                        if (lightMode == "Theme")
-                        {
-                            await SetColor(color);
-                        }
-
-                        if (DateTime.Now.Minute % 5 == 0)
-                        {
-                            await SettingsService.SaveSettings(Config);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        DiagnosticsClient.TrackException(ex);
-                    }
-                }
-            }
         }
 
 
