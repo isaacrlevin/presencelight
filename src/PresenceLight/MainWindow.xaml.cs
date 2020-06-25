@@ -31,7 +31,7 @@ namespace PresenceLight
         public ConfigWrapper Config { get; set; }
 
         private string lightMode;
-        private string savedAvailability = string.Empty;
+        //private string savedAvailability = string.Empty;
 
         private Presence presence { get; set; }
         private DateTime settingsLastSaved = DateTime.MinValue;
@@ -118,7 +118,7 @@ namespace PresenceLight
                 object value = property.GetValue(Config);
                 property.SetValue(_options, value);
             }
-            savedAvailability = string.Empty;
+            //savedAvailability = string.Empty;
         }
 
         private async Task LoadSettings()
@@ -248,7 +248,7 @@ namespace PresenceLight
 
             dataPanel.Visibility = Visibility.Visible;
             await SettingsService.SaveSettings(Config);
-            savedAvailability = string.Empty;
+            //savedAvailability = string.Empty;
 
             await InteractWithLights();
         }
@@ -526,7 +526,7 @@ namespace PresenceLight
 
         private async void cbSyncLights(object sender, RoutedEventArgs e)
         {
-            savedAvailability = string.Empty;
+            //savedAvailability = string.Empty;
             SyncOptions();
             await SettingsService.SaveSettings(Config);
             e.Handled = true;
@@ -553,7 +553,7 @@ namespace PresenceLight
                 pnlWorkingHours.Visibility = Visibility.Collapsed;
             }
 
-            savedAvailability = string.Empty;
+            //savedAvailability = string.Empty;
             SyncOptions();
             e.Handled = true;
         }
@@ -651,7 +651,7 @@ namespace PresenceLight
                 Config.WorkingHoursEndTime = DateTime.Parse(Config.WorkingHoursEndTime).TimeOfDay.ToString();
             }
 
-            savedAvailability = string.Empty;
+            //savedAvailability = string.Empty;
             SyncOptions();
             e.Handled = true;
         }
@@ -673,10 +673,10 @@ namespace PresenceLight
                                 {
                                     presence = await System.Threading.Tasks.Task.Run(() => GetPresence());
 
-                                    if (presence.Availability != savedAvailability)
-                                    {
-                                        await SetColor(presence.Availability);
-                                    }
+                                    //if (presence.Availability != savedAvailability)
+                                    //{
+                                    await SetColor(presence.Availability);
+                                    //}
 
                                     if (DateTime.Now.AddMinutes(-5) > settingsLastSaved)
                                     {
@@ -685,7 +685,7 @@ namespace PresenceLight
                                     }
 
                                     MapUI(presence, null, null);
-                                    savedAvailability = presence.Availability;
+                                    //savedAvailability = presence.Availability;
                                 }
                                 catch (Exception e)
                                 {
