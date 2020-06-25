@@ -15,10 +15,6 @@
 
     <RuntimeIdentifiers>win-x86</RuntimeIdentifiers>
 
-    <UseWpf>true</UseWpf>
-    <UseWindowsForms>true</UseWindowsForms>
-    <!-- This suppresses the warning we get because of defining UseWpf/UseWindowsForms where it doesn't
-         apply to all of our projects -->
     <MSBuildWarningsAsMessages>$(MSBuildWarningsAsMessages);NETSDK1107</MSBuildWarningsAsMessages>
 
     <LangVersion>preview</LangVersion>
@@ -55,10 +51,11 @@
     <PackageReference Include="Microsoft.Graph.Beta" Version="0.15.0-preview" />
     <PackageReference Include="Microsoft.Graph.Core" Version="2.0.0-preview.2" />
     <PackageReference Include="Microsoft.Identity.Client" Version="4.15.0" />
-    <PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.19041.1" />
+    <PackageReference Include="Microsoft.Windows.SDK.NET" Version="10.0.18362.3-preview" />
+    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="0.1.0-prerelease.200623.5" />
+    <PackageReference Include="OSVersionHelper" Version="1.1.5-preview" />
     <PackageReference Include="NETStandard.HttpListener" Version="1.0.3.5" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="OSVersionHelper" Version="1.0.64" />
     <PackageReference Include="Q42.HueApi" Version="3.15.4" />
     <PackageReference Include="Q42.HueApi.ColorConverters" Version="3.14.0" />
     <PackageReference Include="WpfAnimatedGif" Version="2.0.0" />
