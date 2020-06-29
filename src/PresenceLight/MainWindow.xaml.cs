@@ -526,6 +526,10 @@ namespace PresenceLight
 
         private async void cbSyncLights(object sender, RoutedEventArgs e)
         {
+            if (!Config.SyncLights)
+            {
+                await SetColor("Off");
+            }
             //savedAvailability = string.Empty;
             SyncOptions();
             await SettingsService.SaveSettings(Config);
