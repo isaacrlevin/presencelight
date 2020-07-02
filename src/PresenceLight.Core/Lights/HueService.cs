@@ -35,8 +35,8 @@ namespace PresenceLight.Core
 
         public async Task SetColor(string availability, string lightId)
         {
-            _client = new LocalHueClient(_options.HueIpAddress);
-            _client.Initialize(_options.HueApiKey);
+            _client = new LocalHueClient(_options.LightSettings.Hue.HueIpAddress);
+            _client.Initialize(_options.LightSettings.Hue.HueApiKey);
 
 
             var command = new LightCommand();
@@ -69,15 +69,31 @@ namespace PresenceLight.Core
                     break;
             }
 
-            if (_options.Brightness == 0)
+            if (_options.LightSettings.UseDefaultBrightness)
             {
-                command.On = false;
+                if (_options.LightSettings.DefaultBrightness == 0)
+                {
+                    command.On = false;
+                }
+                else
+                {
+                    command.On = true;
+                    command.Brightness = Convert.ToByte(((Convert.ToDouble(_options.LightSettings.DefaultBrightness) / 100) * 254));
+                    command.TransitionTime = new TimeSpan(0);
+                }
             }
             else
             {
-                command.On = true;
-                command.Brightness = Convert.ToByte(((Convert.ToDouble(_options.Brightness) / 100) * 254));
-                command.TransitionTime = new TimeSpan(0);
+                if (_options.LightSettings.Hue.HueBrightness == 0)
+                {
+                    command.On = false;
+                }
+                else
+                {
+                    command.On = true;
+                    command.Brightness = Convert.ToByte(((Convert.ToDouble(_options.LightSettings.Hue.HueBrightness) / 100) * 254));
+                    command.TransitionTime = new TimeSpan(0);
+                }
             }
 
             await _client.SendCommandAsync(command, new List<string> { lightId });
@@ -86,11 +102,11 @@ namespace PresenceLight.Core
         //Need to wire up a way to do this without user intervention
         public async Task<string> RegisterBridge()
         {
-            if (string.IsNullOrEmpty(_options.HueApiKey))
+            if (string.IsNullOrEmpty(_options.LightSettings.Hue.HueApiKey))
             {
                 try
                 {
-                    _client = new LocalHueClient(_options.HueIpAddress);
+                    _client = new LocalHueClient(_options.LightSettings.Hue.HueIpAddress);
 
                     //Make sure the user has pressed the button on the bridge before calling RegisterAsync
                     //It will throw an LinkButtonNotPressedException if the user did not press the button
@@ -126,8 +142,8 @@ namespace PresenceLight.Core
         {
             if (_client == null)
             {
-                _client = new LocalHueClient(_options.HueIpAddress);
-                _client.Initialize(_options.HueApiKey);
+                _client = new LocalHueClient(_options.LightSettings.Hue.HueIpAddress);
+                _client.Initialize(_options.LightSettings.Hue.HueApiKey);
             }
             var lights = await _client.GetLightsAsync();
             // if there are no lights, get some

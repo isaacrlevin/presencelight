@@ -14,10 +14,10 @@
                     <h1 class="centering text-center">Configure LIFX</h1>
                     <br />
                     <br />
-                    <input type="checkbox" checked="@Config.CurrentValue.IsLIFXEnabled" @bind-value="@Config.CurrentValue.IsLIFXEnabled" /> Connect to LIFX
+                    <input type="checkbox" checked="@Config.CurrentValue.LightSettings.LIFX.IsLIFXEnabled" @bind-value="@Config.CurrentValue.LightSettings.LIFX.IsLIFXEnabled" /> Connect to LIFX
                     <br />
                     <br />
-                    @if (Config.CurrentValue.IsLIFXEnabled)
+                    @if (Config.CurrentValue.LightSettings.LIFX.IsLIFXEnabled)
                     {
 
                         <div class="row">
@@ -25,11 +25,11 @@
                                 <h5>LIFX Token</h5>
                             </div>
                             <div class="col-8">
-                                <input style="width: 75%" @bind-value="@Config.CurrentValue.LIFXApiKey" type="text" /> <a href="https://cloud.lifx.com/settings" target="_blank">Get Token</a>
+                                <input style="width: 75%" @bind-value="@Config.CurrentValue.LightSettings.LIFX.LIFXApiKey" type="text" /> <a href="https://cloud.lifx.com/settings" target="_blank">Get Token</a>
                             </div>
                         </div>
                         <br /><br />
-                        @if (!string.IsNullOrEmpty(Config.CurrentValue.LIFXApiKey))
+                        @if (!string.IsNullOrEmpty(Config.CurrentValue.LightSettings.LIFX.LIFXApiKey))
                         {
                             <button @onclick="@((ev) => CheckLIFX("Lights"))" class="btn btn-primary" type="submit">Get Lights</button>
 
@@ -54,7 +54,7 @@
                                         {
                                             var obj = (LifxCloud.NET.Models.Group)light;
 
-                                            @if (Config.CurrentValue.SelectedLIFXItemId == obj.Id)
+                                            @if (Config.CurrentValue.LightSettings.LIFX.SelectedLIFXItemId == obj.Id)
                                             {
                                                 <option selected="selected" value=group_id:@obj.Id>@obj.Label</option>
                                             }
@@ -67,7 +67,7 @@
                                         {
                                             var obj = (LifxCloud.NET.Models.Light)light;
 
-                                            @if (Config.CurrentValue.SelectedLIFXItemId == obj.Id)
+                                            @if (Config.CurrentValue.LightSettings.LIFX.SelectedLIFXItemId == obj.Id)
                                             {
                                                 <option selected="selected" value=id:@obj.Id>@obj.Label</option>
                                             }
@@ -83,7 +83,7 @@
                         }
                         <br />
                         <br />
-                        @if (!string.IsNullOrEmpty(Config.CurrentValue.LIFXApiKey))
+                        @if (!string.IsNullOrEmpty(Config.CurrentValue.LightSettings.LIFX.LIFXApiKey))
                         {
                             <button class="btn btn-primary" @onclick="Save">Save LIFX Settings</button>
                         }
@@ -109,14 +109,14 @@
     string lifxMessage;
     private void Save()
     {
-        System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/AADSettings.json", JsonConvert.SerializeObject(Config.CurrentValue));
+        System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/PresenceLightSettings.json", JsonConvert.SerializeObject(Config.CurrentValue));
         message = "Settings Saved";
         settingsSaved = true;
     }
 
     async Task CheckLIFX(string type)
     {
-        if (!string.IsNullOrEmpty(Config.CurrentValue.LIFXApiKey))
+        if (!string.IsNullOrEmpty(Config.CurrentValue.LightSettings.LIFX.LIFXApiKey))
         {
             try
             {
@@ -150,7 +150,7 @@
     private void OnChange(ChangeEventArgs e)
     {
         var light = e.Value.ToString();
-        Config.CurrentValue.SelectedLIFXItemId = light;
+        Config.CurrentValue.LightSettings.LIFX.SelectedLIFXItemId = light;
         appState.SetLIFXLight(light);
     }
 

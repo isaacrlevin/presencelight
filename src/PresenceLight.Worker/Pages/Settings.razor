@@ -13,10 +13,10 @@
             <h5>Teams Presence Polling Interval</h5>
         </div>
         <div class="col-4">
-            <Slider TValue="double" @bind-Value="@Config.CurrentValue.PollingInterval" Step=".1" Min="1.0" Max="5.0" />
+            <Slider TValue="double" @bind-Value="@Config.CurrentValue.LightSettings.PollingInterval" Step=".1" Min="1.0" Max="5.0" />
         </div>
         <div class="col-1">
-            <input style="width:50px" @bind-value="@Config.CurrentValue.PollingInterval" type="text" />
+            <input style="width:50px" @bind-value="@Config.CurrentValue.LightSettings.PollingInterval" type="text" />
         </div>
     </div>
     <br /><br />
@@ -25,10 +25,10 @@
             <h5>Brightness</h5>
         </div>
         <div class="col-4">
-            <Slider TValue="int" @bind-Value="@Config.CurrentValue.Brightness" Step="1" Min="0" Max="100" />
+            <Slider TValue="int" @bind-Value="@Config.CurrentValue.LightSettings.DefaultBrightness" Step="1" Min="0" Max="100" />
         </div>
         <div class="col-1">
-            <input style="width:50px" @bind-value="@Config.CurrentValue.Brightness" type="text" />
+            <input style="width:50px" @bind-value="@Config.CurrentValue.LightSettings.DefaultBrightness" type="text" />
         </div>
     </div>
     <br />
@@ -50,7 +50,7 @@
 
     void SaveSettings()
     {
-        System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/AADSettings.json", JsonConvert.SerializeObject(Config.CurrentValue));
+        System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/PresenceLightSettings.json", JsonConvert.SerializeObject(Config.CurrentValue));
         message = "Settings Saved";
         settingsSaved = true;
     }

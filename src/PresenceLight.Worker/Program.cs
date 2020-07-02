@@ -19,7 +19,7 @@ namespace PresenceLight.Worker
         {
             config
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("AADSettings.json", optional: false, reloadOnChange: false)
+                .AddJsonFile("PresenceLightSettings.json", optional: false, reloadOnChange: false)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
                 .AddUserSecrets<Startup>();
         }

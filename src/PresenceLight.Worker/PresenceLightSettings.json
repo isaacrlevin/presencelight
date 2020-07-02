@@ -1,0 +1,61 @@
+{
+  "IconType": "White",
+  "AADSettings": {
+    "ClientId": "f8119f58-4523-44c1-ab72-b2e0c815bd6a",
+    "ClientSecret": "io2~p.3-2~x646_TMC-uo4tL9610mA2RxO",
+    "Instance": "https://login.microsoftonline.com/",
+    "RedirectUri": "https://localhost:5001/signin-oidc",
+    "CallbackPath": "/signin-oidc",
+    "ApiScopes": "User.Read offline_access"
+  },
+  "LightSettings": {
+    "SyncLights": true,
+    "WorkingDays": "",
+    "WorkingHoursStartTime": "",
+    "WorkingHoursEndTime": "",
+    "UseWorkingHours": false,
+    "PollingInterval": 5.0,
+    "UseDefaultBrightness": true,
+    "DefaultBrightness": 100,
+    "LIFX": {
+      "LIFXClientId": "",
+      "LIFXClientSecret": "",
+      "LIFXApiKey": "",
+      "IsLIFXEnabled": false,
+      "SelectedLIFXItemId": "",
+      "LIFXBrightness": 100
+    },
+    "Hue": {
+      "HueApiKey": "",
+      "SelectedHueLightId": "",
+      "HueIpAddress": "",
+      "IsPhillipsHueEnabled": false,
+      "HueBrightness": 100
+    },
+    "Yeelight": {
+      "SelectedYeelightId": "",
+      "IsYeelightEnabled": false,
+      "YeelightBrightness": 100
+    },
+    "Custom": {
+      "SelectedCustomLightId": "",
+      "IsCustomApiEnabled": false,
+      "CustomLightBrightness": 100,
+      "CustomApiAvailableMethod": "",
+      "CustomApiAvailableUri": "",
+      "CustomApiBusyMethod": "",
+      "CustomApiBusyUri": "",
+      "CustomApiBeRightBackMethod": "",
+      "CustomApiBeRightBackUri": "",
+      "CustomApiAwayMethod": "",
+      "CustomApiAwayUri": "",
+      "CustomApiDoNotDisturbMethod": "",
+      "CustomApiDoNotDisturbUri": "",
+      "CustomApiOfflineMethod": "",
+      "CustomApiOfflineUri": "",
+      "CustomApiOffMethod": "",
+      "CustomApiOffUri": "",
+      "CustomApiTimeout": 100
+    }
+  }
+}

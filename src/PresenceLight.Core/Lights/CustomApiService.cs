@@ -43,32 +43,32 @@ namespace PresenceLight.Core
             switch (availability)
             {
                 case "Available":
-                    method = _options.CustomApiAvailableMethod;
-                    uri = _options.CustomApiAvailableUri;
+                    method = _options.LightSettings.Custom.CustomApiAvailableMethod;
+                    uri = _options.LightSettings.Custom.CustomApiAvailableUri;
                     break;
                 case "Busy":
-                    method = _options.CustomApiBusyMethod;
-                    uri = _options.CustomApiBusyUri;
+                    method = _options.LightSettings.Custom.CustomApiBusyMethod;
+                    uri = _options.LightSettings.Custom.CustomApiBusyUri;
                     break;
                 case "BeRightBack":
-                    method = _options.CustomApiBeRightBackMethod;
-                    uri = _options.CustomApiBeRightBackUri;
+                    method = _options.LightSettings.Custom.CustomApiBeRightBackMethod;
+                    uri = _options.LightSettings.Custom.CustomApiBeRightBackUri;
                     break;
                 case "Away":
-                    method = _options.CustomApiAwayMethod;
-                    uri = _options.CustomApiAwayUri;
+                    method = _options.LightSettings.Custom.CustomApiAwayMethod;
+                    uri = _options.LightSettings.Custom.CustomApiAwayUri;
                     break;
                 case "DoNotDisturb":
-                    method = _options.CustomApiDoNotDisturbMethod;
-                    uri = _options.CustomApiDoNotDisturbUri;
+                    method = _options.LightSettings.Custom.CustomApiDoNotDisturbMethod;
+                    uri = _options.LightSettings.Custom.CustomApiDoNotDisturbUri;
                     break;
                 case "Offline":
-                    method = _options.CustomApiOfflineMethod;
-                    uri = _options.CustomApiOfflineUri;
+                    method = _options.LightSettings.Custom.CustomApiOfflineMethod;
+                    uri = _options.LightSettings.Custom.CustomApiOfflineUri;
                     break;
                 case "Off":
-                    method = _options.CustomApiOffMethod;
-                    uri = _options.CustomApiOffUri;
+                    method = _options.LightSettings.Custom.CustomApiOffMethod;
+                    uri = _options.LightSettings.Custom.CustomApiOffUri;
                     break;
                 default:
                     break;
