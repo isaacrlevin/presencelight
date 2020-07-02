@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Windows.Storage;
 using System.IO;
 using Windows.Storage.Streams;
+using ABI.Windows.Foundation.Diagnostics;
 
 namespace PresenceLight
 {
@@ -44,18 +45,30 @@ namespace PresenceLight
                 {
                     f = await _settingsFolder.CreateFileAsync(SETTINGS_FILENAME, CreationCollisionOption.ReplaceExisting);
                 }
-                await FileIO.WriteTextAsync(f, content, Windows.Storage.Streams.UnicodeEncoding.Utf8);
-                //using (StorageStreamTransaction transaction = await f.OpenTransactedWriteAsync())
-                //{
+                bool fileWritten = false;
 
-                //    using (DataWriter dataWriter = new DataWriter(transaction.Stream))
-                //    {
-                //        dataWriter.WriteString(content);
+                while (!fileWritten)
+                {
+                    try
+                    {
+                        await FileIO.WriteTextAsync(f, content, Windows.Storage.Streams.UnicodeEncoding.Utf8);
+                        fileWritten = true;
+                    }
+                    catch (System.Exception e)
+                    {                     
+                    }
+                    //using (StorageStreamTransaction transaction = await f.OpenTransactedWriteAsync())
+                    //{
 
-                //        transaction.Stream.Size = await dataWriter.StoreAsync();
-                //        await transaction.CommitAsync();
-                //    }
-                //}
+                    //    using (DataWriter dataWriter = new DataWriter(transaction.Stream))
+                    //    {
+                    //        dataWriter.WriteString(content);
+
+                    //        transaction.Stream.Size = await dataWriter.StoreAsync();
+                    //        await transaction.CommitAsync();
+                    //    }
+                    //}
+                }
                 return true;
             }
             catch (Exception e)
