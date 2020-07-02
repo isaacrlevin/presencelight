@@ -15,7 +15,13 @@ namespace PresenceLight.Core
 
         public string? ClientId { get; set; }
 
+        public string? ClientSecret { get; set; }
+
         public string? LIFXApiKey { get; set; }
+
+        public string? LIFXClientId { get; set; }
+
+        public string? LIFXClientSecret { get; set; }
 
         public string? Instance { get; set; }
 
