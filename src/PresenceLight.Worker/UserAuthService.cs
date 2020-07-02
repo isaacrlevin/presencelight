@@ -23,16 +23,9 @@ namespace PresenceLight.Worker
             var config = new ConfigWrapper();
             configuration.Bind(config);
 
-            var client = new HttpClient();
-            string json = client.GetStringAsync("https://presence-light.azurewebsites.net/api/KeyVault?code=0UGo7xdQmumEzoCV8vRNXv6Z8pGxWvtu7b6a0meOtDlQCB43oxIEfw==").Result;
-
-            var secretResponse = JsonConvert.DeserializeObject<List<SecretResponse>>(json);
-            var _clientSecret = secretResponse.FirstOrDefault(a => a.Secret == "BlazorClientSecret").Value;
-
-
             _msalClient = ConfidentialClientApplicationBuilder
                 .Create(config.ClientId)
-                .WithClientSecret(_clientSecret)
+                .WithClientSecret(config.ClientSecret)
                 .WithAuthority($"{config.Instance}common/v2.0")
                 .WithRedirectUri(config.RedirectUri)
                 .Build();
