@@ -14,15 +14,15 @@
                     <h1 class="centering text-center">Configure Phillips Hue</h1>
                     <br />
                     <br />
-                    <input type="checkbox" checked="@Config.CurrentValue.IsPhillipsEnabled" @bind-value="@Config.CurrentValue.IsPhillipsEnabled" /> Connect to Phillips Hue
+                    <input type="checkbox" checked="@Config.CurrentValue.LightSettings.Hue.IsPhillipsHueEnabled" @bind-value="@Config.CurrentValue.LightSettings.Hue.IsPhillipsHueEnabled" /> Connect to Phillips Hue
                     <br />
                     <br />
-                    @if (Config.CurrentValue.IsPhillipsEnabled)
+                    @if (Config.CurrentValue.LightSettings.Hue.IsPhillipsHueEnabled)
                     {
                         <EditForm Model="@tempConfig" OnValidSubmit="RegisterBridge">
 
 
-                            <InputText id="name" @bind-Value="@tempConfig.HueIpAddress" />
+                            <InputText id="name" @bind-Value="@tempConfig.LightSettings.Hue.HueIpAddress" />
                             <br />
                             <DataAnnotationsValidator />
                             <ValidationSummary />
@@ -46,7 +46,7 @@
                                     <option disabled="disabled">Select</option>
                                     @foreach (var light in appState.HueLights)
                                     {
-                                        @if (tempConfig.SelectedHueLightId == light.Id)
+                                        @if (tempConfig.LightSettings.Hue.SelectedHueLightId == light.Id)
                                         {
                                             <option selected="selected" value=@light.Id>@light.Name</option>
                                         }
@@ -60,7 +60,7 @@
                         }
 
                         <br />
-                        @if (!string.IsNullOrEmpty(tempConfig.HueApiKey))
+                        @if (!string.IsNullOrEmpty(tempConfig.LightSettings.Hue.HueApiKey))
                         {
                             <button class="btn btn-primary" @onclick="Save">Save Hue Settings</button>
                         }
@@ -83,7 +83,7 @@
 
     private void Save()
     {
-        System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/AADSettings.json", JsonConvert.SerializeObject(Config.CurrentValue));
+        System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/PresenceLightSettings.json", JsonConvert.SerializeObject(Config.CurrentValue));
         _hueService = new HueService(Config.CurrentValue);
         message = "Settings Saved";
         settingsSaved = true;
@@ -109,7 +109,7 @@
         {
             try
             {
-                tempConfig.HueApiKey = await _hueService.RegisterBridge();
+                tempConfig.LightSettings.Hue.HueApiKey = await _hueService.RegisterBridge();
             }
             catch
             {
@@ -118,16 +118,16 @@
                 hueMessageClass = "text-danger";
             }
 
-            if (!string.IsNullOrEmpty(tempConfig.HueApiKey))
+            if (!string.IsNullOrEmpty(tempConfig.LightSettings.Hue.HueApiKey))
             {
                 showHueMessage = true;
                 hueMessage = "App Registered with Bridge";
                 hueMessageClass = "text-success";
 
-                Config.CurrentValue.HueIpAddress = tempConfig.HueIpAddress;
-                Config.CurrentValue.HueApiKey = tempConfig.HueApiKey;
+                Config.CurrentValue.LightSettings.Hue.HueIpAddress = tempConfig.LightSettings.Hue.HueIpAddress;
+                Config.CurrentValue.LightSettings.Hue.HueApiKey = tempConfig.LightSettings.Hue.HueApiKey;
 
-                System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/AADSettings.json", JsonConvert.SerializeObject(Config.CurrentValue));
+                System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/PresenceLightSettings.json", JsonConvert.SerializeObject(Config.CurrentValue));
 
                 appState.SetHueLights(await _hueService.CheckLights());
             }
@@ -143,8 +143,8 @@
     private void OnChange(ChangeEventArgs e)
     {
         var light = e.Value.ToString();
-        tempConfig.SelectedHueLightId = light;
-        Config.CurrentValue.SelectedHueLightId = light;
+        tempConfig.LightSettings.Hue.SelectedHueLightId = light;
+        Config.CurrentValue.LightSettings.Hue.SelectedHueLightId = light;
         appState.SetHueLight(light);
     }
 
@@ -152,7 +152,7 @@
     {
         tempConfig = Config.CurrentValue;
 
-        if (!string.IsNullOrEmpty(tempConfig.HueApiKey))
+        if (!string.IsNullOrEmpty(tempConfig.LightSettings.Hue.HueApiKey))
         {
             appState.SetHueLights(await _hueService.CheckLights());
         }

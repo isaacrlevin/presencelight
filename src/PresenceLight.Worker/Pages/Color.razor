@@ -46,14 +46,14 @@
 
         if (appState.LightMode == "Custom")
         {
-            if (!string.IsNullOrEmpty(Config.CurrentValue.HueApiKey) && !string.IsNullOrEmpty(Config.CurrentValue.HueIpAddress) && !string.IsNullOrEmpty(Config.CurrentValue.SelectedHueLightId))
+            if (!string.IsNullOrEmpty(Config.CurrentValue.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.CurrentValue.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.CurrentValue.LightSettings.Hue.SelectedHueLightId))
             {
-                await _hueService.SetColor(appState.CustomColor, Config.CurrentValue.SelectedHueLightId);
+                await _hueService.SetColor(appState.CustomColor, Config.CurrentValue.LightSettings.Hue.SelectedHueLightId);
             }
 
-            if (Config.CurrentValue.IsLIFXEnabled && !string.IsNullOrEmpty(Config.CurrentValue.LIFXApiKey))
+            if (Config.CurrentValue.LightSettings.LIFX.IsLIFXEnabled && !string.IsNullOrEmpty(Config.CurrentValue.LightSettings.LIFX.LIFXApiKey))
             {
-                await _lifxService.SetColor(appState.CustomColor, (Selector)Config.CurrentValue.SelectedLIFXItemId);
+                await _lifxService.SetColor(appState.CustomColor, (Selector)Config.CurrentValue.LightSettings.LIFX.SelectedLIFXItemId);
             }
         }
     }

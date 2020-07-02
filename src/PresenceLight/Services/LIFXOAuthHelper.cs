@@ -56,7 +56,7 @@ namespace PresenceLight.Services
             // Creates the OAuth 2.0 authorization request.
             string authorizationRequest = string.Format("{0}?response_type=code&scope=remote_control:all&client_id={1}&state={2}&redirect_uri={3}",
                 _lIFXAuthorizationEndpoint,
-                _options.LIFXClientId,
+                _options.LightSettings.LIFX.LIFXClientId,
                 state,
               HttpUtility.UrlEncode(redirectURI)
                 );
@@ -112,8 +112,8 @@ namespace PresenceLight.Services
 
             string tokenRequestBody = string.Format("code={0}&client_id={1}&client_secret={2}&grant_type=authorization_code",
                 code,
-               _options.LIFXClientId,
-               _options.LIFXClientSecret
+               _options.LightSettings.LIFX.LIFXClientId,
+               _options.LightSettings.LIFX.LIFXClientSecret
                 );
 
             // sends the request
@@ -143,7 +143,7 @@ namespace PresenceLight.Services
 
                     if (!string.IsNullOrEmpty(access_token))
                     {
-                        _options.LIFXApiKey = access_token;
+                        _options.LightSettings.LIFX.LIFXApiKey = access_token;
                         return access_token;
                     }
                 }

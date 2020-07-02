@@ -4,13 +4,13 @@
     "ClientId": "f8119f58-4523-44c1-ab72-b2e0c815bd6a",
     "ClientSecret": "io2~p.3-2~x646_TMC-uo4tL9610mA2RxO",
     "Instance": "https://login.microsoftonline.com/",
-    "RedirectUri": "http://localhost",
+    "RedirectUri": "https://localhost:5001/signin-oidc",
     "CallbackPath": "/signin-oidc",
     "ApiScopes": "User.Read offline_access"
   },
   "LightSettings": {
     "SyncLights": true,
-    "WorkingDays": "Monday|Tuesday|Wednesday|Thursday|Friday",
+    "WorkingDays": "",
     "WorkingHoursStartTime": "",
     "WorkingHoursEndTime": "",
     "UseWorkingHours": false,
@@ -18,8 +18,8 @@
     "UseDefaultBrightness": true,
     "DefaultBrightness": 100,
     "LIFX": {
-      "LIFXClientId": "fe204c11ef2e8e681f4335778eda72e8d3fc7fed61b84a91c6fe2c3e954ef74c",
-      "LIFXClientSecret": "8b259089b730e8a2de514dba351947d185ee7f382ab23dc7d384542824c110e0",
+      "LIFXClientId": "",
+      "LIFXClientSecret": "",
       "LIFXApiKey": "",
       "IsLIFXEnabled": false,
       "SelectedLIFXItemId": "",
@@ -29,7 +29,7 @@
       "HueApiKey": "",
       "SelectedHueLightId": "",
       "HueIpAddress": "",
-      "IsPhillipsHueEnabled": true,
+      "IsPhillipsHueEnabled": false,
       "HueBrightness": 100
     },
     "Yeelight": {

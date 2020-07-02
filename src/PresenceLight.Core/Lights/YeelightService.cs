@@ -43,19 +43,34 @@ namespace PresenceLight.Core
             device.OnNotificationReceived += Device_OnNotificationReceived;
             device.OnError += Device_OnError;
 
-            if(!await device.Connect())
+            if (!await device.Connect())
             {
                 return;
             }
 
-            if (_options.Brightness == 0)
+            if (_options.LightSettings.UseDefaultBrightness)
             {
-                await device.TurnOff();
+                if (_options.LightSettings.DefaultBrightness == 0)
+                {
+                    await device.TurnOff();
+                }
+                else
+                {
+                    await device.TurnOn();
+                    await device.SetBrightness(Convert.ToInt32(_options.LightSettings.DefaultBrightness));
+                }
             }
             else
             {
-                await device.TurnOn();
-                await device.SetBrightness(Convert.ToInt32(_options.Brightness));
+                if (_options.LightSettings.Hue.HueBrightness == 0)
+                {
+                    await device.TurnOff();
+                }
+                else
+                {
+                    await device.TurnOn();
+                    await device.SetBrightness(Convert.ToInt32(_options.LightSettings.Yeelight.YeelightBrightness));
+                }
             }
 
             switch (availability)

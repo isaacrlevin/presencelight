@@ -15,7 +15,7 @@ namespace PresenceLight
 
         private void cbIsYeelightEnabledChanged(object sender, RoutedEventArgs e)
         {
-            if (Config.IsYeelightEnabled)
+            if (Config.LightSettings.Yeelight.IsYeelightEnabled)
             {
                 pnlYeelight.Visibility = Visibility.Visible;
             }
@@ -29,22 +29,25 @@ namespace PresenceLight
 
         private async void FindYeelights_Click(object sender, RoutedEventArgs e)
         {
+            pnlYeelightBrigthness.Visibility = Visibility.Collapsed;
             var deviceGroup = await _yeelightService.FindLights();
             ddlYeelightLights.ItemsSource = deviceGroup.ToList();
+            pnlYeelightBrigthness.Visibility = Visibility;
         }
 
         private void ddlYeelightLights_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             if (ddlYeelightLights.SelectedItem != null)
             {
-                Config.SelectedYeeLightId = ((YeelightAPI.Device)ddlYeelightLights.SelectedItem).Id;
+                Config.LightSettings.Yeelight.SelectedYeelightId = ((YeelightAPI.Device)ddlYeelightLights.SelectedItem).Id;
                 SyncOptions();
             }
             e.Handled = true;
         }
 
-        private async void CheckYeelightSettings()
+        private async void CheckYeelight()
         {
+            pnlYeelightBrigthness.Visibility = Visibility.Collapsed;
             if (Config != null)
             {
                 SyncOptions();
@@ -54,12 +57,13 @@ namespace PresenceLight
                 foreach (var item in ddlYeelightLights.Items)
                 {
                     var light = (YeelightAPI.Device)item;
-                    if (light?.Id == Config.SelectedYeeLightId)
+                    if (light?.Id == Config.LightSettings.Yeelight.SelectedYeelightId)
                     {
                         ddlYeelightLights.SelectedItem = item;
                     }
                 }
                 ddlYeelightLights.Visibility = Visibility.Visible;
+                pnlYeelightBrigthness.Visibility = Visibility.Visible;
             }
         }
 

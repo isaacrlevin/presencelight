@@ -14,7 +14,7 @@ namespace PresenceLight
 
         private void cbIsCustomApiEnabledChanged(object sender, RoutedEventArgs e)
         {
-            if (Config.IsCustomApiEnabled)
+            if (Config.LightSettings.Custom.IsCustomApiEnabled)
             {
                 pnlCustomApi.Visibility = Visibility.Visible;
             }
@@ -36,26 +36,26 @@ namespace PresenceLight
             switch (sourceComboBox.Name)
             {
                 case "customApiAvailableMethod":
-                    Config.CustomApiAvailableMethod = selectedText;
+                    Config.LightSettings.Custom.CustomApiAvailableMethod = selectedText;
                     break;
                 case "customApiBusyMethod":
-                    Config.CustomApiBusyMethod = selectedText;
+                    Config.LightSettings.Custom.CustomApiBusyMethod = selectedText;
                     break;
 
                 case "customApiBeRightBackMethod":
-                    Config.CustomApiBeRightBackMethod = selectedText;
+                    Config.LightSettings.Custom.CustomApiBeRightBackMethod = selectedText;
                     break;
                 case "customApiAwayMethod":
-                    Config.CustomApiAwayMethod = selectedText;
+                    Config.LightSettings.Custom.CustomApiAwayMethod = selectedText;
                     break;
                 case "customApiDoNotDisturbMethod":
-                    Config.CustomApiDoNotDisturbMethod = selectedText;
+                    Config.LightSettings.Custom.CustomApiDoNotDisturbMethod = selectedText;
                     break;
                 case "customApiOfflineMethod":
-                    Config.CustomApiOfflineMethod = selectedText;
+                    Config.LightSettings.Custom.CustomApiOfflineMethod = selectedText;
                     break;
                 case "customApiOffMethod":
-                    Config.CustomApiOffMethod = selectedText;
+                    Config.LightSettings.Custom.CustomApiOffMethod = selectedText;
                     break;
                 default:
                     break;

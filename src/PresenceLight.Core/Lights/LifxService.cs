@@ -18,31 +18,31 @@ namespace PresenceLight.Core
 
         public async Task<List<Light>> GetAllLightsAsync()
         {
-            if (!_options.IsLIFXEnabled || string.IsNullOrEmpty(_options.LIFXApiKey))
+            if (!_options.LightSettings.LIFX.IsLIFXEnabled || string.IsNullOrEmpty(_options.LightSettings.LIFX.LIFXApiKey))
             {
                 return new List<Light>();
             }
 
-            _client = await LifxCloudClient.CreateAsync(_options.LIFXApiKey);
+            _client = await LifxCloudClient.CreateAsync(_options.LightSettings.LIFX.LIFXApiKey);
             return await _client.ListLights(Selector.All);
         }
 
         public async Task<List<Group>> GetAllGroupsAsync()
         {
-            if (!_options.IsLIFXEnabled || string.IsNullOrEmpty(_options.LIFXApiKey))
+            if (!_options.LightSettings.LIFX.IsLIFXEnabled || string.IsNullOrEmpty(_options.LightSettings.LIFX.LIFXApiKey))
             {
                 return new List<Group>();
             }
-            _client = await LifxCloudClient.CreateAsync(_options.LIFXApiKey);
+            _client = await LifxCloudClient.CreateAsync(_options.LightSettings.LIFX.LIFXApiKey);
             return await _client.ListGroups(Selector.All);
         }
         public async Task SetColor(string availability, Selector selector)
         {
-            if (!_options.IsLIFXEnabled || string.IsNullOrEmpty(_options.LIFXApiKey))
+            if (!_options.LightSettings.LIFX.IsLIFXEnabled || string.IsNullOrEmpty(_options.LightSettings.LIFX.LIFXApiKey))
             {
                 return;
             }
-            _client = await LifxCloudClient.CreateAsync(_options.LIFXApiKey);
+            _client = await LifxCloudClient.CreateAsync(_options.LightSettings.LIFX.LIFXApiKey);
             string color = "";
             switch (availability)
             {
@@ -71,21 +71,45 @@ namespace PresenceLight.Core
                     color = availability;
                     break;
             }
-            if (_options.Brightness == 0)
+
+
+            if (_options.LightSettings.UseDefaultBrightness)
             {
-                var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
+                if (_options.LightSettings.DefaultBrightness == 0)
                 {
-                    Power = PowerState.Off
-                }); ;
+                    var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
+                    {
+                        Power = PowerState.Off
+                    });
+                }
+                else
+                {
+                    var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
+                    {
+                        Brightness = Convert.ToDouble(_options.LightSettings.DefaultBrightness) / 100,
+                        Color = color,
+                        Duration = 0
+                    });
+                }
             }
             else
             {
-                var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
+                if (_options.LightSettings.Hue.HueBrightness == 0)
                 {
-                    Brightness = Convert.ToDouble(_options.Brightness) / 100,
-                    Color = color,
-                    Duration = 0
-                }); ;
+                    var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
+                    {
+                        Power = PowerState.Off
+                    });
+                }
+                else
+                {
+                    var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
+                    {
+                        Brightness = Convert.ToDouble(_options.LightSettings.LIFX.LIFXBrightness) / 100,
+                        Color = color,
+                        Duration = 0
+                    });
+                }
             }
         }
     }
