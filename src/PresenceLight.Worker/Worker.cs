@@ -43,12 +43,6 @@ namespace PresenceLight.Worker
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            if (!Debugger.IsAttached)
-            {
-                Helpers.OpenBrowser("https://localhost:5001");
-            }
-
-
             while (!stoppingToken.IsCancellationRequested)
             {
 
