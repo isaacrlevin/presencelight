@@ -132,7 +132,7 @@ namespace PresenceLight
 
             Config = await SettingsService.LoadSettings();
 
-            if (string.IsNullOrEmpty(Config.AADSettings.RedirectUri))
+            if (string.IsNullOrEmpty(Config.RedirectUri))
             {
                 await SettingsService.DeleteSettings();
                 await SettingsService.SaveSettings(_options);
@@ -546,7 +546,7 @@ namespace PresenceLight
         private void CheckAAD()
         {
             Regex r = new Regex(@"^(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}$");
-            if (string.IsNullOrEmpty(Config.AADSettings.ClientId) || string.IsNullOrEmpty(Config.AADSettings.RedirectUri) || !r.IsMatch(Config.AADSettings.ClientId))
+            if (string.IsNullOrEmpty(Config.ClientId) || string.IsNullOrEmpty(Config.RedirectUri) || !r.IsMatch(Config.ClientId))
             {
                 configErrorPanel.Visibility = Visibility.Visible;
                 dataPanel.Visibility = Visibility.Hidden;

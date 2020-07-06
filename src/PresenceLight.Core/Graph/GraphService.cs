@@ -33,9 +33,9 @@ namespace PresenceLight.Core.Graph
                 "https://graph.microsoft.com/.default"
             };
 
-            var pca = PublicClientApplicationBuilder.Create(_options.AADSettings.ClientId)
-                                                    .WithAuthority($"{_options.AADSettings.Instance}common/")
-                                                    .WithRedirectUri(_options.AADSettings.RedirectUri)
+            var pca = PublicClientApplicationBuilder.Create(_options.ClientId)
+                                                    .WithAuthority($"{_options.Instance}common/")
+                                                    .WithRedirectUri(_options.RedirectUri)
                                                     .Build();
 
             TokenCacheHelper.EnableSerialization(pca.UserTokenCache);

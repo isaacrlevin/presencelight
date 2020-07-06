@@ -24,10 +24,10 @@ namespace PresenceLight.Worker
             configuration.Bind(config);
 
             _msalClient = ConfidentialClientApplicationBuilder
-                .Create(config.AADSettings.ClientId)
-                .WithClientSecret(config.AADSettings.ClientSecret)
-                .WithAuthority($"{config.AADSettings.Instance}common/v2.0")
-                .WithRedirectUri(config.AADSettings.RedirectUri)
+                .Create(config.ClientId)
+                .WithClientSecret(config.ClientSecret)
+                .WithAuthority($"{config.Instance}common/v2.0")
+                .WithRedirectUri(config.RedirectUri)
                 .Build();
 
             // TODO: Token cache serialization
