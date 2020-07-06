@@ -7,13 +7,20 @@ namespace PresenceLight.Core
 {
     public class ConfigWrapper
     {
-        [Required]
-        [RegularExpression(@"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b",
-        ErrorMessage = "Characters are not allowed.")]
-
         public string? IconType { get; set; }
         public LightSettings LightSettings { get; set; }
-        public AADSettings AADSettings { get; set; }
+
+        public string? ClientId { get; set; }
+
+        public string? ClientSecret { get; set; }
+
+        public string? Instance { get; set; }
+
+        public string? RedirectUri { get; set; }
+
+        public string? CallbackPath { get; set; }
+
+        public string? ApiScopes { get; set; }
     }
 
     public class AADSettings
@@ -118,6 +125,9 @@ namespace PresenceLight.Core
 
         public int HueBrightness { get; set; }
 
+        [Required]
+        [RegularExpression(@"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b",
+        ErrorMessage = "Not a valid IP Address")]
         public string? HueIpAddress { get; set; }
 
         public bool IsPhillipsHueEnabled { get; set; }

@@ -20,8 +20,6 @@
                     @if (Config.CurrentValue.LightSettings.Hue.IsPhillipsHueEnabled)
                     {
                         <EditForm Model="@tempConfig" OnValidSubmit="RegisterBridge">
-
-
                             <InputText id="name" @bind-Value="@tempConfig.LightSettings.Hue.HueIpAddress" />
                             <br />
                             <DataAnnotationsValidator />
