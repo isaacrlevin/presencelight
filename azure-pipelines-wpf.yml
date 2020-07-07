@@ -186,7 +186,7 @@ stages:
               azureSubscription: 'Isaac Levin MSDN (a07802f5-f8df-47d8-9b88-79ba55cfb396)'
               scriptType: 'ps'
               scriptLocation: 'inlineScript'
-              inlineScript: 'az appservice plan update --name levin-signserv-asp-2dnwx6q6jwiay --resource-group SignService --sku P1V2'
+              inlineScript: 'az appservice plan update --name levin-signserv-asp-2dnwx6q6jwiay --resource-group SignService --sku P2V2'
 
           - pwsh: |
               .\SignClient "Sign" `
