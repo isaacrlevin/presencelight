@@ -110,6 +110,9 @@ namespace PresenceLight
             notificationIcon.Text = PresenceConstants.Inactive;
             notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(String.Empty, IconConstants.Inactive)));
 
+            turnOffButton.Visibility = Visibility.Collapsed;
+            turnOnButton.Visibility = Visibility.Collapsed;
+
             CallGraph();
         }
 
@@ -258,6 +261,9 @@ namespace PresenceLight
 
             dataPanel.Visibility = Visibility.Visible;
             await SettingsService.SaveSettings(Config);
+
+            turnOffButton.Visibility = Visibility.Visible;
+            turnOnButton.Visibility = Visibility.Collapsed;
 
             await InteractWithLights();
         }
@@ -625,6 +631,8 @@ namespace PresenceLight
             if (!Config.LightSettings.SyncLights)
             {
                 await SetColor("Off");
+                turnOffButton.Visibility = Visibility.Collapsed;
+                turnOnButton.Visibility = Visibility.Visible;
             }
 
             SyncOptions();
@@ -695,6 +703,42 @@ namespace PresenceLight
             this.Show();
             this.WindowState = this.lastWindowState;
         }
+
+        private void OnTurnOnSyncClick(object sender, RoutedEventArgs e)
+        {
+            lightMode = "Graph";
+
+            turnOffButton.Visibility = Visibility.Visible;
+            turnOnButton.Visibility = Visibility.Collapsed;
+
+            this.WindowState = this.lastWindowState;
+        }
+
+        private async void OnTurnOffSyncClick(object sender, RoutedEventArgs e)
+        {
+            lightMode = "Custom";
+
+            if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedHueLightId))
+            {
+                await _hueService.SetColor("Off", Config.LightSettings.Hue.SelectedHueLightId);
+            }
+
+            if (Config.LightSettings.LIFX.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
+            {
+
+                await _lifxService.SetColor("Off", (Selector)Config.LightSettings.LIFX.SelectedLIFXItemId);
+            }
+
+            turnOffButton.Visibility = Visibility.Collapsed;
+            turnOnButton.Visibility = Visibility.Visible;
+
+            notificationIcon.Text = PresenceConstants.Inactive;
+            notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(string.Empty, IconConstants.Inactive)));
+
+            this.WindowState = this.lastWindowState;
+        }
+
+
         private async void OnExitClick(object sender, RoutedEventArgs e)
         {
             if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedHueLightId))
