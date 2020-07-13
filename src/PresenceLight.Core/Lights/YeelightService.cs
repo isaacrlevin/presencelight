@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using System.Threading;
 using YeelightAPI;
 using System.Drawing;
+using Q42.HueApi.ColorConverters;
 
 namespace PresenceLight.Core
 {
@@ -97,8 +98,8 @@ namespace PresenceLight.Core
                     await device.SetRGBColor(255, 255, 255);
                     break;
                 default:
-                    var color = System.Drawing.ColorTranslator.FromHtml(availability);
-                    await device.SetRGBColor(color.R, color.G, color.B);
+                    var color = new RGBColor(availability);
+                    await device.SetRGBColor((int)color.R, (int)color.G, (int)color.B);
                     break;
             }
         }
