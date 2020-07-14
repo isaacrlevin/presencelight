@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using System.Linq;
 using System.IO;
+using System.Security.Authentication;
 
 namespace PresenceLight.Worker
 {
@@ -34,12 +35,11 @@ namespace PresenceLight.Worker
                    .ConfigureAppConfiguration(ConfigureConfiguration)
                    .ConfigureWebHostDefaults(webBuilder =>
                    {
-                       if (Convert.ToBoolean(configForMain["DeployedToServer"]))
+                       webBuilder
+                       .ConfigureKestrel(options =>
                        {
-                           webBuilder
-                           .ConfigureKestrel(options =>
+                           if (Convert.ToBoolean(configForMain["DeployedToServer"]))
                            {
-
                                var server = Dns.GetHostName();
                                IPHostEntry heserver = Dns.GetHostEntry(server);
                                var ip = heserver.AddressList.Where(a => a.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork).FirstOrDefault();
@@ -54,8 +54,15 @@ namespace PresenceLight.Worker
                                    });
 
                                }
-                           });
-                       }
+                           }
+                           if (Convert.ToBoolean(configForMain["DeployedToContainer"]))
+                           {
+                               options.ConfigureHttpsDefaults(listenOptions =>
+                               {
+                                   listenOptions.SslProtocols = SslProtocols.Tls12;
+                               });
+                           }
+                       });
                        webBuilder.UseStartup<Startup>();
                    });
         }
