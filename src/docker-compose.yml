@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  presencelight.worker:
+    image: ${DOCKER_REGISTRY-}presencelightworker
+    build:
+      context: .
+      dockerfile: PresenceLight.Worker/Dockerfile
