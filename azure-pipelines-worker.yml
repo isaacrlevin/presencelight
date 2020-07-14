@@ -47,10 +47,10 @@ stages:
           RID: linux-musl-x64
     steps:
       - task: UseDotNet@2
-        displayName: 'Use .NET Core SDK 5.0.x'
+        displayName: 'Use .NET Core sdk'
         inputs:
-          version: 5.0.x
-          includePreviewVersions: true
+          packageType: sdk
+          version: 3.1.301
 
       - task: DotNetCoreCLI@2
         inputs:
