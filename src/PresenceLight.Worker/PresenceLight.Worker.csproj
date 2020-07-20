@@ -19,7 +19,7 @@
 
   <ItemGroup>
     <PackageReference Include="Blazored.Modal" Version="5.0.1" />
-    <PackageReference Include="Blazorise.Bootstrap" Version="0.9.1.1" />
+    <PackageReference Include="Blazorise.Bootstrap" Version="0.9.1.2" />
     <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.1.1" />
     <PackageReference Include="IdentityModel" Version="4.3.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="3.1.5" />
