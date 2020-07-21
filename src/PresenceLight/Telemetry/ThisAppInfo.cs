@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using OSVersionHelper;
 using Windows.ApplicationModel;
 using Windows.Foundation.Metadata;
+using Windows.Storage;
 
 namespace PresenceLight
 {
@@ -30,6 +31,13 @@ namespace PresenceLight
             return $"{date.ToShortDateString()} {date.ToShortTimeString()}";
         }
 
+        internal static string GetSettingsLocation()
+        {
+            string SETTINGS_FILENAME = "settings.json";
+            StorageFolder _settingsFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
+            return $"{_settingsFolder.Path}\\{SETTINGS_FILENAME}";
+        }
+
         internal static string GetPackageVersion()
         {
             if (WindowsVersionHelper.HasPackageIdentity)
@@ -41,7 +49,7 @@ namespace PresenceLight
 
         internal static string GetPackageChannel()
         {
-            if(WindowsVersionHelper.HasPackageIdentity)
+            if (WindowsVersionHelper.HasPackageIdentity)
             {
                 return Package.Current.Id.Name.Substring(Package.Current.Id.Name.LastIndexOf('.') + 1);
             }
@@ -74,7 +82,7 @@ namespace PresenceLight
 
             if (!WindowsVersionHelper.HasPackageIdentity) return "Not packaged";
 
-                if (ApiInformation.IsMethodPresent("Windows.ApplicationModel.Package", "GetAppInstallerInfo"))
+            if (ApiInformation.IsMethodPresent("Windows.ApplicationModel.Package", "GetAppInstallerInfo"))
             {
                 var aiUri = GetAppInstallerInfoUri(Package.Current);
                 if (aiUri != null)

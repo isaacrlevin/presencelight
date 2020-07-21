@@ -500,6 +500,12 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="10" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="10" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="20" />
+                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
@@ -538,11 +544,14 @@
                     <Label Grid.Column="1" Grid.Row="8" FontSize="15" Content="Install Location" Target="{Binding ElementName=installLocation}"  />
                     <TextBlock Grid.ColumnSpan="2" Grid.Row="8" FontSize="15" TextWrapping="Wrap" x:Name="installLocation"  Grid.Column="2" VerticalAlignment="Center"  />
 
-                    <Label Grid.Column="1" Grid.Row="10" FontSize="15" Content="Install Date" Target="{Binding ElementName=installedDate}"  />
-                    <TextBlock Grid.ColumnSpan="2" Grid.Row="10" FontSize="15" TextWrapping="Wrap" x:Name="installedDate" Grid.Column="2" VerticalAlignment="Center"   />
+                    <Label Grid.Column="1" Grid.Row="12" FontSize="15" Content="Settings Location" Target="{Binding ElementName=installLocation}"  />
+                    <TextBlock Grid.ColumnSpan="2" Grid.Row="12" FontSize="15" TextWrapping="Wrap" x:Name="settingsLocation"  Grid.Column="2" VerticalAlignment="Center"  />
 
-                    <Label Grid.Column="1" Grid.Row="12" FontSize="15" Content="Runtime Version" Target="{Binding ElementName=RuntimeVersionInfo}"  />
-                    <TextBlock Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Left" x:Name="RuntimeVersionInfo" FontSize="15" Grid.Row="12" Grid.Column="2" />
+                    <Label Grid.Column="1" Grid.Row="14" FontSize="15" Content="Install Date" Target="{Binding ElementName=installedDate}"  />
+                    <TextBlock Grid.ColumnSpan="2" Grid.Row="14" FontSize="15" TextWrapping="Wrap" x:Name="installedDate" Grid.Column="2" VerticalAlignment="Center"   />
+
+                    <Label Grid.Column="1" Grid.Row="16" FontSize="15" Content="Runtime Version" Target="{Binding ElementName=RuntimeVersionInfo}"  />
+                    <TextBlock Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Left" x:Name="RuntimeVersionInfo" FontSize="15" Grid.Row="16" Grid.Column="2" />
 
                 </Grid>
             </TabItem>

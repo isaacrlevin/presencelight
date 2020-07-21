@@ -85,6 +85,7 @@ namespace PresenceLight
             packageVersion.Text = ThisAppInfo.GetPackageVersion();
             installedFrom.Text = ThisAppInfo.GetAppInstallerUri();
             installLocation.Text = ThisAppInfo.GetInstallLocation();
+            settingsLocation.Text = ThisAppInfo.GetSettingsLocation();
             installedDate.Text = ThisAppInfo.GetInstallationDate();
             RuntimeVersionInfo.Text = ThisAppInfo.GetDotNetRuntimeInfo();
         }
