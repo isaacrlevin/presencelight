@@ -2,120 +2,59 @@
 using System.IO;
 using System.Security.Cryptography;
 using Microsoft.Identity.Client;
-using Windows.Storage;
-using System.Threading.Tasks;
-using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace PresenceLight.Core.Graph
 {
     static class TokenCacheHelper
     {
-        /// <summary>
-        /// Path to the token cache
-        /// </summary>
-        private static readonly string CacheFilePath = System.Reflection.Assembly.GetExecutingAssembly().Location + ".msalcache.bin";
+        public static void EnableSerialization(ITokenCache tokenCache)
+        {
+            tokenCache.SetBeforeAccess(BeforeAccessNotification);
+            tokenCache.SetAfterAccess(AfterAccessNotification);
+        }
 
-        private const string SETTINGS_FILENAME = "token.json";
-        private static readonly StorageFolder _settingsFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
+        /// <summary>
+        /// Path to the token cache. Note that this could be something different for instance for MSIX applications:
+        /// </summary>
+        private static readonly string CacheFolderPath = $"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\\PresenceLight\\";
+        private static readonly string CacheFileName = "msalcache.bin";
+
         private static readonly object FileLock = new object();
 
-        private static async void BeforeAccessNotification(TokenCacheNotificationArgs args)
+
+        private static void BeforeAccessNotification(TokenCacheNotificationArgs args)
         {
-            try
+            lock (FileLock)
             {
-                lock (FileLock)
-                {
-                    args.TokenCache.DeserializeMsalV3(File.Exists(CacheFilePath)
-                        ? ProtectedData.Unprotect(File.ReadAllBytes(CacheFilePath),
+                args.TokenCache.DeserializeMsalV3(File.Exists($"{CacheFolderPath}{CacheFileName}")
+                        ? ProtectedData.Unprotect(File.ReadAllBytes($"{CacheFolderPath}{CacheFileName}"),
                                                   null,
                                                   DataProtectionScope.CurrentUser)
                         : null);
-                }
-            }
-            catch
-            {
-                args.TokenCache.DeserializeMsalV3(await IsFilePresent()
-                     ? ProtectedData.Unprotect(await LoadFile(),
-                                               null,
-                                               DataProtectionScope.CurrentUser)
-                     : null);
-
             }
         }
 
-        private static async void AfterAccessNotification(TokenCacheNotificationArgs args)
+        private static void AfterAccessNotification(TokenCacheNotificationArgs args)
         {
             // if the access operation resulted in a cache update
             if (args.HasStateChanged)
             {
-                try
+                lock (FileLock)
                 {
-                    lock (FileLock)
+                    // reflect changesgs in the persistent store
+
+                    if (!Directory.Exists(CacheFolderPath))
                     {
-                        // reflect changes in the persistent store
-                        File.WriteAllBytes(CacheFilePath,
-                                           ProtectedData.Protect(args.TokenCache.SerializeMsalV3(),
-                                                                 null,
-                                                                 DataProtectionScope.CurrentUser)
-                                          );
+                        Directory.CreateDirectory(CacheFolderPath);
                     }
-                }
-                catch
-                {
-                    // reflect changes in the persistent store
-                    await SaveFile(ProtectedData.Protect(args.TokenCache.SerializeMsalV3(),
-                                                                 null,
-                                                                 DataProtectionScope.CurrentUser)
-                                          );
+
+                    File.WriteAllBytes($"{CacheFolderPath}{CacheFileName}",
+                                        ProtectedData.Protect(args.TokenCache.SerializeMsalV3(),
+                                                                null,
+                                                                DataProtectionScope.CurrentUser)
+                                        );
                 }
             }
-        }
-
-        private async static Task<byte[]> LoadFile()
-        {
-            try
-            {
-                StorageFile sf = await _settingsFolder.GetFileAsync(SETTINGS_FILENAME);
-                if (sf == null) return null;
-
-                var content = await FileIO.ReadBufferAsync(sf);
-                return content.ToArray();
-            }
-            catch
-            { return null; }
-        }
-
-        private async static Task<bool> SaveFile(byte[] content)
-        {
-            try
-            {
-                StorageFile file = await _settingsFolder.CreateFileAsync(SETTINGS_FILENAME, CreationCollisionOption.ReplaceExisting);
-
-                await FileIO.WriteBytesAsync(file, content);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        private static async Task<bool> IsFilePresent()
-        {
-            try
-            {
-                var item = await _settingsFolder.TryGetItemAsync(SETTINGS_FILENAME);
-                return item != null;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-        internal static void EnableSerialization(ITokenCache tokenCache)
-        {
-            tokenCache.SetBeforeAccess(BeforeAccessNotification);
-            tokenCache.SetAfterAccess(AfterAccessNotification);
         }
     }
 }
