@@ -166,7 +166,7 @@ namespace PresenceLight.Core
 
         private static async Task<string> PerformWebRequest(string method, string uri, string result)
         {
-            if (method != string.Empty && uri != string.Empty)
+            if (!string.IsNullOrEmpty(method) && !string.IsNullOrEmpty(uri))
             {
                 try
                 {
