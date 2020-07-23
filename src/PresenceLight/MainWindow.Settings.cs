@@ -80,6 +80,17 @@ namespace PresenceLight
                 customApiDoNotDisturbMethod.SelectedValue = Config.LightSettings.Custom.CustomApiDoNotDisturbMethod;
                 customApiOfflineMethod.SelectedValue = Config.LightSettings.Custom.CustomApiOfflineMethod;
                 customApiOffMethod.SelectedValue = Config.LightSettings.Custom.CustomApiOffMethod;
+
+                customApiActivityAvailableMethod.SelectedValue = Config.LightSettings.Custom.CustomApiActivityAvailableMethod;
+                customApiActivityPresentingMethod.SelectedValue = Config.LightSettings.Custom.CustomApiActivityPresentingMethod;
+                customApiActivityInACallMethod.SelectedValue = Config.LightSettings.Custom.CustomApiActivityInACallMethod;
+                customApiActivityInAMeetingMethod.SelectedValue = Config.LightSettings.Custom.CustomApiActivityInAMeetingMethod;
+                customApiActivityBusyMethod.SelectedValue = Config.LightSettings.Custom.CustomApiActivityBusyMethod;
+                customApiActivityAwayMethod.SelectedValue = Config.LightSettings.Custom.CustomApiActivityAwayMethod;
+                customApiActivityBeRightBackMethod.SelectedValue = Config.LightSettings.Custom.CustomApiActivityBeRightBackMethod;
+                customApiActivityOfflineMethod.SelectedValue = Config.LightSettings.Custom.CustomApiActivityOfflineMethod;
+                customApiActivityDoNotDisturbMethod.SelectedValue = Config.LightSettings.Custom.CustomApiActivityDoNotDisturbMethod;
+                customApiActivityOffMethod.SelectedValue = Config.LightSettings.Custom.CustomApiActivityOffMethod;
                 SyncOptions();
             }
             else

@@ -80,11 +80,11 @@ namespace PresenceLight
                 case "customApiActivityDoNotDisturbMethod":
                     Config.LightSettings.Custom.CustomApiActivityDoNotDisturbMethod = selectedText;
                     break;
-                case "customApiActivityOffMethod":
-                    Config.LightSettings.Custom.CustomApiActivityOffMethod = selectedText;
-                    break;
                 case "customApiActivityOfflineMethod":
                     Config.LightSettings.Custom.CustomApiActivityOfflineMethod = selectedText;
+                    break;
+                case "customApiActivityOffMethod":
+                    Config.LightSettings.Custom.CustomApiActivityOffMethod = selectedText;
                     break;
                 default:
                     break;
