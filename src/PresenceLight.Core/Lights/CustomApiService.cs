@@ -73,6 +73,14 @@ namespace PresenceLight.Core
                     method = _options.LightSettings.Custom.CustomApiActivityBeRightBackMethod;
                     uri = _options.LightSettings.Custom.CustomApiActivityBeRightBackUri;
                     break;
+                case "DoNotDisturb":
+                    method = _options.LightSettings.Custom.CustomApiActivityDoNotDisturbMethod;
+                    uri = _options.LightSettings.Custom.CustomApiActivityDoNotDisturbUri;
+                    break;
+                case "Offline":
+                    method = _options.LightSettings.Custom.CustomApiActivityOfflineMethod;
+                    uri = _options.LightSettings.Custom.CustomApiActivityOfflineUri;
+                    break;
                 case "Off":
                     method = _options.LightSettings.Custom.CustomApiActivityOffMethod;
                     uri = _options.LightSettings.Custom.CustomApiActivityOffUri;

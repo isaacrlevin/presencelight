@@ -126,6 +126,14 @@ namespace PresenceLight.Core
 
         public string? CustomApiActivityBeRightBackUri { get; set; }
 
+        public string? CustomApiActivityDoNotDisturbMethod { get; set; }
+
+        public string? CustomApiActivityDoNotDisturbUri { get; set; }
+
+        public string? CustomApiActivityOfflineMethod { get; set; }
+
+        public string? CustomApiActivityOfflineUri { get; set; }
+
         public string? CustomApiActivityOffMethod { get; set; }
 
         public string? CustomApiActivityOffUri { get; set; }
