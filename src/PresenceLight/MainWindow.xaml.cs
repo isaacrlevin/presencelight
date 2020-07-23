@@ -193,7 +193,7 @@ namespace PresenceLight
             await InteractWithLights();
         }
 
-        public async Task SetColor(string color)
+        public async Task SetColor(string color, string? activity = null)
         {
             if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedHueLightId))
             {
@@ -212,9 +212,9 @@ namespace PresenceLight
 
             if (Config.LightSettings.Custom.IsCustomApiEnabled)
             {
-                string response = await _customApiService.SetColor(color);
+                string response = await _customApiService.SetColor(color, activity);
                 customApiLastResponse.Content = response;
-                if (response.StartsWith("Error:"))
+                if (response.Contains("Error:"))
                 {
                     customApiLastResponse.Foreground = new SolidColorBrush(Colors.Red);
                 }
@@ -507,7 +507,7 @@ namespace PresenceLight
 
             if (Config.LightSettings.Custom.IsCustomApiEnabled && !string.IsNullOrEmpty(Config.LightSettings.Custom.CustomApiOffMethod) && !string.IsNullOrEmpty(Config.LightSettings.Custom.CustomApiOffUri))
             {
-                await _customApiService.SetColor("Off");
+                await _customApiService.SetColor("Off", "Off");
             }
 
             await SettingsService.SaveSettings(Config);
@@ -532,7 +532,7 @@ namespace PresenceLight
                                 {
                                     presence = await System.Threading.Tasks.Task.Run(() => GetPresence());
 
-                                    await SetColor(presence.Availability);
+                                    await SetColor(presence.Availability, presence.Activity);
 
                                     if (DateTime.Now.AddMinutes(-5) > settingsLastSaved)
                                     {
