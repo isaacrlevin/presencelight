@@ -458,7 +458,7 @@
                         </ComboBox>
                         <TextBox x:Name="customApiActivityDoNotDisturbUri" Grid.Row="16" TextWrapping="Wrap" VerticalAlignment="Center" Text="{Binding LightSettings.Custom.CustomApiActivityDoNotDisturbUri}" Grid.Column="2" Margin="10,0,14,0"/>
 
-                        <Label x:Name="customApiActivityOfflineLabel" Content="Activity Off:" Margin="10,0,0,0" Grid.Row="17" VerticalAlignment="Center"/>
+                        <Label x:Name="customApiActivityOfflineLabel" Content="Activity Offline:" Margin="10,0,0,0" Grid.Row="17" VerticalAlignment="Center"/>
                         <ComboBox x:Name="customApiActivityOfflineMethod" HorizontalAlignment="Left" Grid.Row="17" VerticalAlignment="Center" Width="72" Grid.Column="1" Margin="10,0,0,0" SelectionChanged="customApiMethod_SelectionChanged" SelectedValuePath="Content">
                             <ComboBoxItem Content="GET"></ComboBoxItem>
                             <ComboBoxItem Content="POST"></ComboBoxItem>
