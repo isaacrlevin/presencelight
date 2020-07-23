@@ -11,17 +11,20 @@ namespace PresenceLight.Core
 {
     public interface ICustomApiService
     {
-        Task<string> SetColor(string availability);
+        Task<string> SetColor(string availability, string? activity);
     }
 
     public class CustomApiService : ICustomApiService
     {
+        private string _currentAvailability = "";
+        private string _currentActivity = "";
+
         static readonly HttpClient client = new HttpClient
         {
             // TODO: Make this configurable
             Timeout = TimeSpan.FromSeconds(10)
         };
-        
+
         private readonly ConfigWrapper _options;
 
         public CustomApiService(IOptionsMonitor<ConfigWrapper> optionsAccessor)
@@ -34,13 +37,60 @@ namespace PresenceLight.Core
             _options = options;
         }
 
-        public async Task<string> SetColor(string availability)
+        private async Task<string> CallCustomApiForActivityChanged(object sender, string newActivity)
         {
             string method = string.Empty;
             string uri = string.Empty;
             string result = string.Empty;
 
-            switch (availability)
+            switch (newActivity)
+            {
+                case "Available":
+                    method = _options.LightSettings.Custom.CustomApiActivityAvailableMethod;
+                    uri = _options.LightSettings.Custom.CustomApiActivityAvailableUri;
+                    break;
+                case "Presenting":
+                    method = _options.LightSettings.Custom.CustomApiActivityPresentingMethod;
+                    uri = _options.LightSettings.Custom.CustomApiActivityPresentingUri;
+                    break;
+                case "InACall":
+                    method = _options.LightSettings.Custom.CustomApiActivityInACallMethod;
+                    uri = _options.LightSettings.Custom.CustomApiActivityInACallUri;
+                    break;
+                case "InAMeeting":
+                    method = _options.LightSettings.Custom.CustomApiActivityInAMeetingMethod;
+                    uri = _options.LightSettings.Custom.CustomApiActivityInAMeetingUri;
+                    break;
+                case "Busy":
+                    method = _options.LightSettings.Custom.CustomApiActivityBusyMethod;
+                    uri = _options.LightSettings.Custom.CustomApiActivityBusyUri;
+                    break;
+                case "Away":
+                    method = _options.LightSettings.Custom.CustomApiActivityAwayMethod;
+                    uri = _options.LightSettings.Custom.CustomApiActivityAwayUri;
+                    break;
+                case "BeRightBack":
+                    method = _options.LightSettings.Custom.CustomApiActivityBeRightBackMethod;
+                    uri = _options.LightSettings.Custom.CustomApiActivityBeRightBackUri;
+                    break;
+                case "Off":
+                    method = _options.LightSettings.Custom.CustomApiActivityOffMethod;
+                    uri = _options.LightSettings.Custom.CustomApiActivityOffUri;
+                    break;
+                default:
+                    break;
+            }
+
+            return await PerformWebRequest(method, uri, result);
+        }
+
+        private async Task<string> CallCustomApiForAvailabilityChanged(object sender, string newAvailability)
+        {
+            string method = string.Empty;
+            string uri = string.Empty;
+            string result = string.Empty;
+
+            switch (newAvailability)
             {
                 case "Available":
                     method = _options.LightSettings.Custom.CustomApiAvailableMethod;
@@ -74,6 +124,40 @@ namespace PresenceLight.Core
                     break;
             }
 
+            return await PerformWebRequest(method, uri, result);
+        }
+
+        public async Task<string> SetColor(string availability, string? activity)
+        {
+            string result = await SetAvailability(availability);
+            result += await SetActivity(activity);
+            return result;
+        }
+
+        private async Task<string> SetAvailability(string availability)
+        {
+            string result = "";
+            if (!string.IsNullOrEmpty(availability) && availability != _currentAvailability)
+            {
+                _currentAvailability = availability;
+                result = await CallCustomApiForAvailabilityChanged(this, availability);
+            }
+            return result;
+        }
+
+        private async Task<string> SetActivity(string activity)
+        {
+            string result = "";
+            if (!string.IsNullOrEmpty(activity) && activity != _currentActivity)
+            {
+                _currentActivity = activity;
+                result = await CallCustomApiForActivityChanged(this, activity);
+            }
+            return result;
+        }
+
+        private static async Task<string> PerformWebRequest(string method, string uri, string result)
+        {
             if (method != string.Empty && uri != string.Empty)
             {
                 try
