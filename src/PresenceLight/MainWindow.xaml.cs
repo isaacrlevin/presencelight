@@ -176,7 +176,7 @@ namespace PresenceLight
 
                     if (lightMode == "Graph")
                     {
-                        await SetColor(presence.Availability);
+                        await SetColor(presence.Availability, presence.Activity);
                     }
                     loadingPanel.Visibility = Visibility.Collapsed;
                     this.signInPanel.Visibility = Visibility.Collapsed;
