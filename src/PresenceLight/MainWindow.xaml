@@ -6,7 +6,7 @@
         xmlns:l="clr-namespace:PresenceLight"
         xmlns:gif="http://wpfanimatedgif.codeplex.com"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-        mc:Ignorable="d" Title="PresenceLight" Icon="Icons/Icon.ico" Height="800" Width="750">
+        mc:Ignorable="d" Title="PresenceLight" Icon="Icons/Icon.ico" Height="850" Width="750">
     <Grid>
         <TabControl x:Name="tabControl" SelectionChanged="TabControl_SelectionChanged">
             <TabItem Header="Sign In">
@@ -315,7 +315,7 @@
                     </Grid>
                     <Grid x:Name="pnlCustomApi" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="130"/>
+                            <ColumnDefinition Width="140"/>
                             <ColumnDefinition Width="100"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
@@ -339,8 +339,7 @@
                             <RowDefinition Height="35" />
                             <RowDefinition Height="35" />
                             <RowDefinition Height="35" />
-                            <RowDefinition Height="35" />
-                            <RowDefinition Height="35" />
+                            <RowDefinition Height="45" />
                             <RowDefinition/>
                         </Grid.RowDefinitions>
                         <Label x:Name="customApiPreseneceHeader" Content="Presence State" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold"/>
