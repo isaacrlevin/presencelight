@@ -77,6 +77,10 @@ namespace PresenceLight.Core
                     method = _options.LightSettings.Custom.CustomApiActivityDoNotDisturbMethod;
                     uri = _options.LightSettings.Custom.CustomApiActivityDoNotDisturbUri;
                     break;
+                case "Idle":
+                    method = _options.LightSettings.Custom.CustomApiActivityIdleMethod;
+                    uri = _options.LightSettings.Custom.CustomApiActivityIdleUri;
+                    break;
                 case "Offline":
                     method = _options.LightSettings.Custom.CustomApiActivityOfflineMethod;
                     uri = _options.LightSettings.Custom.CustomApiActivityOfflineUri;
@@ -119,6 +123,10 @@ namespace PresenceLight.Core
                 case "DoNotDisturb":
                     method = _options.LightSettings.Custom.CustomApiDoNotDisturbMethod;
                     uri = _options.LightSettings.Custom.CustomApiDoNotDisturbUri;
+                    break;
+                case "AvailableIdle":
+                    method = _options.LightSettings.Custom.CustomApiAvailableIdleMethod;
+                    uri = _options.LightSettings.Custom.CustomApiAvailableIdleUri;
                     break;
                 case "Offline":
                     method = _options.LightSettings.Custom.CustomApiOfflineMethod;
