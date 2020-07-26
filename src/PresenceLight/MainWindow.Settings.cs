@@ -78,6 +78,7 @@ namespace PresenceLight
                 customApiBeRightBackMethod.SelectedValue = Config.LightSettings.Custom.CustomApiBeRightBackMethod;
                 customApiAwayMethod.SelectedValue = Config.LightSettings.Custom.CustomApiAwayMethod;
                 customApiDoNotDisturbMethod.SelectedValue = Config.LightSettings.Custom.CustomApiDoNotDisturbMethod;
+                customApiAvailableIdleMethod.SelectedValue = Config.LightSettings.Custom.CustomApiAvailableIdleMethod;
                 customApiOfflineMethod.SelectedValue = Config.LightSettings.Custom.CustomApiOfflineMethod;
                 customApiOffMethod.SelectedValue = Config.LightSettings.Custom.CustomApiOffMethod;
 
@@ -90,6 +91,7 @@ namespace PresenceLight
                 customApiActivityBeRightBackMethod.SelectedValue = Config.LightSettings.Custom.CustomApiActivityBeRightBackMethod;
                 customApiActivityOfflineMethod.SelectedValue = Config.LightSettings.Custom.CustomApiActivityOfflineMethod;
                 customApiActivityDoNotDisturbMethod.SelectedValue = Config.LightSettings.Custom.CustomApiActivityDoNotDisturbMethod;
+                customApiActivityIdleMethod.SelectedValue = Config.LightSettings.Custom.CustomApiActivityIdleMethod;
                 customApiActivityOffMethod.SelectedValue = Config.LightSettings.Custom.CustomApiActivityOffMethod;
                 SyncOptions();
             }

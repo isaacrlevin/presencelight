@@ -90,6 +90,10 @@ namespace PresenceLight.Core
 
         public string? CustomApiDoNotDisturbUri { get; set; }
 
+        public string? CustomApiAvailableIdleMethod { get; set; }
+
+        public string? CustomApiAvailableIdleUri { get; set; }
+
         public string? CustomApiOfflineMethod { get; set; }
 
         public string? CustomApiOfflineUri { get; set; }
@@ -129,6 +133,10 @@ namespace PresenceLight.Core
         public string? CustomApiActivityDoNotDisturbMethod { get; set; }
 
         public string? CustomApiActivityDoNotDisturbUri { get; set; }
+
+        public string? CustomApiActivityIdleMethod { get; set; }
+
+        public string? CustomApiActivityIdleUri { get; set; }
 
         public string? CustomApiActivityOfflineMethod { get; set; }
 
