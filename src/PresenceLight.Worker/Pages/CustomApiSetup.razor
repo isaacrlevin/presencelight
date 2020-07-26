@@ -66,6 +66,15 @@
                             <InputText class="form-control" @bind-Value="@Config.CurrentValue.LightSettings.Custom.CustomApiDoNotDisturbUri" />
                         </div>
                         <div class="form-group col-3 centering text-center">
+                            <label>Available Idle: </label>
+                            <InputSelect class="form-control" @bind-Value="@Config.CurrentValue.LightSettings.Custom.CustomApiAvailableIdleMethod">
+                                <option disabled="disabled">Select</option>
+                                <option value="GET">GET</option>
+                                <option value="POST">POST</option>
+                            </InputSelect>
+                            <InputText class="form-control" @bind-Value="@Config.CurrentValue.LightSettings.Custom.CustomApiAvailableIdleUri" />
+                        </div>
+                        <div class="form-group col-3 centering text-center">
                             <label>Offline: </label>
                             <InputSelect class="form-control" @bind-Value="@Config.CurrentValue.LightSettings.Custom.CustomApiOfflineMethod">
                                 <option disabled="disabled">Select</option>
@@ -167,6 +176,15 @@
                                 <option value="POST">POST</option>
                             </InputSelect>
                             <InputText class="form-control" @bind-Value="@Config.CurrentValue.LightSettings.Custom.CustomApiActivityDoNotDisturbUri" />
+                        </div>
+                        <div class="form-group col-3 centering text-center">
+                            <label>Idle: </label>
+                            <InputSelect class="form-control" @bind-Value="@Config.CurrentValue.LightSettings.Custom.CustomApiActivityIdleMethod">
+                                <option disabled="disabled">Select</option>
+                                <option value="GET">GET</option>
+                                <option value="POST">POST</option>
+                            </InputSelect>
+                            <InputText class="form-control" @bind-Value="@Config.CurrentValue.LightSettings.Custom.CustomApiActivityIdleUri" />
                         </div>
                         <div class="form-group col-3 centering text-center">
                             <label>Off: </label>
