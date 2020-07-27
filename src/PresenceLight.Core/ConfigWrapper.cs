@@ -90,6 +90,10 @@ namespace PresenceLight.Core
 
         public string? CustomApiDoNotDisturbUri { get; set; }
 
+        public string? CustomApiAvailableIdleMethod { get; set; }
+
+        public string? CustomApiAvailableIdleUri { get; set; }
+
         public string? CustomApiOfflineMethod { get; set; }
 
         public string? CustomApiOfflineUri { get; set; }
@@ -97,6 +101,50 @@ namespace PresenceLight.Core
         public string? CustomApiOffMethod { get; set; }
 
         public string? CustomApiOffUri { get; set; }
+
+        public string? CustomApiActivityAvailableMethod { get; set; }
+
+        public string? CustomApiActivityAvailableUri { get; set; }
+
+        public string? CustomApiActivityInACallMethod { get; set; }
+
+        public string? CustomApiActivityInACallUri { get; set; }
+
+        public string? CustomApiActivityInAMeetingMethod { get; set; }
+
+        public string? CustomApiActivityInAMeetingUri { get; set; }
+
+        public string? CustomApiActivityPresentingMethod { get; set; }
+
+        public string? CustomApiActivityPresentingUri { get; set; }
+
+        public string? CustomApiActivityBusyMethod { get; set; }
+
+        public string? CustomApiActivityBusyUri { get; set; }
+
+        public string? CustomApiActivityAwayMethod { get; set; }
+
+        public string? CustomApiActivityAwayUri { get; set; }
+
+        public string? CustomApiActivityBeRightBackMethod { get; set; }
+
+        public string? CustomApiActivityBeRightBackUri { get; set; }
+
+        public string? CustomApiActivityDoNotDisturbMethod { get; set; }
+
+        public string? CustomApiActivityDoNotDisturbUri { get; set; }
+
+        public string? CustomApiActivityIdleMethod { get; set; }
+
+        public string? CustomApiActivityIdleUri { get; set; }
+
+        public string? CustomApiActivityOfflineMethod { get; set; }
+
+        public string? CustomApiActivityOfflineUri { get; set; }
+
+        public string? CustomApiActivityOffMethod { get; set; }
+
+        public string? CustomApiActivityOffUri { get; set; }
 
         public double CustomApiTimeout { get; set; }
     }

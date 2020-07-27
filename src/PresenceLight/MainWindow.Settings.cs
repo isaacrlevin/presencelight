@@ -78,8 +78,21 @@ namespace PresenceLight
                 customApiBeRightBackMethod.SelectedValue = Config.LightSettings.Custom.CustomApiBeRightBackMethod;
                 customApiAwayMethod.SelectedValue = Config.LightSettings.Custom.CustomApiAwayMethod;
                 customApiDoNotDisturbMethod.SelectedValue = Config.LightSettings.Custom.CustomApiDoNotDisturbMethod;
+                customApiAvailableIdleMethod.SelectedValue = Config.LightSettings.Custom.CustomApiAvailableIdleMethod;
                 customApiOfflineMethod.SelectedValue = Config.LightSettings.Custom.CustomApiOfflineMethod;
                 customApiOffMethod.SelectedValue = Config.LightSettings.Custom.CustomApiOffMethod;
+
+                customApiActivityAvailableMethod.SelectedValue = Config.LightSettings.Custom.CustomApiActivityAvailableMethod;
+                customApiActivityPresentingMethod.SelectedValue = Config.LightSettings.Custom.CustomApiActivityPresentingMethod;
+                customApiActivityInACallMethod.SelectedValue = Config.LightSettings.Custom.CustomApiActivityInACallMethod;
+                customApiActivityInAMeetingMethod.SelectedValue = Config.LightSettings.Custom.CustomApiActivityInAMeetingMethod;
+                customApiActivityBusyMethod.SelectedValue = Config.LightSettings.Custom.CustomApiActivityBusyMethod;
+                customApiActivityAwayMethod.SelectedValue = Config.LightSettings.Custom.CustomApiActivityAwayMethod;
+                customApiActivityBeRightBackMethod.SelectedValue = Config.LightSettings.Custom.CustomApiActivityBeRightBackMethod;
+                customApiActivityOfflineMethod.SelectedValue = Config.LightSettings.Custom.CustomApiActivityOfflineMethod;
+                customApiActivityDoNotDisturbMethod.SelectedValue = Config.LightSettings.Custom.CustomApiActivityDoNotDisturbMethod;
+                customApiActivityIdleMethod.SelectedValue = Config.LightSettings.Custom.CustomApiActivityIdleMethod;
+                customApiActivityOffMethod.SelectedValue = Config.LightSettings.Custom.CustomApiActivityOffMethod;
                 SyncOptions();
             }
             else
