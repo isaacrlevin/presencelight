@@ -126,7 +126,7 @@ namespace PresenceLight
                 property.SetValue(_options, value);
             }
         }
-     
+
         #endregion
 
         #region Profile Panel
@@ -158,37 +158,38 @@ namespace PresenceLight
             lblTheme.Visibility = Visibility.Collapsed;
             loadingPanel.Visibility = Visibility.Visible;
 
+            var (profile, presence) = await System.Threading.Tasks.Task.Run(() => GetBatchContent());
+            var photo = await System.Threading.Tasks.Task.Run(() => GetPhoto());
+
+            if (photo == null)
+            {
+                MapUI(presence, profile, new BitmapImage(new Uri("pack://application:,,,/PresenceLight;component/images/UnknownProfile.png")));
+            }
+            else
+            {
+                MapUI(presence, profile, LoadImage(photo));
+            }
+
             if (Config.LightSettings.SyncLights)
             {
                 if (!Config.LightSettings.UseWorkingHours || (Config.LightSettings.UseWorkingHours && IsInWorkingHours()))
                 {
-                    var (profile, presence) = await System.Threading.Tasks.Task.Run(() => GetBatchContent());
-                    var photo = await System.Threading.Tasks.Task.Run(() => GetPhoto());
-
-                    if (photo == null)
-                    {
-                        MapUI(presence, profile, new BitmapImage(new Uri("pack://application:,,,/PresenceLight;component/images/UnknownProfile.png")));
-                    }
-                    else
-                    {
-                        MapUI(presence, profile, LoadImage(photo));
-                    }
-
                     if (lightMode == "Graph")
                     {
                         await SetColor(presence.Availability, presence.Activity);
                     }
-                    loadingPanel.Visibility = Visibility.Collapsed;
-                    this.signInPanel.Visibility = Visibility.Collapsed;
-                    hueIpAddress.IsEnabled = false;
-
-                    dataPanel.Visibility = Visibility.Visible;
-                    await SettingsService.SaveSettings(Config);
-
-                    turnOffButton.Visibility = Visibility.Visible;
-                    turnOnButton.Visibility = Visibility.Collapsed;
                 }
             }
+
+            loadingPanel.Visibility = Visibility.Collapsed;
+            this.signInPanel.Visibility = Visibility.Collapsed;
+            hueIpAddress.IsEnabled = false;
+
+            dataPanel.Visibility = Visibility.Visible;
+            await SettingsService.SaveSettings(Config);
+
+            turnOffButton.Visibility = Visibility.Visible;
+            turnOnButton.Visibility = Visibility.Collapsed;
 
             await InteractWithLights();
         }
@@ -416,7 +417,7 @@ namespace PresenceLight
             lblSettingSaved.Visibility = Visibility.Collapsed;
         }
 
-       
+
 
         #region Tray Methods
 
@@ -514,7 +515,7 @@ namespace PresenceLight
         }
 
         #endregion
-        
+
         private async Task InteractWithLights()
         {
             while (true)
