@@ -46,6 +46,8 @@ namespace PresenceLight
         private readonly IGraphService _graphservice;
         private WindowState lastWindowState;
 
+        private bool IsWorkingHours;
+
         #region Init
         public MainWindow(IGraphService graphService, IHueService hueService, LIFXService lifxService, IYeelightService yeelightService, ICustomApiService customApiService, IOptionsMonitor<ConfigWrapper> optionsAccessor, LIFXOAuthHelper lifxOAuthHelper)
         {
@@ -104,6 +106,22 @@ namespace PresenceLight
             else
             {
                 White.IsChecked = true;
+            }
+
+            switch (Config.LightSettings.HoursPassedStatus)
+            {
+                case "Keep":
+                    HourStatusKeep.IsChecked = true;
+                    break;
+                case "White":
+                    HourStatusWhite.IsChecked = true;
+                    break;
+                case "Off":
+                    HourStatusOff.IsChecked = true;
+                    break;
+                default:
+                    HourStatusKeep.IsChecked = true;
+                    break;
             }
 
             PopulateWorkingDays();
@@ -172,11 +190,47 @@ namespace PresenceLight
 
             if (Config.LightSettings.SyncLights)
             {
-                if (!Config.LightSettings.UseWorkingHours || (Config.LightSettings.UseWorkingHours && IsInWorkingHours()))
+                if (!Config.LightSettings.UseWorkingHours)
                 {
                     if (lightMode == "Graph")
                     {
                         await SetColor(presence.Availability, presence.Activity);
+                    }
+                }
+                else
+                {
+                    bool previousWorkingHours = IsWorkingHours;
+                    if (IsInWorkingHours())
+                    {
+                        if (lightMode == "Graph")
+                        {
+                            await SetColor(presence.Availability, presence.Activity);
+                        }
+                    }
+                    else
+                    {
+                        // check to see if working hours have passed
+                        if (previousWorkingHours)
+                        {
+                            if (lightMode == "Graph")
+                            {
+                                switch (Config.LightSettings.HoursPassedStatus)
+                                {
+                                    case "Keep":
+                                        await SetColor(presence.Availability, presence.Activity);
+                                        break;
+                                    case "White":
+                                        await SetColor("Offline", presence.Activity);
+                                        break;
+                                    case "Off":
+                                        await SetColor("Off", presence.Activity);
+                                        break;
+                                    default:
+                                        await SetColor(presence.Availability, presence.Activity);
+                                        break;
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -522,63 +576,115 @@ namespace PresenceLight
             {
                 await Task.Delay(Convert.ToInt32(Config.LightSettings.PollingInterval * 1000));
 
+                bool touchLight = false;
+                string newColor = "";
+
                 if (Config.LightSettings.SyncLights)
                 {
-                    if (!Config.LightSettings.UseWorkingHours || (Config.LightSettings.UseWorkingHours && IsInWorkingHours()))
+                    if (!Config.LightSettings.UseWorkingHours)
                     {
-                        switch (lightMode)
+                        if (lightMode == "Graph")
                         {
-                            case "Graph":
-                                try
-                                {
-                                    presence = await System.Threading.Tasks.Task.Run(() => GetPresence());
-
-                                    await SetColor(presence.Availability, presence.Activity);
-
-                                    if (DateTime.Now.AddMinutes(-5) > settingsLastSaved)
-                                    {
-                                        await SettingsService.SaveSettings(Config);
-                                        settingsLastSaved = DateTime.Now;
-                                    }
-
-                                    MapUI(presence, null, null);
-
-                                }
-                                catch (Exception e)
-                                {
-                                    DiagnosticsClient.TrackException(e);
-                                }
-
-                                break;
-                            case "Theme":
-
-                                try
-                                {
-                                    var theme = ((SolidColorBrush)SystemParameters.WindowGlassBrush).Color;
-                                    var color = $"#{theme.ToString().Substring(3)}";
-
-                                    lblTheme.Content = $"Theme Color is {color}";
-                                    lblTheme.Foreground = (SolidColorBrush)SystemParameters.WindowGlassBrush;
-                                    lblTheme.Visibility = Visibility.Visible;
-
-                                    if (lightMode == "Theme")
-                                    {
-                                        await SetColor(color);
-                                    }
-
-                                    if (DateTime.Now.Minute % 5 == 0)
-                                    {
-                                        await SettingsService.SaveSettings(Config);
-                                    }
-                                }
-                                catch (Exception ex)
-                                {
-                                    DiagnosticsClient.TrackException(ex);
-                                }
-                                break;
-                            default:
-                                break;
+                            touchLight = true;
                         }
+                    }
+                    else
+                    {
+                        bool previousWorkingHours = IsWorkingHours;
+                        if (IsInWorkingHours())
+                        {
+                            if (lightMode == "Graph")
+                            {
+                                touchLight = true;
+                            }
+                        }
+                        else
+                        {
+                            // check to see if working hours have passed
+                            if (previousWorkingHours)
+                            {
+                                switch (Config.LightSettings.HoursPassedStatus)
+                                {
+                                    case "Keep":
+                                        break;
+                                    case "White":
+                                        newColor = "Offline";
+                                        break;
+                                    case "Off":
+                                        newColor = "Off";
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                touchLight = true;
+                            }
+
+                        }
+                    }
+                }
+
+                if (touchLight)
+                {
+                    switch (lightMode)
+                    {
+                        case "Graph":
+                            try
+                            {
+                                presence = await System.Threading.Tasks.Task.Run(() => GetPresence());
+
+                                if (newColor == string.Empty)
+                                {
+                                    await SetColor(presence.Availability, presence.Activity);
+                                }
+                                else
+                                {
+                                    await SetColor(newColor, presence.Activity);
+                                }
+                                
+
+                                if (DateTime.Now.AddMinutes(-5) > settingsLastSaved)
+                                {
+                                    await SettingsService.SaveSettings(Config);
+                                    settingsLastSaved = DateTime.Now;
+                                }
+
+                                MapUI(presence, null, null);
+
+                            }
+                            catch (Exception e)
+                            {
+                                DiagnosticsClient.TrackException(e);
+                            }
+
+                            break;
+                        case "Theme":
+
+                            try
+                            {
+                                var theme = ((SolidColorBrush)SystemParameters.WindowGlassBrush).Color;
+                                var color = $"#{theme.ToString().Substring(3)}";
+
+                                lblTheme.Content = $"Theme Color is {color}";
+                                lblTheme.Foreground = (SolidColorBrush)SystemParameters.WindowGlassBrush;
+                                lblTheme.Visibility = Visibility.Visible;
+
+                                if (lightMode == "Theme")
+                                {
+                                    await SetColor(color);
+                                }
+
+                                if (DateTime.Now.Minute % 5 == 0)
+                                {
+                                    await SettingsService.SaveSettings(Config);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                DiagnosticsClient.TrackException(ex);
+                            }
+                            break;
+                        default:
+                            break;
                     }
                 }
             }

@@ -121,6 +121,21 @@ namespace PresenceLight
                 Config.IconType = "White";
             }
 
+            if (HourStatusKeep.IsChecked == true)
+            {
+                Config.LightSettings.HoursPassedStatus = "Keep";
+            }
+
+            if (HourStatusOff.IsChecked == true)
+            {
+                Config.LightSettings.HoursPassedStatus = "Off";
+            }
+
+            if (HourStatusWhite.IsChecked == true)
+            {
+                Config.LightSettings.HoursPassedStatus = "White";
+            }
+
             CheckAAD();
             Config.LightSettings.DefaultBrightness = Convert.ToInt32(brightness.Value);
 
@@ -300,11 +315,13 @@ namespace PresenceLight
         {
             if (string.IsNullOrEmpty(Config.LightSettings.WorkingHoursStartTime) || string.IsNullOrEmpty(Config.LightSettings.WorkingHoursEndTime) || string.IsNullOrEmpty(Config.LightSettings.WorkingDays))
             {
+                IsWorkingHours = false;
                 return false;
             }
 
             if (!Config.LightSettings.WorkingDays.Contains(DateTime.Now.DayOfWeek.ToString()))
             {
+                IsWorkingHours = false;
                 return false;
             }
 
@@ -313,15 +330,22 @@ namespace PresenceLight
             bool validEnd = TimeSpan.TryParse(Config.LightSettings.WorkingHoursEndTime, out TimeSpan end);
             if (!validEnd || !validStart)
             {
+                IsWorkingHours = false;
                 return false;
             }
 
             TimeSpan now = DateTime.Now.TimeOfDay;
             // see if start comes before end
             if (start < end)
-                return start <= now && now <= end;
+            {
+                IsWorkingHours = start <= now && now <= end;
+                return IsWorkingHours;
+            }
             // start is after end, so do the inverse comparison
-            return !(end < now && now < start);
+
+            IsWorkingHours = !(end < now && now < start);
+
+            return IsWorkingHours;
         }
 
         private void time_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)

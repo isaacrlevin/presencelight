@@ -3,6 +3,7 @@ using LifxCloud.NET;
 using LifxCloud.NET.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Windows.Media.Capture;
 
 namespace PresenceLight.Core
 {
@@ -70,6 +71,16 @@ namespace PresenceLight.Core
                 default:
                     color = availability;
                     break;
+            }
+
+            if (availability == "Off")
+            {
+                var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
+                {
+                    Color = color,
+                    Power = PowerState.Off
+                });
+                return;
             }
 
 
