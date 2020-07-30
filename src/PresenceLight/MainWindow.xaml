@@ -157,7 +157,7 @@
                             </Grid.RowDefinitions>
 
                             <Label Grid.Column="0" VerticalAlignment="Center" Margin="0,0,0,0" Grid.Row="0" Content="Brightness"  Grid.ColumnSpan="3" />
-                            <Slider Grid.Column="1" VerticalAlignment="Center" Margin="0,20,10,0" Grid.Row="0" Width="180"  HorizontalAlignment="Left" x:Name = "hueBrightness" Value="{Binding LightSettings.Hue.Brightness}" IsSnapToTickEnabled="True"  Minimum = "0" Maximum = "100" TickFrequency = "10"  TickPlacement = "BottomRight" />
+                            <Slider Grid.Column="1" VerticalAlignment="Center" Margin="0,20,10,0" Grid.Row="0" Width="180"  HorizontalAlignment="Left" x:Name = "hueBrightness" Value="{Binding LightSettings.Hue.HueBrightness}" IsSnapToTickEnabled="True"  Minimum = "0" Maximum = "100" TickFrequency = "10"  TickPlacement = "BottomRight" />
                             <TextBox Grid.Column="1" VerticalAlignment="Center"  Grid.Row="0" Text="{Binding ElementName=hueBrightness, Path=Value, UpdateSourceTrigger=PropertyChanged}" Margin="0,10,-30,0" HorizontalAlignment="Right" Height="20" TextAlignment="Center" Width="40" />
                             <ComboBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" x:Name="ddlHueLights" DisplayMemberPath="Name" SelectionChanged="ddlHueLights_SelectionChanged"  HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="150"/>
                         </Grid>
@@ -210,7 +210,7 @@
                             </Grid.RowDefinitions>
 
                             <Label Grid.Column="0" VerticalAlignment="Center" Margin="0,20,0,0" Grid.Row="0" Content="Brightness"  Grid.ColumnSpan="3" />
-                            <Slider Grid.Column="1" VerticalAlignment="Center" Margin="0,40,10,0" Grid.Row="0" Width="180"  HorizontalAlignment="Left" x:Name = "yeelightBrightness" Value="{Binding LightSettings.Yeelight.Brightness}" IsSnapToTickEnabled="True"  Minimum = "0" Maximum = "100" TickFrequency = "10"  TickPlacement = "BottomRight" />
+                            <Slider Grid.Column="1" VerticalAlignment="Center" Margin="0,40,10,0" Grid.Row="0" Width="180"  HorizontalAlignment="Left" x:Name = "yeelightBrightness" Value="{Binding LightSettings.Yeelight.YeelightBrightness}" IsSnapToTickEnabled="True"  Minimum = "0" Maximum = "100" TickFrequency = "10"  TickPlacement = "BottomRight" />
                             <TextBox Grid.Column="1" VerticalAlignment="Center"  Grid.Row="0" Text="{Binding ElementName=yeelightBrightness, Path=Value, UpdateSourceTrigger=PropertyChanged}" Margin="0,30,-30,0" HorizontalAlignment="Right" Height="20" TextAlignment="Center" Width="40" />
                         </Grid>
 
@@ -506,6 +506,7 @@
                         <RowDefinition Height="100" />
                         <RowDefinition Height="100" />
                         <RowDefinition Height="100" />
+                        <RowDefinition Height="100" />
                         <RowDefinition Height="*" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
@@ -513,7 +514,7 @@
                     <CheckBox x:Name="cbLightSyncEnabled" FontWeight="Bold" IsChecked="{Binding LightSettings.SyncLights}" Grid.Row="1" Content="Light Sync Enabled" Grid.Column="1" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Unchecked="cbSyncLights" Checked="cbSyncLights" />
                     <CheckBox x:Name="cbUseWorkingHours" FontWeight="Bold" Grid.Row="1" IsChecked="{Binding LightSettings.UseWorkingHours}" Content="Configure Working Hours" Grid.Column="2" Grid.ColumnSpan="4" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Unchecked="cbUseWorkingHoursChanged" Checked="cbUseWorkingHoursChanged" />
 
-                    <Grid Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2" x:Name="pnlWorkingHours" Margin="0,15,0,0">
+                    <Grid Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" Grid.ColumnSpan="2" x:Name="pnlWorkingHours" Margin="0,15,0,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="72*"/>
                             <ColumnDefinition Width="175*"/>
@@ -549,12 +550,20 @@
                         </Grid>
 
                         <Label FontWeight="Bold" Grid.Column="0" Margin="0,120,0,0" Content="Light Syncing Schedule (Working Hours)"  Grid.ColumnSpan="3" />
-                        <xctk:TimePicker Margin="0,80,0,0" ValueChanged="time_ValueChanged" TimeInterval="0:15:0"  x:Name="startTime" Format="Custom" FormatString="HH:mm" Value="{Binding LightSettings.WorkingHoursStartTime}" Grid.Column="2" Height="23" HorizontalAlignment="Left"  VerticalAlignment="Center" Width="100" />
-                        <xctk:TimePicker  ValueChanged="time_ValueChanged" TimeInterval="0:15:0"  x:Name="endTime" Format="Custom" FormatString="HH:mm" Value="{Binding LightSettings.WorkingHoursEndTime}" Grid.Column="2" Margin="130,80,0,0" Height="23" HorizontalAlignment="Left"  VerticalAlignment="Center" Width="100" />
-                    </Grid>
+                        <xctk:TimePicker Margin="0,-15,0,0" ValueChanged="time_ValueChanged" TimeInterval="0:15:0"  x:Name="startTime" Format="Custom" FormatString="HH:mm" Value="{Binding LightSettings.WorkingHoursStartTime}" Grid.Column="2" Height="23" HorizontalAlignment="Left"  VerticalAlignment="Center" Width="100" />
+                        <xctk:TimePicker  ValueChanged="time_ValueChanged" TimeInterval="0:15:0"  x:Name="endTime" Format="Custom" FormatString="HH:mm" Value="{Binding LightSettings.WorkingHoursEndTime}" Grid.Column="2" Margin="130,-15,0,0" Height="23" HorizontalAlignment="Left"  VerticalAlignment="Center" Width="100" />
+                   
 
-                    <CheckBox x:Name="cbUseDefaultBrightness" Grid.Row="2" IsChecked="{Binding LightSettings.UseDefaultBrightness}" Content="Lights Use Same Brightness" Grid.Column="1" Grid.ColumnSpan="4" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Unchecked="cbUseDefaultBrightnessChanged" Checked="cbUseDefaultBrightnessChanged" />
-                    <Grid Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="2" x:Name="pnlDefaultBrightness" Margin="0,20,0,0">
+
+                    <Label FontWeight="Bold" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,200,0,0" Grid.Row="1" Content="Light Status When After Hours Are Reached" />
+                    <RadioButton Grid.Column="2" Grid.Row="2" GroupName="HoursPassedStatus" x:Name="HourStatusOff" Margin="0,200,0,0" Content="Turn Off Light" HorizontalAlignment="Left" VerticalAlignment="Top" />
+                    <RadioButton Grid.Column="2" Grid.Row="2" GroupName="HoursPassedStatus" x:Name="HourStatusWhite" Margin="0,220,0,0" Content="Change Light Color to White" HorizontalAlignment="Left" VerticalAlignment="Top" />
+                    <RadioButton Grid.Column="2" Grid.Row="2" GroupName="HoursPassedStatus" x:Name="HourStatusKeep" Margin="0,240,0,0" Content="Leave Color Alone" HorizontalAlignment="Left"  VerticalAlignment="Top"/>
+
+                    </Grid>
+                    
+                    <CheckBox x:Name="cbUseDefaultBrightness" Grid.Row="3" IsChecked="{Binding LightSettings.UseDefaultBrightness}" Content="Lights Use Same Brightness" Grid.Column="1" Grid.ColumnSpan="4" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Unchecked="cbUseDefaultBrightnessChanged" Checked="cbUseDefaultBrightnessChanged" />
+                    <Grid Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="2" x:Name="pnlDefaultBrightness" Margin="0,20,0,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
@@ -567,14 +576,14 @@
                         <TextBox Grid.Column="2" Grid.Row="2" Text="{Binding ElementName=brightness, Path=Value, UpdateSourceTrigger=PropertyChanged}" Margin="0,30,10,0" HorizontalAlignment="Right" VerticalAlignment="Top" Height="20" TextAlignment="Center" Width="40" />
                     </Grid>
 
-                    <Label Grid.Column="1" Grid.Row="3" Margin="0,0,0,0" Content="Presence and Theme Polling Interval"  Grid.ColumnSpan="3" />
-                    <xctk:DecimalUpDown Grid.Column="2" Margin="0,0,0,0" Grid.Row="3"  FormatString="F2" Value="{Binding LightSettings.PollingInterval}" x:Name="pollingInterval"  Height="23" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="230" Increment=".1" Maximum="5" Minimum="1" />
+                    <Label Grid.Column="1" Grid.Row="4" Margin="0,0,0,0" Content="Presence and Theme Polling Interval"  Grid.ColumnSpan="3" />
+                    <xctk:DecimalUpDown Grid.Column="2" Margin="0,0,0,0" Grid.Row="4"  FormatString="F2" Value="{Binding LightSettings.PollingInterval}" x:Name="pollingInterval"  Height="23" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="230" Increment=".1" Maximum="5" Minimum="1" />
 
-                    <Label Grid.Column="1" Margin="0,0,0,0" Grid.Row="4" Content="Icon Type" />
-                    <RadioButton Grid.Column="2" Grid.Row="4" GroupName="IconType" x:Name="Transparent" Margin="0,0,0,0" Content="Transparent" HorizontalAlignment="Left" VerticalAlignment="Top" />
-                    <RadioButton Grid.Column="2" Grid.Row="4" GroupName="IconType" x:Name="White" Margin="0,20,0,0" Content="White" HorizontalAlignment="Left"  VerticalAlignment="Top"/>
-                    <Button Grid.Column="0" Grid.Row="5" Height="45" x:Name="btnSettings" Width="170" Content="Save" Click="SaveSettings_Click" Grid.ColumnSpan="4" />
-                    <Label Grid.Column="0"  HorizontalAlignment="Center" Grid.Row="6" x:Name="lblSettingSaved" Visibility="Collapsed" Content="Settings Updated" Foreground="Green" Grid.ColumnSpan="4"/>
+                    <Label Grid.Column="1" Margin="0,0,0,0" Grid.Row="5" Content="Icon Type" />
+                    <RadioButton Grid.Column="2" Grid.Row="5" GroupName="IconType" x:Name="Transparent" Margin="0,0,0,0" Content="Transparent" HorizontalAlignment="Left" VerticalAlignment="Top" />
+                    <RadioButton Grid.Column="2" Grid.Row="5" GroupName="IconType" x:Name="White" Margin="0,20,0,0" Content="White" HorizontalAlignment="Left"  VerticalAlignment="Top"/>
+                    <Button Grid.Column="0" Grid.Row="6" Height="45" x:Name="btnSettings" Width="170" Content="Save" Click="SaveSettings_Click" Grid.ColumnSpan="4" />
+                    <Label Grid.Column="0"  HorizontalAlignment="Center" Grid.Row="7" x:Name="lblSettingSaved" Visibility="Collapsed" Content="Settings Updated" Foreground="Green" Grid.ColumnSpan="4"/>
                 </Grid>
             </TabItem>
             <TabItem Header="About" >

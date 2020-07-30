@@ -102,6 +102,12 @@ namespace PresenceLight.Core
                     await device.SetRGBColor((int)color.R, (int)color.G, (int)color.B);
                     break;
             }
+
+            if (availability == "Off")
+            {
+                await device.TurnOff();
+                return;
+            }
         }
 
         private void Device_OnError(object sender, UnhandledExceptionEventArgs e)
