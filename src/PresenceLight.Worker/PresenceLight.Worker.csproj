@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Blazored.Modal" Version="5.0.2" />
+    <PackageReference Include="Blazored.Modal" Version="5.0.3" />
     <PackageReference Include="Blazorise.Bootstrap" Version="0.9.1.2" />
     <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.1.2" />
     <PackageReference Include="IdentityModel" Version="4.3.1" />
