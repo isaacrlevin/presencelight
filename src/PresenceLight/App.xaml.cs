@@ -58,6 +58,7 @@ namespace PresenceLight
             services.Configure<ConfigWrapper>(Configuration);
             services.AddSingleton<IGraphService, GraphService>();
             services.AddSingleton<IHueService, HueService>();
+            services.AddSingleton<IRemoteHueService, RemoteHueService>();
             services.AddSingleton<LIFXService, LIFXService>();
             services.AddSingleton<IYeelightService, YeelightService>();
             services.AddSingleton<ICustomApiService, CustomApiService>();

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using PresenceLight.Telemetry;
 
+
 namespace PresenceLight
 {
     public partial class MainWindow : Window

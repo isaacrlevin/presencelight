@@ -117,8 +117,16 @@
                         <RowDefinition Height="50" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
-                    <Grid Grid.Column="1" Grid.ColumnSpan="4">
+                    <Grid Grid.Column="1" Grid.ColumnSpan="1">
                         <CheckBox x:Name="cbIsPhillipsEnabled" IsChecked="{Binding LightSettings.Hue.IsPhillipsHueEnabled}" Content="Connect to Phillips Hue" Grid.Column="1" Grid.ColumnSpan="4" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbIsPhillipsEnabledChanged" Checked="cbIsPhillipsEnabledChanged" />
+                    </Grid>
+                    <Grid x:Name="pnlHueApi" Grid.Column="2" Grid.ColumnSpan="2">
+                        <CheckBox x:Name="cbUseRemoteHueApi" IsChecked="{Binding LightSettings.Hue.UseRemoteApi}" Content="Use Remote Api" Grid.Column="1" Grid.ColumnSpan="4" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbUseRemoteApiChanged" Checked="cbUseRemoteApiChanged" />
+                        <TextBlock x:Name="getHueApiTokenLink" Margin="200,20,0,0" >
+                            <Hyperlink NavigateUri="https://developers.meethue.com/"  RequestNavigate="HueApiKey_Get">
+                            Get Token
+                        </Hyperlink>
+                        </TextBlock>
                     </Grid>
                     <Grid x:Name="pnlPhillips"  Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3">
                         <Grid.ColumnDefinitions>
@@ -136,7 +144,7 @@
                         </Grid.RowDefinitions>
                         <Label Grid.Row="1" Grid.Column="0"  Content="Hue Bridge IP Address" />
                         <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding LightSettings.Hue.HueIpAddress}" x:Name="hueIpAddress" HorizontalAlignment="Left" Height="23"  TextWrapping="Wrap" VerticalAlignment="Top" Width="120" TextChanged="HueIpAddress_TextChanged"/>
-                        <Button Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Left" Grid.Column="2" Height="23" Width="120" Content="Find Bridge" Click="FindBridge_Click"/>
+                        <Button Grid.Row="1" x:Name="btnFindBridge" VerticalAlignment="Top" HorizontalAlignment="Left" Grid.Column="2" Height="23" Width="120" Content="Find Bridge" Click="FindBridge_Click"/>
 
                         <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" x:Name="btnRegister" Height="45" Width="170" Content="Register Bridge"  Click="RegisterBridge_Click"/>
 
@@ -245,8 +253,12 @@
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <Grid Grid.Column="1" Grid.ColumnSpan="4">
-                        <CheckBox x:Name="cbIsLIFXEnabled" IsChecked="{Binding LightSettings.LIFX.IsLIFXEnabled}" Content="Connect to LIFX Light" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbIsLIFXEnabledChanged" Checked="cbIsLIFXEnabledChanged" Grid.Column="1" Grid.ColumnSpan="4" />
-                        <TextBlock x:Name="getTokenLink" Grid.Column="4"  Margin="200,20,0,0" >
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="141*"/>
+                            <ColumnDefinition Width="553*"/>
+                        </Grid.ColumnDefinitions>
+                        <CheckBox x:Name="cbIsLIFXEnabled" IsChecked="{Binding LightSettings.LIFX.IsLIFXEnabled}" Content="Connect to LIFX Light" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbIsLIFXEnabledChanged" Checked="cbIsLIFXEnabledChanged" />
+                        <TextBlock x:Name="getTokenLink" Grid.Column="1"  Margin="59,20,0,0" >
                             <Hyperlink NavigateUri="https://cloud.lifx.com/settings"  RequestNavigate="LIFXToken_Get">
                             Get Token
                         </Hyperlink>
@@ -552,16 +564,16 @@
                         <Label FontWeight="Bold" Grid.Column="0" Margin="0,120,0,0" Content="Light Syncing Schedule (Working Hours)"  Grid.ColumnSpan="3" />
                         <xctk:TimePicker Margin="0,-15,0,0" ValueChanged="time_ValueChanged" TimeInterval="0:15:0"  x:Name="startTime" Format="Custom" FormatString="HH:mm" Value="{Binding LightSettings.WorkingHoursStartTime}" Grid.Column="2" Height="23" HorizontalAlignment="Left"  VerticalAlignment="Center" Width="100" />
                         <xctk:TimePicker  ValueChanged="time_ValueChanged" TimeInterval="0:15:0"  x:Name="endTime" Format="Custom" FormatString="HH:mm" Value="{Binding LightSettings.WorkingHoursEndTime}" Grid.Column="2" Margin="130,-15,0,0" Height="23" HorizontalAlignment="Left"  VerticalAlignment="Center" Width="100" />
-                   
 
 
-                    <Label FontWeight="Bold" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,200,0,0" Grid.Row="1" Content="Light Status When After Hours Are Reached" />
-                    <RadioButton Grid.Column="2" Grid.Row="2" GroupName="HoursPassedStatus" x:Name="HourStatusOff" Margin="0,200,0,0" Content="Turn Off Light" HorizontalAlignment="Left" VerticalAlignment="Top" />
-                    <RadioButton Grid.Column="2" Grid.Row="2" GroupName="HoursPassedStatus" x:Name="HourStatusWhite" Margin="0,220,0,0" Content="Change Light Color to White" HorizontalAlignment="Left" VerticalAlignment="Top" />
-                    <RadioButton Grid.Column="2" Grid.Row="2" GroupName="HoursPassedStatus" x:Name="HourStatusKeep" Margin="0,240,0,0" Content="Leave Color Alone" HorizontalAlignment="Left"  VerticalAlignment="Top"/>
+
+                        <Label FontWeight="Bold" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,200,0,0" Grid.Row="1" Content="Light Status When After Hours Are Reached" />
+                        <RadioButton Grid.Column="2" Grid.Row="2" GroupName="HoursPassedStatus" x:Name="HourStatusOff" Margin="0,200,0,0" Content="Turn Off Light" HorizontalAlignment="Left" VerticalAlignment="Top" />
+                        <RadioButton Grid.Column="2" Grid.Row="2" GroupName="HoursPassedStatus" x:Name="HourStatusWhite" Margin="0,220,0,0" Content="Change Light Color to White" HorizontalAlignment="Left" VerticalAlignment="Top" />
+                        <RadioButton Grid.Column="2" Grid.Row="2" GroupName="HoursPassedStatus" x:Name="HourStatusKeep" Margin="0,240,0,0" Content="Leave Color Alone" HorizontalAlignment="Left"  VerticalAlignment="Top"/>
 
                     </Grid>
-                    
+
                     <CheckBox x:Name="cbUseDefaultBrightness" Grid.Row="3" IsChecked="{Binding LightSettings.UseDefaultBrightness}" Content="Lights Use Same Brightness" Grid.Column="1" Grid.ColumnSpan="4" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Unchecked="cbUseDefaultBrightnessChanged" Checked="cbUseDefaultBrightnessChanged" />
                     <Grid Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="2" x:Name="pnlDefaultBrightness" Margin="0,20,0,0">
                         <Grid.ColumnDefinitions>

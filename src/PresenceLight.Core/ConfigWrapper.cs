@@ -169,6 +169,11 @@ namespace PresenceLight.Core
 
     public class Hue
     {
+        public string? RemoteHueClientId { get; set; }
+
+        public string? RemoteHueClientAppName { get; set; }
+
+        public string? RemoteHueClientSecret { get; set; }
         public string? HueApiKey { get; set; }
 
         public string? SelectedHueLightId { get; set; }
@@ -181,6 +186,7 @@ namespace PresenceLight.Core
         public string? HueIpAddress { get; set; }
 
         public bool IsPhillipsHueEnabled { get; set; }
+        public bool UseRemoteApi { get; set; }
     }
 
     public class Yeelight

@@ -37,10 +37,15 @@
       "LIFXBrightness": 100
     },
     "Hue": {
+      "RemoteHueClientId": "gGfuKceD3oJG9KlJJB8bAetwmkRXG0cM",
+      "RemoteHueClientSecret": "YlN05wbDztd4h7UC",
+      "RemoteHueClientAppName":  "presencelight",
       "HueApiKey": "",
+      "RemoteHueApiKey": "",
       "SelectedHueLightId": "",
       "HueBrightness": 100,
       "HueIpAddress": "",
+      "UseRemoteApi":  false,
       "IsPhillipsHueEnabled": true
     },
     "Yeelight": {

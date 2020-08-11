@@ -5,6 +5,8 @@ using System.Windows.Media;
 using System.Text.RegularExpressions;
 using System.Windows.Controls;
 using PresenceLight.Telemetry;
+using ABI.Windows.System.RemoteSystems;
+using System.Windows.Navigation;
 
 namespace PresenceLight
 {
@@ -16,10 +18,35 @@ namespace PresenceLight
         {
             btnHue.IsEnabled = false;
             await SettingsService.SaveSettings(Config);
-            _hueService = new HueService(Config);
+
+            if (Config.LightSettings.Hue.UseRemoteApi)
+            {
+                _remoteHueService = new RemoteHueService(Config);
+            }
+            else
+            {
+                _hueService = new HueService(Config);
+            }
             CheckHue();
             lblHueSaved.Visibility = Visibility.Visible;
             btnHue.IsEnabled = true;
+        }
+
+        private async void HueApiKey_Get(object sender, RequestNavigateEventArgs e)
+        {
+            string accessToken = await _remoteHueService.RegisterBridge();
+            if (!string.IsNullOrEmpty(accessToken))
+            {
+                lifxApiKey.Text = accessToken;
+                Config.LightSettings.Hue.HueApiKey = accessToken;
+
+                ddlHueLights.ItemsSource = await _hueService.CheckLights();
+                SyncOptions();
+                pnlHueBrightness.Visibility = Visibility.Visible;
+                imgLoading.Visibility = Visibility.Collapsed;
+                lblHueMessage.Visibility = Visibility.Visible;
+            }
+            this.Activate();
         }
 
         private void ddlHueLights_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -52,7 +79,7 @@ namespace PresenceLight
                 SolidColorBrush fontBrush = new SolidColorBrush();
 
 
-                if (!CheckHueIp())
+                if ((!Config.LightSettings.Hue.UseRemoteApi || !string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey)) && !CheckHueIp())
                 {
                     lblHueMessage.Text = "Valid IP Address Required";
                     fontBrush.Color = MapColor("#ff3300");
@@ -77,8 +104,15 @@ namespace PresenceLight
                     }
                     else
                     {
-                        ddlHueLights.ItemsSource = await _hueService.CheckLights();
-
+                        if (Config.LightSettings.Hue.UseRemoteApi)
+                        {
+                            ddlHueLights.ItemsSource = await _remoteHueService.CheckLights();
+                        }
+                        else
+                        {
+                            ddlHueLights.ItemsSource = await _hueService.CheckLights();
+                        }
+                        
                         foreach (var item in ddlHueLights.Items)
                         {
                             var light = (Q42.HueApi.Light)item;
@@ -119,10 +153,28 @@ namespace PresenceLight
             if (Config.LightSettings.Hue.IsPhillipsHueEnabled)
             {
                 pnlPhillips.Visibility = Visibility.Visible;
+                pnlHueApi.Visibility = Visibility.Visible;
             }
             else
             {
                 pnlPhillips.Visibility = Visibility.Collapsed;
+                pnlHueApi.Visibility = Visibility.Collapsed;
+            }
+            SyncOptions();
+            e.Handled = true;
+        }
+
+        private void cbUseRemoteApiChanged(object sender, RoutedEventArgs e)
+        {
+            if (Config.LightSettings.Hue.UseRemoteApi)
+            {
+                hueIpAddress.IsEnabled = false;
+                btnFindBridge.IsEnabled = false;
+            }
+            else
+            {
+                hueIpAddress.IsEnabled = true;
+                btnFindBridge.IsEnabled = true;
             }
             SyncOptions();
             e.Handled = true;

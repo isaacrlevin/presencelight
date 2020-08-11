@@ -39,6 +39,7 @@ namespace PresenceLight
 
         private IYeelightService _yeelightService;
         private IHueService _hueService;
+        private IRemoteHueService _remoteHueService;
         private ICustomApiService _customApiService;
         private LIFXOAuthHelper _lIFXOAuthHelper;
         private LIFXService _lifxService;
@@ -49,7 +50,7 @@ namespace PresenceLight
         private bool IsWorkingHours;
 
         #region Init
-        public MainWindow(IGraphService graphService, IHueService hueService, LIFXService lifxService, IYeelightService yeelightService, ICustomApiService customApiService, IOptionsMonitor<ConfigWrapper> optionsAccessor, LIFXOAuthHelper lifxOAuthHelper)
+        public MainWindow(IGraphService graphService, IHueService hueService, IRemoteHueService remoteHueService, LIFXService lifxService, IYeelightService yeelightService, ICustomApiService customApiService, IOptionsMonitor<ConfigWrapper> optionsAccessor, LIFXOAuthHelper lifxOAuthHelper)
         {
             InitializeComponent();
 
@@ -61,6 +62,7 @@ namespace PresenceLight
             _yeelightService = yeelightService;
             _lifxService = lifxService;
             _hueService = hueService;
+            _remoteHueService = remoteHueService;
             _customApiService = customApiService;
             _options = optionsAccessor.CurrentValue;
             _lIFXOAuthHelper = lifxOAuthHelper;
@@ -250,9 +252,16 @@ namespace PresenceLight
 
         public async Task SetColor(string color, string? activity = null)
         {
-            if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedHueLightId))
+            if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedHueLightId))
             {
-                await _hueService.SetColor(color, Config.LightSettings.Hue.SelectedHueLightId);
+                if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress))
+                {
+                    await _hueService.SetColor(color, Config.LightSettings.Hue.SelectedHueLightId);
+                }
+                else
+                {
+                    await _remoteHueService.SetColor(color, Config.LightSettings.Hue.SelectedHueLightId);
+                }                
             }
 
             if (Config.LightSettings.LIFX.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
@@ -296,9 +305,16 @@ namespace PresenceLight
                     notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(string.Empty, IconConstants.Inactive)));
                     hueIpAddress.IsEnabled = true;
 
-                    if (Config.LightSettings.Hue.IsPhillipsHueEnabled && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedHueLightId))
+                    if (Config.LightSettings.Hue.IsPhillipsHueEnabled && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedHueLightId))
                     {
-                        await _hueService.SetColor("Off", Config.LightSettings.Hue.SelectedHueLightId);
+                        if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress))
+                        {
+                            await _hueService.SetColor("Off", Config.LightSettings.Hue.SelectedHueLightId);
+                        }
+                        else
+                        {
+                            await _remoteHueService.SetColor("Off", Config.LightSettings.Hue.SelectedHueLightId);
+                        }
                     }
 
                     if (lightMode == "Graph")
@@ -511,9 +527,16 @@ namespace PresenceLight
         {
             lightMode = "Custom";
 
-            if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedHueLightId))
+            if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedHueLightId))
             {
-                await _hueService.SetColor("Off", Config.LightSettings.Hue.SelectedHueLightId);
+                if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress))
+                {
+                    await _hueService.SetColor("Off", Config.LightSettings.Hue.SelectedHueLightId);
+                }
+                else
+                {
+                    await _remoteHueService.SetColor("Off", Config.LightSettings.Hue.SelectedHueLightId);
+                }
             }
 
             if (Config.LightSettings.LIFX.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
@@ -533,9 +556,16 @@ namespace PresenceLight
 
         private async void OnExitClick(object sender, RoutedEventArgs e)
         {
-            if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedHueLightId))
+            if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedHueLightId))
             {
-                await _hueService.SetColor("Off", Config.LightSettings.Hue.SelectedHueLightId);
+                if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress))
+                {
+                    await _hueService.SetColor("Off", Config.LightSettings.Hue.SelectedHueLightId);
+                }
+                else
+                {
+                    await _remoteHueService.SetColor("Off", Config.LightSettings.Hue.SelectedHueLightId);
+                }
             }
 
             if (Config.LightSettings.LIFX.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
@@ -549,9 +579,16 @@ namespace PresenceLight
 
         private async void Current_SessionEnding(object sender, SessionEndingCancelEventArgs e)
         {
-            if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedHueLightId))
+            if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedHueLightId))
             {
-                await _hueService.SetColor("Off", Config.LightSettings.Hue.SelectedHueLightId);
+                if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress))
+                {
+                    await _hueService.SetColor("Off", Config.LightSettings.Hue.SelectedHueLightId);
+                }
+                else
+                {
+                    await _remoteHueService.SetColor("Off", Config.LightSettings.Hue.SelectedHueLightId);
+                }
             }
 
             if (Config.LightSettings.LIFX.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
