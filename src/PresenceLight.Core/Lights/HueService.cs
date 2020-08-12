@@ -69,6 +69,13 @@ namespace PresenceLight.Core
                     break;
             }
 
+            if (availability == "Off")
+            {
+                command.On = false;
+                await _client.SendCommandAsync(command, new List<string> { lightId });
+                return;
+            }
+
             if (_options.LightSettings.UseDefaultBrightness)
             {
                 if (_options.LightSettings.DefaultBrightness == 0)

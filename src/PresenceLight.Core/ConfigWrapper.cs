@@ -40,6 +40,8 @@ namespace PresenceLight.Core
 
     public class LightSettings
     {
+        public string HoursPassedStatus { get; set; }
+
         public bool SyncLights { get; set; }
 
         public string WorkingDays { get; set; }
