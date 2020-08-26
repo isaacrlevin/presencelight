@@ -128,43 +128,77 @@
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="10" />
-                            <RowDefinition Height="100" />
-                            <RowDefinition Height="*" />
-                            <RowDefinition Height="*" />
-                            <RowDefinition Height="*" />
-                            <RowDefinition Height="*" />
+                            <RowDefinition Height="23" />
+                            <RowDefinition Height="46" />
+                            <RowDefinition Height="23"/>
+                            <RowDefinition Height="42.02"/>
+                            <RowDefinition Height="107*" />
+                            <RowDefinition Height="114*"/>
+                            <RowDefinition Height="221*" />
+                            <RowDefinition Height="221*" />
                         </Grid.RowDefinitions>
                         <Label Grid.Row="1" Grid.Column="0"  Content="Hue Bridge IP Address" />
-                        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding LightSettings.Hue.HueIpAddress}" x:Name="hueIpAddress" HorizontalAlignment="Left" Height="23"  TextWrapping="Wrap" VerticalAlignment="Top" Width="120" TextChanged="HueIpAddress_TextChanged"/>
-                        <Button Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Left" Grid.Column="2" Height="23" Width="120" Content="Find Bridge" Click="FindBridge_Click"/>
+                        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding LightSettings.Hue.HueIpAddress}" x:Name="hueIpAddress" HorizontalAlignment="Left" Height="23"  TextWrapping="Wrap" VerticalAlignment="Center" Width="120" TextChanged="HueIpAddress_TextChanged"/>
+                        <Button Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="1" Height="23" Width="120" Content="Find Bridge" Click="FindBridge_Click" Grid.ColumnSpan="2" Margin="214,0,0,0"/>
 
-                        <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" x:Name="btnRegister" Height="45" Width="170" Content="Register Bridge"  Click="RegisterBridge_Click"/>
+                        <Button Grid.Row="2" Grid.Column="1" x:Name="btnRegister" Height="23" Width="120" HorizontalAlignment="Left" Content="Register Bridge"  Click="RegisterBridge_Click" Grid.ColumnSpan="2" Margin="214,11,0,11"/>
 
-                        <Label Grid.Row="2" VerticalAlignment="Bottom" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Center" >
+                        <Label Grid.Row="2" VerticalAlignment="Top" Grid.Column="1" HorizontalAlignment="Center" Margin="0,20,0,0" >
                             <TextBlock  x:Name="lblHueMessage" TextWrapping="Wrap"   TextAlignment="Center">
                             </TextBlock>
                         </Label>
 
-                        <Grid x:Name="pnlHueBrightness" Visibility="Collapsed"  Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="3">
+                        <Grid x:Name="pnlHueBrightness"  Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="3" Margin="0,0,0,88" Grid.RowSpan="4">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="*" />
-                                <RowDefinition Height="*" />
+                                <RowDefinition Height="23*"/>
+                                <RowDefinition Height="23*"/>
+                                <RowDefinition Height="23*"/>
+                                <RowDefinition Height="23*"/>
+                                <RowDefinition Height="23*" />
+                                <RowDefinition Height="23*"/>
+                                <RowDefinition Height="23*"/>
+                                <RowDefinition Height="23*"/>
+                                <RowDefinition Height="23*"/>
                             </Grid.RowDefinitions>
 
-                            <Label Grid.Column="0" VerticalAlignment="Center" Margin="0,0,0,0" Grid.Row="0" Content="Brightness"  Grid.ColumnSpan="3" />
-                            <Slider Grid.Column="1" VerticalAlignment="Center" Margin="0,20,10,0" Grid.Row="0" Width="180"  HorizontalAlignment="Left" x:Name = "hueBrightness" Value="{Binding LightSettings.Hue.HueBrightness}" IsSnapToTickEnabled="True"  Minimum = "0" Maximum = "100" TickFrequency = "10"  TickPlacement = "BottomRight" />
-                            <TextBox Grid.Column="1" VerticalAlignment="Center"  Grid.Row="0" Text="{Binding ElementName=hueBrightness, Path=Value, UpdateSourceTrigger=PropertyChanged}" Margin="0,10,-30,0" HorizontalAlignment="Right" Height="20" TextAlignment="Center" Width="40" />
-                            <ComboBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" x:Name="ddlHueLights" DisplayMemberPath="Name" SelectionChanged="ddlHueLights_SelectionChanged"  HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="150"/>
+                            <Label Grid.Row="0" Grid.Column="0" VerticalAlignment="Top" Margin="0,9,214,0" Content="Light" Grid.ColumnSpan="2" Grid.RowSpan="2" />
+                            <ComboBox Grid.Row="0" Grid.Column="1" x:Name="ddlHueLights" DisplayMemberPath="Name" SelectionChanged="ddlHueLights_SelectionChanged"  HorizontalAlignment="Left" VerticalAlignment="Top" Width="150" Margin="0,11,0,0" Grid.RowSpan="2"/>
+
+                            <Label Grid.Column="0" VerticalAlignment="Center" Content="Brightness"  Grid.ColumnSpan="3" Grid.Row="1" />
+                            <Slider Grid.Column="1" VerticalAlignment="Center" Width="180"  HorizontalAlignment="Left" x:Name = "hueBrightness" Value="{Binding LightSettings.Hue.HueBrightness}" IsSnapToTickEnabled="True"  Minimum = "0" Maximum = "100" TickFrequency = "10" TickPlacement = "BottomRight"  Grid.Row="1" />
+                            <TextBox Grid.Column="2" VerticalAlignment="Center" Text="{Binding ElementName=hueBrightness, Path=Value, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="20" TextAlignment="Center" Width="40" Grid.Row="1" />
+                            <Label Grid.Column="0" VerticalAlignment="Center" Content="Available Colour"  Grid.Row="2" />
+                            <Label Grid.Column="0" VerticalAlignment="Center" Content="Busy Colour" Grid.Row="3" />
+                            <Label Grid.Column="0" VerticalAlignment="Center" Content="Away Colour" Grid.Row="4" />
+                            <Label Grid.Column="0" VerticalAlignment="Center" Content="Be Rght Back Colour" Grid.Row="5" />
+                            <Label Grid.Column="0" VerticalAlignment="Center" Content="Do Not Disturb Colour" Grid.Row="6"  />
+                            <Label Grid.Column="0" VerticalAlignment="Center" Content="Offline Colour" Grid.Row="7"/>
+                            <Label Grid.Column="0" VerticalAlignment="Center" Content="Off Colour" Grid.Row="8" />
+                            <TextBox Grid.Column="1" Text="{Binding LightSettings.Hue.AvailableStatus.Colour}" x:Name="hueAvailableColour" HorizontalAlignment="Left" Height="23"  TextWrapping="Wrap" VerticalAlignment="Center" Width="120" Grid.Row="2"/>
+                            <TextBox Grid.Column="1" Text="{Binding LightSettings.Hue.BusyStatus.Colour}" x:Name="hueBusyColour" HorizontalAlignment="Left" Height="23"  TextWrapping="Wrap" VerticalAlignment="Center" Width="120" Grid.Row="3"/>
+                            <TextBox Grid.Column="1" Text="{Binding LightSettings.Hue.AwayStatus.Colour}" x:Name="hueAwayColour" HorizontalAlignment="Left" Height="23"  TextWrapping="Wrap" VerticalAlignment="Center" Width="120" Grid.Row="4"/>
+                            <TextBox Grid.Column="1" Text="{Binding LightSettings.Hue.BeRightBackStatus.Colour}" x:Name="hueBeRightBackColour" HorizontalAlignment="Left" Height="23"  TextWrapping="Wrap" VerticalAlignment="Center" Width="120" Grid.Row="5" />
+                            <TextBox Grid.Column="1" Text="{Binding LightSettings.Hue.DoNotDisturbStatus.Colour}" x:Name="hueDoNotDisturbColour" HorizontalAlignment="Left" Height="23"  TextWrapping="Wrap" VerticalAlignment="Center" Width="120" Grid.Row="6" />
+                            <TextBox Grid.Column="1" Text="{Binding LightSettings.Hue.OfflineStatus.Colour}" x:Name="hueOfflineColour" HorizontalAlignment="Left" Height="23"  TextWrapping="Wrap" VerticalAlignment="Center" Width="120" Grid.Row="7"/>
+                            <TextBox Grid.Column="1" Text="{Binding LightSettings.Hue.OffStatus.Colour}" x:Name="hueOffColour" HorizontalAlignment="Left" Height="23"  TextWrapping="Wrap" VerticalAlignment="Center" Width="120" Grid.Row="8"/>
+
+                            <CheckBox x:Name="cbIsPhillipsAvailableStatusDisabled" IsChecked="{Binding LightSettings.Hue.AvailableStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbIsPhillipsAvailableStatusDisabledChanged" Checked="cbIsPhillipsAvailableStatusDisabledChanged" />
+                            <CheckBox x:Name="cbIsPhillipsBusyStatusDisabled" IsChecked="{Binding LightSettings.Hue.BusyStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="3" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbIsPhillipsBusyStatusDisabledChanged" Checked="cbIsPhillipsBusyStatusDisabledChanged" />
+                            <CheckBox x:Name="cbIsPhillipsAwayStatusDisabled" IsChecked="{Binding LightSettings.Hue.AwayStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbIsPhillipsAwayStatusDisabledChanged" Checked="cbIsPhillipsAwayStatusDisabledChanged" />
+                            <CheckBox x:Name="cbIsPhillipsBeRightBackStatusDisabled" IsChecked="{Binding LightSettings.Hue.BeRightBackStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="5" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbIsPhillipsBeRightBackStatusDisabledChanged" Checked="cbIsPhillipsBeRightBackStatusDisabledChanged" />
+                            <CheckBox x:Name="cbIsPhillipsDoNotDisturbStatusDisabled" IsChecked="{Binding LightSettings.Hue.DoNotDisturbStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="6" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbIsPhillipsDoNotDisturbStatusDisabledChanged" Checked="cbIsPhillipsDoNotDisturbStatusDisabledChanged" />
+                            <CheckBox x:Name="cbIsPhillipsOfflineStatusDisabled" IsChecked="{Binding LightSettings.Hue.OfflineStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="7" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbIsPhillipsOfflineStatusDisabledChanged" Checked="cbIsPhillipsOfflineStatusDisabledChanged" />
+                            <CheckBox x:Name="cbIsPhillipsOffStatusDisabled" IsChecked="{Binding LightSettings.Hue.OffStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="8" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbIsPhillipsOffStatusDisabledChanged" Checked="cbIsPhillipsOffStatusDisabledChanged" />
                         </Grid>
 
-                        <Image Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" x:Name="imgLoading" Visibility="Collapsed" gif:ImageBehavior.AnimatedSource="Icons/loading.gif" Width="75"  />
-                        <Button Grid.Row="4" VerticalAlignment="Bottom" Grid.Column="0" Grid.ColumnSpan="3" x:Name="btnHue" Height="45" Width="170" Content="Save"  Click="SaveHue_Click"/>
-                        <Label Grid.Row="5" Grid.Column="1" x:Name="lblHueSaved" HorizontalAlignment="Center" Visibility="Visible" Content="Settings Updated" Foreground="Green" />
+                        <Image Grid.Row="4" Grid.Column="1" x:Name="imgLoading" Visibility="Collapsed" gif:ImageBehavior.AnimatedSource="Icons/loading.gif" Width="75" Margin="70,42,69,215" Grid.RowSpan="4"  />
+                        <Button Grid.Row="7" VerticalAlignment="Bottom" Grid.Column="1" x:Name="btnHue" Height="45" Width="170" Content="Save"  Click="SaveHue_Click" />
+                        <Label Grid.Row="7" Grid.Column="1" x:Name="lblHueSaved" HorizontalAlignment="Center" Visibility="Visible" Content="Settings Updated" Foreground="Green" Margin="0,225,0,0" Grid.RowSpan="2" />
                     </Grid>
                 </Grid>
             </TabItem>
@@ -552,16 +586,16 @@
                         <Label FontWeight="Bold" Grid.Column="0" Margin="0,120,0,0" Content="Light Syncing Schedule (Working Hours)"  Grid.ColumnSpan="3" />
                         <xctk:TimePicker Margin="0,-15,0,0" ValueChanged="time_ValueChanged" TimeInterval="0:15:0"  x:Name="startTime" Format="Custom" FormatString="HH:mm" Value="{Binding LightSettings.WorkingHoursStartTime}" Grid.Column="2" Height="23" HorizontalAlignment="Left"  VerticalAlignment="Center" Width="100" />
                         <xctk:TimePicker  ValueChanged="time_ValueChanged" TimeInterval="0:15:0"  x:Name="endTime" Format="Custom" FormatString="HH:mm" Value="{Binding LightSettings.WorkingHoursEndTime}" Grid.Column="2" Margin="130,-15,0,0" Height="23" HorizontalAlignment="Left"  VerticalAlignment="Center" Width="100" />
-                   
 
 
-                    <Label FontWeight="Bold" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,200,0,0" Grid.Row="1" Content="Light Status When After Hours Are Reached" />
-                    <RadioButton Grid.Column="2" Grid.Row="2" GroupName="HoursPassedStatus" x:Name="HourStatusOff" Margin="0,200,0,0" Content="Turn Off Light" HorizontalAlignment="Left" VerticalAlignment="Top" />
-                    <RadioButton Grid.Column="2" Grid.Row="2" GroupName="HoursPassedStatus" x:Name="HourStatusWhite" Margin="0,220,0,0" Content="Change Light Color to White" HorizontalAlignment="Left" VerticalAlignment="Top" />
-                    <RadioButton Grid.Column="2" Grid.Row="2" GroupName="HoursPassedStatus" x:Name="HourStatusKeep" Margin="0,240,0,0" Content="Leave Color Alone" HorizontalAlignment="Left"  VerticalAlignment="Top"/>
+
+                        <Label FontWeight="Bold" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,200,0,0" Grid.Row="1" Content="Light Status When After Hours Are Reached" />
+                        <RadioButton Grid.Column="2" Grid.Row="2" GroupName="HoursPassedStatus" x:Name="HourStatusOff" Margin="0,200,0,0" Content="Turn Off Light" HorizontalAlignment="Left" VerticalAlignment="Top" />
+                        <RadioButton Grid.Column="2" Grid.Row="2" GroupName="HoursPassedStatus" x:Name="HourStatusWhite" Margin="0,220,0,0" Content="Change Light Color to White" HorizontalAlignment="Left" VerticalAlignment="Top" />
+                        <RadioButton Grid.Column="2" Grid.Row="2" GroupName="HoursPassedStatus" x:Name="HourStatusKeep" Margin="0,240,0,0" Content="Leave Color Alone" HorizontalAlignment="Left"  VerticalAlignment="Top"/>
 
                     </Grid>
-                    
+
                     <CheckBox x:Name="cbUseDefaultBrightness" Grid.Row="3" IsChecked="{Binding LightSettings.UseDefaultBrightness}" Content="Lights Use Same Brightness" Grid.Column="1" Grid.ColumnSpan="4" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Unchecked="cbUseDefaultBrightnessChanged" Checked="cbUseDefaultBrightnessChanged" />
                     <Grid Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="2" x:Name="pnlDefaultBrightness" Margin="0,20,0,0">
                         <Grid.ColumnDefinitions>
