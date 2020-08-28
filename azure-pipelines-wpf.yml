@@ -67,7 +67,7 @@ stages:
 
     - powershell: |
         ((Get-Content -path .\.chocolatey\tools\ChocolateyInstall.ps1 -Raw) -replace 'ReplaceVersion','$(Build.BuildNumber)') | Set-Content -Path .\.chocolatey\tools\ChocolateyInstall.ps1
-        ((Get-Content -path .\.chocolatey\tools\ChocolateyInstall.ps1 -Raw) -replace 'PackagePath','PresenceLight.Package_$(GitBuildVersionSimple).0_x86.appxbundle') | Set-Content -Path .\.chocolatey\tools\ChocolateyInstall.ps1
+        ((Get-Content -path .\.chocolatey\tools\ChocolateyInstall.ps1 -Raw) -replace 'PackagePath','PresenceLight.Package_$(GitBuildVersionSimple).0_x64.appxbundle') | Set-Content -Path .\.chocolatey\tools\ChocolateyInstall.ps1
       displayName: Update ChocolateyInstall.ps1
 
     - powershell: |
@@ -105,7 +105,7 @@ stages:
       displayName: Build Presence Light for $(ChannelName)
       inputs:
         solution: '.\src\PresenceLight\PresenceLight.csproj'
-        msbuildArguments: /restore /t:publish /p:IncludeSymbols=true /p:PublishProfile=Properties/PublishProfiles/WinX86.pubxml
+        msbuildArguments: /restore /t:publish /p:IncludeSymbols=true /p:PublishProfile=Properties/PublishProfiles/WinX64.pubxml
         configuration: $(BuildConfiguration)
         maximumCpuCount: true
 
@@ -119,7 +119,7 @@ stages:
 
     - powershell: |
 
-        copy-item -path "$(Build.ArtifactStagingDirectory)\$(ChannelName)\PresenceLight.Package_$(GitBuildVersionSimple).0_Test\PresenceLight.Package_$(GitBuildVersionSimple).0_x86.appxbundle" -destination .\.chocolatey\tools\
+        copy-item -path "$(Build.ArtifactStagingDirectory)\$(ChannelName)\PresenceLight.Package_$(GitBuildVersionSimple).0_Test\PresenceLight.Package_$(GitBuildVersionSimple).0_x64.appxbundle" -destination .\.chocolatey\tools\
         # Chocolatey
         & choco.exe pack .\.chocolatey\PresenceLight.nuspec --version $(NBGV_ChocolateyPackageVersion) --OutputDirectory $(Build.ArtifactStagingDirectory)\$(ChannelName)
       displayName: Create Choco Package
@@ -129,7 +129,7 @@ stages:
       displayName: Zip PresenceLight Files
       inputs:
         archiveType: default
-        rootFolder: '.\src\PresenceLight\bin\$(BuildConfiguration)\netcoreapp5.0\win-x86\publish'
+        rootFolder: '.\src\PresenceLight\bin\$(BuildConfiguration)\netcoreapp5.0\win-x64\publish'
         archiveFile: $(Build.ArtifactStagingDirectory)\$(ChannelName)\PresenceLight.$(Build.BuildNumber).zip
         includeRootFolder: false
       condition: and(succeeded(), eq(variables['ChannelName'], 'Release'))

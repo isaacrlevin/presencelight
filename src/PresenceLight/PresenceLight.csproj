@@ -13,7 +13,7 @@
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
 
 
-    <RuntimeIdentifiers>win-x86</RuntimeIdentifiers>
+    <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
 
     <MSBuildWarningsAsMessages>$(MSBuildWarningsAsMessages);NETSDK1107</MSBuildWarningsAsMessages>
 
