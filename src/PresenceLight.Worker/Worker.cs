@@ -83,7 +83,6 @@ namespace PresenceLight.Worker
                 await _lifxService.SetColor(presence.Availability, (Selector)Config.LightSettings.LIFX.SelectedLIFXItemId);
             }
 
-            string availability = string.Empty;
             while (await _userAuthService.IsUserAuthenticated())
             {
                 if (_appState.LightMode == "Graph")
@@ -91,23 +90,22 @@ namespace PresenceLight.Worker
                     token = await _userAuthService.GetAccessToken();
                     presence = await GetPresence(token);
 
-                    if (presence.Availability != availability)
-                    {
-                        _appState.SetPresence(presence);
-                        _logger.LogInformation($"Presence is {presence.Availability}");
-                        if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedHueLightId))
-                        {
-                            await _hueService.SetColor(presence.Availability, Config.LightSettings.Hue.SelectedHueLightId);
-                        }
 
-                        if (Config.LightSettings.LIFX.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
-                        {
-                            await _lifxService.SetColor(presence.Availability, (Selector)Config.LightSettings.LIFX.SelectedLIFXItemId);
-                        }
+                    _appState.SetPresence(presence);
+                    _logger.LogInformation($"Presence is {presence.Availability}");
+                    if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedHueLightId))
+                    {
+                        await _hueService.SetColor(presence.Availability, Config.LightSettings.Hue.SelectedHueLightId);
                     }
+
+                    if (Config.LightSettings.LIFX.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
+                    {
+                        await _lifxService.SetColor(presence.Availability, (Selector)Config.LightSettings.LIFX.SelectedLIFXItemId);
+                    }
+
                 }
 
-                availability = presence.Availability;
+
                 Thread.Sleep(Convert.ToInt32(Config.LightSettings.PollingInterval * 1000));
             }
 
