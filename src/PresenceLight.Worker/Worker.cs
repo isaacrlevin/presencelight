@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using LifxCloud.NET.Models;
 using System.Text.RegularExpressions;
+using WinRT;
 
 namespace PresenceLight.Worker
 {
@@ -24,16 +25,20 @@ namespace PresenceLight.Worker
 
         private LIFXService _lifxService;
 
+        private ICustomApiService _customApiService;
+
         public Worker(IHueService hueService,
                       ILogger<Worker> logger,
                       IOptionsMonitor<ConfigWrapper> optionsAccessor,
                       AppState appState,
                       LIFXService lifxService,
+                      CustomApiService customApiService,
                       UserAuthService userAuthService)
         {
             Config = optionsAccessor.CurrentValue;
             _hueService = hueService;
             _lifxService = lifxService;
+            _customApiService = customApiService;
             _logger = logger;
             _appState = appState;
             _userAuthService = userAuthService;
@@ -104,6 +109,11 @@ namespace PresenceLight.Worker
                         {
                             await _lifxService.SetColor(presence.Availability, (Selector)Config.LightSettings.LIFX.SelectedLIFXItemId);
                         }
+                    }
+                    if (Config.LightSettings.Custom.IsCustomApiEnabled)
+                    {
+                        // passing the data on only when it changed is handled within the custom api service
+                        await _customApiService.SetColor(presence.Availability, presence.Activity);
                     }
                 }
 
