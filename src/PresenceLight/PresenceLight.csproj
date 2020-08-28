@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>netcoreapp5.0</TargetFramework>
+    <TargetFramework>net5.0-windows10.0.18362</TargetFramework>
     <AssetTargetFallback>net472</AssetTargetFallback>
     <AssemblyName>PresenceLight</AssemblyName>
     <Title>PresenceLight</Title>
@@ -13,7 +13,7 @@
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
 
 
-    <RuntimeIdentifiers>win-x86</RuntimeIdentifiers>
+    <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
 
     <MSBuildWarningsAsMessages>$(MSBuildWarningsAsMessages);NETSDK1107</MSBuildWarningsAsMessages>
 
@@ -23,10 +23,10 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetPlatformMinVersion>10.0.17134.0</TargetPlatformMinVersion>
-    <TargetPlatformVersion>10.0.18362.0</TargetPlatformVersion>
+    <!--<TargetPlatformMinVersion>10.0.17134.0</TargetPlatformMinVersion>-->
+    <!--<TargetPlatformVersion>10.0.18362.0</TargetPlatformVersion>-->
 
-    <NuGetDependencyVersion>5.6.0-xprivate.60020</NuGetDependencyVersion>
+    <NuGetDependencyVersion>5.7.0</NuGetDependencyVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -53,7 +53,6 @@
     <PackageReference Include="Microsoft.Graph.Core" Version="2.0.0-preview.2" />
     <PackageReference Include="Microsoft.Identity.Client" Version="4.17.1" />
     <PackageReference Include="Microsoft.Windows.SDK.NET" Version="10.0.18362.3-preview" />
-    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="0.1.0-prerelease.200623.5" />
     <PackageReference Include="OSVersionHelper" Version="1.1.5-preview" />
     <PackageReference Include="NETStandard.HttpListener" Version="1.0.3.5" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />

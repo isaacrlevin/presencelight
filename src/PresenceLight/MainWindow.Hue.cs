@@ -128,6 +128,55 @@ namespace PresenceLight
             e.Handled = true;
         }
 
+        private void cbIsPhillipsAvailableStatusDisabledChanged(object sender, RoutedEventArgs e)
+        {
+            hueAvailableColour.IsEnabled = !Config.LightSettings.Hue.AvailableStatus.Disabled;
+            SyncOptions();
+            e.Handled = true;
+        }
+
+        private void cbIsPhillipsBusyStatusDisabledChanged(object sender, RoutedEventArgs e)
+        {
+            hueBusyColour.IsEnabled = !Config.LightSettings.Hue.BusyStatus.Disabled;
+            SyncOptions();
+            e.Handled = true;
+        }
+
+        private void cbIsPhillipsAwayStatusDisabledChanged(object sender, RoutedEventArgs e)
+        {
+            hueAwayColour.IsEnabled = !Config.LightSettings.Hue.AwayStatus.Disabled;
+            SyncOptions();
+            e.Handled = true;
+        }
+
+        private void cbIsPhillipsDoNotDisturbStatusDisabledChanged(object sender, RoutedEventArgs e)
+        {
+            hueDoNotDisturbColour.IsEnabled = !Config.LightSettings.Hue.DoNotDisturbStatus.Disabled;
+            SyncOptions();
+            e.Handled = true;
+        }
+
+        private void cbIsPhillipsBeRightBackStatusDisabledChanged(object sender, RoutedEventArgs e)
+        {
+            hueBeRightBackColour.IsEnabled = !Config.LightSettings.Hue.BeRightBackStatus.Disabled;
+            SyncOptions();
+            e.Handled = true;
+        }
+
+        private void cbIsPhillipsOfflineStatusDisabledChanged(object sender, RoutedEventArgs e)
+        {
+            hueOfflineColour.IsEnabled = !Config.LightSettings.Hue.OfflineStatus.Disabled;
+            SyncOptions();
+            e.Handled = true;
+        }
+
+        private void cbIsPhillipsOffStatusDisabledChanged(object sender, RoutedEventArgs e)
+        {
+            hueOffColour.IsEnabled = !Config.LightSettings.Hue.OffStatus.Disabled;
+            SyncOptions();
+            e.Handled = true;
+        }
+
         private async void RegisterBridge_Click(object sender, RoutedEventArgs e)
         {
             MessageBoxHelper.PrepToCenterMessageBoxOnForm(this);
