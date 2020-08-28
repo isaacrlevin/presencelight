@@ -48,28 +48,105 @@ namespace PresenceLight.Core
             switch (availability)
             {
                 case "Available":
-                    color = "green";
+                    if (!_options.LightSettings.LIFX.AvailableStatus.Disabled)
+                    {
+                        color = color = $"#{_options.LightSettings.LIFX.AvailableStatus.Colour.ToString().Substring(3)}";
+                    }
+                    else
+                    {
+                        var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
+                        {
+                            Power = PowerState.Off
+                        });
+                        return;
+                    }
                     break;
                 case "Busy":
-                    color = "red";
+                    if (!_options.LightSettings.LIFX.BusyStatus.Disabled)
+                    {
+                        color = $"#{_options.LightSettings.LIFX.BusyStatus.Colour.ToString().Substring(3)}";
+                    }
+                    else
+                    {
+                        var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
+                        {
+                            Power = PowerState.Off
+                        });
+                        return;
+                    }
                     break;
                 case "BeRightBack":
-                    color = "yellow";
+                    if (!_options.LightSettings.LIFX.BeRightBackStatus.Disabled)
+                    {
+                        color = $"#{_options.LightSettings.LIFX.BeRightBackStatus.Colour.ToString().Substring(3)}";
+                    }
+                    else
+                    {
+                        var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
+                        {
+                            Power = PowerState.Off
+                        });
+                        return;
+                    }
                     break;
                 case "Away":
-                    color = "yellow";
+                    if (!_options.LightSettings.LIFX.AwayStatus.Disabled)
+                    {
+                        color = $"#{_options.LightSettings.LIFX.AwayStatus.Colour.ToString().Substring(3)}";
+                    }
+                    else
+                    {
+                        var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
+                        {
+                            Power = PowerState.Off
+                        });
+                        return;
+                    }
                     break;
                 case "DoNotDisturb":
-                    color = "purple";
+                    if (!_options.LightSettings.LIFX.DoNotDisturbStatus.Disabled)
+                    {
+                        color = $"#{_options.LightSettings.LIFX.DoNotDisturbStatus.Colour.ToString().Substring(3)}";
+                    }
+                    else
+                    {
+                        var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
+                        {
+                            Power = PowerState.Off
+                        });
+                        return;
+                    }
                     break;
                 case "Offline":
-                    color = "white";
+                    if (!_options.LightSettings.LIFX.OfflineStatus.Disabled)
+                    {
+                        color = $"#{_options.LightSettings.LIFX.OfflineStatus.Colour.ToString().Substring(3)}";
+                    }
+                    else
+                    {
+                        var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
+                        {
+                            Power = PowerState.Off
+                        });
+                        return;
+                    }
                     break;
                 case "Off":
-                    color = "white";
+                    if (!_options.LightSettings.LIFX.OffStatus.Disabled)
+                    {
+                        color = $"#{_options.LightSettings.LIFX.OffStatus.Colour.ToString().Substring(3)}";
+                    }
+                    else
+                    {
+                        var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
+                        {
+                            Power = PowerState.Off
+                        });
+                        return;
+                    }
                     break;
                 default:
-                    color = availability;
+                    color = $"#{_options.LightSettings.LIFX.OffStatus.Colour.ToString().Substring(3)}";
                     break;
             }
 
@@ -105,7 +182,7 @@ namespace PresenceLight.Core
             }
             else
             {
-                if (_options.LightSettings.Hue.HueBrightness == 0)
+                if (_options.LightSettings.LIFX.LIFXBrightness == 0)
                 {
                     var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
                     {
