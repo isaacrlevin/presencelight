@@ -165,6 +165,20 @@ namespace PresenceLight.Core
         public string? SelectedLIFXItemId { get; set; }
 
         public int LIFXBrightness { get; set; }
+
+        public AvailabilityStatus AvailableStatus { get; set; }
+
+        public AvailabilityStatus BusyStatus { get; set; }
+
+        public AvailabilityStatus AwayStatus { get; set; }
+
+        public AvailabilityStatus BeRightBackStatus { get; set; }
+
+        public AvailabilityStatus DoNotDisturbStatus { get; set; }
+
+        public AvailabilityStatus OfflineStatus { get; set; }
+
+        public AvailabilityStatus OffStatus { get; set; }
     }
 
     public class Hue
@@ -181,7 +195,29 @@ namespace PresenceLight.Core
         public string? HueIpAddress { get; set; }
 
         public bool IsPhillipsHueEnabled { get; set; }
+
+        public AvailabilityStatus AvailableStatus { get; set; }
+
+        public AvailabilityStatus BusyStatus { get; set; }
+
+        public AvailabilityStatus AwayStatus { get; set; }
+
+        public AvailabilityStatus BeRightBackStatus { get; set; }
+
+        public AvailabilityStatus DoNotDisturbStatus { get; set; }
+
+        public AvailabilityStatus OfflineStatus { get; set; }
+
+        public AvailabilityStatus OffStatus { get; set; }
     }
+
+    public class AvailabilityStatus
+    {
+        public Boolean Disabled { get; set; }
+
+        public string? Colour { get; set; }
+    }
+
 
     public class Yeelight
     {
@@ -190,5 +226,19 @@ namespace PresenceLight.Core
         public int YeelightBrightness { get; set; }
 
         public bool IsYeelightEnabled { get; set; }
+
+        public AvailabilityStatus AvailableStatus { get; set; }
+
+        public AvailabilityStatus BusyStatus { get; set; }
+
+        public AvailabilityStatus AwayStatus { get; set; }
+
+        public AvailabilityStatus BeRightBackStatus { get; set; }
+
+        public AvailabilityStatus DoNotDisturbStatus { get; set; }
+
+        public AvailabilityStatus OfflineStatus { get; set; }
+
+        public AvailabilityStatus OffStatus { get; set; }
     }
 }

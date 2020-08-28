@@ -74,7 +74,7 @@ namespace PresenceLight
                     if (ddlLIFXLights.SelectedItem != null)
                     {
 
-                        pnlLIFXBrigthness.Visibility = Visibility.Visible;
+                        pnlLIFXBrightness.Visibility = Visibility.Visible;
                         lblLIFXMessage.Text = "Connected to LIFX Cloud";
                         fontBrush.Color = MapColor("#009933");
                         lblLIFXMessage.Foreground = fontBrush;
@@ -131,7 +131,7 @@ namespace PresenceLight
                         ddlLIFXLights.ItemsSource = await _lifxService.GetAllLightsAsync();
                     }
 
-                    pnlLIFXBrigthness.Visibility = Visibility.Visible;
+                    pnlLIFXBrightness.Visibility = Visibility.Visible;
                     lblLIFXMessage.Text = "Connected to LIFX Cloud";
                     fontBrush.Color = MapColor("#009933");
                     lblLIFXMessage.Foreground = fontBrush;
@@ -140,7 +140,7 @@ namespace PresenceLight
                 {
                     DiagnosticsClient.TrackException(ex);
 
-                    pnlLIFXBrigthness.Visibility = Visibility.Collapsed;
+                    pnlLIFXBrightness.Visibility = Visibility.Collapsed;
                     lblLIFXMessage.Text = "Error Occured Connecting to LIFX, please try again";
                     fontBrush.Color = MapColor("#ff3300");
                     lblLIFXMessage.Foreground = fontBrush;
@@ -181,6 +181,55 @@ namespace PresenceLight
                 pnlLIFX.Visibility = Visibility.Collapsed;
             }
             
+            SyncOptions();
+            e.Handled = true;
+        }
+
+        private void cbIsLIFXAvailableStatusDisabledChanged(object sender, RoutedEventArgs e)
+        {
+            lifxAvailableColour.IsEnabled = !Config.LightSettings.LIFX.AvailableStatus.Disabled;
+            SyncOptions();
+            e.Handled = true;
+        }
+
+        private void cbIsLIFXBusyStatusDisabledChanged(object sender, RoutedEventArgs e)
+        {
+            lifxBusyColour.IsEnabled = !Config.LightSettings.LIFX.BusyStatus.Disabled;
+            SyncOptions();
+            e.Handled = true;
+        }
+
+        private void cbIsLIFXAwayStatusDisabledChanged(object sender, RoutedEventArgs e)
+        {
+            lifxAwayColour.IsEnabled = !Config.LightSettings.LIFX.AwayStatus.Disabled;
+            SyncOptions();
+            e.Handled = true;
+        }
+
+        private void cbIsLIFXDoNotDisturbStatusDisabledChanged(object sender, RoutedEventArgs e)
+        {
+            lifxDoNotDisturbColour.IsEnabled = !Config.LightSettings.LIFX.DoNotDisturbStatus.Disabled;
+            SyncOptions();
+            e.Handled = true;
+        }
+
+        private void cbIsLIFXBeRightBackStatusDisabledChanged(object sender, RoutedEventArgs e)
+        {
+            lifxBeRightBackColour.IsEnabled = !Config.LightSettings.LIFX.BeRightBackStatus.Disabled;
+            SyncOptions();
+            e.Handled = true;
+        }
+
+        private void cbIsLIFXOfflineStatusDisabledChanged(object sender, RoutedEventArgs e)
+        {
+            lifxOfflineColour.IsEnabled = !Config.LightSettings.LIFX.OfflineStatus.Disabled;
+            SyncOptions();
+            e.Handled = true;
+        }
+
+        private void cbIsLIFXOffStatusDisabledChanged(object sender, RoutedEventArgs e)
+        {
+            lifxOffColour.IsEnabled = !Config.LightSettings.LIFX.OffStatus.Disabled;
             SyncOptions();
             e.Handled = true;
         }
