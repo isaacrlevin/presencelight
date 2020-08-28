@@ -107,6 +107,7 @@ stages:
         solution: '.\src\PresenceLight\PresenceLight.csproj'
         msbuildArguments: /restore /t:publish /p:IncludeSymbols=true /p:PublishProfile=Properties/PublishProfiles/WinX64.pubxml
         configuration: $(BuildConfiguration)
+        msbuildVersion: '16.8'
         maximumCpuCount: true
 
     - task: MSBuild@1
@@ -115,6 +116,7 @@ stages:
         solution: '.\src\PresenceLight.Package\PresenceLight.Package.wapproj'
         msbuildArguments: /p:IncludeSymbols=true /p:AppxPackageDir="$(Build.ArtifactStagingDirectory)\$(ChannelName)\\"
         configuration: $(BuildConfiguration)
+        msbuildVersion: '16.8'
         maximumCpuCount: true
 
     - powershell: |
