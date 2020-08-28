@@ -107,6 +107,7 @@ stages:
         solution: '.\src\PresenceLight\PresenceLight.csproj'
         msbuildArguments: /restore /t:publish /p:IncludeSymbols=true /p:PublishProfile=Properties/PublishProfiles/WinX86.pubxml
         configuration: $(BuildConfiguration)
+        msbuildVersion: '16.8'
         maximumCpuCount: true
 
     - task: MSBuild@1
@@ -115,6 +116,7 @@ stages:
         solution: '.\src\PresenceLight.Package\PresenceLight.Package.wapproj'
         msbuildArguments: /p:IncludeSymbols=true /p:AppxPackageDir="$(Build.ArtifactStagingDirectory)\$(ChannelName)\\"
         configuration: $(BuildConfiguration)
+        msbuildVersion: '16.8'
         maximumCpuCount: true
 
     - powershell: |
@@ -129,7 +131,7 @@ stages:
       displayName: Zip PresenceLight Files
       inputs:
         archiveType: default
-        rootFolder: '.\src\PresenceLight\bin\$(BuildConfiguration)\netcoreapp5.0\win-x86\publish'
+        rootFolder: '.\src\PresenceLight\bin\$(BuildConfiguration)\netcoreapp5.0\net5.0-windows10.0.18362\win-x86\publish'
         archiveFile: $(Build.ArtifactStagingDirectory)\$(ChannelName)\PresenceLight.$(Build.BuildNumber).zip
         includeRootFolder: false
       condition: and(succeeded(), eq(variables['ChannelName'], 'Release'))
