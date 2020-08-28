@@ -101,13 +101,17 @@ stages:
         $badge.Save("$(Build.ArtifactStagingDirectory)\$(ChannelName)\stable_badge.svg")
       displayName: Update Badge Versions
 
-    - task: MSBuild@1
+       
+    - task: DotNetCoreCLI@2
       displayName: Build Presence Light for $(ChannelName)
       inputs:
-        solution: '.\src\PresenceLight\PresenceLight.csproj'
-        msbuildArguments: /restore /t:publish /p:IncludeSymbols=true /p:PublishProfile=Properties/PublishProfiles/WinX64.pubxml
-        configuration: $(BuildConfiguration)
-        maximumCpuCount: true
+        command: publish
+        projects: '.\src\PresenceLight\PresenceLight.csproj'
+        arguments: -c $(BuildConfiguration) /p:PublishProfile=Properties/PublishProfiles/WinX64.pubxml
+        zipAfterPublish: false
+        modifyOutputPath: false
+        publishWebProjects: false
+      condition: and(succeeded(), not(eq(variables['ChannelName'], 'Nightly')))
 
     - task: MSBuild@1
       displayName: Build Appx Package
