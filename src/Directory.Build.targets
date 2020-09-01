@@ -1,7 +1,4 @@
 <Project>
-  <PropertyGroup>
-    <Product Condition="'$(IsTypesProject)' != 'true'">$(Product) ($(Configuration)) ($(Platform))</Product>
-  </PropertyGroup>
 
   <Target Name="AddCommitHashToAssemblyAttributes" BeforeTargets="GetAssemblyAttributes">
     <ItemGroup>

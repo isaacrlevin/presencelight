@@ -1,47 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
-    <OutputType>WinExe</OutputType>
     <TargetFramework>net5.0-windows10.0.19041</TargetFramework>
     <AssetTargetFallback>net472</AssetTargetFallback>
+    <OutputType>WinExe</OutputType>
     <AssemblyName>PresenceLight</AssemblyName>
     <Title>PresenceLight</Title>
     <Description>PresenceLight is a solution to broadcast your Microsoft Teams presence to a Phillips Hue or LIFX light bulb. There are other solutions that do something similar, but they require a tethered solution (plugging a light into a computer via USB). What PresenceLight does is leverage the Presence Api, which is available in Microsoft Graph, allowing to retrieve your presence without having to be tethered. This could potentially allow someone to update the light bulb from a remote machine they do not use.</Description>
     <RootNamespace>PresenceLight</RootNamespace>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <ApplicationIcon>Icons\Icon.ico</ApplicationIcon>
+    <TieredCompilationQuickJitForLoops>true</TieredCompilationQuickJitForLoops>
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
-
-
-    <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
-
-    <MSBuildWarningsAsMessages>$(MSBuildWarningsAsMessages);NETSDK1107</MSBuildWarningsAsMessages>
-
-    <LangVersion>preview</LangVersion>
-    <NullableContextOptions>enable</NullableContextOptions>
-    <Nullable>enable</Nullable>
   </PropertyGroup>
-
-  <PropertyGroup>
-    <!--<TargetPlatformMinVersion>10.0.17134.0</TargetPlatformMinVersion>-->
-    <!--<TargetPlatformVersion>10.0.19041.0</TargetPlatformVersion>-->
-
-    <NuGetDependencyVersion>5.7.0</NuGetDependencyVersion>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <NoWarn>1701;1702;1705;1591;NU1701,CS8625,CS8603,CS8618;CS8604;CS8600;CS0649;CS8602</NoWarn>
-  </PropertyGroup>
-
   <ItemGroup>
     <None Remove="Images\UnknownProfile.png" />
   </ItemGroup>
 
-
-
-
-  <ItemGroup>
-    <PackageReference Include="AppInsights.WindowsDesktop" Version="2.13.1" />
+<ItemGroup>
+     <PackageReference Include="AppInsights.WindowsDesktop" Version="2.13.1" />
     <PackageReference Include="Extended.Wpf.Toolkit" Version="4.0.1" />
     <PackageReference Include="IdentityModel.OidcClient" Version="3.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OAuth" Version="2.2.0" />
@@ -59,13 +35,10 @@
     <PackageReference Include="Q42.HueApi.ColorConverters" Version="3.14.0" />
     <PackageReference Include="WpfAnimatedGif" Version="2.0.0" />
     <PackageReference Include="YeelightAPI" Version="1.9.0" />
-  </ItemGroup>
 
-  <ItemGroup>
     <ProjectReference Include="..\PresenceLight.Core\PresenceLight.Core.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
+<ItemGroup>
     <Resource Include="Icons\Available.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
@@ -126,23 +99,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Properties\Settings.Designer.cs">
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="ApplicationInsights.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
 

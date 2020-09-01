@@ -2,8 +2,7 @@
 using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Windows.ApplicationModel;
-using Windows.Foundation.Metadata;
+
 
 namespace PresenceLight
 {
@@ -43,17 +42,6 @@ namespace PresenceLight
         internal static string GetDotNetRuntimeInfo()
         {
             return typeof(object).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
-        }
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private static Uri GetAppInstallerInfoUri(Package p)
-        {
-            var aiInfo = p.GetAppInstallerInfo();
-            if (aiInfo != null)
-            {
-                return aiInfo.Uri;
-            }
-            return null;
         }
     }
 }

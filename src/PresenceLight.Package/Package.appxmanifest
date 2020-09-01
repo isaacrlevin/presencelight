@@ -19,7 +19,7 @@
   </Properties>
 
   <Dependencies>
-    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.14393.0" MaxVersionTested="10.0.14393.0" />
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.17134.0" MaxVersionTested="10.0.18362.0" />
   </Dependencies>
 
   <Resources>
@@ -87,17 +87,7 @@
         <uap:SplashScreen Image="Images\SplashScreen.png"  BackgroundColor="transparent"/>
         <uap:LockScreen BadgeLogo="Images\BadgeLogo.png" Notification="badge"/>
       </uap:VisualElements>
-        <Extensions>
-          <desktop:Extension
-            Category="windows.startupTask"
-            Executable="PresenceLight\PresenceLight.exe"
-            EntryPoint="Windows.FullTrustApplication">
-            <desktop:StartupTask
-              TaskId="PresenceLight"
-              Enabled="true"
-              DisplayName="PresenceLight" />
-          </desktop:Extension>
-      </Extensions>
+
     </Application>
   </Applications>
 
