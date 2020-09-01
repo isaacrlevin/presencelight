@@ -3,7 +3,6 @@ using LifxCloud.NET;
 using LifxCloud.NET.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Windows.Media.Capture;
 
 namespace PresenceLight.Core
 {

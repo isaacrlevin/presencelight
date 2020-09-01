@@ -31,6 +31,10 @@
     <AppxPackageIncludePrivateSymbols>true</AppxPackageIncludePrivateSymbols>
     <UapAppxPackageBuildMode Condition="'$(ChannelName)' == 'Release'">StoreUpload</UapAppxPackageBuildMode>
     <EntryPointProjectUniqueName>..\PresenceLight\PresenceLight.csproj</EntryPointProjectUniqueName>
+	  <EntryPointExe Condition="'$(BuildingInsideVisualStudio)' != 'true' ">PresenceLight\PresenceLight.exe</EntryPointExe>
+    <EntryPointProjectUniqueName Condition="'$(BuildingInsideVisualStudio)' == 'true' ">..\PresenceLight\PresenceLight.csproj</EntryPointProjectUniqueName>
+    <GetPackagingOutputsDependsOn Condition="'$(BuildingInsideVisualStudio)' != 'true' ">$(GetPackagingOutputsDependsOn);BuildRefsOutputGroup</GetPackagingOutputsDependsOn>
+
   </PropertyGroup>
   <PropertyGroup Condition="'$(ChannelName)' == 'Nightly'">
     <GenerateAppInstallerFile>True</GenerateAppInstallerFile>
@@ -57,11 +61,33 @@
       <Content Include="Images\*.png" />
     <None Include="Package.xml" />
   </ItemGroup>
-  <ItemGroup>
+   <ItemGroup Condition="'$(BuildingInsideVisualStudio)' == 'true'">
     <ProjectReference Include="..\PresenceLight\PresenceLight.csproj">
       <SkipGetTargetFrameworkProperties>True</SkipGetTargetFrameworkProperties>
-      <PublishProfile Condition="'$(Platform)'=='x64'">Properties\PublishProfiles\Winx64.pubxml</PublishProfile>
+      <PublishProfile Condition="'$(Platform)'=='x64'">Properties\PublishProfiles\WinX64.pubxml</PublishProfile>
+      <PublishProfile Condition="'$(Platform)'=='x86'">Properties\PublishProfiles\WinX86.pubxml</PublishProfile>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(WapProjPath)\Microsoft.DesktopBridge.targets" />
+  <Target Name="BuildRef" Condition="'$(BuildingInsideVisualStudio)' != 'true' " BeforeTargets="BeforeBuild">
+    <PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
+      <NpeExecCmd>dotnet publish -c $(Configuration) "$(MSBuildThisFileDirectory)..\PresenceLight\PresenceLight.csproj" /p:PublishProfile=Properties\PublishProfiles\Win$(Platform).pubxml</NpeExecCmd>
+    </PropertyGroup>
+    <Message Text="Executing: $(NpeExecCmd)" Importance="High" />
+    <Exec Command="$(NpeExecCmd)" />
+    <Message Text="Built ref " />
+    <ItemGroup>
+      <TheFiles Include="..\PresenceLight\bin\$(Configuration)\net5.0-windows10.0.19041\win-$(Platform)\**\*.*" />
+      <TheFiles TargetPath="PresenceLight\%(RecursiveDir)%(Filename)%(Extension)" />
+      <File Include="@(TheFiles)">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </File>
+    </ItemGroup>
+  </Target>
+
+    <Target Name="BuildRefsOutputGroup" Returns="@(BuiltRefsOutput)">
+    <ItemGroup>
+      <_PackagingOutputsUnexpanded Include="@(BuiltRef)" OutputGroup="BuildRefsOutputGroup"  ProjectName="$(ProjectName)"  />
+    </ItemGroup>
+  </Target>
 </Project>

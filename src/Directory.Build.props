@@ -9,7 +9,11 @@
     <DefaultLanguage>en-US</DefaultLanguage>
     <NoWarn>1701;1702;1705;1591;NU1701</NoWarn>
 
+    <IsTypesProject>$(MSBuildProjectName.Contains('Types'))</IsTypesProject>
+    <IsLegacyProject>$(MSBuildProjectName.Equals('PresenceLight'))</IsLegacyProject>
+    <IsPackageProject>$(MSBuildProjectName.Contains('.Package'))</IsPackageProject>
     <DebugType>embedded</DebugType>
+	
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
@@ -27,6 +31,10 @@
     <NullableContextOptions>enable</NullableContextOptions>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+  
+    <PropertyGroup Condition="'$(TF_BUILD)' == 'true'">
+     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+	</PropertyGroup>
 
   <PropertyGroup>
     <!--<TargetPlatformMinVersion>10.0.17134.0</TargetPlatformMinVersion>

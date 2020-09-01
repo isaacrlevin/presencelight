@@ -10,7 +10,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using LifxCloud.NET.Models;
 using System.Text.RegularExpressions;
-using WinRT;
 
 namespace PresenceLight.Worker
 {
