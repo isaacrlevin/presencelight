@@ -2,7 +2,7 @@
 using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using OSVersionHelper;
+//using OSVersionHelper;
 using Windows.ApplicationModel;
 using Windows.Foundation.Metadata;
 using Windows.Storage;
@@ -13,11 +13,14 @@ namespace PresenceLight
     {
         internal static string GetDisplayName()
         {
-            if (WindowsVersionHelper.HasPackageIdentity)
+            try
             {
                 return Package.Current.DisplayName;
             }
-            return "Not packaged";
+            catch
+            {
+                return "Not packaged";
+            }
         }
 
         internal static string GetInstallLocation()
@@ -40,21 +43,26 @@ namespace PresenceLight
 
         internal static string GetPackageVersion()
         {
-            if (WindowsVersionHelper.HasPackageIdentity)
+            try
             {
                 return $"{Package.Current.Id.Version.Major}.{Package.Current.Id.Version.Minor}.{Package.Current.Id.Version.Build}.{Package.Current.Id.Version.Revision}";
             }
-            return "Not packaged";
+            catch
+            {
+                return "Not packaged";
+            }
         }
 
         internal static string GetPackageChannel()
         {
-            if (WindowsVersionHelper.HasPackageIdentity)
+            try
             {
                 return Package.Current.Id.Name.Substring(Package.Current.Id.Name.LastIndexOf('.') + 1);
             }
-
-            return null;
+            catch
+            {
+                return null;
+            }
         }
 
         internal static string GetDotNetInfo()
@@ -80,26 +88,32 @@ namespace PresenceLight
         {
             string result;
 
-            if (!WindowsVersionHelper.HasPackageIdentity) return "Not packaged";
-
-            if (ApiInformation.IsMethodPresent("Windows.ApplicationModel.Package", "GetAppInstallerInfo"))
+            try
             {
-                var aiUri = GetAppInstallerInfoUri(Package.Current);
-                if (aiUri != null)
+
+                if (ApiInformation.IsMethodPresent("Windows.ApplicationModel.Package", "GetAppInstallerInfo"))
                 {
-                    result = aiUri.ToString();
+                    var aiUri = GetAppInstallerInfoUri(Package.Current);
+                    if (aiUri != null)
+                    {
+                        result = aiUri.ToString();
+                    }
+                    else
+                    {
+                        result = "not present";
+                    }
                 }
                 else
                 {
-                    result = "not present";
+                    result = "Not Available";
                 }
-            }
-            else
-            {
-                result = "Not Available";
-            }
 
-            return result;
+                return result;
+            }
+            catch
+            {
+                return "Not packaged";
+            }
         }
 
         internal static string GetDotNetRuntimeInfo()
