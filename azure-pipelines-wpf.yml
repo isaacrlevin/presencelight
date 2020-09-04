@@ -205,7 +205,7 @@ stages:
               --descriptionUrl "https://github.com/isaacrlevin/PresenceLight"
             displayName: Authenticode Sign AppXBundle
  
-           - pwsh: |
+          - pwsh: |
               .\SignClient "Sign" `
               --baseDirectory "$(Pipeline.Workspace)\ToSign" `
               --input "**/*.{appinstaller}" `
@@ -242,7 +242,7 @@ stages:
               --name "PresenceLight" `
               --description "PresenceLight" `
               --descriptionUrl "https://github.com/isaacrlevin/PresenceLight"
-           displayName: Authenticode Sign NUPKG
+            displayName: Authenticode Sign nupkg
 
 
 
