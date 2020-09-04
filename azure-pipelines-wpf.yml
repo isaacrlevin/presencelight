@@ -133,7 +133,7 @@ stages:
       displayName: Zip PresenceLight Files
       inputs:
         archiveType: default
-        rootFolder: '.\src\PresenceLight\bin\$(BuildConfiguration)\netcoreapp5.0\win-x64\publish'
+        rootFolder: '.\src\PresenceLight\bin\Release\net5.0-windows10.0.19041\win-x64\publish\'
         archiveFile: $(Build.ArtifactStagingDirectory)\$(ChannelName)\PresenceLight.$(Build.BuildNumber).zip
         includeRootFolder: false
       condition: and(succeeded(), eq(variables['ChannelName'], 'Release'))
