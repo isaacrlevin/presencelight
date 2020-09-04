@@ -31,7 +31,7 @@ namespace PresenceLight.Worker
                       IOptionsMonitor<ConfigWrapper> optionsAccessor,
                       AppState appState,
                       LIFXService lifxService,
-                      CustomApiService customApiService,
+                      ICustomApiService customApiService,
                       UserAuthService userAuthService)
         {
             Config = optionsAccessor.CurrentValue;
