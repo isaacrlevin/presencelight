@@ -191,11 +191,11 @@ stages:
               scriptType: 'ps'
               scriptLocation: 'inlineScript'
               inlineScript: 'az appservice plan update --name levin-signserv-asp-2dnwx6q6jwiay --resource-group SignService --sku P2V2'
-
+             
           - pwsh: |
               .\SignClient "Sign" `
               --baseDirectory "$(Pipeline.Workspace)\ToSign" `
-              --input "**/*.{appxbundle}" `
+              --input "**/*.appxbundle" `
               --config "$(Pipeline.Workspace)\SigningScripts\appsettings.json" `
               --filelist "$(Pipeline.Workspace)\SigningScripts\filelist.txt" `
               --user "$(SignClientUser)" `
@@ -208,7 +208,7 @@ stages:
           - pwsh: |
               .\SignClient "Sign" `
               --baseDirectory "$(Pipeline.Workspace)\ToSign" `
-              --input "**/*.{appinstaller}" `
+              --input "**/*.appinstaller" `
               --config "$(Pipeline.Workspace)\SigningScripts\appsettings.json" `
               --filelist "$(Pipeline.Workspace)\SigningScripts\filelist.txt" `
               --user "$(SignClientUser)" `
@@ -221,7 +221,7 @@ stages:
           - pwsh: |
               .\SignClient "Sign" `
               --baseDirectory "$(Pipeline.Workspace)\ToSign" `
-              --input "**/*.{zip}" `
+              --input "**/*.zip" `
               --config "$(Pipeline.Workspace)\SigningScripts\appsettings.json" `
               --filelist "$(Pipeline.Workspace)\SigningScripts\filelist.txt" `
               --user "$(SignClientUser)" `
@@ -234,7 +234,7 @@ stages:
           - pwsh: |
               .\SignClient "Sign" `
               --baseDirectory "$(Pipeline.Workspace)\ToSign" `
-              --input "**/*.{nupkg}" `
+              --input "**/*.nupkg" `
               --config "$(Pipeline.Workspace)\SigningScripts\appsettings.json" `
               --filelist "$(Pipeline.Workspace)\SigningScripts\filelist.txt" `
               --user "$(SignClientUser)" `
