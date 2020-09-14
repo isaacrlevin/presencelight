@@ -101,7 +101,6 @@ stages:
         $badge.Save("$(Build.ArtifactStagingDirectory)\$(ChannelName)\stable_badge.svg")
       displayName: Update Badge Versions
 
-       
     - task: DotNetCoreCLI@2
       displayName: Build Presence Light for $(ChannelName)
       inputs:
@@ -122,8 +121,12 @@ stages:
         maximumCpuCount: true
 
     - powershell: |
-
         copy-item -path "$(Build.ArtifactStagingDirectory)\$(ChannelName)\PresenceLight.Package_$(GitBuildVersionSimple).0_Test\PresenceLight.Package_$(GitBuildVersionSimple).0_x64.appxbundle" -destination .\.chocolatey\tools\
+        $hash=Get-Filehash .\.chocolatey\tools\PresenceLight.Package_$(GitBuildVersionSimple).0_x64.appxbundle
+        $content = Get-Content -Path .\.chocolatey\tools\Verification.txt
+        $newContent = $content -replace '{VERSION}' , $(GitBuildVersionSimple)
+        $newContent = $content -replace '{HASH}', $hash.Hash
+        $newContent | Set-Content -Path .\.chocolatey\tools\Verification.txt
         # Chocolatey
         & choco.exe pack .\.chocolatey\PresenceLight.nuspec --version $(NBGV_ChocolateyPackageVersion) --OutputDirectory $(Build.ArtifactStagingDirectory)\$(ChannelName)
       displayName: Create Choco Package
@@ -137,6 +140,10 @@ stages:
         archiveFile: $(Build.ArtifactStagingDirectory)\$(ChannelName)\PresenceLight.$(Build.BuildNumber).zip
         includeRootFolder: false
       condition: and(succeeded(), eq(variables['ChannelName'], 'Release'))
+
+    - powershell: |
+
+      displayName: Update Verification.txt
 
     - publish: $(Build.ArtifactStagingDirectory)\$(ChannelName)
       displayName: Publish Arifacts
@@ -191,7 +198,7 @@ stages:
               scriptType: 'ps'
               scriptLocation: 'inlineScript'
               inlineScript: 'az appservice plan update --name levin-signserv-asp-2dnwx6q6jwiay --resource-group SignService --sku P2V2'
-             
+
           - pwsh: |
               .\SignClient "Sign" `
               --baseDirectory "$(Pipeline.Workspace)\ToSign" `
@@ -204,7 +211,7 @@ stages:
               --description "PresenceLight" `
               --descriptionUrl "https://github.com/isaacrlevin/PresenceLight"
             displayName: Authenticode Sign AppXBundle
- 
+
           - pwsh: |
               .\SignClient "Sign" `
               --baseDirectory "$(Pipeline.Workspace)\ToSign" `
@@ -217,7 +224,7 @@ stages:
               --description "PresenceLight" `
               --descriptionUrl "https://github.com/isaacrlevin/PresenceLight"
             displayName: Authenticode Sign AppInstaller
-            
+
           - pwsh: |
               .\SignClient "Sign" `
               --baseDirectory "$(Pipeline.Workspace)\ToSign" `
@@ -230,7 +237,7 @@ stages:
               --description "PresenceLight" `
               --descriptionUrl "https://github.com/isaacrlevin/PresenceLight"
             displayName: Authenticode Sign Zip
-         
+
           - pwsh: |
               .\SignClient "Sign" `
               --baseDirectory "$(Pipeline.Workspace)\ToSign" `
