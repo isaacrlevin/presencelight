@@ -11,11 +11,11 @@ Issuer: DigiCert CA
 Thumbprint: A1DE3CF35AB44D687323ADE9CDCDC594618D288B
 
 
-1. Download the following installers:
-  32-Bit: <https://github.com/isaacrlevin/PresenceLight/releases/download/v{VERSION}/PresenceLight.Package_{VERSION}.0_x64.appxbundle>
+1. Download the latest APPXBundle installer:
+  64-Bit: <https://github.com/isaacrlevin/PresenceLight/releases/>
 2. You can use one of the following methods to obtain the checksum
   - Use powershell function 'Get-Filehash'
   - Use chocolatey utility 'checksum.exe'
 
   checksum type: sha256
-  checksum32: {HASH}
+  checksum64: {HASH}
