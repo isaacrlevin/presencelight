@@ -11,11 +11,12 @@ Issuer: DigiCert CA
 Thumbprint: A1DE3CF35AB44D687323ADE9CDCDC594618D288B
 
 
-1. Download the latest APPXBundle installer:
-  64-Bit: <https://github.com/isaacrlevin/PresenceLight/releases/>
+1. Locate the AppxBundle File at the same root of this file:
+  
 2. You can use one of the following methods to obtain the checksum
   - Use powershell function 'Get-Filehash'
   - Use chocolatey utility 'checksum.exe'
+
 
   checksum type: sha256
   checksum64: {HASH}
