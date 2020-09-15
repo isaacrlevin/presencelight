@@ -126,6 +126,8 @@ stages:
         $content = Get-Content -Path .\.chocolatey\tools\Verification.txt
         $newContent = $content -replace '{VERSION}' , $(GitBuildVersionSimple)
         $newContent = $content -replace '{HASH}', $hash.Hash
+        Write-Host "File: .\.chocolatey\tools\PresenceLight.Package_$(GitBuildVersionSimple).0_x64.appxbundle"
+        Write-Host "Hash: $hash.Hash"
         $newContent | Set-Content -Path .\.chocolatey\tools\Verification.txt
         # Chocolatey
         & choco.exe pack .\.chocolatey\PresenceLight.nuspec --version $(NBGV_ChocolateyPackageVersion) --OutputDirectory $(Build.ArtifactStagingDirectory)\$(ChannelName)
