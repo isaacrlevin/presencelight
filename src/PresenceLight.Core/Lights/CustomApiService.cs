@@ -16,8 +16,8 @@ namespace PresenceLight.Core
 
     public class CustomApiService : ICustomApiService
     {
-        private string _currentAvailability = "";
-        private string _currentActivity = "";
+        private string _currentAvailability = string.Empty;
+        private string _currentActivity = string.Empty;
 
         static readonly HttpClient client = new HttpClient
         {
@@ -26,15 +26,18 @@ namespace PresenceLight.Core
         };
 
         private readonly ConfigWrapper _options;
+        private readonly IWorkingHoursService _workingHoursService;
 
-        public CustomApiService(IOptionsMonitor<ConfigWrapper> optionsAccessor)
+        public CustomApiService(IOptionsMonitor<ConfigWrapper> optionsAccessor, IWorkingHoursService workingHoursService)
         {
             _options = optionsAccessor.CurrentValue;
+            _workingHoursService = workingHoursService;
         }
 
-        public CustomApiService(ConfigWrapper options)
+        public CustomApiService(ConfigWrapper options, IWorkingHoursService workingHoursService)
         {
             _options = options;
+            _workingHoursService = workingHoursService;
         }
 
         private async Task<string> CallCustomApiForActivityChanged(object sender, string newActivity)
@@ -145,6 +148,13 @@ namespace PresenceLight.Core
 
         public async Task<string> SetColor(string availability, string? activity)
         {
+            if (this._workingHoursService.UseWorkingHours
+                && this._workingHoursService.OutsideWorkingHours)
+            {
+                // If we are outside of working hours we should signal that we are off
+                availability = activity = "Off";
+            }
+
             string result = await SetAvailability(availability);
             result += await SetActivity(activity);
             return result;
@@ -152,7 +162,7 @@ namespace PresenceLight.Core
 
         private async Task<string> SetAvailability(string availability)
         {
-            string result = "";
+            string result = string.Empty;
             if (!string.IsNullOrEmpty(availability) && availability != _currentAvailability)
             {
                 _currentAvailability = availability;
@@ -163,7 +173,7 @@ namespace PresenceLight.Core
 
         private async Task<string> SetActivity(string activity)
         {
-            string result = "";
+            string result = string.Empty;
             if (!string.IsNullOrEmpty(activity) && activity != _currentActivity)
             {
                 _currentActivity = activity;

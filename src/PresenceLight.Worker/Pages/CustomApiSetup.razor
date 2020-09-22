@@ -4,6 +4,7 @@
 @inject AppState appState
 @inject IModalService Modal
 @inject IOptionsMonitor<ConfigWrapper> Config
+@inject IWorkingHoursService _workingHoursService
 
 
 <div class="container text-body" style="overflow:hidden">
@@ -253,7 +254,7 @@
     private void Save()
     {
         System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/PresenceLightSettings.json", JsonConvert.SerializeObject(Config.CurrentValue));
-        _customApiService = new CustomApiService(Config.CurrentValue);
+        _customApiService = new CustomApiService(Config.CurrentValue, _workingHoursService);
         message = "Settings Saved";
         settingsSaved = true;
     }
