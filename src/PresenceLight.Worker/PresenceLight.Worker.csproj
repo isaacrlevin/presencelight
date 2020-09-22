@@ -22,17 +22,17 @@
     <PackageReference Include="Blazored.Modal" Version="5.0.3" />
     <PackageReference Include="Blazorise.Bootstrap" Version="0.9.1.2" />
     <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.1.2" />
-    <PackageReference Include="IdentityModel" Version="4.3.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="3.1.7" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="3.1.7" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="3.1.7" />
+    <PackageReference Include="IdentityModel" Version="4.4.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="3.1.8" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="3.1.8" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="3.1.8" />
     <PackageReference Include="Microsoft.Graph.Beta" Version="0.15.0-preview" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="Microsoft.Identity.Client" Version="4.17.1" />
+    <PackageReference Include="Microsoft.Identity.Client" Version="4.18.0" />
     <PackageReference Include="Microsoft.Graph.Auth" Version="1.0.0-preview.2" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.AzureAD.UI" Version="3.1.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.AzureAD.UI" Version="3.1.8" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.2.0" />
 
   </ItemGroup>

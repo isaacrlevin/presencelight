@@ -26,9 +26,17 @@ namespace PresenceLight.Worker.Controllers
             _appState = appState;
         }
 
+
+
         [AllowAnonymous]
         [HttpGet]
-
+        [Route("GetPresence")]
+        public string GetPresence()
+        {
+            return _appState.Presence.Availability;
+        }
+        [AllowAnonymous]
+        [HttpGet]
         public async void UpdateLight(string command)
         {
             if (command == "Teams")

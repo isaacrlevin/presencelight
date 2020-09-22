@@ -5,6 +5,7 @@
   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
   xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3" 
   IgnorableNamespaces="uap rescap desktop">
 
   <Identity
@@ -88,16 +89,12 @@
         <uap:LockScreen BadgeLogo="Images\BadgeLogo.png" Notification="badge"/>
       </uap:VisualElements>
         <Extensions>
-          <desktop:Extension
-            Category="windows.startupTask"
-            Executable="PresenceLight\PresenceLight.exe"
-            EntryPoint="Windows.FullTrustApplication">
-            <desktop:StartupTask
-              TaskId="PresenceLight"
-              Enabled="true"
-              DisplayName="PresenceLight" />
-          </desktop:Extension>
-      </Extensions>
+            <uap3:Extension Category="windows.appExecutionAlias" Executable="PresenceLight\PresenceLight.exe" EntryPoint="Windows.FullTrustApplication">
+                <uap3:AppExecutionAlias>
+                    <desktop:ExecutionAlias Alias="PresenceLight.exe" />
+                </uap3:AppExecutionAlias>
+            </uap3:Extension>
+        </Extensions>
     </Application>
   </Applications>
 

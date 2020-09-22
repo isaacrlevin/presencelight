@@ -45,46 +45,46 @@ namespace PresenceLight.Worker
                        webBuilder
                        .ConfigureKestrel(options =>
                        {
-                           //if (Convert.ToBoolean(configForMain["DeployedToServer"]))
-                           //{
-                            //    var server = Dns.GetHostName();
-                            //    IPHostEntry heserver = Dns.GetHostEntry(server);
-                            //    var ip = heserver.AddressList.Where(a => a.ToString() == "192.168.86.20").FirstOrDefault();
+                           if (Convert.ToBoolean(configForMain["DeployedToServer"]))
+                           {
+                               var server = Dns.GetHostName();
+                               IPHostEntry heserver = Dns.GetHostEntry(server);
+                               var ip = heserver.AddressList.Where(a => a.ToString() == "192.168.86.20").FirstOrDefault();
 
-                            //    if (ip == null)
-                            //    {
-                            //        NetworkInterface[] nics = NetworkInterface.GetAllNetworkInterfaces();
-                            //        foreach (NetworkInterface adapter in nics)
-                            //        {
-                            //            foreach (var x in adapter.GetIPProperties().UnicastAddresses)
-                            //            {
-                            //                if (x.Address.ToString() == "192.168.86.20")
-                            //                {
-                            //                    Console.WriteLine(x.Address.ToString());
-                            //                    ip = x.Address;
-                            //                }
-                            //            }
-                            //        }
-                            //    }
+                               if (ip == null)
+                               {
+                                   NetworkInterface[] nics = NetworkInterface.GetAllNetworkInterfaces();
+                                   foreach (NetworkInterface adapter in nics)
+                                   {
+                                       foreach (var x in adapter.GetIPProperties().UnicastAddresses)
+                                       {
+                                           if (x.Address.ToString() == "192.168.86.20")
+                                           {
+                                               Console.WriteLine(x.Address.ToString());
+                                               ip = x.Address;
+                                           }
+                                       }
+                                   }
+                               }
 
-                            //    if (ip != null)
-                            //    {
-                            //        Console.WriteLine(ip.ToString());
-                            //        options.Listen(ip, 5000);
-                            //        options.Listen(ip, 5001, listenOptions =>
-                            //        {
-                            //            listenOptions.UseHttps("presencelight.pfx", "presencelight");
-                            //        });
+                               if (ip != null)
+                               {
+                                   Console.WriteLine(ip.ToString());
+                                   options.Listen(ip, 5000);
+                                   options.Listen(ip, 5001, listenOptions =>
+                                   {
+                                       listenOptions.UseHttps("presencelight.pfx", "presencelight");
+                                   });
 
-                            //    }
-                           //}
-                        //    if (Convert.ToBoolean(configForMain["DeployedToContainer"]))
-                        //    {
-                        //        options.ConfigureHttpsDefaults(listenOptions =>
-                        //        {
-                        //            listenOptions.SslProtocols = SslProtocols.Tls12;
-                        //        });
-                        //    }
+                               }
+                           }
+                           if (Convert.ToBoolean(configForMain["DeployedToContainer"]))
+                           {
+                               options.ConfigureHttpsDefaults(listenOptions =>
+                               {
+                                   listenOptions.SslProtocols = SslProtocols.Tls12;
+                               });
+                           }
                        });
                        webBuilder.UseStartup<Startup>();
                    });
