@@ -1,66 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup Condition="'$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '15.0'">
-    <VisualStudioVersion>15.0</VisualStudioVersion>
-  </PropertyGroup>
-  <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="Debug|x86">
-      <Configuration>Debug</Configuration>
-      <Platform>x86</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|x86">
-      <Configuration>Release</Configuration>
-      <Platform>x86</Platform>
-    </ProjectConfiguration>
-  </ItemGroup>
-  <PropertyGroup>
-    <WapProjPath Condition="'$(WapProjPath)'==''">$(MSBuildExtensionsPath)\Microsoft\DesktopBridge\</WapProjPath>
-  </PropertyGroup>
-  <Import Project="$(WapProjPath)\Microsoft.DesktopBridge.props" />
-  <PropertyGroup>
-    <ProjectGuid>12ddad24-ccbd-409f-9342-17a0e445604f</ProjectGuid>
-    <TargetPlatformVersion>10.0.18362.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.17134.0</TargetPlatformMinVersion>
-    <DefaultLanguage>en-US</DefaultLanguage>
-    <DebuggerType>ManagedOnly</DebuggerType>
-    <AppxPackageSigningEnabled>false</AppxPackageSigningEnabled>
-    <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
-    <AppxBundle>Always</AppxBundle>
-    <AppxBundlePlatforms>x86</AppxBundlePlatforms>
-    <AppxPackageIncludePrivateSymbols>true</AppxPackageIncludePrivateSymbols>
-    <UapAppxPackageBuildMode Condition="'$(ChannelName)' == 'Release'">StoreUpload</UapAppxPackageBuildMode>
-    <EntryPointProjectUniqueName>..\PresenceLight\PresenceLight.csproj</EntryPointProjectUniqueName>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(ChannelName)' == 'Nightly'">
-    <GenerateAppInstallerFile>True</GenerateAppInstallerFile>
-    <AppInstallerUri>https://presencelight.blob.core.windows.net/nightly</AppInstallerUri>
-    <AppInstallerUpdateFrequency>0</AppInstallerUpdateFrequency>
-    <AppInstallerCheckForUpdateFrequency>OnApplicationRun</AppInstallerCheckForUpdateFrequency>
-  </PropertyGroup>
+    <PropertyGroup Condition="'$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '15.0'">
+        <VisualStudioVersion>15.0</VisualStudioVersion>
+    </PropertyGroup>
+    <ItemGroup Label="ProjectConfigurations">
+        <ProjectConfiguration Include="Debug|x64">
+            <Configuration>Debug</Configuration>
+            <Platform>x64</Platform>
+        </ProjectConfiguration>
+        <ProjectConfiguration Include="Release|x64">
+            <Configuration>Release</Configuration>
+            <Platform>x64</Platform>
+        </ProjectConfiguration>
+    </ItemGroup>
+    <PropertyGroup>
+        <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
+        <WapProjPath Condition="'$(WapProjPath)'==''">$(MSBuildExtensionsPath)\Microsoft\DesktopBridge\</WapProjPath>
+    </PropertyGroup>
+    <Import Project="$(WapProjPath)\Microsoft.DesktopBridge.props" />
+    <PropertyGroup>
+        <ProjectGuid>12ddad24-ccbd-409f-9342-17a0e445604f</ProjectGuid>
+        <TargetPlatformVersion>10.0.19041.0</TargetPlatformVersion>
+        <TargetPlatformMinVersion>10.0.17134.0</TargetPlatformMinVersion>
+        <DefaultLanguage>en-US</DefaultLanguage>
+        <DebuggerType>ManagedOnly</DebuggerType>
+        <AppxPackageSigningEnabled>false</AppxPackageSigningEnabled>
+        <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
+        <AppxBundle>Always</AppxBundle>
+        <AppxBundlePlatforms>x64</AppxBundlePlatforms>
+        <AppxPackageIncludePrivateSymbols>true</AppxPackageIncludePrivateSymbols>
+        <UapAppxPackageBuildMode Condition="'$(ChannelName)' == 'Release'">StoreUpload</UapAppxPackageBuildMode>
+        <EntryPointExe Condition="'$(BuildingInsideVisualStudio)' != 'true' ">PresenceLight\PresenceLight.exe</EntryPointExe>
+        <EntryPointProjectUniqueName Condition="'$(BuildingInsideVisualStudio)' == 'true' ">..\PresenceLight\PresenceLight.csproj</EntryPointProjectUniqueName>
+        <GetPackagingOutputsDependsOn Condition="'$(BuildingInsideVisualStudio)' != 'true' ">$(GetPackagingOutputsDependsOn);BuildRefsOutputGroup</GetPackagingOutputsDependsOn>
+
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(ChannelName)' == 'Nightly'">
+        <GenerateAppInstallerFile>True</GenerateAppInstallerFile>
+        <AppInstallerUri>https://presencelight.blob.core.windows.net/nightly</AppInstallerUri>
+        <AppInstallerUpdateFrequency>0</AppInstallerUpdateFrequency>
+        <AppInstallerCheckForUpdateFrequency>OnApplicationRun</AppInstallerCheckForUpdateFrequency>
+    </PropertyGroup>
 
 
-  <ItemGroup>
-    <AppxManifest Include="Package.appxmanifest" Condition="'$(ChannelName)' == 'Release'">
-      <SubType>Designer</SubType>
-    </AppxManifest>
-    <AppxManifest Include="Package-Nightly.appxmanifest" Condition="'$(ChannelName)' == 'Nightly'">
-      <SubType>Designer</SubType>
-    </AppxManifest>
-    <AppxManifest Include="Package-Local.appxmanifest" Condition="'$(ChannelName)' != 'Release' and '$(ChannelName)' != 'Nightly'">
-      <SubType>Designer</SubType>
-    </AppxManifest>
-    <None Include="*.appxmanifest" />
-    <None Include="*.appinstaller" />
-  </ItemGroup>
-  <ItemGroup>
-      <Content Include="Images\*.png" />
-    <None Include="Package.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\PresenceLight\PresenceLight.csproj">
-      <SkipGetTargetFrameworkProperties>True</SkipGetTargetFrameworkProperties>
-      <PublishProfile Condition="'$(Platform)'=='x86'">Properties\PublishProfiles\WinX86.pubxml</PublishProfile>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="$(WapProjPath)\Microsoft.DesktopBridge.targets" />
+    <ItemGroup>
+        <AppxManifest Include="Package.appxmanifest" Condition="'$(ChannelName)' == 'Release'">
+            <SubType>Designer</SubType>
+        </AppxManifest>
+        <AppxManifest Include="Package-Nightly.appxmanifest" Condition="'$(ChannelName)' == 'Nightly'">
+            <SubType>Designer</SubType>
+        </AppxManifest>
+        <AppxManifest Include="Package-Local.appxmanifest" Condition="'$(ChannelName)' != 'Release' and '$(ChannelName)' != 'Nightly'">
+            <SubType>Designer</SubType>
+        </AppxManifest>
+        <None Include="*.appxmanifest" />
+        <None Include="*.appinstaller" />
+    </ItemGroup>
+    <ItemGroup>
+        <Content Include="Images\*.png" />
+        <None Include="Package.xml" />
+    </ItemGroup>
+    <ItemGroup Condition="'$(BuildingInsideVisualStudio)' == 'true'">
+        <ProjectReference Include="..\PresenceLight\PresenceLight.csproj">
+            <SkipGetTargetFrameworkProperties>True</SkipGetTargetFrameworkProperties>
+            <PublishProfile Condition="'$(Platform)'=='x64'">Properties\PublishProfiles\WinX64.pubxml</PublishProfile>
+            <PublishProfile Condition="'$(Platform)'=='x86'">Properties\PublishProfiles\WinX86.pubxml</PublishProfile>
+        </ProjectReference>
+    </ItemGroup>
+    <Import Project="$(WapProjPath)\Microsoft.DesktopBridge.targets" />
+    <Target Name="BuildRef" Condition="'$(BuildingInsideVisualStudio)' != 'true' " BeforeTargets="BeforeBuild">
+        <PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
+            <NpeExecCmd>dotnet publish -c $(Configuration) "$(MSBuildThisFileDirectory)..\PresenceLight\PresenceLight.csproj" /p:PublishProfile=Properties\PublishProfiles\Win$(Platform).pubxml</NpeExecCmd>
+        </PropertyGroup>
+        <Message Text="Executing: $(NpeExecCmd)" Importance="High" />
+        <Exec Command="$(NpeExecCmd)" />
+        <Message Text="Built ref " />
+        <ItemGroup>
+            <TheFiles Include="..\PresenceLight\bin\$(Configuration)\net5.0-windows10.0.19041\win-$(Platform)\**\*.*" />
+            <TheFiles TargetPath="PresenceLight\%(RecursiveDir)%(Filename)%(Extension)" />
+            <File Include="@(TheFiles)">
+                <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            </File>
+        </ItemGroup>
+    </Target>
+
+    <Target Name="BuildRefsOutputGroup" Returns="@(BuiltRefsOutput)">
+        <ItemGroup>
+            <_PackagingOutputsUnexpanded Include="@(BuiltRef)" OutputGroup="BuildRefsOutputGroup"  ProjectName="$(ProjectName)"  />
+        </ItemGroup>
+    </Target>
 </Project>
