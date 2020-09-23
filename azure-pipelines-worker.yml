@@ -50,7 +50,7 @@ stages:
         displayName: 'Use .NET Core sdk'
         inputs:
           packageType: sdk
-          version: 3.1.301
+          version: 5.0.100-preview
 
       - task: DotNetCoreCLI@2
         inputs:
