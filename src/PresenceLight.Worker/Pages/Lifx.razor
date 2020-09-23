@@ -133,7 +133,7 @@
                 lifxMessage = "Connected to LIFX Cloud";
                 lifxMessageClass = "text-success";
             }
-            catch (Exception ex)
+            catch
             {
                 //DiagnosticsClient.TrackException(ex);
                 showLifxMessage = true;
@@ -154,7 +154,7 @@
         appState.SetLIFXLight(light);
     }
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         appState.OnChange += RaiseStateHasChanged;
     }

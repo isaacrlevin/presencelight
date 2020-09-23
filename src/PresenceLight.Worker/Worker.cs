@@ -136,7 +136,7 @@ namespace PresenceLight.Worker
             catch (Exception ex)
             {
                 _logger.LogError($"Exception getting me: {ex.Message}");
-                throw ex;
+                throw;
             }
         }
 
@@ -181,7 +181,7 @@ namespace PresenceLight.Worker
             catch (Exception ex)
             {
                 _logger.LogError($"Exception getting presence: {ex.Message}");
-                throw ex;
+                throw;
             }
         }
     }
