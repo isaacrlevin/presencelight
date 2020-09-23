@@ -175,7 +175,7 @@
                             <Label Grid.Column="0" VerticalAlignment="Center" Content="Available Colour"  Grid.Row="2" />
                             <Label Grid.Column="0" VerticalAlignment="Center" Content="Busy Colour" Grid.Row="3" />
                             <Label Grid.Column="0" VerticalAlignment="Center" Content="Away Colour" Grid.Row="4" />
-                            <Label Grid.Column="0" VerticalAlignment="Center" Content="Be Rght Back Colour" Grid.Row="5" />
+                            <Label Grid.Column="0" VerticalAlignment="Center" Content="Be Right Back Colour" Grid.Row="5" />
                             <Label Grid.Column="0" VerticalAlignment="Center" Content="Do Not Disturb Colour" Grid.Row="6"  />
                             <Label Grid.Column="0" VerticalAlignment="Center" Content="Offline Colour" Grid.Row="7"/>
                             <Label Grid.Column="0" VerticalAlignment="Center" Content="Off Colour" Grid.Row="8" />
