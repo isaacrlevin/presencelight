@@ -33,10 +33,6 @@ namespace PresenceLight.Worker
             ConfigureConfiguration(configBuilderForMain);
             IConfiguration configForMain = configBuilderForMain.Build();
 
-            Console.WriteLine($"Deployed to server: {configForMain["DeployedToServer"]}");
-
-            Console.WriteLine($"Server IP: {configForMain["ServerIP"]}");
-
             return Host.CreateDefaultBuilder(args)
                    .UseSystemd()
                    .ConfigureAppConfiguration(ConfigureConfiguration)
@@ -47,6 +43,9 @@ namespace PresenceLight.Worker
                        {
                            if (Convert.ToBoolean(configForMain["DeployedToServer"]))
                            {
+                               Console.WriteLine($"Deployed to server: {configForMain["DeployedToServer"]}");
+                               Console.WriteLine($"Server IP: {configForMain["ServerIP"]}");
+
                                var server = Dns.GetHostName();
                                IPHostEntry heserver = Dns.GetHostEntry(server);
                                var ip = heserver.AddressList.Where(a => a.ToString() == configForMain["ServerIP"]).FirstOrDefault();
