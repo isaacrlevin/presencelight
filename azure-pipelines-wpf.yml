@@ -67,7 +67,7 @@ stages:
 
     - powershell: |
         ((Get-Content -path .\.chocolatey\tools\ChocolateyInstall.ps1 -Raw) -replace 'ReplaceVersion','$(Build.BuildNumber)') | Set-Content -Path .\.chocolatey\tools\ChocolateyInstall.ps1
-        ((Get-Content -path .\.chocolatey\tools\ChocolateyInstall.ps1 -Raw) -replace 'PackagePath','PresenceLight.Package_$(GitBuildVersionSimple).0_x86.appxbundle') | Set-Content -Path .\.chocolatey\tools\ChocolateyInstall.ps1
+        ((Get-Content -path .\.chocolatey\tools\ChocolateyInstall.ps1 -Raw) -replace 'PackagePath','PresenceLight.Package_$(GitBuildVersionSimple).0_x64.appxbundle') | Set-Content -Path .\.chocolatey\tools\ChocolateyInstall.ps1
       displayName: Update ChocolateyInstall.ps1
 
     - powershell: |
@@ -101,13 +101,16 @@ stages:
         $badge.Save("$(Build.ArtifactStagingDirectory)\$(ChannelName)\stable_badge.svg")
       displayName: Update Badge Versions
 
-    - task: MSBuild@1
+    - task: DotNetCoreCLI@2
       displayName: Build Presence Light for $(ChannelName)
       inputs:
-        solution: '.\src\PresenceLight\PresenceLight.csproj'
-        msbuildArguments: /restore /t:publish /p:IncludeSymbols=true /p:PublishProfile=Properties/PublishProfiles/WinX86.pubxml
-        configuration: $(BuildConfiguration)
-        maximumCpuCount: true
+        command: publish
+        projects: '.\src\PresenceLight\PresenceLight.csproj'
+        arguments: -c $(BuildConfiguration) /p:PublishProfile=Properties/PublishProfiles/WinX64.pubxml
+        zipAfterPublish: false
+        modifyOutputPath: false
+        publishWebProjects: false
+      condition: and(succeeded(), not(eq(variables['ChannelName'], 'Nightly')))
 
     - task: MSBuild@1
       displayName: Build Appx Package
@@ -118,8 +121,14 @@ stages:
         maximumCpuCount: true
 
     - powershell: |
-
-        copy-item -path "$(Build.ArtifactStagingDirectory)\$(ChannelName)\PresenceLight.Package_$(GitBuildVersionSimple).0_Test\PresenceLight.Package_$(GitBuildVersionSimple).0_x86.appxbundle" -destination .\.chocolatey\tools\
+        copy-item -path "$(Build.ArtifactStagingDirectory)\$(ChannelName)\PresenceLight.Package_$(GitBuildVersionSimple).0_Test\PresenceLight.Package_$(GitBuildVersionSimple).0_x64.appxbundle" -destination .\.chocolatey\tools\
+        $hash=Get-Filehash .\.chocolatey\tools\PresenceLight.Package_$(GitBuildVersionSimple).0_x64.appxbundle
+        $content = Get-Content -Path .\.chocolatey\tools\Verification.txt
+        $newContent = $content -replace '{VERSION}' , $(GitBuildVersionSimple)
+        $newContent = $content -replace '{HASH}', $hash.Hash
+        Write-Host "File: .\.chocolatey\tools\PresenceLight.Package_$(GitBuildVersionSimple).0_x64.appxbundle"
+        Write-Host "Hash: $hash.Hash"
+        $newContent | Set-Content -Path .\.chocolatey\tools\Verification.txt
         # Chocolatey
         & choco.exe pack .\.chocolatey\PresenceLight.nuspec --version $(NBGV_ChocolateyPackageVersion) --OutputDirectory $(Build.ArtifactStagingDirectory)\$(ChannelName)
       displayName: Create Choco Package
@@ -129,10 +138,14 @@ stages:
       displayName: Zip PresenceLight Files
       inputs:
         archiveType: default
-        rootFolder: '.\src\PresenceLight\bin\$(BuildConfiguration)\netcoreapp5.0\win-x86\publish'
+        rootFolder: '.\src\PresenceLight\bin\Release\net5.0-windows10.0.19041\win-x64\publish\'
         archiveFile: $(Build.ArtifactStagingDirectory)\$(ChannelName)\PresenceLight.$(Build.BuildNumber).zip
         includeRootFolder: false
       condition: and(succeeded(), eq(variables['ChannelName'], 'Release'))
+
+    - powershell: |
+
+      displayName: Update Verification.txt
 
     - publish: $(Build.ArtifactStagingDirectory)\$(ChannelName)
       displayName: Publish Arifacts
@@ -191,7 +204,7 @@ stages:
           - pwsh: |
               .\SignClient "Sign" `
               --baseDirectory "$(Pipeline.Workspace)\ToSign" `
-              --input "**/*.{appxbundle,appinstaller,zip,nupkg}" `
+              --input "**/*.appxbundle" `
               --config "$(Pipeline.Workspace)\SigningScripts\appsettings.json" `
               --filelist "$(Pipeline.Workspace)\SigningScripts\filelist.txt" `
               --user "$(SignClientUser)" `
@@ -199,12 +212,12 @@ stages:
               --name "PresenceLight" `
               --description "PresenceLight" `
               --descriptionUrl "https://github.com/isaacrlevin/PresenceLight"
-            displayName: Authenticode Sign artifacts
+            displayName: Authenticode Sign AppXBundle
 
           - pwsh: |
               .\SignClient "Sign" `
               --baseDirectory "$(Pipeline.Workspace)\ToSign" `
-              --input "**/*.{appxbundle,appinstaller,zip,nupkg}" `
+              --input "**/*.appinstaller" `
               --config "$(Pipeline.Workspace)\SigningScripts\appsettings.json" `
               --filelist "$(Pipeline.Workspace)\SigningScripts\filelist.txt" `
               --user "$(SignClientUser)" `
@@ -212,8 +225,20 @@ stages:
               --name "PresenceLight" `
               --description "PresenceLight" `
               --descriptionUrl "https://github.com/isaacrlevin/PresenceLight"
-            displayName: Authenticode Sign artifacts If Fail
-            condition: eq(variables['Agent.JobStatus'], 'Failed')
+            displayName: Authenticode Sign AppInstaller
+
+          - pwsh: |
+              .\SignClient "Sign" `
+              --baseDirectory "$(Pipeline.Workspace)\ToSign" `
+              --input "**/*.zip" `
+              --config "$(Pipeline.Workspace)\SigningScripts\appsettings.json" `
+              --filelist "$(Pipeline.Workspace)\SigningScripts\filelist.txt" `
+              --user "$(SignClientUser)" `
+              --secret "$(SignClientSecret)" `
+              --name "PresenceLight" `
+              --description "PresenceLight" `
+              --descriptionUrl "https://github.com/isaacrlevin/PresenceLight"
+            displayName: Authenticode Sign Zip
 
           - task: AzureCLI@2
             displayName: Scale Down Sign Service

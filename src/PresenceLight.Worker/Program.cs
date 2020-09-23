@@ -1,13 +1,13 @@
 ﻿using System;
+using System.IO;
+using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
+using System.Security.Authentication;
+
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using System.Linq;
-using System.IO;
-using System.Security.Authentication;
-using System.Net.NetworkInformation;
-using Microsoft.Extensions.Logging;
 
 namespace PresenceLight.Worker
 {
@@ -49,7 +49,7 @@ namespace PresenceLight.Worker
                            {
                                var server = Dns.GetHostName();
                                IPHostEntry heserver = Dns.GetHostEntry(server);
-                               var ip = heserver.AddressList.Where(a => a.ToString() == "192.168.86.20").FirstOrDefault();
+                               var ip = heserver.AddressList.Where(a => a.ToString() == configForMain["ServerIP"]).FirstOrDefault();
 
                                if (ip == null)
                                {
@@ -58,7 +58,7 @@ namespace PresenceLight.Worker
                                    {
                                        foreach (var x in adapter.GetIPProperties().UnicastAddresses)
                                        {
-                                           if (x.Address.ToString() == "192.168.86.20")
+                                           if (x.Address.ToString() == configForMain["ServerIP"])
                                            {
                                                Console.WriteLine(x.Address.ToString());
                                                ip = x.Address;

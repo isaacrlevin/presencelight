@@ -54,24 +54,108 @@
       "CustomApiTimeout": 100.0
     },
     "LIFX": {
-      "LIFXApiKey": "c058f544949818c557d88644e0f82a7987130618791ec46e48e169b0593c9c95",
+      "LIFXApiKey": "",
       "LIFXClientId": "",
       "LIFXClientSecret": "",
       "IsLIFXEnabled": true,
-      "SelectedLIFXItemId": "group_id:523a981080e08b5bedbcaa2f5813684f",
-      "LIFXBrightness": 100
+      "SelectedLIFXItemId": "",
+      "LIFXBrightness": 100,
+      "AvailableStatus": {
+        "Disabled": false,
+        "Colour": "#009933"
+      },
+      "BusyStatus": {
+        "Disabled": false,
+        "Colour": "#FF3300"
+      },
+      "AwayStatus": {
+        "Disabled": false,
+        "Colour": "#FFFF00"
+      },
+      "BeRightBackStatus": {
+        "Disabled": false,
+        "Colour": "#FFFF00"
+      },
+      "DoNotDisturbStatus": {
+        "Disabled": false,
+        "Colour": "#B03CDE"
+      },
+      "OfflineStatus": {
+        "Disabled": false,
+        "Colour": "#FFFFFF"
+      },
+      "OffStatus": {
+        "Disabled": false,
+        "Colour": "#FFFFFF"
+      }
     },
     "Hue": {
-      "HueApiKey": "zo7uTJN8uLIMPGXoZy7P058EZbMCN-V3gyjnOHZc",
-      "SelectedHueLightId": "26",
+      "HueApiKey": "",
+      "SelectedHueLightId": "",
       "HueBrightness": 100,
-      "HueIpAddress": "192.168.86.246",
-      "IsPhillipsHueEnabled": true
+      "HueIpAddress": "",
+      "IsPhillipsHueEnabled": true,
+      "AvailableStatus": {
+        "Disabled": false,
+        "Colour": "#009933"
+      },
+      "BusyStatus": {
+        "Disabled": false,
+        "Colour": "#FF3300"
+      },
+      "AwayStatus": {
+        "Disabled": false,
+        "Colour": "#FFFF00"
+      },
+      "BeRightBackStatus": {
+        "Disabled": false,
+        "Colour": "#FFFF00"
+      },
+      "DoNotDisturbStatus": {
+        "Disabled": false,
+        "Colour": "#B03CDE"
+      },
+      "OfflineStatus": {
+        "Disabled": false,
+        "Colour": "#FFFFFF"
+      },
+      "OffStatus": {
+        "Disabled": false,
+        "Colour": "#FFFFFF"
+      }
     },
     "Yeelight": {
       "SelectedYeelightId": "",
       "YeelightBrightness": 100,
-      "IsYeelightEnabled": false
+      "IsYeelightEnabled": false,
+      "AvailableStatus": {
+        "Disabled": false,
+        "Colour": "#009933"
+      },
+      "BusyStatus": {
+        "Disabled": false,
+        "Colour": "#FF3300"
+      },
+      "AwayStatus": {
+        "Disabled": false,
+        "Colour": "#FFFF00"
+      },
+      "BeRightBackStatus": {
+        "Disabled": false,
+        "Colour": "#FFFF00"
+      },
+      "DoNotDisturbStatus": {
+        "Disabled": false,
+        "Colour": "#B03CDE"
+      },
+      "OfflineStatus": {
+        "Disabled": false,
+        "Colour": "#FFFFFF"
+      },
+      "OffStatus": {
+        "Disabled": false,
+        "Colour": "#FFFFFF"
+      }
     }
   },
   "ClientId": "f8119f58-4523-44c1-ab72-b2e0c815bd6a",
