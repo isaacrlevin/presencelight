@@ -46,7 +46,7 @@ namespace PresenceLight.Worker.Controllers
             else
             {
                 _appState.SetLightMode("Custom");
-                _appState.SetCustomColor("white");
+                _appState.SetCustomColor("Offline");
             }
 
             if (_appState.LightMode == "Custom")
