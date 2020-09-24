@@ -47,7 +47,7 @@ namespace PresenceLight.Services
 
                     break;
                 }
-                catch (Exception e)
+                catch
                 {
                     http = new System.Net.HttpListener();
                 }
@@ -65,7 +65,7 @@ namespace PresenceLight.Services
 
             // Waits for the OAuth authorization response.
 
-            var context = await http.GetContextAsync();
+            var context = await http.GetContextAsync().ConfigureAwait(true);
 
             //Sends an HTTP response to the browser.
             var response = context.Response;
@@ -103,7 +103,7 @@ namespace PresenceLight.Services
             }
 
             // Starts the code exchange at the Token Endpoint.
-            return await PerformCodeExchange(code);
+            return await PerformCodeExchange(code).ConfigureAwait(true);
         }
 
         private async Task<string> PerformCodeExchange(string code)
@@ -124,17 +124,17 @@ namespace PresenceLight.Services
             byte[] _byteVersion = Encoding.ASCII.GetBytes(tokenRequestBody);
             tokenRequest.ContentLength = _byteVersion.Length;
             Stream stream = tokenRequest.GetRequestStream();
-            await stream.WriteAsync(_byteVersion, 0, _byteVersion.Length);
+            await stream.WriteAsync(_byteVersion, 0, _byteVersion.Length).ConfigureAwait(true);
             stream.Close();
 
             try
             {
                 // gets the response
-                WebResponse tokenResponse = await tokenRequest.GetResponseAsync();
+                WebResponse tokenResponse = await tokenRequest.GetResponseAsync().ConfigureAwait(true);
                 using (StreamReader reader = new StreamReader(tokenResponse.GetResponseStream()))
                 {
                     // reads response body
-                    string responseText = await reader.ReadToEndAsync();
+                    string responseText = await reader.ReadToEndAsync().ConfigureAwait(true);
 
                     // converts to dictionary
                     Dictionary<string, string> tokenEndpointDecoded = JsonConvert.DeserializeObject<Dictionary<string, string>>(responseText);
@@ -159,7 +159,7 @@ namespace PresenceLight.Services
                         using (StreamReader reader = new StreamReader(response.GetResponseStream()))
                         {
                             // reads response body
-                            string responseText = await reader.ReadToEndAsync();
+                            string responseText = await reader.ReadToEndAsync().ConfigureAwait(true);
                         }
                     }
                 }
@@ -190,10 +190,10 @@ namespace PresenceLight.Services
             string base64 = Convert.ToBase64String(buffer);
 
             // Converts base64 to base64url.
-            base64 = base64.Replace("+", "-");
-            base64 = base64.Replace("/", "_");
+            base64 = base64.Replace("+", "-", StringComparison.OrdinalIgnoreCase);
+            base64 = base64.Replace("/", "_", StringComparison.OrdinalIgnoreCase);
             // Strips padding.
-            base64 = base64.Replace("=", "");
+            base64 = base64.Replace("=", "", StringComparison.OrdinalIgnoreCase);
 
             return base64;
         }

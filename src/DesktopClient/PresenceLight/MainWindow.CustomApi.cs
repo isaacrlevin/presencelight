@@ -101,7 +101,7 @@ namespace PresenceLight
 
         private async void btnApiSettingsSave_Click(object sender, RoutedEventArgs e)
         {
-            await SettingsService.SaveSettings(Config);
+            await SettingsService.SaveSettings(Config).ConfigureAwait(true);
             lblCustomApiSaved.Visibility = Visibility.Visible;
             SyncOptions();
         }

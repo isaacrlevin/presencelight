@@ -8,7 +8,7 @@ namespace PresenceLight
 {
     public partial class MainWindow : Window
     {
-        private async void SetTeamsPresence_Click(object sender, RoutedEventArgs e)
+        private void SetTeamsPresence_Click(object sender, RoutedEventArgs e)
         {
             lightMode = "Graph";
             syncTeamsButton.IsEnabled = false;
@@ -29,7 +29,7 @@ namespace PresenceLight
             lblTheme.Foreground = (SolidColorBrush)SystemParameters.WindowGlassBrush;
             lblTheme.Visibility = Visibility.Visible;
 
-            await SetColor(color);
+            await SetColor(color).ConfigureAwait(true);
         }
 
 
@@ -45,7 +45,7 @@ namespace PresenceLight
 
                 if (lightMode == "Custom")
                 {
-                    await SetColor(color);
+                    await SetColor(color).ConfigureAwait(true);
                 }
             }
         }

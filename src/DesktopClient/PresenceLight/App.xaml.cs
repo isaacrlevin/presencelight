@@ -74,8 +74,8 @@ namespace PresenceLight
 
         private bool IsCriticalFontLoadFailure(Exception ex)
         {
-            return ex.StackTrace.Contains("MS.Internal.Text.TextInterface.FontFamily.GetFirstMatchingFont") ||
-                   ex.StackTrace.Contains("MS.Internal.Text.Line.Format");
+            return ex.StackTrace.Contains("MS.Internal.Text.TextInterface.FontFamily.GetFirstMatchingFont", StringComparison.OrdinalIgnoreCase) ||
+                   ex.StackTrace.Contains("MS.Internal.Text.Line.Format", StringComparison.OrdinalIgnoreCase);
         }
 
         private void OnCriticalFontLoadFailure()

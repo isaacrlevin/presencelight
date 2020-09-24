@@ -14,7 +14,7 @@ namespace PresenceLight
     {
         private const string SETTINGS_FILENAME = "settings.json";
         private static readonly StorageFolder _settingsFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
-        public async static Task<ConfigWrapper> LoadSettings()
+        public async static Task<ConfigWrapper?> LoadSettings()
         {
             try
             {
@@ -37,7 +37,7 @@ namespace PresenceLight
             {
                 string content = JsonConvert.SerializeObject(data, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { });
                 StorageFile f;
-                if (await IsFilePresent())
+                if (await IsFilePresent().ConfigureAwait(true))
                 {
                     f = await _settingsFolder.GetFileAsync(SETTINGS_FILENAME);
                 }
@@ -54,7 +54,7 @@ namespace PresenceLight
                         await FileIO.WriteTextAsync(f, content, Windows.Storage.Streams.UnicodeEncoding.Utf8);
                         fileWritten = true;
                     }
-                    catch (System.Exception e)
+                    catch
                     {                     
                     }
                     //using (StorageStreamTransaction transaction = await f.OpenTransactedWriteAsync())
@@ -105,7 +105,7 @@ namespace PresenceLight
                 }
                 else
                 {
-                    var config = await LoadSettings();
+                    var config = await LoadSettings().ConfigureAwait(true);
                     if (config == null)
                     {
                         return false;

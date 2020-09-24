@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
@@ -14,17 +12,17 @@ namespace PresenceLight
     {
         private async Task LoadSettings()
         {
-            if (!(await SettingsService.IsFilePresent()))
+            if (!(await SettingsService.IsFilePresent().ConfigureAwait(true)))
             {
-                await SettingsService.SaveSettings(_options);
+                await SettingsService.SaveSettings(_options).ConfigureAwait(true);
             }
 
-            Config = await SettingsService.LoadSettings();
+            Config = await SettingsService.LoadSettings().ConfigureAwait(true);
 
             if (string.IsNullOrEmpty(Config.RedirectUri))
             {
-                await SettingsService.DeleteSettings();
-                await SettingsService.SaveSettings(_options);
+                await SettingsService.DeleteSettings().ConfigureAwait(true);
+                await SettingsService.SaveSettings(_options).ConfigureAwait(true);
             }
             if (Config.LightSettings.UseWorkingHours)
             {
@@ -142,7 +140,7 @@ namespace PresenceLight
             SetWorkingDays();
 
             SyncOptions();
-            await SettingsService.SaveSettings(Config);
+            await SettingsService.SaveSettings(Config).ConfigureAwait(true);
             lblSettingSaved.Visibility = Visibility.Visible;
             btnSettings.IsEnabled = true;
         }
@@ -219,37 +217,37 @@ namespace PresenceLight
             if (!string.IsNullOrEmpty(Config.LightSettings.WorkingDays))
             {
 
-                if (Config.LightSettings.WorkingDays.Contains("Monday"))
+                if (Config.LightSettings.WorkingDays.Contains("Monday", StringComparison.OrdinalIgnoreCase))
                 {
                     Monday.IsChecked = true;
                 }
 
-                if (Config.LightSettings.WorkingDays.Contains("Tuesday"))
+                if (Config.LightSettings.WorkingDays.Contains("Tuesday", StringComparison.OrdinalIgnoreCase))
                 {
                     Tuesday.IsChecked = true;
                 }
 
-                if (Config.LightSettings.WorkingDays.Contains("Wednesday"))
+                if (Config.LightSettings.WorkingDays.Contains("Wednesday", StringComparison.OrdinalIgnoreCase))
                 {
                     Wednesday.IsChecked = true;
                 }
 
-                if (Config.LightSettings.WorkingDays.Contains("Thursday"))
+                if (Config.LightSettings.WorkingDays.Contains("Thursday", StringComparison.OrdinalIgnoreCase))
                 {
                     Thursday.IsChecked = true;
                 }
 
-                if (Config.LightSettings.WorkingDays.Contains("Friday"))
+                if (Config.LightSettings.WorkingDays.Contains("Friday", StringComparison.OrdinalIgnoreCase))
                 {
                     Friday.IsChecked = true;
                 }
 
-                if (Config.LightSettings.WorkingDays.Contains("Saturday"))
+                if (Config.LightSettings.WorkingDays.Contains("Saturday", StringComparison.OrdinalIgnoreCase))
                 {
                     Saturday.IsChecked = true;
                 }
 
-                if (Config.LightSettings.WorkingDays.Contains("Sunday"))
+                if (Config.LightSettings.WorkingDays.Contains("Sunday", StringComparison.OrdinalIgnoreCase)) ;
                 {
                     Sunday.IsChecked = true;
                 }
@@ -260,13 +258,13 @@ namespace PresenceLight
         {
             if (!Config.LightSettings.SyncLights)
             {
-                await SetColor("Off");
+                await SetColor("Off").ConfigureAwait(true);
                 turnOffButton.Visibility = Visibility.Collapsed;
                 turnOnButton.Visibility = Visibility.Visible;
             }
 
             SyncOptions();
-            await SettingsService.SaveSettings(Config);
+            await SettingsService.SaveSettings(Config).ConfigureAwait(true);
             e.Handled = true;
         }
 
@@ -282,7 +280,7 @@ namespace PresenceLight
             }
 
             SyncOptions();
-            await SettingsService.SaveSettings(Config);
+            await SettingsService.SaveSettings(Config).ConfigureAwait(true);
             e.Handled = true;
         }
 
@@ -290,12 +288,12 @@ namespace PresenceLight
         {
             if (!string.IsNullOrEmpty(Config.LightSettings.WorkingHoursStartTime))
             {
-                Config.LightSettings.WorkingHoursStartTime = DateTime.Parse(Config.LightSettings.WorkingHoursStartTime).TimeOfDay.ToString();
+                Config.LightSettings.WorkingHoursStartTime = Config.LightSettings.WorkingHoursStartTimeAsDate.HasValue ? Config.LightSettings.WorkingHoursStartTimeAsDate.Value.TimeOfDay.ToString() : string.Empty;
             }
 
             if (!string.IsNullOrEmpty(Config.LightSettings.WorkingHoursEndTime))
             {
-                Config.LightSettings.WorkingHoursEndTime = DateTime.Parse(Config.LightSettings.WorkingHoursEndTime).TimeOfDay.ToString();
+                Config.LightSettings.WorkingHoursEndTime = Config.LightSettings.WorkingHoursEndTimeAsDate.HasValue ? Config.LightSettings.WorkingHoursEndTimeAsDate.Value.TimeOfDay.ToString() : string.Empty;
             }
 
             if (Config.LightSettings.UseWorkingHours)
@@ -319,7 +317,7 @@ namespace PresenceLight
                 return false;
             }
 
-            if (!Config.LightSettings.WorkingDays.Contains(DateTime.Now.DayOfWeek.ToString()))
+            if (!Config.LightSettings.WorkingDays.Contains(DateTime.Now.DayOfWeek.ToString(), StringComparison.OrdinalIgnoreCase))
             {
                 IsWorkingHours = false;
                 return false;
@@ -350,14 +348,14 @@ namespace PresenceLight
 
         private void time_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            if (!string.IsNullOrEmpty(Config.LightSettings.WorkingHoursStartTime))
+            if (Config.LightSettings.WorkingHoursStartTimeAsDate.HasValue)
             {
-                Config.LightSettings.WorkingHoursStartTime = DateTime.Parse(Config.LightSettings.WorkingHoursStartTime).TimeOfDay.ToString();
+                Config.LightSettings.WorkingHoursStartTime = Config.LightSettings.WorkingHoursStartTimeAsDate.HasValue ? Config.LightSettings.WorkingHoursStartTimeAsDate.Value.TimeOfDay.ToString() : string.Empty;
             }
 
-            if (!string.IsNullOrEmpty(Config.LightSettings.WorkingHoursEndTime))
+            if (Config.LightSettings.WorkingHoursEndTimeAsDate.HasValue)
             {
-                Config.LightSettings.WorkingHoursEndTime = DateTime.Parse(Config.LightSettings.WorkingHoursEndTime).TimeOfDay.ToString();
+                Config.LightSettings.WorkingHoursEndTime = Config.LightSettings.WorkingHoursEndTimeAsDate.HasValue ? Config.LightSettings.WorkingHoursEndTimeAsDate.Value.TimeOfDay.ToString() : string.Empty;
             }
 
             SyncOptions();

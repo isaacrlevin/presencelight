@@ -46,6 +46,7 @@ namespace PresenceLight
         private readonly IGraphService _graphservice;
         private WindowState lastWindowState;
 
+
         private bool IsWorkingHours;
 
         #region Init
@@ -132,7 +133,10 @@ namespace PresenceLight
             turnOffButton.Visibility = Visibility.Collapsed;
             turnOnButton.Visibility = Visibility.Collapsed;
 
-            CallGraph();
+            Config.LightSettings.WorkingHoursStartTimeAsDate = string.IsNullOrEmpty(Config.LightSettings.WorkingHoursStartTime) ? null : DateTime.Parse(Config.LightSettings.WorkingHoursStartTime, null); 
+
+
+            CallGraph().ConfigureAwait(true);
         }
 
         private void SyncOptions()
@@ -158,7 +162,7 @@ namespace PresenceLight
 
         private async void SignIn_Click(object sender, RoutedEventArgs e)
         {
-            await CallGraph();
+            await CallGraph().ConfigureAwait(true);
         }
 
         private async Task CallGraph()
@@ -176,8 +180,8 @@ namespace PresenceLight
             lblTheme.Visibility = Visibility.Collapsed;
             loadingPanel.Visibility = Visibility.Visible;
 
-            var (profile, presence) = await System.Threading.Tasks.Task.Run(() => GetBatchContent());
-            var photo = await System.Threading.Tasks.Task.Run(() => GetPhoto());
+            var (profile, presence) = await System.Threading.Tasks.Task.Run(() => GetBatchContent()).ConfigureAwait(true);
+            var photo = await System.Threading.Tasks.Task.Run(() => GetPhoto()).ConfigureAwait(true);
 
             if (photo == null)
             {
@@ -194,7 +198,7 @@ namespace PresenceLight
                 {
                     if (lightMode == "Graph")
                     {
-                        await SetColor(presence.Availability, presence.Activity);
+                        await SetColor(presence.Availability, presence.Activity).ConfigureAwait(true);
                     }
                 }
                 else
@@ -204,7 +208,7 @@ namespace PresenceLight
                     {
                         if (lightMode == "Graph")
                         {
-                            await SetColor(presence.Availability, presence.Activity);
+                            await SetColor(presence.Availability, presence.Activity).ConfigureAwait(true);
                         }
                     }
                     else
@@ -217,16 +221,16 @@ namespace PresenceLight
                                 switch (Config.LightSettings.HoursPassedStatus)
                                 {
                                     case "Keep":
-                                        await SetColor(presence.Availability, presence.Activity);
+                                        await SetColor(presence.Availability, presence.Activity).ConfigureAwait(true);
                                         break;
                                     case "White":
-                                        await SetColor("Offline", presence.Activity);
+                                        await SetColor("Offline", presence.Activity).ConfigureAwait(true);
                                         break;
                                     case "Off":
-                                        await SetColor("Off", presence.Activity);
+                                        await SetColor("Off", presence.Activity).ConfigureAwait(true);
                                         break;
                                     default:
-                                        await SetColor(presence.Availability, presence.Activity);
+                                        await SetColor(presence.Availability, presence.Activity).ConfigureAwait(true);
                                         break;
                                 }
                             }
@@ -237,39 +241,39 @@ namespace PresenceLight
 
             loadingPanel.Visibility = Visibility.Collapsed;
             this.signInPanel.Visibility = Visibility.Collapsed;
-            hueIpAddress.IsEnabled = false;
+
 
             dataPanel.Visibility = Visibility.Visible;
-            await SettingsService.SaveSettings(Config);
+            await SettingsService.SaveSettings(Config).ConfigureAwait(true);
 
             turnOffButton.Visibility = Visibility.Visible;
             turnOnButton.Visibility = Visibility.Collapsed;
 
-            await InteractWithLights();
+            await InteractWithLights().ConfigureAwait(true);
         }
 
         public async Task SetColor(string color, string? activity = null)
         {
             if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedHueLightId))
             {
-                await _hueService.SetColor(color, Config.LightSettings.Hue.SelectedHueLightId);
+                await _hueService.SetColor(color, Config.LightSettings.Hue.SelectedHueLightId).ConfigureAwait(true);
             }
 
             if (Config.LightSettings.LIFX.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
             {
-                await _lifxService.SetColor(color, (Selector)Config.LightSettings.LIFX.SelectedLIFXItemId);
+                await _lifxService.SetColor(color, (Selector)Config.LightSettings.LIFX.SelectedLIFXItemId).ConfigureAwait(true);
             }
 
             if (Config.LightSettings.Yeelight.IsYeelightEnabled && !string.IsNullOrEmpty(Config.LightSettings.Yeelight.SelectedYeelightId))
             {
-                await _yeelightService.SetColor(color, Config.LightSettings.Yeelight.SelectedYeelightId);
+                await _yeelightService.SetColor(color, Config.LightSettings.Yeelight.SelectedYeelightId).ConfigureAwait(true);
             }
 
             if (Config.LightSettings.Custom.IsCustomApiEnabled)
             {
-                string response = await _customApiService.SetColor(color, activity);
+                string response = await _customApiService.SetColor(color, activity).ConfigureAwait(true);
                 customApiLastResponse.Content = response;
-                if (response.Contains("Error:"))
+                if (response.Contains("Error:", StringComparison.OrdinalIgnoreCase))
                 {
                     customApiLastResponse.Foreground = new SolidColorBrush(Colors.Red);
                 }
@@ -283,39 +287,38 @@ namespace PresenceLight
         private async void SignOutButton_Click(object sender, RoutedEventArgs e)
         {
             lightMode = "Graph";
-            var accounts = await WPFAuthorizationProvider.Application.GetAccountsAsync();
+            var accounts = await WPFAuthorizationProvider.Application.GetAccountsAsync().ConfigureAwait(true);
             if (accounts.Any())
             {
                 try
                 {
-                    await WPFAuthorizationProvider.Application.RemoveAsync(accounts.FirstOrDefault());
+                    await WPFAuthorizationProvider.Application.RemoveAsync(accounts.FirstOrDefault()).ConfigureAwait(true);
                     this.signInPanel.Visibility = Visibility.Visible;
                     dataPanel.Visibility = Visibility.Collapsed;
 
                     notificationIcon.Text = PresenceConstants.Inactive;
                     notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(string.Empty, IconConstants.Inactive)));
-                    hueIpAddress.IsEnabled = true;
 
                     if (Config.LightSettings.Hue.IsPhillipsHueEnabled && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedHueLightId))
                     {
-                        await _hueService.SetColor("Off", Config.LightSettings.Hue.SelectedHueLightId);
+                        await _hueService.SetColor("Off", Config.LightSettings.Hue.SelectedHueLightId).ConfigureAwait(true);
                     }
 
                     if (lightMode == "Graph")
                     {
-                        await SetColor("Off");
+                        await SetColor("Off").ConfigureAwait(true);
                     }
                 }
                 catch (MsalException)
                 {
                 }
             }
-            await SettingsService.SaveSettings(Config);
+            await SettingsService.SaveSettings(Config).ConfigureAwait(true);
         }
         #endregion
 
         #region UI Helpers
-        private static BitmapImage LoadImage(byte[] imageData)
+        private static BitmapImage? LoadImage(byte[] imageData)
         {
             if (imageData == null || imageData.Length == 0) return null;
             var image = new BitmapImage();
@@ -406,14 +409,14 @@ namespace PresenceLight
         #region Graph Calls
         public async Task<Presence> GetPresence()
         {
-            return await _graphServiceClient.Me.Presence.Request().GetAsync();
+            return await _graphServiceClient.Me.Presence.Request().GetAsync().ConfigureAwait(true);
         }
 
-        public async Task<byte[]> GetPhoto()
+        public async Task<byte[]?> GetPhoto()
         {
             try
             {
-                var photo = await _graphServiceClient.Me.Photo.Content.Request().GetAsync();
+                var photo = await _graphServiceClient.Me.Photo.Content.Request().GetAsync().ConfigureAwait(true);
 
                 if (photo == null)
                 {
@@ -454,10 +457,10 @@ namespace PresenceLight
             var userRequestId = batchRequestContent.AddBatchRequestStep(userRequest);
             var presenceRequestId = batchRequestContent.AddBatchRequestStep(presenceRequest);
 
-            BatchResponseContent returnedResponse = await _graphServiceClient.Batch.Request().PostAsync(batchRequestContent);
+            BatchResponseContent returnedResponse = await _graphServiceClient.Batch.Request().PostAsync(batchRequestContent).ConfigureAwait(true);
 
-            User user = await returnedResponse.GetResponseByIdAsync<User>(userRequestId);
-            Presence presence = await returnedResponse.GetResponseByIdAsync<Presence>(presenceRequestId);
+            User user = await returnedResponse.GetResponseByIdAsync<User>(userRequestId).ConfigureAwait(true);
+            Presence presence = await returnedResponse.GetResponseByIdAsync<Presence>(presenceRequestId).ConfigureAwait(true);
 
             return (User: user, Presence: presence);
         }
@@ -478,7 +481,7 @@ namespace PresenceLight
         protected override async void OnClosing(System.ComponentModel.CancelEventArgs e)
         {
             e.Cancel = true;
-            await SettingsService.SaveSettings(Config);
+            await SettingsService.SaveSettings(Config).ConfigureAwait(true);
             this.Hide();
         }
 
@@ -513,13 +516,13 @@ namespace PresenceLight
 
             if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedHueLightId))
             {
-                await _hueService.SetColor("Off", Config.LightSettings.Hue.SelectedHueLightId);
+                await _hueService.SetColor("Off", Config.LightSettings.Hue.SelectedHueLightId).ConfigureAwait(true);
             }
 
             if (Config.LightSettings.LIFX.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
             {
 
-                await _lifxService.SetColor("Off", (Selector)Config.LightSettings.LIFX.SelectedLIFXItemId);
+                await _lifxService.SetColor("Off", (Selector)Config.LightSettings.LIFX.SelectedLIFXItemId).ConfigureAwait(true);
             }
 
             turnOffButton.Visibility = Visibility.Collapsed;
@@ -535,15 +538,15 @@ namespace PresenceLight
         {
             if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedHueLightId))
             {
-                await _hueService.SetColor("Off", Config.LightSettings.Hue.SelectedHueLightId);
+                await _hueService.SetColor("Off", Config.LightSettings.Hue.SelectedHueLightId).ConfigureAwait(true);
             }
 
             if (Config.LightSettings.LIFX.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
             {
 
-                await _lifxService.SetColor("Off", (Selector)Config.LightSettings.LIFX.SelectedLIFXItemId);
+                await _lifxService.SetColor("Off", (Selector)Config.LightSettings.LIFX.SelectedLIFXItemId).ConfigureAwait(true);
             }
-            await SettingsService.SaveSettings(Config);
+            await SettingsService.SaveSettings(Config).ConfigureAwait(true);
             System.Windows.Application.Current.Shutdown();
         }
 
@@ -551,21 +554,21 @@ namespace PresenceLight
         {
             if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedHueLightId))
             {
-                await _hueService.SetColor("Off", Config.LightSettings.Hue.SelectedHueLightId);
+                await _hueService.SetColor("Off", Config.LightSettings.Hue.SelectedHueLightId).ConfigureAwait(true);
             }
 
             if (Config.LightSettings.LIFX.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
             {
 
-                await _lifxService.SetColor("Off", (Selector)Config.LightSettings.LIFX.SelectedLIFXItemId);
+                await _lifxService.SetColor("Off", (Selector)Config.LightSettings.LIFX.SelectedLIFXItemId).ConfigureAwait(true);
             }
 
             if (Config.LightSettings.Custom.IsCustomApiEnabled && !string.IsNullOrEmpty(Config.LightSettings.Custom.CustomApiOffMethod) && !string.IsNullOrEmpty(Config.LightSettings.Custom.CustomApiOffUri))
             {
-                await _customApiService.SetColor("Off", "Off");
+                await _customApiService.SetColor("Off", "Off").ConfigureAwait(true);
             }
 
-            await SettingsService.SaveSettings(Config);
+            await SettingsService.SaveSettings(Config).ConfigureAwait(true);
         }
 
         #endregion
@@ -574,7 +577,7 @@ namespace PresenceLight
         {
             while (true)
             {
-                await Task.Delay(Convert.ToInt32(Config.LightSettings.PollingInterval * 1000));
+                await Task.Delay(Convert.ToInt32(Config.LightSettings.PollingInterval * 1000)).ConfigureAwait(true);
 
                 bool touchLight = false;
                 string newColor = "";
@@ -630,21 +633,21 @@ namespace PresenceLight
                         case "Graph":
                             try
                             {
-                                presence = await System.Threading.Tasks.Task.Run(() => GetPresence());
+                                presence = await System.Threading.Tasks.Task.Run(() => GetPresence()).ConfigureAwait(true);
 
                                 if (newColor == string.Empty)
                                 {
-                                    await SetColor(presence.Availability, presence.Activity);
+                                    await SetColor(presence.Availability, presence.Activity).ConfigureAwait(true);
                                 }
                                 else
                                 {
-                                    await SetColor(newColor, presence.Activity);
+                                    await SetColor(newColor, presence.Activity).ConfigureAwait(true);
                                 }
                                 
 
                                 if (DateTime.Now.AddMinutes(-5) > settingsLastSaved)
                                 {
-                                    await SettingsService.SaveSettings(Config);
+                                    await SettingsService.SaveSettings(Config).ConfigureAwait(true);
                                     settingsLastSaved = DateTime.Now;
                                 }
 
@@ -670,12 +673,12 @@ namespace PresenceLight
 
                                 if (lightMode == "Theme")
                                 {
-                                    await SetColor(color);
+                                    await SetColor(color).ConfigureAwait(true);
                                 }
 
                                 if (DateTime.Now.Minute % 5 == 0)
                                 {
-                                    await SettingsService.SaveSettings(Config);
+                                    await SettingsService.SaveSettings(Config).ConfigureAwait(true);
                                 }
                             }
                             catch (Exception ex)

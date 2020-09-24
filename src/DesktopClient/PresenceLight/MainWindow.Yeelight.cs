@@ -30,7 +30,7 @@ namespace PresenceLight
         private async void FindYeelights_Click(object sender, RoutedEventArgs e)
         {
             pnlYeelightBrigthness.Visibility = Visibility.Collapsed;
-            var deviceGroup = await _yeelightService.FindLights();
+            var deviceGroup = await _yeelightService.FindLights().ConfigureAwait(true);
             ddlYeelightLights.ItemsSource = deviceGroup.ToList();
             pnlYeelightBrigthness.Visibility = Visibility;
         }
@@ -52,7 +52,7 @@ namespace PresenceLight
             {
                 SyncOptions();
 
-                ddlYeelightLights.ItemsSource = await _yeelightService.FindLights();
+                ddlYeelightLights.ItemsSource = await _yeelightService.FindLights().ConfigureAwait(true);
 
                 foreach (var item in ddlYeelightLights.Items)
                 {

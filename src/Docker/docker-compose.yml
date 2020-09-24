@@ -4,7 +4,7 @@ services:
   presencelight.worker:
     build:
       context: .
-      dockerfile: PresenceLight.Worker/Dockerfile
+      dockerfile: ../PresenceLight.Worker/Dockerfile
     image: ${DOCKER_REGISTRY-}presencelightworker
     ports:
       - "443"
