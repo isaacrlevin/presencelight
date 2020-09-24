@@ -1,11 +1,13 @@
 ﻿using System;
+using System.IO;
+using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
+using System.Security.Authentication;
+
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using System.Linq;
-using System.IO;
-using System.Security.Authentication;
 
 namespace PresenceLight.Worker
 {
@@ -32,6 +34,7 @@ namespace PresenceLight.Worker
             IConfiguration configForMain = configBuilderForMain.Build();
 
             return Host.CreateDefaultBuilder(args)
+                   .UseSystemd()
                    .ConfigureAppConfiguration(ConfigureConfiguration)
                    .ConfigureWebHostDefaults(webBuilder =>
                    {
@@ -40,16 +43,35 @@ namespace PresenceLight.Worker
                        {
                            if (Convert.ToBoolean(configForMain["DeployedToServer"]))
                            {
+                               Console.WriteLine($"Deployed to server: {configForMain["DeployedToServer"]}");
+                               Console.WriteLine($"Server IP: {configForMain["ServerIP"]}");
+
                                var server = Dns.GetHostName();
                                IPHostEntry heserver = Dns.GetHostEntry(server);
-                               var ip = heserver.AddressList.Where(a => a.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork).FirstOrDefault();
+                               var ip = heserver.AddressList.Where(a => a.ToString() == configForMain["ServerIP"]).FirstOrDefault();
+
+                               if (ip == null)
+                               {
+                                   NetworkInterface[] nics = NetworkInterface.GetAllNetworkInterfaces();
+                                   foreach (NetworkInterface adapter in nics)
+                                   {
+                                       foreach (var x in adapter.GetIPProperties().UnicastAddresses)
+                                       {
+                                           if (x.Address.ToString() == configForMain["ServerIP"])
+                                           {
+                                               Console.WriteLine(x.Address.ToString());
+                                               ip = x.Address;
+                                           }
+                                       }
+                                   }
+                               }
 
                                if (ip != null)
                                {
-                                   options.Listen(ip, 5001);
-                                   options.Listen(ip, 5002, listenOptions =>
+                                   Console.WriteLine(ip.ToString());
+                                   options.Listen(ip, 5000);
+                                   options.Listen(ip, 5001, listenOptions =>
                                    {
-                                       listenOptions.UseHttps();
                                        listenOptions.UseHttps("presencelight.pfx", "presencelight");
                                    });
 

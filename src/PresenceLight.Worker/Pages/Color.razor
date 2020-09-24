@@ -73,7 +73,7 @@
         appState.SetLightMode("Graph");
     }
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         appState.OnChange += RaiseStateHasChanged;
     }

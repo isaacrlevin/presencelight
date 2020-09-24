@@ -1,15 +1,17 @@
 ﻿using System;
+using System.IO;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
+
+using LifxCloud.NET.Models;
+
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Graph;
+
 using PresenceLight.Core;
-using System.Diagnostics;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-using LifxCloud.NET.Models;
-using System.Text.RegularExpressions;
 
 namespace PresenceLight.Worker
 {
@@ -56,7 +58,10 @@ namespace PresenceLight.Worker
                     {
                         await GetData();
                     }
-                    catch { }
+                    catch (Exception e)
+                    {
+                        var foo = e;
+                    }
                     await Task.Delay(Convert.ToInt32(Config.LightSettings.PollingInterval * 1000), stoppingToken);
                 }
                 await Task.Delay(1000, stoppingToken);
@@ -87,7 +92,6 @@ namespace PresenceLight.Worker
                 await _lifxService.SetColor(presence.Availability, (Selector)Config.LightSettings.LIFX.SelectedLIFXItemId);
             }
 
-            string availability = string.Empty;
             while (await _userAuthService.IsUserAuthenticated())
             {
                 if (_appState.LightMode == "Graph")
@@ -95,19 +99,17 @@ namespace PresenceLight.Worker
                     token = await _userAuthService.GetAccessToken();
                     presence = await GetPresence(token);
 
-                    if (presence.Availability != availability)
-                    {
-                        _appState.SetPresence(presence);
-                        _logger.LogInformation($"Presence is {presence.Availability}");
-                        if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedHueLightId))
-                        {
-                            await _hueService.SetColor(presence.Availability, Config.LightSettings.Hue.SelectedHueLightId);
-                        }
 
-                        if (Config.LightSettings.LIFX.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
-                        {
-                            await _lifxService.SetColor(presence.Availability, (Selector)Config.LightSettings.LIFX.SelectedLIFXItemId);
-                        }
+                    _appState.SetPresence(presence);
+                    _logger.LogInformation($"Presence is {presence.Availability}");
+                    if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedHueLightId))
+                    {
+                        await _hueService.SetColor(presence.Availability, Config.LightSettings.Hue.SelectedHueLightId);
+                    }
+
+                    if (Config.LightSettings.LIFX.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
+                    {
+                        await _lifxService.SetColor(presence.Availability, (Selector)Config.LightSettings.LIFX.SelectedLIFXItemId);
                     }
                     if (Config.LightSettings.Custom.IsCustomApiEnabled)
                     {
@@ -116,7 +118,7 @@ namespace PresenceLight.Worker
                     }
                 }
 
-                availability = presence.Availability;
+
                 Thread.Sleep(Convert.ToInt32(Config.LightSettings.PollingInterval * 1000));
             }
 
@@ -134,7 +136,7 @@ namespace PresenceLight.Worker
             catch (Exception ex)
             {
                 _logger.LogError($"Exception getting me: {ex.Message}");
-                throw ex;
+                throw;
             }
         }
 
@@ -179,7 +181,7 @@ namespace PresenceLight.Worker
             catch (Exception ex)
             {
                 _logger.LogError($"Exception getting presence: {ex.Message}");
-                throw ex;
+                throw;
             }
         }
     }
