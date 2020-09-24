@@ -52,7 +52,6 @@ stages:
           version: 5.0.x
           includePreviewVersions: true
           packageType: sdk
-          version: 5.0.100-preview
 
       - task: DotNetCoreCLI@2
         inputs:
