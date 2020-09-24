@@ -70,7 +70,7 @@
                         <Image gif:ImageBehavior.AnimatedSource="Icons/loading.gif" Width="100" />
                         <Label HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-150,0,0" Content="If you are adding new lights, this may take up to a minute" />
                     </Grid>
-                    <l:NotifyIcon x:Name="notificationIcon" Text="{Binding ElementName=tipText,Path=Text}" MouseDoubleClick="OnNotifyIconDoubleClick">
+                    <l:NotifyIcon x:Name="notificationIcon" MouseDoubleClick="OnNotifyIconDoubleClick">
                         <l:NotifyIcon.ContextMenu>
                             <ContextMenu>
                                 <MenuItem Header="Open" Click="OnOpenClick" />
@@ -620,8 +620,8 @@
                         </Grid>
 
                         <Label FontWeight="Bold" Grid.Column="0" Margin="0,120,0,0" Content="Light Syncing Schedule (Working Hours)"  Grid.ColumnSpan="3" />
-                        <xctk:TimePicker Margin="0,-15,0,0" ValueChanged="time_ValueChanged" TimeInterval="0:15:0"  x:Name="startTime" Format="Custom" FormatString="HH:mm" Value="{Binding LightSettings.WorkingHoursStartTime}" Grid.Column="2" Height="23" HorizontalAlignment="Left"  VerticalAlignment="Center" Width="100" />
-                        <xctk:TimePicker  ValueChanged="time_ValueChanged" TimeInterval="0:15:0"  x:Name="endTime" Format="Custom" FormatString="HH:mm" Value="{Binding LightSettings.WorkingHoursEndTime}" Grid.Column="2" Margin="130,-15,0,0" Height="23" HorizontalAlignment="Left"  VerticalAlignment="Center" Width="100" />
+                        <xctk:TimePicker Margin="0,-15,0,0" ValueChanged="time_ValueChanged" TimeInterval="0:15:0"  x:Name="startTime" Format="Custom" FormatString="HH:mm" Value="{Binding LightSettings.WorkingHoursStartTimeAsDate}" Grid.Column="2" Height="23" HorizontalAlignment="Left"  VerticalAlignment="Center" Width="100" />
+                        <xctk:TimePicker  ValueChanged="time_ValueChanged" TimeInterval="0:15:0"  x:Name="endTime" Format="Custom" FormatString="HH:mm" Value="{Binding LightSettings.WorkingHoursEndTimeAsDate}" Grid.Column="2" Margin="130,-15,0,0" Height="23" HorizontalAlignment="Left"  VerticalAlignment="Center" Width="100" />
 
 
 

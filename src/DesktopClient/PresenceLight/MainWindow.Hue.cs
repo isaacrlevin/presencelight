@@ -15,7 +15,7 @@ namespace PresenceLight
         private async void SaveHue_Click(object sender, RoutedEventArgs e)
         {
             btnHue.IsEnabled = false;
-            await SettingsService.SaveSettings(Config);
+            await SettingsService.SaveSettings(Config).ConfigureAwait(true);
             _hueService = new HueService(Config);
             CheckHue();
             lblHueSaved.Visibility = Visibility.Visible;
@@ -77,7 +77,7 @@ namespace PresenceLight
                     }
                     else
                     {
-                        ddlHueLights.ItemsSource = await _hueService.CheckLights();
+                        ddlHueLights.ItemsSource = await _hueService.CheckLights().ConfigureAwait(true);
 
                         foreach (var item in ddlHueLights.Items)
                         {
@@ -102,7 +102,7 @@ namespace PresenceLight
 
             Regex r = new Regex(r2);
 
-            if (string.IsNullOrEmpty(hueIpAddress.Text.Trim()) || !r.IsMatch(hueIpAddress.Text.Trim()) || hueIpAddress.Text.Trim().EndsWith("."))
+            if (string.IsNullOrEmpty(hueIpAddress.Text.Trim()) || !r.IsMatch(hueIpAddress.Text.Trim()) || hueIpAddress.Text.Trim().EndsWith(".", StringComparison.OrdinalIgnoreCase))
             {
                 return false;
             }
@@ -111,7 +111,7 @@ namespace PresenceLight
 
         private async void FindBridge_Click(object sender, RoutedEventArgs e)
         {
-            hueIpAddress.Text = await _hueService.FindBridge();
+            hueIpAddress.Text = await _hueService.FindBridge().ConfigureAwait(true);
         }
 
         private void cbIsPhillipsEnabledChanged(object sender, RoutedEventArgs e)
@@ -189,8 +189,8 @@ namespace PresenceLight
                 imgLoading.Visibility = Visibility.Visible;
                 lblHueMessage.Visibility = Visibility.Collapsed;
                 pnlHueBrightness.Visibility = Visibility.Collapsed;
-                Config.LightSettings.Hue.HueApiKey = await _hueService.RegisterBridge();
-                ddlHueLights.ItemsSource = await _hueService.CheckLights();
+                Config.LightSettings.Hue.HueApiKey = await _hueService.RegisterBridge().ConfigureAwait(true);
+                ddlHueLights.ItemsSource = await _hueService.CheckLights().ConfigureAwait(true);
                 SyncOptions();
                 pnlHueBrightness.Visibility = Visibility.Visible;
                 imgLoading.Visibility = Visibility.Collapsed;

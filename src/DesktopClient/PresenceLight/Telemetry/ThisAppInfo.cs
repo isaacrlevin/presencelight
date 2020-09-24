@@ -25,12 +25,12 @@ namespace PresenceLight
 
         internal static string GetInstallLocation()
         {
-            return Assembly.GetExecutingAssembly().Location;
+            return System.AppContext.BaseDirectory;
         }
 
         internal static string GetInstallationDate()
         {
-            var date = System.IO.File.GetLastWriteTime(Assembly.GetExecutingAssembly().Location);
+            var date = System.IO.File.GetLastWriteTime(System.AppContext.BaseDirectory);
             return $"{date.ToShortDateString()} {date.ToShortTimeString()}";
         }
 
@@ -53,7 +53,7 @@ namespace PresenceLight
             }
         }
 
-        internal static string GetPackageChannel()
+        internal static string? GetPackageChannel()
         {
             try
             {
@@ -67,8 +67,8 @@ namespace PresenceLight
 
         internal static string GetDotNetInfo()
         {
-            var runTimeDir = new FileInfo(typeof(string).Assembly.Location);
-            var entryDir = new FileInfo(Assembly.GetEntryAssembly().Location);
+            var runTimeDir = new FileInfo(System.AppContext.BaseDirectory);
+            var entryDir = new FileInfo(System.AppContext.BaseDirectory);
             var IsSelfContaied = runTimeDir.DirectoryName == entryDir.DirectoryName;
 
             var result = ".NET Framework - ";
@@ -122,7 +122,7 @@ namespace PresenceLight
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static Uri GetAppInstallerInfoUri(Package p)
+        private static Uri? GetAppInstallerInfoUri(Package p)
         {
             var aiInfo = p.GetAppInstallerInfo();
             if (aiInfo != null)

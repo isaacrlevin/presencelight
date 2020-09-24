@@ -85,7 +85,7 @@ namespace PresenceLight
 		{
 			if (text == null)
 			{
-				throw new ArgumentNullException("text");
+				throw new ArgumentNullException(nameof(text));
 			}
 
 			this.Text = text;
@@ -109,7 +109,7 @@ namespace PresenceLight
 			};
 		}
 
-		private static Drawing.Icon FromImageSource(ImageSource icon)
+		private static Drawing.Icon? FromImageSource(ImageSource icon)
 		{
 			if (icon == null)
 			{

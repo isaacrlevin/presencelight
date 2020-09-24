@@ -1,7 +1,10 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
-using Microsoft.Graph;
+using Microsoft.Graph.TermStore;
+
+using Newtonsoft.Json;
 
 namespace PresenceLight.Core
 {
@@ -49,6 +52,16 @@ namespace PresenceLight.Core
         public bool UseWorkingHours { get; set; }
 
         public string WorkingHoursStartTime { get; set; }
+
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonProperty(Required = Required.Default)]
+        public DateTime? WorkingHoursStartTimeAsDate { get; set; }
+
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonProperty(Required = Required.Default)]
+        public DateTime? WorkingHoursEndTimeAsDate { get; set; }
 
         public string WorkingHoursEndTime { get; set; }
 

@@ -24,13 +24,13 @@ namespace PresenceLight.Core.Services
         {
             AuthenticationResult authResult = null;
 
-            var accounts = await Application.GetAccountsAsync();
+            var accounts = await Application.GetAccountsAsync().ConfigureAwait(true);
             var firstAccount = accounts.FirstOrDefault();
 
             try
             {
                 authResult = await Application.AcquireTokenSilent(_scopes, accounts.FirstOrDefault())
-                .ExecuteAsync();
+                .ExecuteAsync().ConfigureAwait(true);
 
             }
             catch (MsalUiRequiredException)
@@ -41,8 +41,8 @@ namespace PresenceLight.Core.Services
                      {
                          authResult = await Application.AcquireTokenInteractive(_scopes)
                             .WithUseEmbeddedWebView(false)
-                            .ExecuteAsync();
-                     });
+                            .ExecuteAsync().ConfigureAwait(true);
+                     }).ConfigureAwait(true);
                 }
                 catch 
                 {

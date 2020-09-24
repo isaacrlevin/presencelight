@@ -19,18 +19,18 @@
 <ItemGroup>
      <PackageReference Include="AppInsights.WindowsDesktop" Version="2.13.1" />
     <PackageReference Include="Extended.Wpf.Toolkit" Version="4.0.1" />
-    <PackageReference Include="IdentityModel.OidcClient" Version="3.1.2" />
+    <PackageReference Include="IdentityModel.OidcClient" Version="4.0.0-preview.3" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OAuth" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.2.7" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0-preview.8.20407.11" />
-    <PackageReference Include="Microsoft.Graph.Beta" Version="0.15.0-preview" />
-    <PackageReference Include="Microsoft.Graph.Core" Version="2.0.0-preview.2" />
-    <PackageReference Include="Microsoft.Identity.Client" Version="4.17.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0-rc.1.20451.14" />
+    <PackageReference Include="Microsoft.Graph.Beta" Version="0.27.0-preview" />
+    <PackageReference Include="Microsoft.Graph.Core" Version="2.0.0-preview.3" />
+    <PackageReference Include="Microsoft.Identity.Client" Version="4.18.0" />
     <PackageReference Include="NETStandard.HttpListener" Version="1.0.3.5" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="Q42.HueApi" Version="3.15.4" />
+    <PackageReference Include="Q42.HueApi" Version="3.15.5" />
     <PackageReference Include="Q42.HueApi.ColorConverters" Version="3.14.0" />
     <PackageReference Include="WpfAnimatedGif" Version="2.0.0" />
     <PackageReference Include="YeelightAPI" Version="1.9.0" />
@@ -119,6 +119,8 @@
 
   <ItemGroup>
     <PackageReference Update="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.0" />
+    <PackageReference Update="Microsoft.SourceLink.GitHub" Version="1.1.0-beta-20204-02" />
+    <PackageReference Update="Nerdbank.GitVersioning" Version="3.3.25-alpha" />
   </ItemGroup>
 
 </Project>
