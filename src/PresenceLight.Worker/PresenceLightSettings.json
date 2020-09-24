@@ -1,6 +1,7 @@
 {
   "IconType": "White",
   "LightSettings": {
+    "HoursPassedStatus": "",
     "SyncLights": true,
     "WorkingDays": "",
     "UseWorkingHours": false,
@@ -22,31 +23,139 @@
       "CustomApiAwayUri": "",
       "CustomApiDoNotDisturbMethod": "",
       "CustomApiDoNotDisturbUri": "",
+      "CustomApiAvailableIdleMethod": "",
+      "CustomApiAvailableIdleUri": "",
       "CustomApiOfflineMethod": "",
       "CustomApiOfflineUri": "",
       "CustomApiOffMethod": "",
       "CustomApiOffUri": "",
+      "CustomApiActivityAvailableMethod": "",
+      "CustomApiActivityAvailableUri": "",
+      "CustomApiActivityInACallMethod": "",
+      "CustomApiActivityInACallUri": "",
+      "CustomApiActivityInAMeetingMethod": "",
+      "CustomApiActivityInAMeetingUri": "",
+      "CustomApiActivityPresentingMethod": "",
+      "CustomApiActivityPresentingUri": "",
+      "CustomApiActivityBusyMethod": "",
+      "CustomApiActivityBusyUri": "",
+      "CustomApiActivityAwayMethod": "",
+      "CustomApiActivityAwayUri": "",
+      "CustomApiActivityBeRightBackMethod": "",
+      "CustomApiActivityBeRightBackUri": "",
+      "CustomApiActivityDoNotDisturbMethod": "",
+      "CustomApiActivityDoNotDisturbUri": "",
+      "CustomApiActivityIdleMethod": "",
+      "CustomApiActivityIdleUri": "",
+      "CustomApiActivityOfflineMethod": "",
+      "CustomApiActivityOfflineUri": "",
+      "CustomApiActivityOffMethod": "",
+      "CustomApiActivityOffUri": "",
       "CustomApiTimeout": 100.0
     },
     "LIFX": {
       "LIFXApiKey": "",
       "LIFXClientId": "",
       "LIFXClientSecret": "",
-      "IsLIFXEnabled": false,
+      "IsLIFXEnabled": true,
       "SelectedLIFXItemId": "",
-      "LIFXBrightness": 100
+      "LIFXBrightness": 100,
+      "AvailableStatus": {
+        "Disabled": false,
+        "Colour": "#009933"
+      },
+      "BusyStatus": {
+        "Disabled": false,
+        "Colour": "#FF3300"
+      },
+      "AwayStatus": {
+        "Disabled": false,
+        "Colour": "#FFFF00"
+      },
+      "BeRightBackStatus": {
+        "Disabled": false,
+        "Colour": "#FFFF00"
+      },
+      "DoNotDisturbStatus": {
+        "Disabled": false,
+        "Colour": "#B03CDE"
+      },
+      "OfflineStatus": {
+        "Disabled": false,
+        "Colour": "#FFFFFF"
+      },
+      "OffStatus": {
+        "Disabled": false,
+        "Colour": "#FFFFFF"
+      }
     },
     "Hue": {
       "HueApiKey": "",
       "SelectedHueLightId": "",
       "HueBrightness": 100,
       "HueIpAddress": "",
-      "IsPhillipsHueEnabled": true
+      "IsPhillipsHueEnabled": true,
+      "AvailableStatus": {
+        "Disabled": false,
+        "Colour": "#009933"
+      },
+      "BusyStatus": {
+        "Disabled": false,
+        "Colour": "#FF3300"
+      },
+      "AwayStatus": {
+        "Disabled": false,
+        "Colour": "#FFFF00"
+      },
+      "BeRightBackStatus": {
+        "Disabled": false,
+        "Colour": "#FFFF00"
+      },
+      "DoNotDisturbStatus": {
+        "Disabled": false,
+        "Colour": "#B03CDE"
+      },
+      "OfflineStatus": {
+        "Disabled": false,
+        "Colour": "#FFFFFF"
+      },
+      "OffStatus": {
+        "Disabled": false,
+        "Colour": "#FFFFFF"
+      }
     },
     "Yeelight": {
       "SelectedYeelightId": "",
       "YeelightBrightness": 100,
-      "IsYeelightEnabled": false
+      "IsYeelightEnabled": false,
+      "AvailableStatus": {
+        "Disabled": false,
+        "Colour": "#009933"
+      },
+      "BusyStatus": {
+        "Disabled": false,
+        "Colour": "#FF3300"
+      },
+      "AwayStatus": {
+        "Disabled": false,
+        "Colour": "#FFFF00"
+      },
+      "BeRightBackStatus": {
+        "Disabled": false,
+        "Colour": "#FFFF00"
+      },
+      "DoNotDisturbStatus": {
+        "Disabled": false,
+        "Colour": "#B03CDE"
+      },
+      "OfflineStatus": {
+        "Disabled": false,
+        "Colour": "#FFFFFF"
+      },
+      "OffStatus": {
+        "Disabled": false,
+        "Colour": "#FFFFFF"
+      }
     }
   },
   "ClientId": "f8119f58-4523-44c1-ab72-b2e0c815bd6a",

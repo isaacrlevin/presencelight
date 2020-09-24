@@ -49,8 +49,8 @@ stages:
       - task: UseDotNet@2
         displayName: 'Use .NET Core SDK 5.0.x'
         inputs:
-          version: 5.0.x
-          includePreviewVersions: true
+          packageType: sdk
+          version: 5.0.100-preview
 
       - task: DotNetCoreCLI@2
         inputs:

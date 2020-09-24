@@ -7,17 +7,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresenceLight.Core", "Prese
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresenceLight.Worker", "PresenceLight.Worker\PresenceLight.Worker.csproj", "{89336649-932D-4BAF-862E-5622345F2B5E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresenceLight", "PresenceLight\PresenceLight.csproj", "{E0C9DB61-A1E6-4254-A200-A946F4353D66}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresenceLight", "DesktopClient\PresenceLight\PresenceLight.csproj", "{E0C9DB61-A1E6-4254-A200-A946F4353D66}"
 EndProject
-Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "PresenceLight.Package", "PresenceLight.Package\PresenceLight.Package.wapproj", "{12DDAD24-CCBD-409F-9342-17A0E445604F}"
+Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "PresenceLight.Package", "DesktopClient\PresenceLight.Package\PresenceLight.Package.wapproj", "{12DDAD24-CCBD-409F-9342-17A0E445604F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9BCEC868-73D3-4393-8099-D4DF2DC6DB74}"
 	ProjectSection(SolutionItems) = preProject
 		..\azure-pipelines-worker.yml = ..\azure-pipelines-worker.yml
 		..\azure-pipelines-wpf.yml = ..\azure-pipelines-wpf.yml
-		Directory.Build.props = Directory.Build.props
-		Directory.Build.targets = Directory.Build.targets
-		PresenceLight.ruleset = PresenceLight.ruleset
+		DesktopClient\Directory.Build.props = DesktopClient\Directory.Build.props
+		DesktopClient\Directory.Build.targets = DesktopClient\Directory.Build.targets
 	EndProjectSection
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{B2D5EB31-6710-4AAA-9F37-374ED1EFDE3F}"
