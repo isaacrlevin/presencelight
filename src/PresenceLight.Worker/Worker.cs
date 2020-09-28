@@ -134,7 +134,7 @@ namespace PresenceLight.Worker
             catch (Exception ex)
             {
                 _logger.LogError($"Exception getting me: {ex.Message}");
-                throw ex;
+                throw;
             }
         }
 
@@ -173,13 +173,13 @@ namespace PresenceLight.Worker
                 presence.Activity = r.Replace(presence.Activity, " ");
 
 
-                _logger.LogInformation($"Presence is {presence.Availability}");
+                _logger.LogInformation($"Presence is {presence.Availability}, Activity is {presence.Activity}.");
                 return presence;
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception getting presence: {ex.Message}");
-                throw ex;
+                throw;
             }
         }
     }
