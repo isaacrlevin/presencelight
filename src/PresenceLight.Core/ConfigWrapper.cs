@@ -70,6 +70,7 @@ namespace PresenceLight.Core
         public bool UseDefaultBrightness { get; set; }
         public int DefaultBrightness { get; set; }
         public Custom Custom { get; set; }
+        public CustomSingleEndpoint CustomSingleEndpoint { get; set; }
 
         public LIFX LIFX { get; set; }
 
@@ -78,6 +79,12 @@ namespace PresenceLight.Core
         public Yeelight Yeelight { get; set; }
     }
 
+    public class CustomSingleEndpoint
+    {
+        public string Method { get; set; }
+        public string Uri { get; set; }
+        public string PostBody { get; set; }
+    }
 
     public class Custom
     {

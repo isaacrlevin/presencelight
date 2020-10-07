@@ -106,6 +106,7 @@ namespace PresenceLight.Worker
             services.AddSingleton<LIFXService, LIFXService>();
             services.AddSingleton<IHueService, HueService>();
             services.AddSingleton<ICustomApiService, CustomApiService>();
+            services.AddSingleton<ICustomApiService, CustomApiSingleEndpointService>();
             services.AddSingleton<AppState, AppState>();
             services.AddBlazoredModal();
             services.AddHostedService<Worker>();

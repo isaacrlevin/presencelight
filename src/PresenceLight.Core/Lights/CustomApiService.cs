@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Net.Http;
 using Microsoft.Graph;
+using System.Net.Http.Json;
 
 namespace PresenceLight.Core
 {
@@ -200,5 +201,90 @@ namespace PresenceLight.Core
 
             return result;
         }
+    }
+
+    public class CustomApiSingleEndpointService : ICustomApiService
+    {
+         {
+        private string _currentAvailability = "";
+        private string _currentActivity = "";
+
+        static readonly HttpClient client = new HttpClient
+        {
+            // TODO: Make this configurable
+            Timeout = TimeSpan.FromSeconds(10)
+        };
+
+        private readonly ConfigWrapper _options;
+
+        public CustomApiSingleEndpointService(IOptionsMonitor<ConfigWrapper> optionsAccessor)
+        {
+            _options = optionsAccessor.CurrentValue;
+        }
+
+        public CustomApiSingleEndpointService(ConfigWrapper options)
+        {
+            _options = options;
+        }
+
+        private async Task<string> CallCustomApi()
+        {
+            string method = _options.LightSettings.CustomSingleEndpoint.Method;
+            string uri = _options.LightSettings.CustomSingleEndpoint.Uri;
+            string result = string.Empty;
+            if (!string.IsNullOrEmpty(method) && !string.IsNullOrEmpty(uri))
+            {
+                try
+                {
+                    uri = ReplacePlaceholders(uri);
+                    HttpResponseMessage response = new HttpResponseMessage();
+                    switch (method)
+                    {
+                        case "GET":
+                            response = await client.GetAsync(uri);
+                            break;
+                        case "POST":
+                            response = await client.PostAsync(uri, new StringContent(ReplacePlaceholders(_options.LightSettings.CustomSingleEndpoint.PostBody)));
+                            break;
+                    }
+
+                    string responseBody = await response.Content.ReadAsStringAsync();
+                    result = $"{(int)response.StatusCode} {response.StatusCode}: {responseBody}";
+                }
+                catch (Exception e)
+                {
+                    result = $"Error: {e.Message}";
+                }
+            }
+
+            return result;
+        }
+
+        public async Task<string> SetColor(string availability, string? activity)
+        {
+            string result = string.Empty;
+            bool blnAvailabilityChanged = !string.IsNullOrEmpty(availability) && availability != _currentAvailability;
+            bool blnActivityChanged = !string.IsNullOrEmpty(activity) && activity != _currentActivity;
+            if (blnAvailabilityChanged)
+            {
+                _currentAvailability = availability;
+            }
+
+            if (blnActivityChanged)
+            {
+                _currentActivity = activity;
+            }
+
+            if(blnAvailabilityChanged || blnActivityChanged)
+            {
+                result = await CallCustomApi();
+            }
+            return result;
+        }
+
+        private string ReplacePlaceholders(string strWithPlaceholders)
+        {
+            return strWithPlaceholders.Replace("{Activity}", _currentActivity).Replace("{Availability}", _currentAvailability);
+        }        
     }
 }
