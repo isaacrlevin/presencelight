@@ -205,7 +205,6 @@ namespace PresenceLight.Core
 
     public class CustomApiSingleEndpointService : ICustomApiService
     {
-         {
         private string _currentAvailability = "";
         private string _currentActivity = "";
 
