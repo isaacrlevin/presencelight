@@ -20,7 +20,7 @@
   <ItemGroup>
     <PackageReference Include="Alexa.NET" Version="1.14.0" />
     <PackageReference Include="Blazored.Modal" Version="5.1.0" />
-    <PackageReference Include="Blazorise.Bootstrap" Version="0.9.1.2" />
+    <PackageReference Include="Blazorise.Bootstrap" Version="0.9.2.3" />
     <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.1.2" />
     <PackageReference Include="IdentityModel" Version="5.0.0-preview.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="5.0.0-rc.1.20451.17" />
