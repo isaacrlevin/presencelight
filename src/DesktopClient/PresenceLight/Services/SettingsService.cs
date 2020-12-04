@@ -10,11 +10,18 @@ using ABI.Windows.Foundation.Diagnostics;
 
 namespace PresenceLight
 {
-    public static class SettingsService
+    public class SettingsService
     {
         private const string SETTINGS_FILENAME = "settings.json";
         private static readonly StorageFolder _settingsFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
-        public async static Task<ConfigWrapper?> LoadSettings()
+        private DiagnosticsClient _diagClient;
+
+        public SettingsService(DiagnosticsClient diagClient)
+        {
+            _diagClient = diagClient;
+        }
+
+        public async Task<ConfigWrapper?> LoadSettings()
         {
             try
             {
@@ -26,12 +33,12 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
-                DiagnosticsClient.TrackException(e);
+                _diagClient.TrackException(e);
                 return null;
             }
         }
 
-        public async static Task<bool> SaveSettings(ConfigWrapper data)
+        public async Task<bool> SaveSettings(ConfigWrapper data)
         {
             try
             {
@@ -73,12 +80,12 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
-                DiagnosticsClient.TrackException(e);
+                _diagClient.TrackException(e);
                 return false;
             }
         }
 
-        public async static Task<bool> DeleteSettings()
+        public async Task<bool> DeleteSettings()
         {
             try
             {
@@ -88,12 +95,12 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
-                DiagnosticsClient.TrackException(e);
+                _diagClient.TrackException(e);
                 return false;
             }
         }
 
-        public static async Task<bool> IsFilePresent()
+        public async Task<bool> IsFilePresent()
         {
             try
             {
@@ -116,7 +123,7 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
-                DiagnosticsClient.TrackException(e);
+                _diagClient.TrackException(e);
                 return false;
             }
         }

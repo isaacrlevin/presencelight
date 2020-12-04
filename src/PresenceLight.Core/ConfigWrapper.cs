@@ -10,6 +10,7 @@ namespace PresenceLight.Core
 {
     public class ConfigWrapper
     {
+        public bool SendDiagnosticData { get; set; }
         public string? IconType { get; set; }
         public LightSettings LightSettings { get; set; }
 

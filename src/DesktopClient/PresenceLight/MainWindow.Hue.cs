@@ -15,7 +15,7 @@ namespace PresenceLight
         private async void SaveHue_Click(object sender, RoutedEventArgs e)
         {
             btnHue.IsEnabled = false;
-            await SettingsService.SaveSettings(Config).ConfigureAwait(true);
+            await _settingsService.SaveSettings(Config).ConfigureAwait(true);
             _hueService = new HueService(Config);
             CheckHue();
             lblHueSaved.Visibility = Visibility.Visible;
@@ -198,7 +198,7 @@ namespace PresenceLight
             }
             catch (Exception ex)
             {
-                DiagnosticsClient.TrackException(ex);
+                _diagClient.TrackException(ex);
 
                 lblHueMessage.Text = "Error Occured registering bridge, please try again";
                 fontBrush.Color = MapColor("#ff3300");

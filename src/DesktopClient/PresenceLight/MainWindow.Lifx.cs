@@ -28,7 +28,7 @@ namespace PresenceLight
         private async void SaveLIFX_Click(object sender, RoutedEventArgs e)
         {
             btnLIFX.IsEnabled = false;
-            await SettingsService.SaveSettings(Config).ConfigureAwait(true);
+            await _settingsService.SaveSettings(Config).ConfigureAwait(true);
             lblLIFXSaved.Visibility = Visibility.Visible;
             btnLIFX.IsEnabled = true;
         }
@@ -83,7 +83,7 @@ namespace PresenceLight
             }
             catch (Exception ex)
             {
-                DiagnosticsClient.TrackException(ex);
+                _diagClient.TrackException(ex);
 
                 lblLIFXMessage.Text = "Error Occured Connecting to LIFX, please try again";
                 fontBrush.Color = MapColor("#ff3300");
@@ -138,7 +138,7 @@ namespace PresenceLight
                 }
                 catch (Exception ex)
                 {
-                    DiagnosticsClient.TrackException(ex);
+                    _diagClient.TrackException(ex);
 
                     pnlLIFXBrightness.Visibility = Visibility.Collapsed;
                     lblLIFXMessage.Text = "Error Occured Connecting to LIFX, please try again";

@@ -71,23 +71,23 @@ stages:
       displayName: Update ChocolateyInstall.ps1
 
     - powershell: |
-        # Update App Insights instrumentation key
-        [xml]$doc = Get-Content ".\src\DesktopClient\PresenceLight\ApplicationInsights.config"
-        $doc.ApplicationInsights.InstrumentationKey = "$(AppInsightsKey)"
-        $doc.save(".\src\DesktopClient\PresenceLight\ApplicationInsights.config")
-      displayName: Set AppInsights Config in ApplicationInsightsConfig
-      env:
-        AppInsightsKey: $(AppInsightsKey)
-      condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')), not(eq(variables['AppInsightsKey'], '')))
-
-    - powershell: |
         # Update AppSettings.json. This must be done before build.
         $appsettings= get-content ".\src\DesktopClient\PresenceLight\appsettings.json" -raw | ConvertFrom-Json
         $appsettings.clientId = "$env:ApplicationId"
+        $appsettings.clientSecret = "$env:ClientSecret"
+        $appsettings.lightSettings.lifx.LIFXClientId = "$env:LIFXClientId"
+        $appsettings.lightSettings.lifx.LIFXClientSecret = "$env:LIFXClientSecret"
+        $appsettings.applicationInsights.instrumentationkey = "$env:AppInsightsKey"
         $appsettings | ConvertTo-Json -depth 32| set-content '.\src\DesktopClient\PresenceLight\appsettings.json'
       displayName: Update appsettings.json
       env:
+        AppInsightsKey: $(AppInsightsKey)
         ApplicationId: $(ApplicationId)
+        ClientSecret: $(ClientSecret)
+        LIFXClientId: $(LIFXClientId)
+        LIFXClientSecret: $(LIFXClientSecret)
+      condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')), not(eq(variables['AppInsightsKey'], '')))
+
 
     - powershell: |
         # Update badges
