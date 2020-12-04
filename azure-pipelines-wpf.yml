@@ -77,16 +77,16 @@ stages:
         $appsettings.clientSecret = "$env:ClientSecret"
         $appsettings.lightSettings.lifx.LIFXClientId = "$env:LIFXClientId"
         $appsettings.lightSettings.lifx.LIFXClientSecret = "$env:LIFXClientSecret"
-        $appsettings.applicationInsights.instrumentationkey = "$env:AppInsightsKey"
+        $appsettings.applicationInsights.instrumentationkey = "$env:InstrumentationKey"
         $appsettings | ConvertTo-Json -depth 32| set-content '.\src\DesktopClient\PresenceLight\appsettings.json'
       displayName: Update appsettings.json
       env:
-        AppInsightsKey: $(AppInsightsKey)
+        InstrumentationKey: $(InstrumentationKey)
         ApplicationId: $(ApplicationId)
         ClientSecret: $(ClientSecret)
         LIFXClientId: $(LIFXClientId)
         LIFXClientSecret: $(LIFXClientSecret)
-      condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')), not(eq(variables['AppInsightsKey'], '')))
+      condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')))
 
 
     - powershell: |
