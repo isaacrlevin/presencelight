@@ -20,8 +20,11 @@ trigger:
 stages:
 - stage: Build
   variables:
-    DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-    BuildConfiguration: Release
+  - group: AppSettings
+  - name: DOTNET_SKIP_FIRST_TIME_EXPERIENCE
+    value: true
+  - name: BuildConfiguration 
+    value: 'Release'
 
   jobs:
   - job: Build
@@ -73,20 +76,14 @@ stages:
     - powershell: |
         # Update AppSettings.json. This must be done before build.
         $appsettings= get-content ".\src\DesktopClient\PresenceLight\appsettings.json" -raw | ConvertFrom-Json
-        $appsettings.clientId = "$env:ApplicationId"
-        $appsettings.clientSecret = "$env:ClientSecret"
-        $appsettings.lightSettings.lifx.LIFXClientId = "$env:LIFXClientId"
-        $appsettings.lightSettings.lifx.LIFXClientSecret = "$env:LIFXClientSecret"
-        $appsettings.applicationInsights.instrumentationkey = "$env:AppInsightsKey"
+        $appsettings.clientId = "$(ApplicationId)"
+        $appsettings.clientSecret = "$(ClientSecret)"
+        $appsettings.lightSettings.lifx.LIFXClientId = "$(LIFXClientId)"
+        $appsettings.lightSettings.lifx.LIFXClientSecret = "$(LIFXClientSecret)"
+        $appsettings.applicationInsights.instrumentationkey = "$(InstrumentationKey)"
         $appsettings | ConvertTo-Json -depth 32| set-content '.\src\DesktopClient\PresenceLight\appsettings.json'
       displayName: Update appsettings.json
-      env:
-        AppInsightsKey: $(AppInsightsKey)
-        ApplicationId: $(ApplicationId)
-        ClientSecret: $(ClientSecret)
-        LIFXClientId: $(LIFXClientId)
-        LIFXClientSecret: $(LIFXClientSecret)
-      condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')), not(eq(variables['AppInsightsKey'], '')))
+      condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')))
 
 
     - powershell: |
