@@ -1,4 +1,5 @@
 {
+  "SendDiagnosticData": false,
   "IconType": "White",
   "LightSettings": {
     "HoursPassedStatus": "",

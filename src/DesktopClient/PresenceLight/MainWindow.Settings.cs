@@ -12,17 +12,17 @@ namespace PresenceLight
     {
         private async Task LoadSettings()
         {
-            if (!(await SettingsService.IsFilePresent().ConfigureAwait(true)))
+            if (!(await _settingsService.IsFilePresent().ConfigureAwait(true)))
             {
-                await SettingsService.SaveSettings(_options).ConfigureAwait(true);
+                await _settingsService.SaveSettings(_options).ConfigureAwait(true);
             }
 
-            Config = await SettingsService.LoadSettings().ConfigureAwait(true);
+            Config = await _settingsService.LoadSettings().ConfigureAwait(true) ?? throw new NullReferenceException("Settings Load Service Returned null");
 
             if (string.IsNullOrEmpty(Config.RedirectUri))
             {
-                await SettingsService.DeleteSettings().ConfigureAwait(true);
-                await SettingsService.SaveSettings(_options).ConfigureAwait(true);
+                await _settingsService.DeleteSettings().ConfigureAwait(true);
+                await _settingsService.SaveSettings(_options).ConfigureAwait(true);
             }
             if (Config.LightSettings.UseWorkingHours)
             {
@@ -140,7 +140,7 @@ namespace PresenceLight
             SetWorkingDays();
 
             SyncOptions();
-            await SettingsService.SaveSettings(Config).ConfigureAwait(true);
+            await _settingsService.SaveSettings(Config).ConfigureAwait(true);
             lblSettingSaved.Visibility = Visibility.Visible;
             btnSettings.IsEnabled = true;
         }
@@ -149,37 +149,37 @@ namespace PresenceLight
         {
             List<string> days = new List<string>();
 
-            if (Monday.IsChecked.Value)
+            if (Monday.IsChecked != null && Monday.IsChecked.Value)
             {
                 days.Add("Monday");
             }
 
-            if (Tuesday.IsChecked.Value)
+            if (Tuesday.IsChecked != null && Tuesday.IsChecked.Value)
             {
                 days.Add("Tuesday");
             }
 
-            if (Wednesday.IsChecked.Value)
+            if (Wednesday.IsChecked != null && Wednesday.IsChecked.Value)
             {
                 days.Add("Wednesday");
             }
 
-            if (Thursday.IsChecked.Value)
+            if (Thursday.IsChecked != null && Thursday.IsChecked.Value)
             {
                 days.Add("Thursday");
             }
 
-            if (Friday.IsChecked.Value)
+            if (Friday.IsChecked != null && Friday.IsChecked.Value)
             {
                 days.Add("Friday");
             }
 
-            if (Saturday.IsChecked.Value)
+            if (Saturday.IsChecked != null && Saturday.IsChecked.Value)
             {
                 days.Add("Saturday");
             }
 
-            if (Sunday.IsChecked.Value)
+            if (Sunday.IsChecked != null && Sunday.IsChecked.Value)
             {
                 days.Add("Sunday");
             }
@@ -247,7 +247,7 @@ namespace PresenceLight
                     Saturday.IsChecked = true;
                 }
 
-                if (Config.LightSettings.WorkingDays.Contains("Sunday", StringComparison.OrdinalIgnoreCase)) ;
+                if (Config.LightSettings.WorkingDays.Contains("Sunday", StringComparison.OrdinalIgnoreCase))
                 {
                     Sunday.IsChecked = true;
                 }
@@ -264,7 +264,7 @@ namespace PresenceLight
             }
 
             SyncOptions();
-            await SettingsService.SaveSettings(Config).ConfigureAwait(true);
+            await _settingsService.SaveSettings(Config).ConfigureAwait(true);
             e.Handled = true;
         }
 
@@ -280,7 +280,7 @@ namespace PresenceLight
             }
 
             SyncOptions();
-            await SettingsService.SaveSettings(Config).ConfigureAwait(true);
+            await _settingsService.SaveSettings(Config).ConfigureAwait(true);
             e.Handled = true;
         }
 

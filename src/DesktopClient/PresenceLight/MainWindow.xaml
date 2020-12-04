@@ -652,6 +652,9 @@
                     <Label Grid.Column="1" Margin="0,0,0,0" Grid.Row="5" Content="Icon Type" />
                     <RadioButton Grid.Column="2" Grid.Row="5" GroupName="IconType" x:Name="Transparent" Margin="0,0,0,0" Content="Transparent" HorizontalAlignment="Left" VerticalAlignment="Top" />
                     <RadioButton Grid.Column="2" Grid.Row="5" GroupName="IconType" x:Name="White" Margin="0,20,0,0" Content="White" HorizontalAlignment="Left"  VerticalAlignment="Top"/>
+
+                    <CheckBox x:Name="cbSendDiagnosticData" VerticalAlignment="Bottom" IsChecked="{Binding SendDiagnosticData}" Grid.Row="5" Content="Send Diagnostic Data" Grid.Column="1" HorizontalAlignment="Left" Margin="0,0,0,0" />
+
                     <Button Grid.Column="0" Grid.Row="6" Height="45" x:Name="btnSettings" Width="170" Content="Save" Click="SaveSettings_Click" Grid.ColumnSpan="4" />
                     <Label Grid.Column="0"  HorizontalAlignment="Center" Grid.Row="7" x:Name="lblSettingSaved" Visibility="Collapsed" Content="Settings Updated" Foreground="Green" Grid.ColumnSpan="4"/>
                 </Grid>

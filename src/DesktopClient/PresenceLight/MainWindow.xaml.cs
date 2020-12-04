@@ -1,26 +1,27 @@
 ﻿using System;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+
+using LifxCloud.NET.Models;
+
+using Microsoft.Extensions.Options;
 using Microsoft.Graph;
 using Microsoft.Identity.Client;
+
 using PresenceLight.Core;
 using PresenceLight.Core.Graph;
-using System.Windows;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
-using System.Windows.Media.Imaging;
-using System.IO;
-using System.Windows.Media;
-using Media = System.Windows.Media;
-using System.Windows.Navigation;
-using System.Text.RegularExpressions;
-using LifxCloud.NET.Models;
-using System.Windows.Input;
-using PresenceLight.Services;
 using PresenceLight.Core.Services;
-using System.Reflection;
+using PresenceLight.Services;
 using PresenceLight.Telemetry;
-using System.Reflection.PortableExecutable;
-using System.Collections.Generic;
+
+using Media = System.Windows.Media;
 
 namespace PresenceLight
 {
@@ -44,13 +45,17 @@ namespace PresenceLight
         private LIFXService _lifxService;
         private GraphServiceClient _graphServiceClient;
         private readonly IGraphService _graphservice;
+        private DiagnosticsClient _diagClient;
+        private SettingsService _settingsService;
         private WindowState lastWindowState;
 
 
         private bool IsWorkingHours;
 
         #region Init
-        public MainWindow(IGraphService graphService, IHueService hueService, LIFXService lifxService, IYeelightService yeelightService, ICustomApiService customApiService, IOptionsMonitor<ConfigWrapper> optionsAccessor, LIFXOAuthHelper lifxOAuthHelper)
+        public MainWindow(IGraphService graphService, IHueService hueService, LIFXService lifxService, IYeelightService yeelightService,
+            ICustomApiService customApiService, IOptionsMonitor<ConfigWrapper> optionsAccessor, LIFXOAuthHelper lifxOAuthHelper, DiagnosticsClient diagClient,
+            SettingsService settingsService)
         {
             InitializeComponent();
 
@@ -63,8 +68,11 @@ namespace PresenceLight
             _lifxService = lifxService;
             _hueService = hueService;
             _customApiService = customApiService;
-            _options = optionsAccessor.CurrentValue;
+            _options = optionsAccessor != null ? optionsAccessor.CurrentValue :  throw new NullReferenceException("Options Accessor is null");
             _lIFXOAuthHelper = lifxOAuthHelper;
+            _diagClient = diagClient;
+            _settingsService = settingsService;
+
             LoadSettings().ContinueWith(
         t =>
         {
@@ -79,7 +87,7 @@ namespace PresenceLight
                 DataContext = Config;
                 notificationIcon.DataContext = tbContext;
             });
-        });
+        }, TaskScheduler.Current);
         }
 
         private void LoadAboutMe()
@@ -133,7 +141,7 @@ namespace PresenceLight
             turnOffButton.Visibility = Visibility.Collapsed;
             turnOnButton.Visibility = Visibility.Collapsed;
 
-            Config.LightSettings.WorkingHoursStartTimeAsDate = string.IsNullOrEmpty(Config.LightSettings.WorkingHoursStartTime) ? null : DateTime.Parse(Config.LightSettings.WorkingHoursStartTime, null); 
+            Config.LightSettings.WorkingHoursStartTimeAsDate = string.IsNullOrEmpty(Config.LightSettings.WorkingHoursStartTime) ? null : DateTime.Parse(Config.LightSettings.WorkingHoursStartTime, null);
 
 
             CallGraph().ConfigureAwait(true);
@@ -244,7 +252,7 @@ namespace PresenceLight
 
 
             dataPanel.Visibility = Visibility.Visible;
-            await SettingsService.SaveSettings(Config).ConfigureAwait(true);
+            await _settingsService.SaveSettings(Config).ConfigureAwait(true);
 
             turnOffButton.Visibility = Visibility.Visible;
             turnOnButton.Visibility = Visibility.Collapsed;
@@ -313,7 +321,7 @@ namespace PresenceLight
                 {
                 }
             }
-            await SettingsService.SaveSettings(Config).ConfigureAwait(true);
+            await _settingsService.SaveSettings(Config).ConfigureAwait(true);
         }
         #endregion
 
@@ -336,7 +344,7 @@ namespace PresenceLight
             return image;
         }
 
-        public Media.Color MapColor(string hexColor)
+        public static Media.Color MapColor(string hexColor)
         {
             return (Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(hexColor);
         }
@@ -481,7 +489,7 @@ namespace PresenceLight
         protected override async void OnClosing(System.ComponentModel.CancelEventArgs e)
         {
             e.Cancel = true;
-            await SettingsService.SaveSettings(Config).ConfigureAwait(true);
+            await _settingsService.SaveSettings(Config).ConfigureAwait(true);
             this.Hide();
         }
 
@@ -546,7 +554,7 @@ namespace PresenceLight
 
                 await _lifxService.SetColor("Off", (Selector)Config.LightSettings.LIFX.SelectedLIFXItemId).ConfigureAwait(true);
             }
-            await SettingsService.SaveSettings(Config).ConfigureAwait(true);
+            await _settingsService.SaveSettings(Config).ConfigureAwait(true);
             System.Windows.Application.Current.Shutdown();
         }
 
@@ -568,7 +576,7 @@ namespace PresenceLight
                 await _customApiService.SetColor("Off", "Off").ConfigureAwait(true);
             }
 
-            await SettingsService.SaveSettings(Config).ConfigureAwait(true);
+            await _settingsService.SaveSettings(Config).ConfigureAwait(true);
         }
 
         #endregion
@@ -643,11 +651,11 @@ namespace PresenceLight
                                 {
                                     await SetColor(newColor, presence.Activity).ConfigureAwait(true);
                                 }
-                                
+
 
                                 if (DateTime.Now.AddMinutes(-5) > settingsLastSaved)
                                 {
-                                    await SettingsService.SaveSettings(Config).ConfigureAwait(true);
+                                    await _settingsService.SaveSettings(Config).ConfigureAwait(true);
                                     settingsLastSaved = DateTime.Now;
                                 }
 
@@ -656,7 +664,7 @@ namespace PresenceLight
                             }
                             catch (Exception e)
                             {
-                                DiagnosticsClient.TrackException(e);
+                                _diagClient.TrackException(e);
                             }
 
                             break;
@@ -678,12 +686,12 @@ namespace PresenceLight
 
                                 if (DateTime.Now.Minute % 5 == 0)
                                 {
-                                    await SettingsService.SaveSettings(Config).ConfigureAwait(true);
+                                    await _settingsService.SaveSettings(Config).ConfigureAwait(true);
                                 }
                             }
                             catch (Exception ex)
                             {
-                                DiagnosticsClient.TrackException(ex);
+                                _diagClient.TrackException(ex);
                             }
                             break;
                         default:
