@@ -20,9 +20,11 @@ trigger:
 stages:
 - stage: Build
   variables:
-    DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-    BuildConfiguration: Release
-    - group: AppSettings
+  - group: AppSettings
+  - name: DOTNET_SKIP_FIRST_TIME_EXPERIENCE
+    value: true
+  - name: BuildConfiguration 
+    value: 'Release'
 
   jobs:
   - job: Build
