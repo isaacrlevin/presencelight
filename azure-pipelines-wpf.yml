@@ -22,6 +22,7 @@ stages:
   variables:
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
     BuildConfiguration: Release
+    - group: AppSettings
 
   jobs:
   - job: Build
