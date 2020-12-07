@@ -85,8 +85,8 @@ namespace PresenceLight
         o.TelemetryInitializers.Add(new AppVersionTelemetryInitializer());
         o.TelemetryInitializers.Add(new EnvironmentTelemetryInitializer());
 
-        //if (Convert.ToBoolean(Configuration["SendDiagnosticData"], CultureInfo.InvariantCulture))
-        //{
+        if (Convert.ToBoolean(Configuration["SendDiagnosticData"], CultureInfo.InvariantCulture))
+        {
             o.TelemetryProcessorChainBuilder.UseSnapshotCollector(new SnapshotCollectorConfiguration
             {
                 IsEnabled = true,
@@ -94,7 +94,7 @@ namespace PresenceLight
                 DeoptimizeMethodCount = 4
 
             });
-        //}
+        }
     });
             services.AddApplicationInsightsTelemetryWorkerService();
 
