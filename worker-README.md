@@ -18,33 +18,91 @@ Here you will the Url for the Kestrel hosted Web Application. Going to that Url 
 
  To make the process even cleaner, you can configure a startup task to run the exe at startup, and PresenceLight will be available at the url listed the first time you ran it.
 
-### Running in a Docker Container
+## Running in Docker
 
-**Note: You will need Docker Desktop with Linux Containers installed on your machine.**
+PresenceLight can easily be configured to run in a Docker container, and I have images on my [DockerHub](https://hub.docker.com/repository/docker/isaaclevin/presencelight) for the primary Linux distros. 
 
-You can also run PresenceLight inside a container. There are currently 2 ways to test this out.
+- x64 Linux (latest tag)
+- ARM64 (debian-arm64 tag)
+- ARM32 (debian-arm32 tag) **This is the Raspberry Pi one**
 
-- Docker Tools
-- Container Orchestration with Docker Compose
 
-## Visual Studio Docker Tools
+For instance, here is a docker cli command to create a container with OkToWakeLight
 
-One easy way to get started with running containers is by starting via Visual Studio. The PresenceLight.Worker project is already configured to run in Docker. All you need to do is choose the Docker option in the project debug options
 
- ![Index](static/docker.png)
+**Note: You will need to create a directory to mount the app/Data volume BEFORE you create the container. This is where the SQLite DB will be created.**
+```bash
 
-At that point, Visual Studio will build and run your container in Docker Desktop. One thing to make sure is that you have 5001 port available on your machine as that is what PresenceLight needs to connect to Azure Active Directory.
+docker run -d \
+--name presencelight \
+-e "ASPNETCORE_ENVIRONMENT=Development" \
+-e "ASPNETCORE_URLS=http://+:80"  \
+-e "TZ=America/Los_Angeles"
+-p 8000:80 \
+--restart unless-stopped \
+isaaclevin/presencelight:latest
 
-## Using docker-compose
+```
+Or better yet, use docker-compose
 
-You can also run docker-compose in Visual Studio. To do this, set the docker-compose project as Startup and Debug against it
+```bash
+version: '3.7'
 
- ![Index](static/docker-compose.png)
+services:
+  presencelight:
+    image: isaaclevin/presencelight:latest
+    container_name: presencelight
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_URLS: "http://+:80"
+      TZ: "America/Los_Angeles"
+      ASPNETCORE_ENVIRONMENT: "Development"
+    ports:
+      - "8000:80"
+```
 
-If you want to run outside of VS, you will have to create a certificate and include it in your docker-compose.yml file ([blog post on that here](https://codeburst.io/hosting-an-asp-net-core-app-on-docker-with-https-642cde4f04e8))
+**NOTE: The TZ Environment Variable controls what TimeZone the container will run under. Not specifying this based on the [Timezone Database](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)
+will make your likes not sync as desired.**
 
-### Running on a Remote Machine
-TBD
+#### Why are you not SSL?
+
+For my particular use-case I do not need SSL. WHAT?!?! Actually it is pretty cool. My personal setup is that PresenceLight runs in a docker container on a Raspberry Pi. I have Traefik, which is a well-known
+reverse proxy that allows me to forward applications through my domain, so I can access the application from anywhere by going to
+
+presencelight.mydomain.com
+
+The best part about this is that [Traefik](https://traefik.io/) can be configured to pull LetsEncrypt Certificates and integration with CloudFlare SSL. There is a [great blog post on this](https://www.smarthomebeginner.com/traefik-2-docker-tutorial/), that I highly reccomend if you are interested. 
+If you want SSL for your implementation, but don't want to use a reverse proxy, you can easily obtain a certificate with either
+
+- dotnet dev-certs
+  - dotnet dev-certs https -ep %PATHTOYOURCERT%\my_web_domain.pfx -p crypticpassword
+  - dotnet dev-certs https --trust
+- openssl (Linux) 
+  - [Go here make your life easier](https://www.digicert.com/easy-csr/openssl.htm)
+  - openssl x509 -signkey my_web_domain.key -in my_web_domain.csr -req -days 365 -out my_web_domain.crt
+  - openssl pkcs12 -inkey my_web_domain.key -in my_web_domain.crt -export -out %PATHTOYOURCERT%my_web_domain.pfx
+
+Once you have a valid .pfx file, you will need to wire up the app to use that cert, the way you do that depends on how you host your app. If you app is just running locally on the machine, 
+you can just set environment variables for your app.
+
+- ASPNETCORE_Kestrel__Certificates__Default__Path
+- ASPNETCORE_Kestrel__Certificates__Default__Password
+
+Or if you are running in docker, you will need to mount a volume that has your cert in it like so
+
+**docker-compose example**
+
+```bash
+ports:
+  - 8000:80
+  - 8001:443
+environment:
+  ASPNETCORE_URLS: "https://+:443;http://+:80"
+  ASPNETCORE_Kestrel__Certificates__Default__Password: "YourSecurePassword"
+  ASPNETCORE_Kestrel__Certificates__Default__Path: "%PATHTOYOURCERT%/my_web_domain.pfx"
+```
+
+There are better ways to do this, but this is the easiest to get started.
 
 ### Third Party Libraries
 
