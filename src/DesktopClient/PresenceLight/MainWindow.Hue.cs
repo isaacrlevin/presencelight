@@ -47,52 +47,58 @@ namespace PresenceLight
         }
         private async void CheckHue()
         {
-            if (Config != null)
+            try
             {
-                SolidColorBrush fontBrush = new SolidColorBrush();
-
-
-                if (!CheckHueIp())
+                if (Config != null)
                 {
-                    lblHueMessage.Text = "Valid IP Address Required";
-                    fontBrush.Color = MapColor("#ff3300");
-                    btnRegister.IsEnabled = false;
-                    pnlHueBrightness.Visibility = Visibility.Collapsed;
-                    lblHueMessage.Foreground = fontBrush;
-                }
-                else
-                {
+                    SolidColorBrush fontBrush = new SolidColorBrush();
 
-                    Config.LightSettings.Hue.HueIpAddress = hueIpAddress.Text;
-
-                    SyncOptions();
-
-                    btnRegister.IsEnabled = true;
-                    if (string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey))
+                    if (!CheckHueIp())
                     {
-                        lblHueMessage.Text = "Missing App Registration, please press button on bridge then click 'Register Bridge'";
+                        lblHueMessage.Text = "Valid IP Address Required";
                         fontBrush.Color = MapColor("#ff3300");
+                        btnRegister.IsEnabled = false;
                         pnlHueBrightness.Visibility = Visibility.Collapsed;
                         lblHueMessage.Foreground = fontBrush;
                     }
                     else
                     {
-                        ddlHueLights.ItemsSource = await _hueService.CheckLights().ConfigureAwait(true);
 
-                        foreach (var item in ddlHueLights.Items)
+                        Config.LightSettings.Hue.HueIpAddress = hueIpAddress.Text;
+
+                        SyncOptions();
+
+                        btnRegister.IsEnabled = true;
+                        if (string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey))
                         {
-                            var light = (Q42.HueApi.Light)item;
-                            if (light?.Id == Config.LightSettings.Hue.SelectedHueLightId)
-                            {
-                                ddlHueLights.SelectedItem = item;
-                            }
+                            lblHueMessage.Text = "Missing App Registration, please press button on bridge then click 'Register Bridge'";
+                            fontBrush.Color = MapColor("#ff3300");
+                            pnlHueBrightness.Visibility = Visibility.Collapsed;
+                            lblHueMessage.Foreground = fontBrush;
                         }
-                        pnlHueBrightness.Visibility = Visibility.Visible;
-                        lblHueMessage.Text = "App Registered with Bridge";
-                        fontBrush.Color = MapColor("#009933");
-                        lblHueMessage.Foreground = fontBrush;
+                        else
+                        {
+                            ddlHueLights.ItemsSource = await _hueService.CheckLights().ConfigureAwait(true);
+
+                            foreach (var item in ddlHueLights.Items)
+                            {
+                                var light = (Q42.HueApi.Light)item;
+                                if (light?.Id == Config.LightSettings.Hue.SelectedHueLightId)
+                                {
+                                    ddlHueLights.SelectedItem = item;
+                                }
+                            }
+                            pnlHueBrightness.Visibility = Visibility.Visible;
+                            lblHueMessage.Text = "App Registered with Bridge";
+                            fontBrush.Color = MapColor("#009933");
+                            lblHueMessage.Foreground = fontBrush;
+                        }
                     }
                 }
+            }
+            catch (Exception e)
+            {
+                _diagClient.TrackException(e);
             }
         }
 
