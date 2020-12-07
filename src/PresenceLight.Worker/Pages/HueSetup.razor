@@ -81,7 +81,7 @@
 
     private void Save()
     {
-        System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/PresenceLightSettings.json", JsonConvert.SerializeObject(Config.CurrentValue));
+        System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/appsettings.json", JsonConvert.SerializeObject(Config.CurrentValue));
         _hueService = new HueService(Config.CurrentValue);
         message = "Settings Saved";
         settingsSaved = true;
@@ -125,7 +125,7 @@
                 Config.CurrentValue.LightSettings.Hue.HueIpAddress = tempConfig.LightSettings.Hue.HueIpAddress;
                 Config.CurrentValue.LightSettings.Hue.HueApiKey = tempConfig.LightSettings.Hue.HueApiKey;
 
-                System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/PresenceLightSettings.json", JsonConvert.SerializeObject(Config.CurrentValue));
+                System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/appsettings.json", JsonConvert.SerializeObject(Config.CurrentValue));
 
                 appState.SetHueLights(await _hueService.CheckLights());
             }

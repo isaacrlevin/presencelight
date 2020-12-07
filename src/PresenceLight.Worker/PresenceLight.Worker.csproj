@@ -6,7 +6,8 @@
     <LangVersion>latest</LangVersion>
     <AssemblyName>PresenceLight</AssemblyName>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
+    <DockerfileFile>../Dockerfiles/Dockerfile</DockerfileFile>
+    <DockerfileContext>..</DockerfileContext>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -45,12 +46,6 @@
     <Resource Include="wwwroot\images\profileimage.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Update="PresenceLightSettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
   <ItemGroup>
