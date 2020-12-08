@@ -53,7 +53,6 @@ namespace PresenceLight.Worker
                     {
                         var foo = e;
                     }
-                    await Task.Delay(Convert.ToInt32(Config.LightSettings.PollingInterval * 1000), stoppingToken);
                 }
                 await Task.Delay(1000, stoppingToken);
             }
