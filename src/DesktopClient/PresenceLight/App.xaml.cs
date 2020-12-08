@@ -87,13 +87,12 @@ namespace PresenceLight
 
         if (Convert.ToBoolean(Configuration["SendDiagnosticData"], CultureInfo.InvariantCulture))
         {
-            o.TelemetryProcessorChainBuilder.UseSnapshotCollector(new SnapshotCollectorConfiguration
-            {
-                IsEnabled = true,
-                IsEnabledInDeveloperMode = true,
-                DeoptimizeMethodCount = 4
-
-            });
+         //   o.TelemetryProcessorChainBuilder.UseSnapshotCollector(new SnapshotCollectorConfiguration
+        //    {
+        //        IsEnabled = true,
+        //        IsEnabledInDeveloperMode = true,
+        //        DeoptimizeMethodCount = 4
+        //    });
         }
     });
             services.AddApplicationInsightsTelemetryWorkerService();
