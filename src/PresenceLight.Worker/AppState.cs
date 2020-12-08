@@ -28,6 +28,16 @@ namespace PresenceLight.Worker
 
         public string CustomColor { get; set; }
 
+        public bool IsUserAuthenticated { get; set; }
+
+        public GraphServiceClient GraphServiceClient { get; set; }
+
+        public void SetGraphServiceClient(GraphServiceClient graphServiceClient)
+        {
+            GraphServiceClient = graphServiceClient;
+            NotifyStateChanged();
+        }
+
         public void SetUserInfo(User user, string photo, Presence presence)
         {
             User = user;
@@ -39,6 +49,12 @@ namespace PresenceLight.Worker
         public void SetPresence(Presence presence)
         {
             Presence = presence;
+            NotifyStateChanged();
+        }
+
+        public void SetUserAuthentication(bool isAuthenticated)
+        {
+            IsUserAuthenticated = isAuthenticated;
             NotifyStateChanged();
         }
 

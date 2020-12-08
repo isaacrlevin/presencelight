@@ -1,32 +1,36 @@
 ﻿@page "/"
 
+@using Microsoft.Identity.Web
+@using Microsoft.Graph
+
 @inject AppState appState
-@inject PresenceLight.Core.IHueService _hueService
 @inject IOptionsMonitor<ConfigWrapper> Config
-@inject Microsoft.AspNetCore.Http.IHttpContextAccessor _httpContextAccessor
-@inject UserAuthService _userAuthService
+@inject Microsoft.Graph.GraphServiceClient GraphServiceClient
+@inject MicrosoftIdentityConsentAndConditionalAccessHandler ConsentHandler
+
+
 
 @if (@appState.Presence != null)
 {
-<div class="container text-body">
-    <div class="row">
-        <div class="container-fluid">
-            <div class="row-fluid">
-                <div class="centering text-center">
-                    <h1>@appState.User?.DisplayName</h1>
-                    <br />
-                    <br />
-                    <div class="centering text-center" style="width: 400px;">
-                        <img class="image" src="@appState.ProfileImage" />
-                        <div class="circle bottom-right @appState.Presence?.Availability"></div>
+    <div class="container text-body">
+        <div class="row">
+            <div class="container-fluid">
+                <div class="row-fluid">
+                    <div class="centering text-center">
+                        <h1>@appState.User?.DisplayName</h1>
+                        <br />
+                        <br />
+                        <div class="centering text-center" style="width: 400px;">
+                            <img class="image" src="@appState.ProfileImage" />
+                            <div class="circle bottom-right @appState.Presence?.Availability"></div>
+                        </div>
+                        <h3>Availability: @appState.Presence?.Availability</h3>
+                        <h3>Activity: @appState.Presence?.Activity</h3>
                     </div>
-                    <h3>Availability: @appState.Presence?.Availability</h3>
-                    <h3>Activity: @appState.Presence?.Activity</h3>
                 </div>
             </div>
         </div>
     </div>
-</div>
 }
 
 @code {
@@ -34,27 +38,21 @@
     {
         appState.OnChange += RaiseStateHasChanged;
 
-        // Handle server restarts
-        // In this case, the user's browser still has the auth cookie
-        // so the HttpContext is authenticated, and ASP.NET won't
-        // challenge the user. We need the challenge piece to go through
-        // so we can initialize MSAL properly in the OnAuthorizationCodeReceived
-        // event. This is because we're not persisting the token cache, so on restart it's empty.
-        // The alternative here would be to implement a proper storage for
-        // token cache serialization. Since this is running on a local box, and is cross-plat,
-        // doing this securely might be challenging.
-        bool isUserAuth = await _userAuthService.IsUserAuthenticated();
-        if (!isUserAuth)
-        {
-            appState.SetLightMode("");
-            await _httpContextAccessor.HttpContext.ChallengeAsync();
-        }
-        else
+        try
         {
             if (appState.LightMode != "Custom")
             {
+                var user = await GraphServiceClient.Me.Request().GetAsync();
                 appState.SetLightMode("Graph");
+                appState.SetUserAuthentication(true);
+                appState.SetGraphServiceClient(GraphServiceClient);
             }
+        }
+        catch (Exception ex)
+        {
+            appState.SetLightMode("");
+            appState.SetUserAuthentication(false);
+            ConsentHandler.HandleException(ex);
         }
     }
 
