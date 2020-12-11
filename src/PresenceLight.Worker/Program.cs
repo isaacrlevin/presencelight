@@ -24,7 +24,9 @@ namespace PresenceLight.Worker
                 .UseSystemd()
                 .ConfigureAppConfiguration((hostingContext, config) =>
                 {
-                    config.AddJsonFile("PresenceLightSettings.json", optional: false, reloadOnChange: true);
+                    config.AddJsonFile("PresenceLightSettings.json", optional: false, reloadOnChange: true)
+                    .AddJsonFile($"PresenceLightSettings.Development.json", optional: true, reloadOnChange: true)
+                    .AddJsonFile($"appsettings.Development.json", optional: true, reloadOnChange: true);
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
