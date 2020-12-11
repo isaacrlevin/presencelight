@@ -18,27 +18,18 @@ namespace PresenceLight.Worker
             CreateHostBuilder(args).Build().Run();
         }
 
-        public static void ConfigureConfiguration(IConfigurationBuilder config)
-        {
-            config
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddUserSecrets<Startup>();
-        }
-
         public static IHostBuilder CreateHostBuilder(string[] args)
         {
-            IConfigurationBuilder configBuilderForMain = new ConfigurationBuilder();
-            ConfigureConfiguration(configBuilderForMain);
-            IConfiguration configForMain = configBuilderForMain.Build();
-
             return Host.CreateDefaultBuilder(args)
-                   .UseSystemd()
-                   .ConfigureAppConfiguration(ConfigureConfiguration)
-                   .ConfigureWebHostDefaults(webBuilder =>
-                   {
-                       webBuilder.UseStartup<Startup>();
-                   });
+                .UseSystemd()
+                .ConfigureAppConfiguration((hostingContext, config) =>
+                {
+                    config.AddJsonFile("PresenceLightSettings.json", optional: false, reloadOnChange: true);
+                })
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                });
         }
     }
 }

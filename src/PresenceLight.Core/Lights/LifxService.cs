@@ -8,16 +8,21 @@ namespace PresenceLight.Core
 {
     public class LIFXService
     {
-        private readonly ConfigWrapper _options;
+        private readonly BaseConfig _options;
         private LifxCloudClient _client;
 
-        public LIFXService(Microsoft.Extensions.Options.IOptionsMonitor<ConfigWrapper> optionsAccessor)
+        public LIFXService(Microsoft.Extensions.Options.IOptionsMonitor<BaseConfig> optionsAccessor)
         {
             _options = optionsAccessor.CurrentValue;
         }
 
-        public async Task<List<Light>> GetAllLightsAsync()
+        public async Task<List<Light>> GetAllLightsAsync(string apiKey = null)
         {
+            if (!string.IsNullOrEmpty(apiKey))
+            {
+                _options.LightSettings.LIFX.LIFXApiKey = apiKey;
+            }
+
             if (!_options.LightSettings.LIFX.IsLIFXEnabled || string.IsNullOrEmpty(_options.LightSettings.LIFX.LIFXApiKey))
             {
                 return new List<Light>();
@@ -27,8 +32,12 @@ namespace PresenceLight.Core
             return await _client.ListLights(Selector.All);
         }
 
-        public async Task<List<Group>> GetAllGroupsAsync()
+        public async Task<List<Group>> GetAllGroupsAsync(string apiKey = null)
         {
+            if (!string.IsNullOrEmpty(apiKey))
+            {
+                _options.LightSettings.LIFX.LIFXApiKey = apiKey;
+            }
             if (!_options.LightSettings.LIFX.IsLIFXEnabled || string.IsNullOrEmpty(_options.LightSettings.LIFX.LIFXApiKey))
             {
                 return new List<Group>();
@@ -36,8 +45,12 @@ namespace PresenceLight.Core
             _client = await LifxCloudClient.CreateAsync(_options.LightSettings.LIFX.LIFXApiKey);
             return await _client.ListGroups(Selector.All);
         }
-        public async Task SetColor(string availability, Selector selector)
+        public async Task SetColor(string availability, Selector selector, string apiKey = null)
         {
+            if (!string.IsNullOrEmpty(apiKey))
+            {
+                _options.LightSettings.LIFX.LIFXApiKey = apiKey;
+            }
             if (!_options.LightSettings.LIFX.IsLIFXEnabled || string.IsNullOrEmpty(_options.LightSettings.LIFX.LIFXApiKey))
             {
                 return;
@@ -48,7 +61,7 @@ namespace PresenceLight.Core
             {
                 case "Available":
                     if (!_options.LightSettings.LIFX.AvailableStatus.Disabled)
-                    {                        
+                    {
                         color = $"{_options.LightSettings.LIFX.AvailableStatus.Colour.ToString()}";
                     }
                     else

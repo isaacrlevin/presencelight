@@ -35,6 +35,10 @@ namespace PresenceLight
 
         private async void CheckLIFX()
         {
+            imgLIFXLoading.Visibility = Visibility.Visible;
+            pnlLIFXBrightness.Visibility = Visibility.Collapsed;
+            lblLIFXMessage.Visibility = Visibility.Collapsed;
+
             SolidColorBrush fontBrush = new SolidColorBrush();
             try
             {
@@ -89,6 +93,8 @@ namespace PresenceLight
                 fontBrush.Color = MapColor("#ff3300");
                 lblLIFXMessage.Foreground = fontBrush;
             }
+
+            imgLIFXLoading.Visibility = Visibility.Collapsed;
         }
 
         private void ddlLIFXLights_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -113,6 +119,9 @@ namespace PresenceLight
 
         private async void CheckLIFX_Click(object sender, RoutedEventArgs e)
         {
+            imgLIFXLoading.Visibility = Visibility.Visible;
+            pnlLIFXBrightness.Visibility = Visibility.Collapsed;
+            lblLIFXMessage.Visibility = Visibility.Collapsed;
             SolidColorBrush fontBrush = new SolidColorBrush();
 
             if (!string.IsNullOrEmpty(lifxApiKey.Text))
@@ -130,7 +139,7 @@ namespace PresenceLight
                     {
                         ddlLIFXLights.ItemsSource = await _lifxService.GetAllLightsAsync().ConfigureAwait(true);
                     }
-
+                    lblLIFXMessage.Visibility = Visibility.Visible;
                     pnlLIFXBrightness.Visibility = Visibility.Visible;
                     lblLIFXMessage.Text = "Connected to LIFX Cloud";
                     fontBrush.Color = MapColor("#009933");
@@ -139,7 +148,7 @@ namespace PresenceLight
                 catch (Exception ex)
                 {
                     _diagClient.TrackException(ex);
-
+                    lblLIFXMessage.Visibility = Visibility.Visible;
                     pnlLIFXBrightness.Visibility = Visibility.Collapsed;
                     lblLIFXMessage.Text = "Error Occured Connecting to LIFX, please try again";
                     fontBrush.Color = MapColor("#ff3300");
@@ -166,6 +175,8 @@ namespace PresenceLight
                 lblLIFXMessage.Foreground = fontBrush;
 
             }
+
+            imgLIFXLoading.Visibility = Visibility.Collapsed;
         }
 
         private void cbIsLIFXEnabledChanged(object sender, RoutedEventArgs e)

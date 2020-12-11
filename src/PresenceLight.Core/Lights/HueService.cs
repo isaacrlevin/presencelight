@@ -20,15 +20,15 @@ namespace PresenceLight.Core
     }
     public class HueService : IHueService
     {
-        private readonly ConfigWrapper _options;
+        private readonly BaseConfig _options;
         private LocalHueClient _client;
 
-        public HueService(IOptionsMonitor<ConfigWrapper> optionsAccessor)
+        public HueService(IOptionsMonitor<BaseConfig> optionsAccessor)
         {
             _options = optionsAccessor.CurrentValue;
         }
 
-        public HueService(ConfigWrapper options)
+        public HueService(BaseConfig options)
         {
             _options = options;
         }
@@ -201,12 +201,12 @@ namespace PresenceLight.Core
 
                     return await _client.RegisterAsync("presence-light", "presence-light");
                 }
-                catch
+                catch (Exception e)
                 {
                     return String.Empty;
                 }
             }
-            return String.Empty;
+            return _options.LightSettings.Hue.HueApiKey;
         }
 
         public async Task<string> FindBridge()

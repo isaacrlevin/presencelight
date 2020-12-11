@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
-
-using PresenceLight.Core.Services;
+using PresenceLight.Graph;
 
 namespace PresenceLight
 {
@@ -19,11 +18,11 @@ namespace PresenceLight
 
             Config = await _settingsService.LoadSettings().ConfigureAwait(true) ?? throw new NullReferenceException("Settings Load Service Returned null");
 
-            if (string.IsNullOrEmpty(Config.RedirectUri))
-            {
-                await _settingsService.DeleteSettings().ConfigureAwait(true);
-                await _settingsService.SaveSettings(_options).ConfigureAwait(true);
-            }
+            //if (string.IsNullOrEmpty(Config.RedirectUri))
+            //{
+            //    await _settingsService.DeleteSettings().ConfigureAwait(true);
+            //    await _settingsService.SaveSettings(_options).ConfigureAwait(true);
+            //}
             if (Config.LightSettings.UseWorkingHours)
             {
                 pnlWorkingHours.Visibility = Visibility.Visible;
@@ -189,14 +188,14 @@ namespace PresenceLight
 
         private void CheckAAD()
         {
-            Regex r = new Regex(@"^(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}$");
-            if (string.IsNullOrEmpty(Config.ClientId) || string.IsNullOrEmpty(Config.RedirectUri) || !r.IsMatch(Config.ClientId))
-            {
-                configErrorPanel.Visibility = Visibility.Visible;
-                dataPanel.Visibility = Visibility.Hidden;
-                signInPanel.Visibility = Visibility.Hidden;
-                return;
-            }
+            //Regex r = new Regex(@"^(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}$");
+            //if (string.IsNullOrEmpty(Config.ClientId) || string.IsNullOrEmpty(Config.RedirectUri) || !r.IsMatch(Config.ClientId))
+            //{
+            //    configErrorPanel.Visibility = Visibility.Visible;
+            //    dataPanel.Visibility = Visibility.Hidden;
+            //    signInPanel.Visibility = Visibility.Hidden;
+            //    return;
+            //}
 
             SyncOptions();
 
@@ -209,7 +208,7 @@ namespace PresenceLight
 
             if (_graphServiceClient == null)
             {
-                _graphServiceClient = _graphservice.GetAuthenticatedGraphClient(typeof(WPFAuthorizationProvider));
+                _graphServiceClient = _graphservice.GetAuthenticatedGraphClient();
             }
         }
         private void PopulateWorkingDays()

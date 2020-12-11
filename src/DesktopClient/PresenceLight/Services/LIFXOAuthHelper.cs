@@ -10,9 +10,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-
 using Newtonsoft.Json;
-
 using PresenceLight.Core;
 
 namespace PresenceLight.Services
@@ -22,9 +20,9 @@ namespace PresenceLight.Services
         private const string LIFXAuthority = "https://cloud.lifx.com/oauth";
         private readonly string _lIFXTokenEndpoint = $"{LIFXAuthority}/token";
         private readonly string _lIFXAuthorizationEndpoint = $"{LIFXAuthority}/authorize";
-        private readonly ConfigWrapper _options;
+        private readonly BaseConfig _options;
 
-        public LIFXOAuthHelper(Microsoft.Extensions.Options.IOptionsMonitor<ConfigWrapper> optionsAccessor)
+        public LIFXOAuthHelper(Microsoft.Extensions.Options.IOptionsMonitor<BaseConfig> optionsAccessor)
         {
             _options = optionsAccessor.CurrentValue;
 

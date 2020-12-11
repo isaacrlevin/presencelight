@@ -16,8 +16,7 @@ using Microsoft.Graph;
 using Microsoft.Identity.Client;
 
 using PresenceLight.Core;
-using PresenceLight.Core.Graph;
-using PresenceLight.Core.Services;
+using PresenceLight.Graph;
 using PresenceLight.Services;
 using PresenceLight.Telemetry;
 
@@ -30,8 +29,8 @@ namespace PresenceLight
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly ConfigWrapper _options;
-        public ConfigWrapper Config { get; set; }
+        private readonly BaseConfig _options;
+        public BaseConfig Config { get; set; }
 
         private string lightMode;
 
@@ -48,13 +47,11 @@ namespace PresenceLight
         private DiagnosticsClient _diagClient;
         private SettingsService _settingsService;
         private WindowState lastWindowState;
-
-
         private bool IsWorkingHours;
 
         #region Init
         public MainWindow(IGraphService graphService, IHueService hueService, LIFXService lifxService, IYeelightService yeelightService,
-            ICustomApiService customApiService, IOptionsMonitor<ConfigWrapper> optionsAccessor, LIFXOAuthHelper lifxOAuthHelper, DiagnosticsClient diagClient,
+            ICustomApiService customApiService, IOptionsMonitor<BaseConfig> optionsAccessor, LIFXOAuthHelper lifxOAuthHelper, DiagnosticsClient diagClient,
             SettingsService settingsService)
         {
             InitializeComponent();
@@ -149,7 +146,7 @@ namespace PresenceLight
 
         private void SyncOptions()
         {
-            PropertyInfo[] properties = typeof(ConfigWrapper).GetProperties();
+            PropertyInfo[] properties = typeof(BaseConfig).GetProperties();
             foreach (PropertyInfo property in properties)
             {
                 object value = property.GetValue(Config);
@@ -182,7 +179,7 @@ namespace PresenceLight
 
             if (_graphServiceClient == null)
             {
-                _graphServiceClient = _graphservice.GetAuthenticatedGraphClient(typeof(WPFAuthorizationProvider));
+                _graphServiceClient = _graphservice.GetAuthenticatedGraphClient();
             }
 
             signInPanel.Visibility = Visibility.Collapsed;

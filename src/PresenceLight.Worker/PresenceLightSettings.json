@@ -1,29 +1,64 @@
 {
-  "SendDiagnosticData": true,
-  "IconType": "White",
-  "AADSettings": {
-    "ClientId": "",
-    "Instance": "https://login.microsoftonline.com/",
-    "RedirectUri": "http://localhost"
-  },
   "LightSettings": {
-    "HoursPassedStatus": "Keep",
+    "HoursPassedStatus": "",
     "SyncLights": true,
-    "WorkingDays": "Monday|Tuesday|Wednesday|Thursday|Friday",
+    "WorkingDays": "",
+    "UseWorkingHours": false,
     "WorkingHoursStartTime": "",
     "WorkingHoursEndTime": "",
-    "UseWorkingHours": false,
     "PollingInterval": 5.0,
     "UseDefaultBrightness": true,
     "DefaultBrightness": 100,
+    "Custom": {
+      "IsCustomApiEnabled": false,
+      "SelectedCustomLightId": "",
+      "CustomApiAvailableMethod": "",
+      "CustomApiAvailableUri": "",
+      "CustomApiBusyMethod": "",
+      "CustomApiBusyUri": "",
+      "CustomApiBeRightBackMethod": "",
+      "CustomApiBeRightBackUri": "",
+      "CustomApiAwayMethod": "",
+      "CustomApiAwayUri": "",
+      "CustomApiDoNotDisturbMethod": "",
+      "CustomApiDoNotDisturbUri": "",
+      "CustomApiAvailableIdleMethod": "",
+      "CustomApiAvailableIdleUri": "",
+      "CustomApiOfflineMethod": "",
+      "CustomApiOfflineUri": "",
+      "CustomApiOffMethod": "",
+      "CustomApiOffUri": "",
+      "CustomApiActivityAvailableMethod": "",
+      "CustomApiActivityAvailableUri": "",
+      "CustomApiActivityInACallMethod": "",
+      "CustomApiActivityInACallUri": "",
+      "CustomApiActivityInAMeetingMethod": "",
+      "CustomApiActivityInAMeetingUri": "",
+      "CustomApiActivityPresentingMethod": "",
+      "CustomApiActivityPresentingUri": "",
+      "CustomApiActivityBusyMethod": "",
+      "CustomApiActivityBusyUri": "",
+      "CustomApiActivityAwayMethod": "",
+      "CustomApiActivityAwayUri": "",
+      "CustomApiActivityBeRightBackMethod": "",
+      "CustomApiActivityBeRightBackUri": "",
+      "CustomApiActivityDoNotDisturbMethod": "",
+      "CustomApiActivityDoNotDisturbUri": "",
+      "CustomApiActivityIdleMethod": "",
+      "CustomApiActivityIdleUri": "",
+      "CustomApiActivityOfflineMethod": "",
+      "CustomApiActivityOfflineUri": "",
+      "CustomApiActivityOffMethod": "",
+      "CustomApiActivityOffUri": "",
+      "CustomApiTimeout": 100.0
+    },
     "LIFX": {
+      "LIFXApiKey": "",
       "LIFXClientId": "",
       "LIFXClientSecret": "",
-      "LIFXApiKey": "",
-      "IsLIFXEnabled": false,
+      "IsLIFXEnabled": true,
       "SelectedLIFXItemId": "",
       "LIFXBrightness": 100,
-
       "AvailableStatus": {
         "Disabled": false,
         "Colour": "#009933"
@@ -56,9 +91,9 @@
     "Hue": {
       "HueApiKey": "",
       "SelectedHueLightId": "",
-      "HueIpAddress": "",
-      "IsPhillipsHueEnabled": false,
       "HueBrightness": 100,
+      "HueIpAddress": "",
+      "IsPhillipsHueEnabled": true,
       "AvailableStatus": {
         "Disabled": false,
         "Colour": "#009933"
@@ -90,8 +125,8 @@
     },
     "Yeelight": {
       "SelectedYeelightId": "",
-      "IsYeelightEnabled": false,
       "YeelightBrightness": 100,
+      "IsYeelightEnabled": false,
       "AvailableStatus": {
         "Disabled": false,
         "Colour": "#009933"
@@ -120,45 +155,6 @@
         "Disabled": false,
         "Colour": "#FFFFFF"
       }
-    },
-    "Custom": {
-      "SelectedCustomLightId": "",
-      "IsCustomApiEnabled": false,
-      "CustomLightBrightness": 100,
-      "CustomApiAvailableMethod": "",
-      "CustomApiAvailableUri": "",
-      "CustomApiBusyMethod": "",
-      "CustomApiBusyUri": "",
-      "CustomApiBeRightBackMethod": "",
-      "CustomApiBeRightBackUri": "",
-      "CustomApiAwayMethod": "",
-      "CustomApiAwayUri": "",
-      "CustomApiDoNotDisturbMethod": "",
-      "CustomApiDoNotDisturbUri": "",
-      "CustomApiOfflineMethod": "",
-      "CustomApiOfflineUri": "",
-      "CustomApiOffMethod": "",
-      "CustomApiOffUri": "",
-      "CustomApiTimeout": 100
     }
-  },
-  "ApplicationInsights": {
-    "TelemetryChannel": {
-      "DeveloperMode": true
-    },
-    "InstrumentationKey": ""
-  },
-  "SnapshotCollectorConfiguration": {
-    "IsEnabledInDeveloperMode": true,
-    "ThresholdForSnapshotting": 1,
-    "MaximumSnapshotsRequired": 3,
-    "MaximumCollectionPlanSize": 50,
-    "ReconnectInterval": "00:15:00",
-    "ProblemCounterResetInterval": "1.00:00:00",
-    "SnapshotsPerTenMinutesLimit": 1,
-    "SnapshotsPerDayLimit": 30,
-    "SnapshotInLowPriorityThread": true,
-    "ProvideAnonymousTelemetry": true,
-    "FailedRequestLimit": 3
   }
 }

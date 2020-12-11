@@ -3,7 +3,7 @@
 @inject ICustomApiService _customApiService
 @inject AppState appState
 @inject IModalService Modal
-@inject IOptionsMonitor<ConfigWrapper> Config
+@inject IOptionsMonitor<BaseConfig> Config
 
 
 <div class="container text-body" style="overflow:hidden">
@@ -252,7 +252,7 @@
 
     private void Save()
     {
-        System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/appsettings.json", JsonConvert.SerializeObject(Config.CurrentValue));
+        System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/PresenceLightSettings.json", JsonConvert.SerializeObject(Config.CurrentValue, Formatting.Indented));
         _customApiService = new CustomApiService(Config.CurrentValue);
         message = "Settings Saved";
         settingsSaved = true;

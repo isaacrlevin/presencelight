@@ -18,16 +18,16 @@ namespace PresenceLight.Core
     }
     public class YeelightService : IYeelightService
     {
-        private readonly ConfigWrapper _options;
+        private readonly BaseConfig _options;
 
         private DeviceGroup deviceGroup;
 
-        public YeelightService(IOptionsMonitor<ConfigWrapper> optionsAccessor)
+        public YeelightService(IOptionsMonitor<BaseConfig> optionsAccessor)
         {
             _options = optionsAccessor.CurrentValue;
         }
 
-        public YeelightService(ConfigWrapper options)
+        public YeelightService(BaseConfig options)
         {
             _options = options;
         }

@@ -1,7 +1,7 @@
 ﻿@page "/settings"
 
 
-@inject IOptionsMonitor<ConfigWrapper> Config
+@inject IOptionsMonitor<BaseConfig> Config
 
 
 <div class="container text-body" style="overflow:hidden">
@@ -50,7 +50,7 @@
 
     void SaveSettings()
     {
-        System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/appsettings.json", JsonConvert.SerializeObject(Config.CurrentValue));
+        System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/PresenceLightSettings.json", JsonConvert.SerializeObject(Config.CurrentValue, Formatting.Indented));
         message = "Settings Saved";
         settingsSaved = true;
     }

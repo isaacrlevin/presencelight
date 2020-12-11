@@ -192,14 +192,14 @@ namespace PresenceLight
 
             try
             {
-                imgLoading.Visibility = Visibility.Visible;
+                imgHueLoading.Visibility = Visibility.Visible;
                 lblHueMessage.Visibility = Visibility.Collapsed;
                 pnlHueBrightness.Visibility = Visibility.Collapsed;
                 Config.LightSettings.Hue.HueApiKey = await _hueService.RegisterBridge().ConfigureAwait(true);
                 ddlHueLights.ItemsSource = await _hueService.CheckLights().ConfigureAwait(true);
                 SyncOptions();
                 pnlHueBrightness.Visibility = Visibility.Visible;
-                imgLoading.Visibility = Visibility.Collapsed;
+                imgHueLoading.Visibility = Visibility.Collapsed;
                 lblHueMessage.Visibility = Visibility.Visible;
             }
             catch (Exception ex)
