@@ -69,9 +69,11 @@ namespace PresenceLight
         private void ContinueStartup()
         {
             var builder = new Microsoft.Extensions.Configuration.ConfigurationBuilder()
-                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                 .AddJsonFile($"appsettings.Development.json", optional: true, reloadOnChange: true);
 
-            Configuration = builder.Build();
+
+        Configuration = builder.Build();
 
 
             IServiceCollection services = new ServiceCollection();

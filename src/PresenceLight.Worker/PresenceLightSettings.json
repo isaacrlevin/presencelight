@@ -1,4 +1,6 @@
 {
+  "SendDiagnosticData": false,
+  "IconType": "",
   "LightSettings": {
     "HoursPassedStatus": "",
     "SyncLights": true,
@@ -57,7 +59,7 @@
       "LIFXClientId": "",
       "LIFXClientSecret": "",
       "IsLIFXEnabled": false,
-      "SelectedLIFXItemId": "",
+      "SelectedLIFXItemId": "group_id:",
       "LIFXBrightness": 100,
       "AvailableStatus": {
         "Disabled": false,
