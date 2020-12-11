@@ -10,7 +10,6 @@ namespace PresenceLight.Worker.Services
 {
     internal class AppVersionTelemetryInitializer : ITelemetryInitializer
     {
-        private readonly string _wpfVersion;
         private readonly string _appVersion;
 
         public AppVersionTelemetryInitializer()

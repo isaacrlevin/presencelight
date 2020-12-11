@@ -17,6 +17,12 @@ trigger:
 
 stages:
 - stage: Build
+  variables:
+  - group: AppSettings
+  - name: DOTNET_SKIP_FIRST_TIME_EXPERIENCE
+    value: true
+  - name: BuildConfiguration 
+    value: 'Release'
 
   jobs:
   - job: Build
@@ -79,14 +85,14 @@ stages:
           $appsettings.lightSettings.lifx.LIFXClientSecret = "$(LIFXClientSecret)"
           $appsettings.applicationInsights.instrumentationkey = "$(InstrumentationKey)"
           $appsettings | ConvertTo-Json -depth 32| set-content '.\src\PresenceLight.Worker\PresenceLightSettings.json'
-        displayName: Update appsettings.json
+        displayName: Update PresenceLightSettings.json
         condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')))
 
       - task: DotNetCoreCLI@2
         inputs:
           command: 'publish'
           workingDirectory: src/PresenceLight.Worker
-          arguments: -r $(RID) -c Release /p:PublishSingleFile=true -o $(Build.ArtifactStagingDirectory)/$(GitBuildVersionSimple)_$(ChannelName) /p:Version=$(GitBuildVersionSimple)
+          arguments: -r $(RID) -c $(BuildConfiguration) /p:PublishSingleFile=true -o $(Build.ArtifactStagingDirectory)/$(GitBuildVersionSimple)_$(ChannelName) /p:Version=$(GitBuildVersionSimple)
           publishWebProjects: false
 
       - publish: $(Build.ArtifactStagingDirectory)\$(GitBuildVersionSimple)_$(ChannelName)

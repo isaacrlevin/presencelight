@@ -41,7 +41,7 @@ namespace PresenceLight.Telemetry
             TrackEvent("AppStart");
         }
 
-        public void TrackEvent(string eventName, IDictionary<string, string> properties = null, IDictionary<string, double> metrics = null)
+        public void TrackEvent(string eventName, IDictionary<string, string>? properties = null, IDictionary<string, double>? metrics = null)
         {
             _client.TrackEvent(eventName, properties, metrics);
         }
@@ -51,7 +51,7 @@ namespace PresenceLight.Telemetry
             _client.TrackTrace(evt);
         }
 
-        public void TrackException(Exception exception, IDictionary<string, string> properties = null, IDictionary<string, double> metrics = null)
+        public void TrackException(Exception exception, IDictionary<string, string>? properties = null, IDictionary<string, double>? metrics = null)
         {
             _client.TrackException(exception, properties, metrics);
         }
