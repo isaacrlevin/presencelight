@@ -74,17 +74,17 @@ stages:
           $appsettings= get-content ".\src\PresenceLight.Worker\appsettings.json" -raw | ConvertFrom-Json
           $appsettings.azureAd.clientId = "$(ApplicationId)"
           $appsettings.azureAd.clientSecret = "$(ClientSecret)"
+          $appsettings.applicationInsights.instrumentationkey = "$(InstrumentationKey)"
           $appsettings | ConvertTo-Json -depth 32| set-content '.\src\PresenceLight.Worker\appsettings.json'
         displayName: Update appsettings.json
         condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')))
 
       - powershell: |
           # Update PresenceLightSettings.json. This must be done before build.
-          $appsettings= get-content ".\src\PresenceLight.Worker\PresenceLightSettings.json" -raw | ConvertFrom-Json
-          $appsettings.lightSettings.lifx.LIFXClientId = "$(LIFXClientId)"
-          $appsettings.lightSettings.lifx.LIFXClientSecret = "$(LIFXClientSecret)"
-          $appsettings.applicationInsights.instrumentationkey = "$(InstrumentationKey)"
-          $appsettings | ConvertTo-Json -depth 32| set-content '.\src\PresenceLight.Worker\PresenceLightSettings.json'
+          $PresenceLightSettings= get-content ".\src\PresenceLight.Worker\PresenceLightSettings.json" -raw | ConvertFrom-Json
+          $PresenceLightSettings.lightSettings.lifx.LIFXClientId = "$(LIFXClientId)"
+          $PresenceLightSettings.lightSettings.lifx.LIFXClientSecret = "$(LIFXClientSecret)"
+          $PresenceLightSettings | ConvertTo-Json -depth 32| set-content '.\src\PresenceLight.Worker\PresenceLightSettings.json'
         displayName: Update PresenceLightSettings.json
         condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')))
 
