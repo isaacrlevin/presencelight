@@ -8,7 +8,7 @@ using System.IO;
 using Windows.Storage.Streams;
 using ABI.Windows.Foundation.Diagnostics;
 
-namespace PresenceLight
+namespace PresenceLight.Services
 {
     public class SettingsService
     {
@@ -21,7 +21,7 @@ namespace PresenceLight
             _diagClient = diagClient;
         }
 
-        public async Task<ConfigWrapper?> LoadSettings()
+        public async Task<BaseConfig?> LoadSettings()
         {
             try
             {
@@ -29,7 +29,7 @@ namespace PresenceLight
                 if (sf == null) return null;
 
                 string content = await FileIO.ReadTextAsync(sf, Windows.Storage.Streams.UnicodeEncoding.Utf8);
-                return JsonConvert.DeserializeObject<ConfigWrapper>(content);
+                return JsonConvert.DeserializeObject<BaseConfig>(content);
             }
             catch (Exception e)
             {
@@ -38,7 +38,7 @@ namespace PresenceLight
             }
         }
 
-        public async Task<bool> SaveSettings(ConfigWrapper data)
+        public async Task<bool> SaveSettings(BaseConfig data)
         {
             try
             {

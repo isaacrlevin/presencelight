@@ -33,13 +33,13 @@
 	<PropertyGroup>
 
 
-		<NuGetDependencyVersion>5.7.0</NuGetDependencyVersion>
+		<NuGetDependencyVersion>5.8.0</NuGetDependencyVersion>
 	</PropertyGroup>
 
 		<ItemGroup>
-		<PackageReference Include="Nerdbank.GitVersioning" Version="3.2.31" PrivateAssets="all" />
-		<PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.0" PrivateAssets="all" />
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
+      <PackageReference Include="Nerdbank.GitVersioning" Version="3.3.37" PrivateAssets="all" />
+      <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.2" PrivateAssets="all" />
+      <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
 	</ItemGroup>
 
 	<PropertyGroup>

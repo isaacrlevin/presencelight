@@ -4,65 +4,72 @@
 @using Microsoft.Graph
 
 @inject AppState appState
-@inject IOptionsMonitor<ConfigWrapper> Config
+@inject IOptionsMonitor<BaseConfig> Config
 @inject Microsoft.Graph.GraphServiceClient GraphServiceClient
 @inject MicrosoftIdentityConsentAndConditionalAccessHandler ConsentHandler
 
 
 
-@if (@appState.Presence != null)
-{
-    <div class="container text-body">
-        <div class="row">
-            <div class="container-fluid">
-                <div class="row-fluid">
-                    <div class="centering text-center">
-                        <h1>@appState.User?.DisplayName</h1>
-                        <br />
-                        <br />
-                        <div class="centering text-center" style="width: 400px;">
-                            <img class="image" src="@appState.ProfileImage" />
-                            <div class="circle bottom-right @appState.Presence?.Availability"></div>
+<SpinLoader IsLoading="@(appState.Presence == null)">
+    <LoadingTemplate>
+        <div style="height:400px; position:relative; ">
+            <Circle style=" margin: 0; position: absolute; top: 50%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%);" Center="true" />
+        </div>
+    </LoadingTemplate>
+    <ContentTemplate>
+        <div class="container text-body">
+            <div class="row">
+                <div class="container-fluid">
+                    <div class="row-fluid">
+                        <div class="centering text-center">
+                            <h1>@appState.User?.DisplayName</h1>
+                            <br />
+                            <br />
+                            <div class="centering text-center" style="width: 400px;">
+                                <img class="image" src="@appState.ProfileImage" />
+                                <div class="circle bottom-right @appState.Presence?.Availability"></div>
+                            </div>
+                            <h3>Availability: @appState.Presence?.Availability</h3>
+                            <h3>Activity: @appState.Presence?.Activity</h3>
                         </div>
-                        <h3>Availability: @appState.Presence?.Availability</h3>
-                        <h3>Activity: @appState.Presence?.Activity</h3>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-}
+       </ContentTemplate>
+</SpinLoader>
 
-@code {
-    protected override async Task OnInitializedAsync()
-    {
-        appState.OnChange += RaiseStateHasChanged;
-
-        try
-        {
-            if (appState.LightMode != "Custom")
+        @code {
+            protected override async Task OnInitializedAsync()
             {
-                var user = await GraphServiceClient.Me.Request().GetAsync();
-                appState.SetLightMode("Graph");
-                appState.SetUserAuthentication(true);
-                appState.SetGraphServiceClient(GraphServiceClient);
+                appState.OnChange += RaiseStateHasChanged;
+
+                try
+                {
+                    if (appState.LightMode != "Custom")
+                    {
+
+                        var user = await GraphServiceClient.Me.Request().GetAsync();
+                        appState.SetLightMode("Graph");
+                        appState.SetUserAuthentication(true);
+                        appState.SetGraphServiceClient(GraphServiceClient);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    appState.SetLightMode("");
+                    appState.SetUserAuthentication(false);
+                    ConsentHandler.HandleException(ex);
+                }
+            }
+
+            public void Dispose()
+            {
+                appState.OnChange -= RaiseStateHasChanged;
+            }
+
+            private void RaiseStateHasChanged()
+            {
+                InvokeAsync(StateHasChanged);
             }
         }
-        catch (Exception ex)
-        {
-            appState.SetLightMode("");
-            appState.SetUserAuthentication(false);
-            ConsentHandler.HandleException(ex);
-        }
-    }
-
-    public void Dispose()
-    {
-        appState.OnChange -= RaiseStateHasChanged;
-    }
-
-    private void RaiseStateHasChanged()
-    {
-        InvokeAsync(StateHasChanged);
-    }
-}

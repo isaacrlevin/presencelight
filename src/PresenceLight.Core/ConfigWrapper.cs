@@ -8,40 +8,6 @@ using Newtonsoft.Json;
 
 namespace PresenceLight.Core
 {
-    public class ConfigWrapper
-    {
-        public bool SendDiagnosticData { get; set; }
-        public string? IconType { get; set; }
-        public LightSettings LightSettings { get; set; }
-
-        public string? ClientId { get; set; }
-
-        public string? ClientSecret { get; set; }
-
-        public string? Instance { get; set; }
-
-        public string? RedirectUri { get; set; }
-
-        public string? CallbackPath { get; set; }
-
-        public string? ApiScopes { get; set; }
-    }
-
-    public class AADSettings
-    {
-        public string? ClientId { get; set; }
-
-        public string? ClientSecret { get; set; }
-
-        public string? Instance { get; set; }
-
-        public string? RedirectUri { get; set; }
-
-        public string? CallbackPath { get; set; }
-
-        public string? ApiScopes { get; set; }
-    }
-
     public class LightSettings
     {
         public string HoursPassedStatus { get; set; }
@@ -78,7 +44,6 @@ namespace PresenceLight.Core
 
         public Yeelight Yeelight { get; set; }
     }
-
 
     public class Custom
     {
@@ -232,7 +197,6 @@ namespace PresenceLight.Core
         public string? Colour { get; set; }
     }
 
-
     public class Yeelight
     {
         public string? SelectedYeelightId { get; set; }
@@ -254,5 +218,21 @@ namespace PresenceLight.Core
         public AvailabilityStatus OfflineStatus { get; set; }
 
         public AvailabilityStatus OffStatus { get; set; }
+    }
+
+    public class AADSettings
+    {
+        public string? ClientId { get; set; }
+
+        public string? Instance { get; set; }
+
+        public string? RedirectUri { get; set; }
+    }
+
+    public class BaseConfig
+    {
+        public bool SendDiagnosticData { get; set; }
+        public string? IconType { get; set; }
+        public LightSettings LightSettings { get; set; }
     }
 }

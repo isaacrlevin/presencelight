@@ -13,7 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 using PresenceLight.Core;
-using PresenceLight.Core.Graph;
+using PresenceLight.Graph;
 using PresenceLight.Services;
 using PresenceLight.Telemetry;
 
@@ -76,7 +76,9 @@ namespace PresenceLight
 
             IServiceCollection services = new ServiceCollection();
             services.AddOptions();
-            services.Configure<ConfigWrapper>(Configuration);
+            
+            services.Configure<BaseConfig>(Configuration);
+            services.Configure<AADSettings>(Configuration.GetSection("AADSettings"));
             services.Configure<TelemetryConfiguration>(
     (o) =>
     {

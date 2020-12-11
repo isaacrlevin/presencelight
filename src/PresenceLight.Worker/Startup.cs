@@ -10,18 +10,35 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using PresenceLight.Core;
-using PresenceLight.Core.Graph;
 using System.Threading.Tasks;
 using Blazorise;
 using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
+using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.ApplicationInsights.AspNetCore;
+using Microsoft.Extensions.Options;
+using Microsoft.ApplicationInsights.SnapshotCollector;
 
 namespace PresenceLight.Worker
 {
     public class Startup
     {
+        private class SnapshotCollectorTelemetryProcessorFactory : ITelemetryProcessorFactory
+        {
+            private readonly IServiceProvider _serviceProvider;
+
+            public SnapshotCollectorTelemetryProcessorFactory(IServiceProvider serviceProvider) =>
+                _serviceProvider = serviceProvider;
+
+            public ITelemetryProcessor Create(ITelemetryProcessor next)
+            {
+                var snapshotConfigurationOptions = _serviceProvider.GetService<IOptions<SnapshotCollectorConfiguration>>();
+                return new SnapshotCollectorTelemetryProcessor(next, configuration: snapshotConfigurationOptions.Value);
+            }
+        }
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -65,16 +82,24 @@ namespace PresenceLight.Worker
               .AddFontAwesomeIcons();
 
             services.AddHttpContextAccessor();
-            services.Configure<ConfigWrapper>(Configuration);
+
+            services.Configure<BaseConfig>(Configuration);
 
             services.AddOptions();
-            services.AddSingleton<IGraphService, GraphService>();
             services.AddSingleton<LIFXService, LIFXService>();
             services.AddSingleton<IHueService, HueService>();
             services.AddSingleton<ICustomApiService, CustomApiService>();
             services.AddSingleton<AppState, AppState>();
             services.AddBlazoredModal();
             services.AddHostedService<Worker>();
+            services.AddApplicationInsightsTelemetry(Configuration.GetValue<string>("ApplicationInsights:InstrumentationKey"));
+
+            // Configure SnapshotCollector from application settings
+            services.Configure<SnapshotCollectorConfiguration>(Configuration.GetSection(nameof(SnapshotCollectorConfiguration)));
+
+            // Add SnapshotCollector telemetry processor.
+            services.AddSingleton<ITelemetryProcessorFactory>(sp => new SnapshotCollectorTelemetryProcessorFactory(sp));
+
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

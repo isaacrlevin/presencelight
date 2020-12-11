@@ -17,7 +17,7 @@ namespace PresenceLight.Worker
 {
     public class Worker : BackgroundService
     {
-        private readonly ConfigWrapper Config;
+        private readonly BaseConfig Config;
         private readonly IHueService _hueService;
         private readonly AppState _appState;
         private readonly ILogger<Worker> _logger;
@@ -26,7 +26,7 @@ namespace PresenceLight.Worker
 
         public Worker(IHueService hueService,
                       ILogger<Worker> logger,
-                      IOptionsMonitor<ConfigWrapper> optionsAccessor,
+                      IOptionsMonitor<BaseConfig> optionsAccessor,
                       AppState appState,
                       LIFXService lifxService,
                       ICustomApiService customApiService)

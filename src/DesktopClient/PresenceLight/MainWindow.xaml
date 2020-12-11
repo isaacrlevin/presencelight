@@ -198,7 +198,7 @@
                             <CheckBox x:Name="cbIsPhillipsOffStatusDisabled" IsChecked="{Binding LightSettings.Hue.OffStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="8" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbIsPhillipsOffStatusDisabledChanged" Checked="cbIsPhillipsOffStatusDisabledChanged" />
                         </Grid>
 
-                        <Image Grid.Row="4" Grid.Column="1" x:Name="imgLoading" Visibility="Collapsed" gif:ImageBehavior.AnimatedSource="Icons/loading.gif" Width="75" Margin="70,42,69,215" Grid.RowSpan="4"  />
+                        <Image Grid.Row="4" Grid.Column="1" x:Name="imgHueLoading" Visibility="Collapsed" gif:ImageBehavior.AnimatedSource="Icons/loading.gif" Width="75" Margin="70,42,69,215" Grid.RowSpan="4"  />
                         <Button Grid.Row="7" VerticalAlignment="Bottom" Grid.Column="1" x:Name="btnHue" Height="45" Width="170" Content="Save"  Click="SaveHue_Click" />
                         <Label Grid.Row="7" Grid.Column="1" x:Name="lblHueSaved" HorizontalAlignment="Center" Visibility="Visible" Content="Settings Updated" Foreground="Green" Margin="0,225,0,0" Grid.RowSpan="2" />
                     </Grid>

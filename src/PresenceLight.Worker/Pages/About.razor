@@ -14,13 +14,21 @@
                     <div class="w-70">
                         <h2>PresenceLight by Isaac Levin</h2>
                         <br />
-                        <h4><a href="https://github.com/isaacrlevin/presencelight" target="_blank">https://github.com/isaacrlevin/presencelight</a></h4>
+                        <h6><a href="https://github.com/isaacrlevin/presencelight" target="_blank">https://github.com/isaacrlevin/presencelight</a></h6>
                     </div>
                 </div>
             </div>
         </div>
     </div>
     <br /><br /><br />
+    <div class="row">
+        <div class="w-25">
+            <h4>Application Version</h4>
+        </div>
+        <div class="w-75">
+            @assemblyVersion
+        </div>
+    </div>
     <div class="row">
         <div class="w-25">
             <h4>Install Location</h4>
@@ -45,17 +53,25 @@
             @RuntimeVersionInfo
         </div>
     </div>
+    <br />
+    <br />
+    <div class="row">
+        <div class="w-100">
+            <h6>Found an issue or want a feature? File it <a href="https://github.com/isaacrlevin/PresenceLight/issues/new/choose" target="_blank">here</a></h6>
+        </div>
+    </div>
 </div>
 
 @code {
     string installLocation;
     string installedDate;
     string RuntimeVersionInfo;
-
+    string assemblyVersion;
     protected override void OnInitialized()
     {
         installLocation = ThisAppInfo.GetInstallLocation();
         installedDate = ThisAppInfo.GetInstallationDate();
         RuntimeVersionInfo = ThisAppInfo.GetDotNetRuntimeInfo();
+        assemblyVersion = ThisAppInfo.GetApplicationVersion();
     }
 }
