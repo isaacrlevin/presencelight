@@ -1,15 +1,15 @@
-![Logo](Icon.png)
+![Logo](https://github.com/isaacrlevin/PresenceLight/raw/main/Icon.png)
 # PresenceLight
 ![Build Status](https://dev.azure.com/isaaclevin/PresenceLight/_apis/build/status/CI-build-wpf?branchName=main)
 
-### [Cross Platform Blazor Version](worker-README.md)
+### [Cross Platform Blazor/Docker Version](https://github.com/isaacrlevin/PresenceLight/blob/main/worker-README.md)
 
 ### WPF Installs
 
 | Release Channel | Build Number | Link |
 |--- | ------------ | ---- |
 | Nightly | [![Nightly build number](https://presencelight.blob.core.windows.net/nightly/ci_badge.svg)](https://presencelight.blob.core.windows.net/nightly/index.html)| [Install](https://presencelight.blob.core.windows.net/nightly/index.html)
-| Microsoft Store | [![Stable build number](https://presencelight.blob.core.windows.net/store/stable_badge.svg)](https://www.microsoft.com/en-us/p/presencelight/9nffkd8gznl7)| [![Install](static/store.svg)](https://www.microsoft.com/en-us/p/presencelight/9nffkd8gznl7)
+| Microsoft Store | [![Stable build number](https://presencelight.blob.core.windows.net/store/stable_badge.svg)](https://www.microsoft.com/en-us/p/presencelight/9nffkd8gznl7)| [![Install](https://github.com/isaacrlevin/PresenceLight/raw/main/static/store.svg)](https://www.microsoft.com/en-us/p/presencelight/9nffkd8gznl7)
 | Chocolatey | [![Stable build number](https://presencelight.blob.core.windows.net/store/stable_badge.svg)](https://www.microsoft.com/en-us/p/presencelight/9nffkd8gznl7)| [Install](https://chocolatey.org/packages/PresenceLight/)
 | [Windows Package Manager](https://docs.microsoft.com/en-us/windows/package-manager) | [![Stable build number](https://presencelight.blob.core.windows.net/store/stable_badge.svg)](https://www.microsoft.com/en-us/p/presencelight/9nffkd8gznl7)| winget install isaaclevin.presencelight
 
