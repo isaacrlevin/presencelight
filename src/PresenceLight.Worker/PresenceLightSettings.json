@@ -56,7 +56,7 @@
       "LIFXApiKey": "",
       "LIFXClientId": "",
       "LIFXClientSecret": "",
-      "IsLIFXEnabled": true,
+      "IsLIFXEnabled": false,
       "SelectedLIFXItemId": "",
       "LIFXBrightness": 100,
       "AvailableStatus": {
@@ -93,7 +93,7 @@
       "SelectedHueLightId": "",
       "HueBrightness": 100,
       "HueIpAddress": "",
-      "IsPhillipsHueEnabled": true,
+      "IsPhillipsHueEnabled": false,
       "AvailableStatus": {
         "Disabled": false,
         "Colour": "#009933"
