@@ -15,8 +15,6 @@ trigger:
    - README.md
    - worker-README.md
 
-
-
 stages:
 - stage: Build
   variables:
@@ -134,7 +132,7 @@ stages:
       displayName: Zip PresenceLight Files
       inputs:
         archiveType: default
-        rootFolder: '.\src\DesktopClient\PresenceLight\bin\Release\net5.0-windows10.0.19041\win-x64\publish\'
+        rootFolder: '.\src\DesktopClient\PresenceLight\bin\$(BuildConfiguration)\net5.0-windows10.0.19041\win-x64\publish\'
         archiveFile: $(Build.ArtifactStagingDirectory)\$(ChannelName)\PresenceLight.$(Build.BuildNumber).zip
         includeRootFolder: false
       condition: and(succeeded(), eq(variables['ChannelName'], 'Release'))
