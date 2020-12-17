@@ -40,6 +40,8 @@ namespace PresenceLight
 
         public IConfiguration Configuration { get; private set; }
 
+        public static IConfiguration StaticConfig { get; private set; }
+
         public App()
         {
         }
@@ -73,12 +75,12 @@ namespace PresenceLight
                  .AddJsonFile($"appsettings.Development.json", optional: true, reloadOnChange: true);
 
 
-        Configuration = builder.Build();
-
+            Configuration = builder.Build();
+            StaticConfig = builder.Build();
 
             IServiceCollection services = new ServiceCollection();
             services.AddOptions();
-            
+
             services.Configure<BaseConfig>(Configuration);
             services.Configure<AADSettings>(Configuration.GetSection("AADSettings"));
             services.Configure<TelemetryConfiguration>(
@@ -91,12 +93,12 @@ namespace PresenceLight
 
         if (Convert.ToBoolean(Configuration["SendDiagnosticData"], CultureInfo.InvariantCulture))
         {
-         //   o.TelemetryProcessorChainBuilder.UseSnapshotCollector(new SnapshotCollectorConfiguration
-        //    {
-        //        IsEnabled = true,
-        //        IsEnabledInDeveloperMode = true,
-        //        DeoptimizeMethodCount = 4
-        //    });
+            //   o.TelemetryProcessorChainBuilder.UseSnapshotCollector(new SnapshotCollectorConfiguration
+            //    {
+            //        IsEnabled = true,
+            //        IsEnabledInDeveloperMode = true,
+            //        DeoptimizeMethodCount = 4
+            //    });
         }
     });
             services.AddApplicationInsightsTelemetryWorkerService();
@@ -107,8 +109,18 @@ namespace PresenceLight
             services.AddSingleton<IYeelightService, YeelightService>();
             services.AddSingleton<ICustomApiService, CustomApiService>();
             services.AddSingleton<LIFXOAuthHelper, LIFXOAuthHelper>();
+            services.AddSingleton<ThisAppInfo, ThisAppInfo>();
             services.AddSingleton<MainWindow>();
-            services.AddSingleton<SettingsService, SettingsService>();
+
+            if (Convert.ToBoolean(Configuration["IsAppPackaged"], CultureInfo.InvariantCulture))
+            {
+                services.AddSingleton<ISettingsService, AppPackageSettingsService>();
+            }
+            else
+            {
+                services.AddSingleton<ISettingsService, StandaloneSettingsService>();
+            }
+
             services.AddTransient<DiagnosticsClient, DiagnosticsClient>();
 
             ServiceProvider = services.BuildServiceProvider();

@@ -4,19 +4,16 @@ using PresenceLight.Core;
 using PresenceLight.Telemetry;
 using System.Threading.Tasks;
 using Windows.Storage;
-using System.IO;
-using Windows.Storage.Streams;
-using ABI.Windows.Foundation.Diagnostics;
 
 namespace PresenceLight.Services
 {
-    public class SettingsService
+    public class AppPackageSettingsService : ISettingsService
     {
         private const string SETTINGS_FILENAME = "settings.json";
         private static readonly StorageFolder _settingsFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
         private DiagnosticsClient _diagClient;
 
-        public SettingsService(DiagnosticsClient diagClient)
+        public AppPackageSettingsService(DiagnosticsClient diagClient)
         {
             _diagClient = diagClient;
         }
@@ -64,17 +61,6 @@ namespace PresenceLight.Services
                     catch
                     {                     
                     }
-                    //using (StorageStreamTransaction transaction = await f.OpenTransactedWriteAsync())
-                    //{
-
-                    //    using (DataWriter dataWriter = new DataWriter(transaction.Stream))
-                    //    {
-                    //        dataWriter.WriteString(content);
-
-                    //        transaction.Stream.Size = await dataWriter.StoreAsync();
-                    //        await transaction.CommitAsync();
-                    //    }
-                    //}
                 }
                 return true;
             }

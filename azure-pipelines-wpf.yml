@@ -34,6 +34,8 @@ stages:
           ChannelName: Release
         Channel_Nightly:
           ChannelName: Nightly
+        Channel_Standalone:
+          ChannelName: Standalone
 
     steps:
     - task: UseDotNet@2
@@ -59,11 +61,9 @@ stages:
         [xml]$manifest= get-content ".\src\DesktopClient\PresenceLight.Package\Package.appxmanifest"
         $manifest.Package.Identity.Version = "$(GitBuildVersionSimple).0"
         $manifest.save(".\src\DesktopClient\PresenceLight.Package\Package.appxmanifest")
-
         [xml]$manifest = Get-Content ".\src\DesktopClient\PresenceLight.Package\Package-Nightly.appxmanifest"
         $manifest.Package.Identity.Version = "$(GitBuildVersionSimple).0"
         $manifest.Save(".\src\DesktopClient\PresenceLight.Package\Package-Nightly.appxmanifest")
-
       displayName: Update AppxManifest version
 
     - powershell: |
@@ -74,12 +74,28 @@ stages:
     - powershell: |
         # Update AppSettings.json. This must be done before build.
         $appsettings= get-content ".\src\DesktopClient\PresenceLight\appsettings.json" -raw | ConvertFrom-Json
+        $appsettings.isAppPackaged = false
+        $appsettings | ConvertTo-Json -depth 32| set-content '.\src\DesktopClient\PresenceLight\appsettings.json'
+      displayName: Update appsettings.json for Standalone
+      condition: and(succeeded(), eq(variables['ChannelName'], 'Standalone'))
+
+    - powershell: |
+        # Update AppSettings.json. This must be done before build.
+        $appsettings= get-content ".\src\DesktopClient\PresenceLight\appsettings.json" -raw | ConvertFrom-Json
+        $appsettings.isAppPackaged = true
+        $appsettings | ConvertTo-Json -depth 32| set-content '.\src\DesktopClient\PresenceLight\appsettings.json'
+      displayName: Update appsettings.json for AppPackage
+      condition: and(succeeded(), not(eq(variables['ChannelName'], 'Standalone')))
+
+    - powershell: |
+        # Update AppSettings.json. This must be done before build.
+        $appsettings= get-content ".\src\DesktopClient\PresenceLight\appsettings.json" -raw | ConvertFrom-Json
         $appsettings.aadSettings.clientId = "$(ApplicationId)"
         $appsettings.lightSettings.lifx.LIFXClientId = "$(LIFXClientId)"
         $appsettings.lightSettings.lifx.LIFXClientSecret = "$(LIFXClientSecret)"
         $appsettings.applicationInsights.instrumentationkey = "$(InstrumentationKey)"
         $appsettings | ConvertTo-Json -depth 32| set-content '.\src\DesktopClient\PresenceLight\appsettings.json'
-      displayName: Update appsettings.json
+      displayName: Update appsettings.json for Standalone
       condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')))
 
 
@@ -113,20 +129,7 @@ stages:
         msbuildArguments: /p:IncludeSymbols=true /p:AppxPackageDir="$(Build.ArtifactStagingDirectory)\$(ChannelName)\\"
         configuration: $(BuildConfiguration)
         maximumCpuCount: true
-
-    - powershell: |
-        copy-item -path "$(Build.ArtifactStagingDirectory)\$(ChannelName)\PresenceLight.Package_$(GitBuildVersionSimple).0_Test\PresenceLight.Package_$(GitBuildVersionSimple).0_x64.appxbundle" -destination .\.chocolatey\tools\
-        $hash=Get-Filehash .\.chocolatey\tools\PresenceLight.Package_$(GitBuildVersionSimple).0_x64.appxbundle
-        $content = Get-Content -Path .\.chocolatey\tools\Verification.txt
-        $newContent = $content -replace '{VERSION}' , $(GitBuildVersionSimple)
-        $newContent = $content -replace '{HASH}', $hash.Hash
-        Write-Host "File: .\.chocolatey\tools\PresenceLight.Package_$(GitBuildVersionSimple).0_x64.appxbundle"
-        Write-Host "Hash: $hash.Hash"
-        $newContent | Set-Content -Path .\.chocolatey\tools\Verification.txt
-        # Chocolatey
-        & choco.exe pack .\.chocolatey\PresenceLight.nuspec --version $(NBGV_ChocolateyPackageVersion) --OutputDirectory $(Build.ArtifactStagingDirectory)\$(ChannelName)
-      displayName: Create Choco Package
-      condition: and(succeeded(), eq(variables['ChannelName'], 'Release'))
+      condition: and(succeeded(), not(eq(variables['ChannelName'], 'Standalone')))
 
     - task: ArchiveFiles@1
       displayName: Zip PresenceLight Files
@@ -135,11 +138,21 @@ stages:
         rootFolder: '.\src\DesktopClient\PresenceLight\bin\$(BuildConfiguration)\net5.0-windows10.0.19041\win-x64\publish\'
         archiveFile: $(Build.ArtifactStagingDirectory)\$(ChannelName)\PresenceLight.$(Build.BuildNumber).zip
         includeRootFolder: false
-      condition: and(succeeded(), eq(variables['ChannelName'], 'Release'))
+      condition: and(succeeded(), eq(variables['ChannelName'], 'Standalone'))
 
     - powershell: |
-
-      displayName: Update Verification.txt
+        copy-item -path "$(Build.ArtifactStagingDirectory)\$(ChannelName)\PresenceLight.$(Build.BuildNumber).zip" -destination .\.chocolatey\tools\
+        $hash=Get-Filehash .\.chocolatey\tools\PresenceLight.$(Build.BuildNumber).zip
+        $content = Get-Content -Path .\.chocolatey\tools\Verification.txt
+        $newContent = $content -replace '{VERSION}' , $(GitBuildVersionSimple)
+        $newContent = $content -replace '{HASH}', $hash.Hash
+        Write-Host "File: .\.chocolatey\tools\PresenceLight.$(Build.BuildNumber).zip"
+        Write-Host "Hash: $hash.Hash"
+        $newContent | Set-Content -Path .\.chocolatey\tools\Verification.txt
+        # Chocolatey
+        & choco.exe pack .\.chocolatey\PresenceLight.nuspec --version $(NBGV_ChocolateyPackageVersion) --OutputDirectory $(Build.ArtifactStagingDirectory)\$(ChannelName)
+      displayName: Create Choco Package
+      condition: and(succeeded(), eq(variables['ChannelName'], 'Standalone'))
 
     - publish: $(Build.ArtifactStagingDirectory)\$(ChannelName)
       displayName: Publish Arifacts
@@ -170,6 +183,12 @@ stages:
             inputs:
               artifactName: Release
               targetPath: $(Pipeline.Workspace)/ToSign/Release
+
+          - task: DownloadPipelineArtifact@2
+            displayName: Download Standalone Artifacts
+            inputs:
+              artifactName: Standalone
+              targetPath: $(Pipeline.Workspace)/ToSign/Standalone
 
           - task: DownloadPipelineArtifact@2
             displayName: Download Nightly Artifacts
@@ -249,3 +268,7 @@ stages:
           - publish: $(Pipeline.Workspace)/ToSign/Nightly
             displayName: Publish Signed Nightly Packages
             artifact: NightlySigned
+
+          - publish: $(Pipeline.Workspace)/ToSign/Standalone
+            displayName: Publish Signed Standalone Packages
+            artifact: StandaloneSigned
