@@ -7,7 +7,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Net.Http.Headers;
 
-namespace PresenceLight.Core.Services
+namespace PresenceLight.Graph
 {
     public class WPFAuthorizationProvider : MSGraph.IAuthenticationProvider
     {

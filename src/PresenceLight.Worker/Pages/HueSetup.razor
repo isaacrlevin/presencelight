@@ -3,7 +3,7 @@
 @inject IHueService _hueService
 @inject AppState appState
 @inject IModalService Modal
-@inject IOptionsMonitor<ConfigWrapper> Config
+@inject IOptionsMonitor<BaseConfig> Config
 
 
 <div class="container text-body" style="overflow:hidden">
@@ -77,11 +77,11 @@
 
 @code {
 
-    private ConfigWrapper tempConfig;
+    private BaseConfig tempConfig;
 
     private void Save()
     {
-        System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/PresenceLightSettings.json", JsonConvert.SerializeObject(Config.CurrentValue));
+        System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/PresenceLightSettings.json", JsonConvert.SerializeObject(Config.CurrentValue, Formatting.Indented));
         _hueService = new HueService(Config.CurrentValue);
         message = "Settings Saved";
         settingsSaved = true;
@@ -122,12 +122,19 @@
                 hueMessage = "App Registered with Bridge";
                 hueMessageClass = "text-success";
 
+                appState.SetHueLights(await _hueService.CheckLights());
+
+                if (string.IsNullOrEmpty(Config.CurrentValue.LightSettings.Hue.SelectedHueLightId) && appState.HueLights.Count() > 0)
+                {
+                    tempConfig.LightSettings.Hue.SelectedHueLightId = appState.HueLights.FirstOrDefault().Id;
+                }
+
                 Config.CurrentValue.LightSettings.Hue.HueIpAddress = tempConfig.LightSettings.Hue.HueIpAddress;
                 Config.CurrentValue.LightSettings.Hue.HueApiKey = tempConfig.LightSettings.Hue.HueApiKey;
+                Config.CurrentValue.LightSettings.Hue.SelectedHueLightId = tempConfig.LightSettings.Hue.SelectedHueLightId;
 
-                System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/PresenceLightSettings.json", JsonConvert.SerializeObject(Config.CurrentValue));
+                System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/PresenceLightSettings.json", JsonConvert.SerializeObject(Config.CurrentValue, Formatting.Indented));
 
-                appState.SetHueLights(await _hueService.CheckLights());
             }
             else
             {

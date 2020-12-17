@@ -17,24 +17,19 @@ namespace PresenceLight.Worker
 {
     public class Worker : BackgroundService
     {
-        private readonly ConfigWrapper Config;
+        private readonly BaseConfig Config;
         private readonly IHueService _hueService;
         private readonly AppState _appState;
         private readonly ILogger<Worker> _logger;
-        private readonly UserAuthService _userAuthService;
-        private readonly GraphServiceClient _graphClient;
-
         private LIFXService _lifxService;
-
         private ICustomApiService _customApiService;
 
         public Worker(IHueService hueService,
                       ILogger<Worker> logger,
-                      IOptionsMonitor<ConfigWrapper> optionsAccessor,
+                      IOptionsMonitor<BaseConfig> optionsAccessor,
                       AppState appState,
                       LIFXService lifxService,
-                      ICustomApiService customApiService,
-                      UserAuthService userAuthService)
+                      ICustomApiService customApiService)
         {
             Config = optionsAccessor.CurrentValue;
             _hueService = hueService;
@@ -42,17 +37,13 @@ namespace PresenceLight.Worker
             _customApiService = customApiService;
             _logger = logger;
             _appState = appState;
-            _userAuthService = userAuthService;
-
-            _graphClient = new GraphServiceClient(userAuthService);
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-
-                if (await _userAuthService.IsUserAuthenticated())
+                if (_appState.IsUserAuthenticated)
                 {
                     try
                     {
@@ -62,7 +53,6 @@ namespace PresenceLight.Worker
                     {
                         var foo = e;
                     }
-                    await Task.Delay(Convert.ToInt32(Config.LightSettings.PollingInterval * 1000), stoppingToken);
                 }
                 await Task.Delay(1000, stoppingToken);
             }
@@ -71,14 +61,11 @@ namespace PresenceLight.Worker
 
         private async Task GetData()
         {
+            var user = await GetUserInformation();
 
-            var token = await _userAuthService.GetAccessToken();
+            var photo = await GetPhotoAsBase64Async();
 
-            var user = await GetUserInformation(token);
-
-            var photo = await GetPhotoAsBase64Async(token);
-
-            var presence = await GetPresence(token);
+            var presence = await GetPresence();
 
             _appState.SetUserInfo(user, photo, presence);
 
@@ -92,13 +79,11 @@ namespace PresenceLight.Worker
                 await _lifxService.SetColor(presence.Availability, (Selector)Config.LightSettings.LIFX.SelectedLIFXItemId);
             }
 
-            while (await _userAuthService.IsUserAuthenticated())
+            while (_appState.IsUserAuthenticated)
             {
                 if (_appState.LightMode == "Graph")
                 {
-                    token = await _userAuthService.GetAccessToken();
-                    presence = await GetPresence(token);
-
+                    presence = await GetPresence();
 
                     _appState.SetPresence(presence);
                     _logger.LogInformation($"Presence is {presence.Availability}");
@@ -117,19 +102,17 @@ namespace PresenceLight.Worker
                         await _customApiService.SetColor(presence.Availability, presence.Activity);
                     }
                 }
-
-
                 Thread.Sleep(Convert.ToInt32(Config.LightSettings.PollingInterval * 1000));
             }
 
             _logger.LogInformation("User logged out, no longer polling for presence.");
         }
 
-        public async Task<User> GetUserInformation(string accessToken)
+        public async Task<User> GetUserInformation()
         {
             try
             {
-                var me = await _graphClient.Me.Request().GetAsync();
+                var me = await _appState.GraphServiceClient.Me.Request().GetAsync();
                 _logger.LogInformation($"User is {me.DisplayName}");
                 return me;
             }
@@ -140,11 +123,11 @@ namespace PresenceLight.Worker
             }
         }
 
-        public async Task<string> GetPhotoAsBase64Async(string accessToken)
+        public async Task<string> GetPhotoAsBase64Async()
         {
             try
             {
-                var photoStream = await _graphClient.Me.Photo.Content.Request().GetAsync();
+                var photoStream = await _appState.GraphServiceClient.Me.Photo.Content.Request().GetAsync();
                 var memoryStream = new MemoryStream();
                 photoStream.CopyTo(memoryStream);
 
@@ -161,11 +144,11 @@ namespace PresenceLight.Worker
             return null;
         }
 
-        public async Task<Presence> GetPresence(string accessToken)
+        public async Task<Presence> GetPresence()
         {
             try
             {
-                var presence = await _graphClient.Me.Presence.Request().GetAsync();
+                var presence = await _appState.GraphServiceClient.Me.Presence.Request().GetAsync();
 
                 var r = new Regex(@"
                 (?<=[A-Z])(?=[A-Z][a-z]) |

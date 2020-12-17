@@ -3,6 +3,7 @@ using System.Windows;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using PresenceLight.Telemetry;
+using System.Globalization;
 
 namespace PresenceLight
 {
@@ -23,7 +24,7 @@ namespace PresenceLight
 
             var theme = ((SolidColorBrush)SystemParameters.WindowGlassBrush).Color;
 
-            string color = $"#{theme.ToString().Substring(3)}";
+            string color = $"#{theme.ToString(CultureInfo.InvariantCulture).Substring(3)}";
 
             lblTheme.Content = $"Theme Color is {color}";
             lblTheme.Foreground = (SolidColorBrush)SystemParameters.WindowGlassBrush;

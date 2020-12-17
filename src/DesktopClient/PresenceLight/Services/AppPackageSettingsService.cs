@@ -4,17 +4,21 @@ using PresenceLight.Core;
 using PresenceLight.Telemetry;
 using System.Threading.Tasks;
 using Windows.Storage;
-using System.IO;
-using Windows.Storage.Streams;
-using ABI.Windows.Foundation.Diagnostics;
 
-namespace PresenceLight
+namespace PresenceLight.Services
 {
-    public static class SettingsService
+    public class AppPackageSettingsService : ISettingsService
     {
         private const string SETTINGS_FILENAME = "settings.json";
         private static readonly StorageFolder _settingsFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
-        public async static Task<ConfigWrapper?> LoadSettings()
+        private DiagnosticsClient _diagClient;
+
+        public AppPackageSettingsService(DiagnosticsClient diagClient)
+        {
+            _diagClient = diagClient;
+        }
+
+        public async Task<BaseConfig?> LoadSettings()
         {
             try
             {
@@ -22,16 +26,16 @@ namespace PresenceLight
                 if (sf == null) return null;
 
                 string content = await FileIO.ReadTextAsync(sf, Windows.Storage.Streams.UnicodeEncoding.Utf8);
-                return JsonConvert.DeserializeObject<ConfigWrapper>(content);
+                return JsonConvert.DeserializeObject<BaseConfig>(content);
             }
             catch (Exception e)
             {
-                DiagnosticsClient.TrackException(e);
+                _diagClient.TrackException(e);
                 return null;
             }
         }
 
-        public async static Task<bool> SaveSettings(ConfigWrapper data)
+        public async Task<bool> SaveSettings(BaseConfig data)
         {
             try
             {
@@ -57,28 +61,17 @@ namespace PresenceLight
                     catch
                     {                     
                     }
-                    //using (StorageStreamTransaction transaction = await f.OpenTransactedWriteAsync())
-                    //{
-
-                    //    using (DataWriter dataWriter = new DataWriter(transaction.Stream))
-                    //    {
-                    //        dataWriter.WriteString(content);
-
-                    //        transaction.Stream.Size = await dataWriter.StoreAsync();
-                    //        await transaction.CommitAsync();
-                    //    }
-                    //}
                 }
                 return true;
             }
             catch (Exception e)
             {
-                DiagnosticsClient.TrackException(e);
+                _diagClient.TrackException(e);
                 return false;
             }
         }
 
-        public async static Task<bool> DeleteSettings()
+        public async Task<bool> DeleteSettings()
         {
             try
             {
@@ -88,12 +81,12 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
-                DiagnosticsClient.TrackException(e);
+                _diagClient.TrackException(e);
                 return false;
             }
         }
 
-        public static async Task<bool> IsFilePresent()
+        public async Task<bool> IsFilePresent()
         {
             try
             {
@@ -116,7 +109,7 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
-                DiagnosticsClient.TrackException(e);
+                _diagClient.TrackException(e);
                 return false;
             }
         }

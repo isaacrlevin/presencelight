@@ -1,13 +1,21 @@
 ﻿using System;
-using PresenceLight.Core;
-using PresenceLight.Core.Graph;
+using System.Diagnostics;
+using System.Globalization;
+using System.Threading;
 using System.Windows;
+
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.ApplicationInsights.SnapshotCollector;
+using Microsoft.ApplicationInsights.WorkerService;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using PresenceLight.Telemetry;
+using Microsoft.Extensions.Options;
+
+using PresenceLight.Core;
+using PresenceLight.Graph;
 using PresenceLight.Services;
-using System.Diagnostics;
-using System.Threading;
+using PresenceLight.Telemetry;
 
 namespace PresenceLight
 {
@@ -16,9 +24,23 @@ namespace PresenceLight
     /// </summary>
     public partial class App : System.Windows.Application
     {
+        private class SnapshotCollectorTelemetryProcessorFactory : ITelemetryProcessorFactory
+        {
+            private readonly IServiceProvider _serviceProvider;
+            public SnapshotCollectorTelemetryProcessorFactory(IServiceProvider serviceProvider) =>
+                _serviceProvider = serviceProvider;
+            public ITelemetryProcessor Create(ITelemetryProcessor next)
+            {
+                var snapshotConfigurationOptions = _serviceProvider.GetService<IOptions<SnapshotCollectorConfiguration>>();
+                return new SnapshotCollectorTelemetryProcessor(next, configuration: snapshotConfigurationOptions == null ? new SnapshotCollectorConfiguration() : snapshotConfigurationOptions.Value);
+            }
+        }
+
         public IServiceProvider? ServiceProvider { get; private set; }
 
-        public IConfiguration? Configuration { get; private set; }
+        public IConfiguration Configuration { get; private set; }
+
+        public static IConfiguration StaticConfig { get; private set; }
 
         public App()
         {
@@ -49,36 +71,74 @@ namespace PresenceLight
         private void ContinueStartup()
         {
             var builder = new Microsoft.Extensions.Configuration.ConfigurationBuilder()
-                  .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                 .AddJsonFile($"appsettings.Development.json", optional: true, reloadOnChange: true);
+
 
             Configuration = builder.Build();
+            StaticConfig = builder.Build();
 
-            var services = new ServiceCollection();
+            IServiceCollection services = new ServiceCollection();
             services.AddOptions();
-            services.Configure<ConfigWrapper>(Configuration);
+
+            services.Configure<BaseConfig>(Configuration);
+            services.Configure<AADSettings>(Configuration.GetSection("AADSettings"));
+            services.Configure<TelemetryConfiguration>(
+    (o) =>
+    {
+        o.InstrumentationKey = Configuration["ApplicationInsights:InstrumentationKey"];
+        o.TelemetryInitializers.Add(new OperationCorrelationTelemetryInitializer());
+        o.TelemetryInitializers.Add(new AppVersionTelemetryInitializer());
+        o.TelemetryInitializers.Add(new EnvironmentTelemetryInitializer());
+
+        if (Convert.ToBoolean(Configuration["SendDiagnosticData"], CultureInfo.InvariantCulture))
+        {
+            //   o.TelemetryProcessorChainBuilder.UseSnapshotCollector(new SnapshotCollectorConfiguration
+            //    {
+            //        IsEnabled = true,
+            //        IsEnabledInDeveloperMode = true,
+            //        DeoptimizeMethodCount = 4
+            //    });
+        }
+    });
+            services.AddApplicationInsightsTelemetryWorkerService();
+
             services.AddSingleton<IGraphService, GraphService>();
             services.AddSingleton<IHueService, HueService>();
             services.AddSingleton<LIFXService, LIFXService>();
             services.AddSingleton<IYeelightService, YeelightService>();
             services.AddSingleton<ICustomApiService, CustomApiService>();
             services.AddSingleton<LIFXOAuthHelper, LIFXOAuthHelper>();
+            services.AddSingleton<ThisAppInfo, ThisAppInfo>();
             services.AddSingleton<MainWindow>();
 
-            DiagnosticsClient.Initialize();
+            if (Convert.ToBoolean(Configuration["IsAppPackaged"], CultureInfo.InvariantCulture))
+            {
+                services.AddSingleton<ISettingsService, AppPackageSettingsService>();
+            }
+            else
+            {
+                services.AddSingleton<ISettingsService, StandaloneSettingsService>();
+            }
+
+            services.AddTransient<DiagnosticsClient, DiagnosticsClient>();
 
             ServiceProvider = services.BuildServiceProvider();
+
+            var telemetryClient = ServiceProvider.GetRequiredService<TelemetryClient>();
+
 
             var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
             mainWindow.Show();
         }
 
-        private bool IsCriticalFontLoadFailure(Exception ex)
+        private static bool IsCriticalFontLoadFailure(Exception ex)
         {
             return ex.StackTrace.Contains("MS.Internal.Text.TextInterface.FontFamily.GetFirstMatchingFont", StringComparison.OrdinalIgnoreCase) ||
                    ex.StackTrace.Contains("MS.Internal.Text.Line.Format", StringComparison.OrdinalIgnoreCase);
         }
 
-        private void OnCriticalFontLoadFailure()
+        private static void OnCriticalFontLoadFailure()
         {
             Trace.WriteLine($"App OnCriticalFontLoadFailure");
 

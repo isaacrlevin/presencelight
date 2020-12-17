@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -19,24 +20,11 @@ namespace PresenceLight
             return $"{date.ToShortDateString()} {date.ToShortTimeString()}";
         }
 
-
-        internal static string GetDotNetInfo()
+        public static string GetApplicationVersion()
         {
-            var runTimeDir = new FileInfo(System.AppContext.BaseDirectory);
-            var entryDir = new FileInfo(System.AppContext.BaseDirectory);
-            var IsSelfContaied = runTimeDir.DirectoryName == entryDir.DirectoryName;
-
-            var result = ".NET Framework - ";
-            if (IsSelfContaied)
-            {
-                result += "Self Contained Deployment";
-            }
-            else
-            {
-                result += "Framework Dependent Deployment";
-            }
-
-            return result;
+            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            FileVersionInfo fileVersion = FileVersionInfo.GetVersionInfo(assembly.Location);
+            return fileVersion.FileVersion;
         }
 
         internal static string GetDotNetRuntimeInfo()

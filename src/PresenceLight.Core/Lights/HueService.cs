@@ -20,15 +20,15 @@ namespace PresenceLight.Core
     }
     public class HueService : IHueService
     {
-        private readonly ConfigWrapper _options;
+        private readonly BaseConfig _options;
         private LocalHueClient _client;
 
-        public HueService(IOptionsMonitor<ConfigWrapper> optionsAccessor)
+        public HueService(IOptionsMonitor<BaseConfig> optionsAccessor)
         {
             _options = optionsAccessor.CurrentValue;
         }
 
-        public HueService(ConfigWrapper options)
+        public HueService(BaseConfig options)
         {
             _options = options;
         }
@@ -40,14 +40,14 @@ namespace PresenceLight.Core
 
 
             var command = new LightCommand();
-
+            string color = "";
             switch (availability)
             {
                 case "Available":
                     if (!_options.LightSettings.Hue.AvailableStatus.Disabled)
                     {
                         command.On = true;
-                        command.SetColor(new RGBColor(_options.LightSettings.Hue.AvailableStatus.Colour));
+                        color = _options.LightSettings.Hue.AvailableStatus.Colour;
                     }
                     else
                     {
@@ -60,7 +60,7 @@ namespace PresenceLight.Core
                     if (!_options.LightSettings.Hue.BusyStatus.Disabled)
                     {
                         command.On = true;
-                        command.SetColor(new RGBColor(_options.LightSettings.Hue.BusyStatus.Colour));
+                        color = _options.LightSettings.Hue.BusyStatus.Colour;
                     }
                     else
                     {
@@ -73,7 +73,7 @@ namespace PresenceLight.Core
                     if (!_options.LightSettings.Hue.BeRightBackStatus.Disabled)
                     {
                         command.On = true;
-                        command.SetColor(new RGBColor(_options.LightSettings.Hue.BeRightBackStatus.Colour));
+                        color = _options.LightSettings.Hue.BeRightBackStatus.Colour;
                     }
                     else
                     {
@@ -86,7 +86,7 @@ namespace PresenceLight.Core
                     if (!_options.LightSettings.Hue.AwayStatus.Disabled)
                     {
                         command.On = true;
-                        command.SetColor(new RGBColor(_options.LightSettings.Hue.AwayStatus.Colour));
+                        color = _options.LightSettings.Hue.AwayStatus.Colour;
                     }
                     else
                     {
@@ -99,7 +99,7 @@ namespace PresenceLight.Core
                     if (!_options.LightSettings.Hue.DoNotDisturbStatus.Disabled)
                     {
                         command.On = true;
-                        command.SetColor(new RGBColor(_options.LightSettings.Hue.DoNotDisturbStatus.Colour));
+                        color = _options.LightSettings.Hue.DoNotDisturbStatus.Colour;
                     }
                     else
                     {
@@ -112,7 +112,7 @@ namespace PresenceLight.Core
                     if (!_options.LightSettings.Hue.OfflineStatus.Disabled)
                     {
                         command.On = true;
-                        command.SetColor(new RGBColor(_options.LightSettings.Hue.OfflineStatus.Colour));
+                        color = _options.LightSettings.Hue.OfflineStatus.Colour;
                     }
                     else
                     {
@@ -125,7 +125,7 @@ namespace PresenceLight.Core
                     if (!_options.LightSettings.Hue.OffStatus.Disabled)
                     {
                         command.On = true;
-                        command.SetColor(new RGBColor(_options.LightSettings.Hue.OffStatus.Colour));
+                        color = _options.LightSettings.Hue.OffStatus.Colour;
                     }
                     else
                     {
@@ -135,9 +135,20 @@ namespace PresenceLight.Core
                     }
                     break;
                 default:
+                    command.On = true;
+                    color = availability;
                     break;
             }
-           
+
+            if (color.Length == 9 && color.Contains("#"))
+            {
+                command.SetColor(new RGBColor($"#{color.Substring(3)}"));
+            }
+            else
+            {
+                command.SetColor(new RGBColor(color));
+            }
+
 
             if (availability == "Off")
             {
@@ -190,12 +201,12 @@ namespace PresenceLight.Core
 
                     return await _client.RegisterAsync("presence-light", "presence-light");
                 }
-                catch
+                catch (Exception e)
                 {
                     return String.Empty;
                 }
             }
-            return String.Empty;
+            return _options.LightSettings.Hue.HueApiKey;
         }
 
         public async Task<string> FindBridge()

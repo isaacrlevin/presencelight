@@ -8,16 +8,21 @@ namespace PresenceLight.Core
 {
     public class LIFXService
     {
-        private readonly ConfigWrapper _options;
+        private readonly BaseConfig _options;
         private LifxCloudClient _client;
 
-        public LIFXService(Microsoft.Extensions.Options.IOptionsMonitor<ConfigWrapper> optionsAccessor)
+        public LIFXService(Microsoft.Extensions.Options.IOptionsMonitor<BaseConfig> optionsAccessor)
         {
             _options = optionsAccessor.CurrentValue;
         }
 
-        public async Task<List<Light>> GetAllLightsAsync()
+        public async Task<List<Light>> GetAllLightsAsync(string apiKey = null)
         {
+            if (!string.IsNullOrEmpty(apiKey))
+            {
+                _options.LightSettings.LIFX.LIFXApiKey = apiKey;
+            }
+
             if (!_options.LightSettings.LIFX.IsLIFXEnabled || string.IsNullOrEmpty(_options.LightSettings.LIFX.LIFXApiKey))
             {
                 return new List<Light>();
@@ -27,8 +32,12 @@ namespace PresenceLight.Core
             return await _client.ListLights(Selector.All);
         }
 
-        public async Task<List<Group>> GetAllGroupsAsync()
+        public async Task<List<Group>> GetAllGroupsAsync(string apiKey = null)
         {
+            if (!string.IsNullOrEmpty(apiKey))
+            {
+                _options.LightSettings.LIFX.LIFXApiKey = apiKey;
+            }
             if (!_options.LightSettings.LIFX.IsLIFXEnabled || string.IsNullOrEmpty(_options.LightSettings.LIFX.LIFXApiKey))
             {
                 return new List<Group>();
@@ -36,8 +45,12 @@ namespace PresenceLight.Core
             _client = await LifxCloudClient.CreateAsync(_options.LightSettings.LIFX.LIFXApiKey);
             return await _client.ListGroups(Selector.All);
         }
-        public async Task SetColor(string availability, Selector selector)
+        public async Task SetColor(string availability, Selector selector, string apiKey = null)
         {
+            if (!string.IsNullOrEmpty(apiKey))
+            {
+                _options.LightSettings.LIFX.LIFXApiKey = apiKey;
+            }
             if (!_options.LightSettings.LIFX.IsLIFXEnabled || string.IsNullOrEmpty(_options.LightSettings.LIFX.LIFXApiKey))
             {
                 return;
@@ -49,7 +62,7 @@ namespace PresenceLight.Core
                 case "Available":
                     if (!_options.LightSettings.LIFX.AvailableStatus.Disabled)
                     {
-                        color = color = $"#{_options.LightSettings.LIFX.AvailableStatus.Colour.ToString()}";
+                        color = $"{_options.LightSettings.LIFX.AvailableStatus.Colour.ToString()}";
                     }
                     else
                     {
@@ -63,7 +76,7 @@ namespace PresenceLight.Core
                 case "Busy":
                     if (!_options.LightSettings.LIFX.BusyStatus.Disabled)
                     {
-                        color = $"#{_options.LightSettings.LIFX.BusyStatus.Colour.ToString()}";
+                        color = $"{_options.LightSettings.LIFX.BusyStatus.Colour.ToString()}";
                     }
                     else
                     {
@@ -77,7 +90,7 @@ namespace PresenceLight.Core
                 case "BeRightBack":
                     if (!_options.LightSettings.LIFX.BeRightBackStatus.Disabled)
                     {
-                        color = $"#{_options.LightSettings.LIFX.BeRightBackStatus.Colour.ToString()}";
+                        color = $"{_options.LightSettings.LIFX.BeRightBackStatus.Colour.ToString()}";
                     }
                     else
                     {
@@ -91,7 +104,7 @@ namespace PresenceLight.Core
                 case "Away":
                     if (!_options.LightSettings.LIFX.AwayStatus.Disabled)
                     {
-                        color = $"#{_options.LightSettings.LIFX.AwayStatus.Colour.ToString()}";
+                        color = $"{_options.LightSettings.LIFX.AwayStatus.Colour.ToString()}";
                     }
                     else
                     {
@@ -105,7 +118,7 @@ namespace PresenceLight.Core
                 case "DoNotDisturb":
                     if (!_options.LightSettings.LIFX.DoNotDisturbStatus.Disabled)
                     {
-                        color = $"#{_options.LightSettings.LIFX.DoNotDisturbStatus.Colour.ToString()}";
+                        color = $"{_options.LightSettings.LIFX.DoNotDisturbStatus.Colour.ToString()}";
                     }
                     else
                     {
@@ -119,7 +132,7 @@ namespace PresenceLight.Core
                 case "Offline":
                     if (!_options.LightSettings.LIFX.OfflineStatus.Disabled)
                     {
-                        color = $"#{_options.LightSettings.LIFX.OfflineStatus.Colour.ToString()}";
+                        color = $"{_options.LightSettings.LIFX.OfflineStatus.Colour.ToString()}";
                     }
                     else
                     {
@@ -133,7 +146,7 @@ namespace PresenceLight.Core
                 case "Off":
                     if (!_options.LightSettings.LIFX.OffStatus.Disabled)
                     {
-                        color = $"#{_options.LightSettings.LIFX.OffStatus.Colour.ToString()}";
+                        color = $"{_options.LightSettings.LIFX.OffStatus.Colour.ToString()}";
                     }
                     else
                     {
@@ -145,8 +158,13 @@ namespace PresenceLight.Core
                     }
                     break;
                 default:
-                    color = $"#{_options.LightSettings.LIFX.OffStatus.Colour.ToString()}";
+                    color = $"{_options.LightSettings.LIFX.OffStatus.Colour.ToString()}";
                     break;
+            }
+
+            if (color.Length == 9 && color.Contains("#"))
+            {
+                color = $"#{color.Substring(3)}";
             }
 
             if (availability == "Off")

@@ -15,7 +15,7 @@ namespace PresenceLight
         private async void SaveHue_Click(object sender, RoutedEventArgs e)
         {
             btnHue.IsEnabled = false;
-            await SettingsService.SaveSettings(Config).ConfigureAwait(true);
+            await _settingsService.SaveSettings(Config).ConfigureAwait(true);
             _hueService = new HueService(Config);
             CheckHue();
             lblHueSaved.Visibility = Visibility.Visible;
@@ -47,52 +47,58 @@ namespace PresenceLight
         }
         private async void CheckHue()
         {
-            if (Config != null)
+            try
             {
-                SolidColorBrush fontBrush = new SolidColorBrush();
-
-
-                if (!CheckHueIp())
+                if (Config != null)
                 {
-                    lblHueMessage.Text = "Valid IP Address Required";
-                    fontBrush.Color = MapColor("#ff3300");
-                    btnRegister.IsEnabled = false;
-                    pnlHueBrightness.Visibility = Visibility.Collapsed;
-                    lblHueMessage.Foreground = fontBrush;
-                }
-                else
-                {
+                    SolidColorBrush fontBrush = new SolidColorBrush();
 
-                    Config.LightSettings.Hue.HueIpAddress = hueIpAddress.Text;
-
-                    SyncOptions();
-
-                    btnRegister.IsEnabled = true;
-                    if (string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey))
+                    if (!CheckHueIp())
                     {
-                        lblHueMessage.Text = "Missing App Registration, please press button on bridge then click 'Register Bridge'";
+                        lblHueMessage.Text = "Valid IP Address Required";
                         fontBrush.Color = MapColor("#ff3300");
+                        btnRegister.IsEnabled = false;
                         pnlHueBrightness.Visibility = Visibility.Collapsed;
                         lblHueMessage.Foreground = fontBrush;
                     }
                     else
                     {
-                        ddlHueLights.ItemsSource = await _hueService.CheckLights().ConfigureAwait(true);
 
-                        foreach (var item in ddlHueLights.Items)
+                        Config.LightSettings.Hue.HueIpAddress = hueIpAddress.Text;
+
+                        SyncOptions();
+
+                        btnRegister.IsEnabled = true;
+                        if (string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey))
                         {
-                            var light = (Q42.HueApi.Light)item;
-                            if (light?.Id == Config.LightSettings.Hue.SelectedHueLightId)
-                            {
-                                ddlHueLights.SelectedItem = item;
-                            }
+                            lblHueMessage.Text = "Missing App Registration, please press button on bridge then click 'Register Bridge'";
+                            fontBrush.Color = MapColor("#ff3300");
+                            pnlHueBrightness.Visibility = Visibility.Collapsed;
+                            lblHueMessage.Foreground = fontBrush;
                         }
-                        pnlHueBrightness.Visibility = Visibility.Visible;
-                        lblHueMessage.Text = "App Registered with Bridge";
-                        fontBrush.Color = MapColor("#009933");
-                        lblHueMessage.Foreground = fontBrush;
+                        else
+                        {
+                            ddlHueLights.ItemsSource = await _hueService.CheckLights().ConfigureAwait(true);
+
+                            foreach (var item in ddlHueLights.Items)
+                            {
+                                var light = (Q42.HueApi.Light)item;
+                                if (light?.Id == Config.LightSettings.Hue.SelectedHueLightId)
+                                {
+                                    ddlHueLights.SelectedItem = item;
+                                }
+                            }
+                            pnlHueBrightness.Visibility = Visibility.Visible;
+                            lblHueMessage.Text = "App Registered with Bridge";
+                            fontBrush.Color = MapColor("#009933");
+                            lblHueMessage.Foreground = fontBrush;
+                        }
                     }
                 }
+            }
+            catch (Exception e)
+            {
+                _diagClient.TrackException(e);
             }
         }
 
@@ -186,19 +192,19 @@ namespace PresenceLight
 
             try
             {
-                imgLoading.Visibility = Visibility.Visible;
+                imgHueLoading.Visibility = Visibility.Visible;
                 lblHueMessage.Visibility = Visibility.Collapsed;
                 pnlHueBrightness.Visibility = Visibility.Collapsed;
                 Config.LightSettings.Hue.HueApiKey = await _hueService.RegisterBridge().ConfigureAwait(true);
                 ddlHueLights.ItemsSource = await _hueService.CheckLights().ConfigureAwait(true);
                 SyncOptions();
                 pnlHueBrightness.Visibility = Visibility.Visible;
-                imgLoading.Visibility = Visibility.Collapsed;
+                imgHueLoading.Visibility = Visibility.Collapsed;
                 lblHueMessage.Visibility = Visibility.Visible;
             }
             catch (Exception ex)
             {
-                DiagnosticsClient.TrackException(ex);
+                _diagClient.TrackException(ex);
 
                 lblHueMessage.Text = "Error Occured registering bridge, please try again";
                 fontBrush.Color = MapColor("#ff3300");

@@ -3,7 +3,7 @@ using System.IO;
 using System.Security.Cryptography;
 using Microsoft.Identity.Client;
 
-namespace PresenceLight.Core.Graph
+namespace PresenceLight.Graph
 {
     static class TokenCacheHelper
     {

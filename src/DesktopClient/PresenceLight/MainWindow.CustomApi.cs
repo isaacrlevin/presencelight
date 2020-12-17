@@ -29,9 +29,9 @@ namespace PresenceLight
 
         private void customApiMethod_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            ComboBox sourceComboBox = e.Source as ComboBox;
+            ComboBox sourceComboBox = e.Source as ComboBox ?? throw new ArgumentException("Custom Api Not Found");
             ComboBoxItem selectedItem = (ComboBoxItem)sourceComboBox.SelectedItem;
-            string selectedText = selectedItem.Content.ToString();
+            string selectedText = selectedItem.Content.ToString() ?? throw new ArgumentException("Custom Api Not Found");
 
             switch (sourceComboBox.Name)
             {
@@ -101,11 +101,16 @@ namespace PresenceLight
 
         private async void btnApiSettingsSave_Click(object sender, RoutedEventArgs e)
         {
-            await SettingsService.SaveSettings(Config).ConfigureAwait(true);
-            lblCustomApiSaved.Visibility = Visibility.Visible;
-            SyncOptions();
+            try
+            {
+                await _settingsService.SaveSettings(Config).ConfigureAwait(true);
+                lblCustomApiSaved.Visibility = Visibility.Visible;
+                SyncOptions();
+            }
+            catch (Exception ex)
+            {
+                _diagClient.TrackException(ex);
+            }
         }
-
     }
-
 }
