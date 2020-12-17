@@ -45,14 +45,14 @@ namespace PresenceLight
         private GraphServiceClient _graphServiceClient;
         private readonly IGraphService _graphservice;
         private DiagnosticsClient _diagClient;
-        private SettingsService _settingsService;
+        private ISettingsService _settingsService;
         private WindowState lastWindowState;
         private bool IsWorkingHours;
 
         #region Init
         public MainWindow(IGraphService graphService, IHueService hueService, LIFXService lifxService, IYeelightService yeelightService,
             ICustomApiService customApiService, IOptionsMonitor<BaseConfig> optionsAccessor, LIFXOAuthHelper lifxOAuthHelper, DiagnosticsClient diagClient,
-            SettingsService settingsService)
+            ISettingsService settingsService)
         {
             InitializeComponent();
 

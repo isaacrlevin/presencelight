@@ -18,11 +18,6 @@ namespace PresenceLight
 
             Config = await _settingsService.LoadSettings().ConfigureAwait(true) ?? throw new NullReferenceException("Settings Load Service Returned null");
 
-            //if (string.IsNullOrEmpty(Config.RedirectUri))
-            //{
-            //    await _settingsService.DeleteSettings().ConfigureAwait(true);
-            //    await _settingsService.SaveSettings(_options).ConfigureAwait(true);
-            //}
             if (Config.LightSettings.UseWorkingHours)
             {
                 pnlWorkingHours.Visibility = Visibility.Visible;
