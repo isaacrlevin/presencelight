@@ -79,7 +79,7 @@ stages:
         $appsettings= get-content ".\src\DesktopClient\PresenceLight\appsettings.json" -raw | ConvertFrom-Json
         $appsettings.isAppPackaged = "false"
         $appsettings | ConvertTo-Json -depth 32| set-content '.\src\DesktopClient\PresenceLight\appsettings.json'
-      displayName: Update appsettings.json for Standalone
+      displayName: Update appsettings.json for Standalone Version
       condition: and(succeeded(), eq(variables['ChannelName'], 'Standalone'))
 
     - powershell: |
@@ -87,7 +87,7 @@ stages:
         $appsettings= get-content ".\src\DesktopClient\PresenceLight\appsettings.json" -raw | ConvertFrom-Json
         $appsettings.isAppPackaged = "true"
         $appsettings | ConvertTo-Json -depth 32| set-content '.\src\DesktopClient\PresenceLight\appsettings.json'
-      displayName: Update appsettings.json for AppPackage
+      displayName: Update appsettings.json for AppPackage Version
       condition: and(succeeded(), not(eq(variables['ChannelName'], 'Standalone')))
 
     - powershell: |
@@ -98,7 +98,7 @@ stages:
         $appsettings.lightSettings.lifx.LIFXClientSecret = "$(LIFXClientSecret)"
         $appsettings.applicationInsights.instrumentationkey = "$(InstrumentationKey)"
         $appsettings | ConvertTo-Json -depth 32| set-content '.\src\DesktopClient\PresenceLight\appsettings.json'
-      displayName: Update appsettings.json
+      displayName: Add Secrets to appsettings.json
       condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')))
 
 
@@ -115,7 +115,7 @@ stages:
       displayName: Update Badge Versions
 
     - task: DotNetCoreCLI@2
-      displayName: Build Presence Light for $(ChannelName)
+      displayName: Build Standalone Presence Light x64
       inputs:
         command: publish
         projects: '.\src\DesktopClient\PresenceLight\PresenceLight.csproj'
@@ -126,7 +126,7 @@ stages:
       condition: and(succeeded(), eq(variables['ChannelName'], 'Standalone'))
 
     - task: DotNetCoreCLI@2
-      displayName: Build Presence Light for $(ChannelName)
+      displayName: Build Standalone Presence Light x86
       inputs:
         command: publish
         projects: '.\src\DesktopClient\PresenceLight\PresenceLight.csproj'
@@ -137,7 +137,7 @@ stages:
       condition: and(succeeded(), eq(variables['ChannelName'], 'Standalone'))
 
     - task: ArchiveFiles@1
-      displayName: Zip PresenceLight x64 Files
+      displayName: Zip Standalone PresenceLight x64 Files
       inputs:
         archiveType: default
         rootFolder: '.\src\DesktopClient\PresenceLight\bin\$(BuildConfiguration)\net5.0-windows10.0.19041\win-x64\publish\'
@@ -146,7 +146,7 @@ stages:
       condition: and(succeeded(), eq(variables['ChannelName'], 'Standalone'))
 
     - task: ArchiveFiles@1
-      displayName: Zip PresenceLight x86 Files
+      displayName: Zip Standalone PresenceLight x86 Files
       inputs:
         archiveType: default
         rootFolder: '.\src\DesktopClient\PresenceLight\bin\$(BuildConfiguration)\net5.0-windows10.0.19041\win-x86\publish\'
@@ -164,7 +164,7 @@ stages:
       condition: and(succeeded(), not(eq(variables['ChannelName'], 'Standalone')))
 
     - publish: $(Build.ArtifactStagingDirectory)\$(ChannelName)
-      displayName: Publish Arifacts
+      displayName: Publish $(ChannelName) Arifacts
       artifact: $(ChannelName)
 
     - publish: Build
