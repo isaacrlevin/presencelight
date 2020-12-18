@@ -56,6 +56,9 @@ stages:
 
     - powershell: |
         mkdir $(Build.ArtifactStagingDirectory)\$(ChannelName)
+      displayName: Create Directory for Channel
+
+    - powershell: |
         # Update appxmanifest. This must be done before build.
         [xml]$manifest= get-content ".\src\DesktopClient\PresenceLight.Package\Package.appxmanifest"
         $manifest.Package.Identity.Version = "$(GitBuildVersionSimple).0"
@@ -64,7 +67,6 @@ stages:
       condition: and(succeeded(), eq(variables['ChannelName'], 'Release'))
 
     - powershell: |
-        mkdir $(Build.ArtifactStagingDirectory)\$(ChannelName)
         # Update appxmanifest. This must be done before build.
         [xml]$manifest = Get-Content ".\src\DesktopClient\PresenceLight.Package\Package-Nightly.appxmanifest"
         $manifest.Package.Identity.Version = "$(GitBuildVersionSimple).0"
