@@ -172,6 +172,11 @@ stages:
       artifact: SigningScripts
       condition: and(succeeded(), eq(variables['ChannelName'], 'Release'))
 
+    - publish: .chocolatey
+      displayName: Publish .chocolatey scripts
+      artifact: Chocolatey
+      condition: and(succeeded(), eq(variables['ChannelName'], 'Standalone'))
+
 - stage: CodeSign
   condition: and(succeeded('Build'), not(eq(variables['build.reason'], 'PullRequest')))
   jobs:
