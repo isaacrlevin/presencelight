@@ -21,7 +21,7 @@ stages:
   - group: AppSettings
   - name: DOTNET_SKIP_FIRST_TIME_EXPERIENCE
     value: true
-  - name: BuildConfiguration 
+  - name: BuildConfiguration
     value: 'Release'
 
   jobs:
@@ -57,19 +57,20 @@ stages:
     - powershell: |
         mkdir $(Build.ArtifactStagingDirectory)\$(ChannelName)
         # Update appxmanifest. This must be done before build.
-        # Set the per-channel values into the appxmanifest, replacing the checked-in values
         [xml]$manifest= get-content ".\src\DesktopClient\PresenceLight.Package\Package.appxmanifest"
         $manifest.Package.Identity.Version = "$(GitBuildVersionSimple).0"
         $manifest.save(".\src\DesktopClient\PresenceLight.Package\Package.appxmanifest")
+      displayName: Update AppxManifest version
+      condition: and(succeeded(), eq(variables['ChannelName'], 'Release'))
+
+    - powershell: |
+        mkdir $(Build.ArtifactStagingDirectory)\$(ChannelName)
+        # Update appxmanifest. This must be done before build.
         [xml]$manifest = Get-Content ".\src\DesktopClient\PresenceLight.Package\Package-Nightly.appxmanifest"
         $manifest.Package.Identity.Version = "$(GitBuildVersionSimple).0"
         $manifest.Save(".\src\DesktopClient\PresenceLight.Package\Package-Nightly.appxmanifest")
-      displayName: Update AppxManifest version
-
-    - powershell: |
-        ((Get-Content -path .\.chocolatey\tools\ChocolateyInstall.ps1 -Raw) -replace 'ReplaceVersion','$(Build.BuildNumber)') | Set-Content -Path .\.chocolatey\tools\ChocolateyInstall.ps1
-        ((Get-Content -path .\.chocolatey\tools\ChocolateyInstall.ps1 -Raw) -replace 'PackagePath','PresenceLight.Package_$(GitBuildVersionSimple).0_x64.appxbundle') | Set-Content -Path .\.chocolatey\tools\ChocolateyInstall.ps1
-      displayName: Update ChocolateyInstall.ps1
+      displayName: Update Nightly AppxManifest version
+      condition: and(succeeded(), eq(variables['ChannelName'], 'Nightly'))
 
     - powershell: |
         # Update AppSettings.json. This must be done before build.
@@ -95,7 +96,7 @@ stages:
         $appsettings.lightSettings.lifx.LIFXClientSecret = "$(LIFXClientSecret)"
         $appsettings.applicationInsights.instrumentationkey = "$(InstrumentationKey)"
         $appsettings | ConvertTo-Json -depth 32| set-content '.\src\DesktopClient\PresenceLight\appsettings.json'
-      displayName: Update appsettings.json for Standalone
+      displayName: Update appsettings.json
       condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')))
 
 
@@ -120,7 +121,36 @@ stages:
         zipAfterPublish: false
         modifyOutputPath: false
         publishWebProjects: false
-      condition: and(succeeded(), not(eq(variables['ChannelName'], 'Nightly')))
+      condition: and(succeeded(), eq(variables['ChannelName'], 'Standalone'))
+
+    - task: DotNetCoreCLI@2
+      displayName: Build Presence Light for $(ChannelName)
+      inputs:
+        command: publish
+        projects: '.\src\DesktopClient\PresenceLight\PresenceLight.csproj'
+        arguments: -c $(BuildConfiguration) /p:PublishProfile=Properties/PublishProfiles/WinX86.pubxml
+        zipAfterPublish: false
+        modifyOutputPath: false
+        publishWebProjects: false
+      condition: and(succeeded(), eq(variables['ChannelName'], 'Standalone'))
+
+    - task: ArchiveFiles@1
+      displayName: Zip PresenceLight x64 Files
+      inputs:
+        archiveType: default
+        rootFolder: '.\src\DesktopClient\PresenceLight\bin\$(BuildConfiguration)\net5.0-windows10.0.19041\win-x64\publish\'
+        archiveFile: $(Build.ArtifactStagingDirectory)\$(ChannelName)\PresenceLight.$(Build.BuildNumber)-x64.zip
+        includeRootFolder: false
+      condition: and(succeeded(), eq(variables['ChannelName'], 'Standalone'))
+
+    - task: ArchiveFiles@1
+      displayName: Zip PresenceLight x86 Files
+      inputs:
+        archiveType: default
+        rootFolder: '.\src\DesktopClient\PresenceLight\bin\$(BuildConfiguration)\net5.0-windows10.0.19041\win-x86\publish\'
+        archiveFile: $(Build.ArtifactStagingDirectory)\$(ChannelName)\PresenceLight.$(Build.BuildNumber)-x86.zip
+        includeRootFolder: false
+      condition: and(succeeded(), eq(variables['ChannelName'], 'Standalone'))
 
     - task: MSBuild@1
       displayName: Build Appx Package
@@ -130,29 +160,6 @@ stages:
         configuration: $(BuildConfiguration)
         maximumCpuCount: true
       condition: and(succeeded(), not(eq(variables['ChannelName'], 'Standalone')))
-
-    - task: ArchiveFiles@1
-      displayName: Zip PresenceLight Files
-      inputs:
-        archiveType: default
-        rootFolder: '.\src\DesktopClient\PresenceLight\bin\$(BuildConfiguration)\net5.0-windows10.0.19041\win-x64\publish\'
-        archiveFile: $(Build.ArtifactStagingDirectory)\$(ChannelName)\PresenceLight.$(Build.BuildNumber).zip
-        includeRootFolder: false
-      condition: and(succeeded(), eq(variables['ChannelName'], 'Standalone'))
-
-    - powershell: |
-        copy-item -path "$(Build.ArtifactStagingDirectory)\$(ChannelName)\PresenceLight.$(Build.BuildNumber).zip" -destination .\.chocolatey\tools\
-        $hash=Get-Filehash .\.chocolatey\tools\PresenceLight.$(Build.BuildNumber).zip
-        $content = Get-Content -Path .\.chocolatey\tools\Verification.txt
-        $newContent = $content -replace '{VERSION}' , $(GitBuildVersionSimple)
-        $newContent = $content -replace '{HASH}', $hash.Hash
-        Write-Host "File: .\.chocolatey\tools\PresenceLight.$(Build.BuildNumber).zip"
-        Write-Host "Hash: $hash.Hash"
-        $newContent | Set-Content -Path .\.chocolatey\tools\Verification.txt
-        # Chocolatey
-        & choco.exe pack .\.chocolatey\PresenceLight.nuspec --version $(NBGV_ChocolateyPackageVersion) --OutputDirectory $(Build.ArtifactStagingDirectory)\$(ChannelName)
-      displayName: Create Choco Package
-      condition: and(succeeded(), eq(variables['ChannelName'], 'Standalone'))
 
     - publish: $(Build.ArtifactStagingDirectory)\$(ChannelName)
       displayName: Publish Arifacts
