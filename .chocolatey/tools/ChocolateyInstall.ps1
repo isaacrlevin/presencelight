@@ -11,14 +11,12 @@ if ($IsCorrectBuild -lt "17134") {
   throw "This package requires at least Windows 10 version build 17134.x."
 }
 
-$version        = "{ReplaceVersion}"
-
 $packageName    = "presencelight"
 $toolsDir       = "$(Split-Path -parent $MyInvocation.MyCommand.Definition)"
-$url_x86        = {x86Link} 
-$url_x64        = {x64Link}
-$checksum_x86   = {ReplaceCheckSumx86}
-$checksum_x64   = {ReplaceCheckSumx64}
+$url_x86        = "{x86Link}"
+$url_x64        = "{x64Link}"
+$checksum_x86   = "{ReplaceCheckSumx86}"
+$checksum_x64   = "{ReplaceCheckSumx64}"
 
 # By default, we want 32-bit installer
 $url = $url_x86
@@ -43,7 +41,7 @@ $packageArgs = @{
 Install-ChocolateyZipPackage @packageArgs
 
 $installPath    = Join-Path $toolsDir 'PresenceLight'
-$exePath = Join-Path installPath 'PresenceLight.exe'
+$exePath = Join-Path $installPath 'PresenceLight.exe'
 
 
 Write-Output "Adding shortcut to Start Menu"
