@@ -178,20 +178,21 @@ stages:
         $hash86=Get-Filehash $(Build.ArtifactStagingDirectory)\$(ChannelName)\PresenceLight.$(Build.BuildNumber)-x86.zip
 
         # Update ChocolateyInstall.ps1
-        $installFile = Get-Content -path ".\.chocolatey\tools\ChocolateyInstall.ps1 -Raw
+        $installFile = Get-Content -path ".\.chocolatey\tools\ChocolateyInstall.ps1" -Raw
         $installFile = $installFile -replace '{ReplaceCheckSumx86}', $hash86.Hash
         $installFile = $installFile -replace '{ReplaceCheckSumx64}', $hash64.Hash
         $installFile = $installFile -replace '{ReplaceVersion}' , $(Build.BuildNumber)
-        $installFile | Set-Content -Path ".\.chocolatey\tools\ChocolateyInstall.ps1
+        $installFile | Set-Content -Path ".\.chocolatey\tools\ChocolateyInstall.ps1" 
 
         # Update Verification.txt
-        $verificationFile = Get-Content -path ".\.chocolatey\tools\Verification.txt
+        $verificationFile = Get-Content -path ".\.chocolatey\tools\Verification.txt" 
         $verificationFile = $verificationFile -replace '{x86Link}' , "https://github.com/isaacrlevin/PresenceLight/releases/download/v$(Build.BuildNumber)/PresenceLight.$(Build.BuildNumber)-x86.zip"
         $verificationFile = $verificationFile -replace '{x64Link}' , "https://github.com/isaacrlevin/PresenceLight/releases/download/v$(Build.BuildNumber)/PresenceLight.$(Build.BuildNumber)-x64.zip"
         $verificationFile = $verificationFile -replace '{HASHx64}', $hash64.Hash
         $verificationFile = $verificationFile -replace '{HASHx86}', $hash86.Hash
-        $verificationFile | Set-Content -Path ".\.chocolatey\tools\Verification.txt
+        $verificationFile | Set-Content -Path ".\.chocolatey\tools\Verification.txt" 
       displayName: Update Chocolatey Files
+      condition: and(succeeded(), eq(variables['ChannelName'], 'Standalone'))
 
     - publish: .chocolatey
       displayName: Publish .chocolatey scripts
