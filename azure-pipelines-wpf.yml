@@ -181,7 +181,8 @@ stages:
         $installFile = Get-Content -path ".\.chocolatey\tools\ChocolateyInstall.ps1" -Raw
         $installFile = $installFile -replace '{ReplaceCheckSumx86}', $hash86.Hash
         $installFile = $installFile -replace '{ReplaceCheckSumx64}', $hash64.Hash
-        $installFile = $installFile -replace '{ReplaceVersion}' , $(Build.BuildNumber)
+        $installFile = $installFile -replace '{x86Link}' , "https://github.com/isaacrlevin/PresenceLight/releases/download/v$(Build.BuildNumber)/PresenceLight.$(Build.BuildNumber)-x86.zip"
+        $installFile = $installFile -replace '{x64Link}' , "https://github.com/isaacrlevin/PresenceLight/releases/download/v$(Build.BuildNumber)/PresenceLight.$(Build.BuildNumber)-x64.zip"
         $installFile | Set-Content -Path ".\.chocolatey\tools\ChocolateyInstall.ps1" 
 
         # Update Verification.txt
