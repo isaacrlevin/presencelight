@@ -15,10 +15,10 @@ $version        = "{ReplaceVersion}"
 
 $packageName    = "presencelight"
 $toolsDir       = "$(Split-Path -parent $MyInvocation.MyCommand.Definition)"
-$url_x86        = "https://github.com/isaacrlevin/PresenceLight/releases/download/v${version}/PresenceLight.${version}-x86.zip"
-$url_x64        = "https://github.com/isaacrlevin/PresenceLight/releases/download/v${version}/PresenceLight.${version}-x64.zip"
-$checksum_x86   = "{ReplaceCheckSumx86}"
-$checksum_x64   = "{ReplaceCheckSumx64}"
+$url_x86        = {x86Link} 
+$url_x64        = {x64Link}
+$checksum_x86   = {ReplaceCheckSumx86}
+$checksum_x64   = {ReplaceCheckSumx64}
 
 # By default, we want 32-bit installer
 $url = $url_x86
