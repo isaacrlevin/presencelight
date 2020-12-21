@@ -140,14 +140,23 @@ namespace PresenceLight.Core
                     break;
             }
 
-            if (color.Length == 9 && color.Contains("#"))
+            color = color.Replace("#", "");
+
+            switch (color.Length)
             {
-                command.SetColor(new RGBColor($"#{color.Substring(3)}"));
+
+                case var length when color.Length == 6:
+                    // Do Nothing
+                    break;
+                case var length when color.Length > 6:
+                    // Get last 6 characters
+                    color = color.Substring(color.Length - 6);
+                    break;
+                default:
+                    throw new ArgumentException("Supplied Color had an issue");
             }
-            else
-            {
-                command.SetColor(new RGBColor(color));
-            }
+
+            command.SetColor(new RGBColor(color));
 
 
             if (availability == "Off")

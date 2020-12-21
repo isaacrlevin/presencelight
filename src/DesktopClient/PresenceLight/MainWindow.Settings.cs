@@ -183,15 +183,6 @@ namespace PresenceLight
 
         private void CheckAAD()
         {
-            //Regex r = new Regex(@"^(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}$");
-            //if (string.IsNullOrEmpty(Config.ClientId) || string.IsNullOrEmpty(Config.RedirectUri) || !r.IsMatch(Config.ClientId))
-            //{
-            //    configErrorPanel.Visibility = Visibility.Visible;
-            //    dataPanel.Visibility = Visibility.Hidden;
-            //    signInPanel.Visibility = Visibility.Hidden;
-            //    return;
-            //}
-
             SyncOptions();
 
             configErrorPanel.Visibility = Visibility.Hidden;

@@ -15,6 +15,7 @@ namespace PresenceLight
         private async void SaveHue_Click(object sender, RoutedEventArgs e)
         {
             btnHue.IsEnabled = false;
+            Config = Helpers.CleanColors(Config);
             await _settingsService.SaveSettings(Config).ConfigureAwait(true);
             _hueService = new HueService(Config);
             CheckHue();
