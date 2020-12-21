@@ -26,13 +26,13 @@ public class RemoteHueService : IRemoteHueService
         private readonly IRemoteAuthenticationClient _authClient;
 
         public RemoteHueService(IOptionsMonitor<ConfigWrapper> optionsAccessor)
-        {
+{
             _options = optionsAccessor.CurrentValue;
             _authClient = new RemoteAuthenticationClient(_options.LightSettings.Hue.RemoteHueClientId, _options.LightSettings.Hue.RemoteHueClientSecret, _options.LightSettings.Hue.RemoteHueClientAppName);
         }
 
         public RemoteHueService(ConfigWrapper options)
-        {
+    {
             _options = options;
             _authClient = new RemoteAuthenticationClient(_options.LightSettings.Hue.RemoteHueClientId, _options.LightSettings.Hue.RemoteHueClientSecret, _options.LightSettings.Hue.RemoteHueClientAppName);
         }
@@ -42,6 +42,9 @@ public class RemoteHueService : IRemoteHueService
             try
             {
                 Uri authorizeUri = _authClient.BuildAuthorizeUri(_options.LightSettings.Hue.RemoteHueClientAppName, _options.LightSettings.Hue.RemoteHueClientAppName);
+
+                Uri authorizeUri = authClient.BuildAuthorizeUri("sample", "presencelight");
+
 
                 string redirectURI = "";
                 var http = new System.Net.HttpListener();
@@ -62,9 +65,14 @@ public class RemoteHueService : IRemoteHueService
                     }
                 }
 
+
                 Helpers.OpenBrowser(authorizeUri.ToString());
 
+                // Waits for the OAuth authorization response.
+
                 var context = await http.GetContextAsync();
+
+                //Sends an HTTP response to the browser.
                 var response = context.Response;
 
                 string responseString = string.Format("<html><head><meta http-equiv='refresh' content='10;url=https://www.philips-hue.com/'></head><body>Please return to the app.</body></html>");
@@ -185,7 +193,7 @@ public class RemoteHueService : IRemoteHueService
                 lights = await _client.GetNewLightsAsync();
             }
             return lights;
-        }
+            }
 
         public Task<string> FindBridge()
         {
