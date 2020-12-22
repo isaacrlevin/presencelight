@@ -1,5 +1,5 @@
 ﻿
-namespace PresenceLight.Core.Graph
+namespace PresenceLight.Graph
 {
     public static class PresenceConstants
     {

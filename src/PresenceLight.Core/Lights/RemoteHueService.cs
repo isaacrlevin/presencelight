@@ -9,67 +9,74 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using System.Net.Sockets;
+using System.Net;
 
 namespace PresenceLight.Core
 {
     public interface IRemoteHueService
-    { 
-    Task SetColor(string availability, string lightId);
-    Task<string> RegisterBridge();
-    Task<IEnumerable<Light>> CheckLights();
-
-}
-public class RemoteHueService : IRemoteHueService
     {
-        private readonly ConfigWrapper _options;
+        Task SetColor(string availability, string lightId);
+        Task<(string bridgeId, string apiKey, string bridgeIp)> RegisterBridge();
+        Task<IEnumerable<Light>> CheckLights();
+
+    }
+    public class RemoteHueService : IRemoteHueService
+    {
+        private readonly BaseConfig _options;
         private RemoteHueClient _client;
         private readonly IRemoteAuthenticationClient _authClient;
 
-        public RemoteHueService(IOptionsMonitor<ConfigWrapper> optionsAccessor)
-{
+        public RemoteHueService(IOptionsMonitor<BaseConfig> optionsAccessor)
+        {
             _options = optionsAccessor.CurrentValue;
             _authClient = new RemoteAuthenticationClient(_options.LightSettings.Hue.RemoteHueClientId, _options.LightSettings.Hue.RemoteHueClientSecret, _options.LightSettings.Hue.RemoteHueClientAppName);
         }
 
-        public RemoteHueService(ConfigWrapper options)
-    {
+        public RemoteHueService(BaseConfig options)
+        {
             _options = options;
             _authClient = new RemoteAuthenticationClient(_options.LightSettings.Hue.RemoteHueClientId, _options.LightSettings.Hue.RemoteHueClientSecret, _options.LightSettings.Hue.RemoteHueClientAppName);
         }
 
-        public async Task<string> RegisterBridge()
+        private static bool TryBindListenerOnFreePort(out HttpListener httpListener, out int port, out string uri)
+        {
+            // IANA suggested range for dynamic or private ports
+            const int MinPort = 49215;
+            const int MaxPort = 65535;
+
+            for (port = MinPort; port < MaxPort; port++)
+            {
+                httpListener = new HttpListener();
+                uri = $"http://localhost:{port}/";
+                httpListener.Prefixes.Add(uri);
+                try
+                {
+                    httpListener.Start();
+                    return true;
+                }
+                catch
+                {
+                    // nothing to do here -- the listener disposes itself when Start throws
+                }
+            }
+
+            port = 0;
+            uri = null;
+            httpListener = null;
+            return false;
+        }
+        public async Task<(string bridgeId, string apiKey, string bridgeIp)> RegisterBridge()
         {
             try
             {
                 Uri authorizeUri = _authClient.BuildAuthorizeUri(_options.LightSettings.Hue.RemoteHueClientAppName, _options.LightSettings.Hue.RemoteHueClientAppName);
 
-                Uri authorizeUri = authClient.BuildAuthorizeUri("sample", "presencelight");
-
-
-                string redirectURI = "";
-                var http = new System.Net.HttpListener();
-
-                foreach (var i in new int[] { 17236 })
-                {
-                    try
-                    {
-                        redirectURI = string.Format("http://localhost:{0}/", i);
-                        http.Prefixes.Add(redirectURI);
-                        http.Start();
-
-                        break;
-                    }
-                    catch (Exception e)
-                    {
-                        http = new System.Net.HttpListener();
-                    }
-                }
-
+                TryBindListenerOnFreePort(out HttpListener http, out int port, out string redirectURI);
 
                 Helpers.OpenBrowser(authorizeUri.ToString());
 
                 // Waits for the OAuth authorization response.
-
                 var context = await http.GetContextAsync();
 
                 //Sends an HTTP response to the browser.
@@ -96,12 +103,22 @@ public class RemoteHueService : IRemoteHueService
                 _client = new RemoteHueClient(_authClient.GetValidToken);
                 var bridges = await _client.GetBridgesAsync();
 
+                var bridgeId = bridges.First().Id;
+                var bridgeIp = bridges.First().InternalIpaddress;
+
+                var apiKey = await _client.RegisterAsync(bridgeId, _options.LightSettings.Hue.RemoteHueClientAppName);
+
+                //if (!_client.IsInitialized)
+                //{
+                _client.Initialize(bridgeId, apiKey);
+                //}
+
                 //Register app
-                return await _client.RegisterAsync(bridges.First().Id, _options.LightSettings.Hue.RemoteHueClientAppName);
+                return (bridgeId, apiKey, bridgeIp);
             }
             catch (Exception ex)
             {
-                return "";
+                return ("", "", "");
             }
         }
 
@@ -182,8 +199,9 @@ public class RemoteHueService : IRemoteHueService
             if (_client == null)
             {
                 _client = new RemoteHueClient(_authClient.GetValidToken);
-                _client.Initialize(_options.LightSettings.Hue.HueApiKey);
+                _client.Initialize(_options.LightSettings.Hue.RemoteBridgeId, _options.LightSettings.Hue.HueApiKey);
             }
+
             var lights = await _client.GetLightsAsync();
             // if there are no lights, get some
             if (lights.Count() == 0)
@@ -193,7 +211,7 @@ public class RemoteHueService : IRemoteHueService
                 lights = await _client.GetNewLightsAsync();
             }
             return lights;
-            }
+        }
 
         public Task<string> FindBridge()
         {
