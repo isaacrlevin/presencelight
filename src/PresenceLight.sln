@@ -7,72 +7,75 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresenceLight.Core", "Prese
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresenceLight.Worker", "PresenceLight.Worker\PresenceLight.Worker.csproj", "{89336649-932D-4BAF-862E-5622345F2B5E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresenceLight", "PresenceLight\PresenceLight.csproj", "{E0C9DB61-A1E6-4254-A200-A946F4353D66}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresenceLight", "DesktopClient\PresenceLight\PresenceLight.csproj", "{E0C9DB61-A1E6-4254-A200-A946F4353D66}"
 EndProject
-Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "PresenceLight.Package", "PresenceLight.Package\PresenceLight.Package.wapproj", "{12DDAD24-CCBD-409F-9342-17A0E445604F}"
+Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "PresenceLight.Package", "DesktopClient\PresenceLight.Package\PresenceLight.Package.wapproj", "{12DDAD24-CCBD-409F-9342-17A0E445604F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9BCEC868-73D3-4393-8099-D4DF2DC6DB74}"
 	ProjectSection(SolutionItems) = preProject
 		..\azure-pipelines-worker.yml = ..\azure-pipelines-worker.yml
 		..\azure-pipelines-wpf.yml = ..\azure-pipelines-wpf.yml
-		Directory.Build.props = Directory.Build.props
-		Directory.Build.targets = Directory.Build.targets
-		PresenceLight.ruleset = PresenceLight.ruleset
+		DesktopClient\Directory.Build.props = DesktopClient\Directory.Build.props
+		DesktopClient\Directory.Build.targets = DesktopClient\Directory.Build.targets
 	EndProjectSection
 EndProject
-Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{B2D5EB31-6710-4AAA-9F37-374ED1EFDE3F}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dockerfiles", "Dockerfiles", "{C28F3920-8CF1-488B-A9FC-49BB2BA865D9}"
+	ProjectSection(SolutionItems) = preProject
+		DockerFiles\Dockerfile = DockerFiles\Dockerfile
+		DockerFiles\Dockerfile.debian-arm32 = DockerFiles\Dockerfile.debian-arm32
+		DockerFiles\Dockerfile.debian-arm64 = DockerFiles\Dockerfile.debian-arm64
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
-		Debug|x86 = Debug|x86
+		Debug|x64 = Debug|x64
 		Release|Any CPU = Release|Any CPU
-		Release|x86 = Release|x86
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{4883809C-FF4B-4504-A85E-2503607E5B99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4883809C-FF4B-4504-A85E-2503607E5B99}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4883809C-FF4B-4504-A85E-2503607E5B99}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{4883809C-FF4B-4504-A85E-2503607E5B99}.Debug|x86.Build.0 = Debug|Any CPU
+		{4883809C-FF4B-4504-A85E-2503607E5B99}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4883809C-FF4B-4504-A85E-2503607E5B99}.Debug|x64.Build.0 = Debug|Any CPU
 		{4883809C-FF4B-4504-A85E-2503607E5B99}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4883809C-FF4B-4504-A85E-2503607E5B99}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4883809C-FF4B-4504-A85E-2503607E5B99}.Release|x86.ActiveCfg = Release|Any CPU
-		{4883809C-FF4B-4504-A85E-2503607E5B99}.Release|x86.Build.0 = Release|Any CPU
+		{4883809C-FF4B-4504-A85E-2503607E5B99}.Release|x64.ActiveCfg = Release|Any CPU
+		{4883809C-FF4B-4504-A85E-2503607E5B99}.Release|x64.Build.0 = Release|Any CPU
 		{89336649-932D-4BAF-862E-5622345F2B5E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{89336649-932D-4BAF-862E-5622345F2B5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{89336649-932D-4BAF-862E-5622345F2B5E}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{89336649-932D-4BAF-862E-5622345F2B5E}.Debug|x86.Build.0 = Debug|Any CPU
+		{89336649-932D-4BAF-862E-5622345F2B5E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{89336649-932D-4BAF-862E-5622345F2B5E}.Debug|x64.Build.0 = Debug|Any CPU
 		{89336649-932D-4BAF-862E-5622345F2B5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{89336649-932D-4BAF-862E-5622345F2B5E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{89336649-932D-4BAF-862E-5622345F2B5E}.Release|x86.ActiveCfg = Release|Any CPU
-		{89336649-932D-4BAF-862E-5622345F2B5E}.Release|x86.Build.0 = Release|Any CPU
+		{89336649-932D-4BAF-862E-5622345F2B5E}.Release|x64.ActiveCfg = Release|Any CPU
+		{89336649-932D-4BAF-862E-5622345F2B5E}.Release|x64.Build.0 = Release|Any CPU
 		{E0C9DB61-A1E6-4254-A200-A946F4353D66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E0C9DB61-A1E6-4254-A200-A946F4353D66}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E0C9DB61-A1E6-4254-A200-A946F4353D66}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{E0C9DB61-A1E6-4254-A200-A946F4353D66}.Debug|x86.Build.0 = Debug|Any CPU
+		{E0C9DB61-A1E6-4254-A200-A946F4353D66}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E0C9DB61-A1E6-4254-A200-A946F4353D66}.Debug|x64.Build.0 = Debug|Any CPU
 		{E0C9DB61-A1E6-4254-A200-A946F4353D66}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E0C9DB61-A1E6-4254-A200-A946F4353D66}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E0C9DB61-A1E6-4254-A200-A946F4353D66}.Release|x86.ActiveCfg = Release|Any CPU
-		{E0C9DB61-A1E6-4254-A200-A946F4353D66}.Release|x86.Build.0 = Release|Any CPU
-		{12DDAD24-CCBD-409F-9342-17A0E445604F}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{12DDAD24-CCBD-409F-9342-17A0E445604F}.Debug|x86.ActiveCfg = Debug|x86
-		{12DDAD24-CCBD-409F-9342-17A0E445604F}.Debug|x86.Build.0 = Debug|x86
-		{12DDAD24-CCBD-409F-9342-17A0E445604F}.Debug|x86.Deploy.0 = Debug|x86
-		{12DDAD24-CCBD-409F-9342-17A0E445604F}.Release|Any CPU.ActiveCfg = Release|x86
-		{12DDAD24-CCBD-409F-9342-17A0E445604F}.Release|x86.ActiveCfg = Release|x86
-		{12DDAD24-CCBD-409F-9342-17A0E445604F}.Release|x86.Build.0 = Release|x86
-		{12DDAD24-CCBD-409F-9342-17A0E445604F}.Release|x86.Deploy.0 = Release|x86
-		{B2D5EB31-6710-4AAA-9F37-374ED1EFDE3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B2D5EB31-6710-4AAA-9F37-374ED1EFDE3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B2D5EB31-6710-4AAA-9F37-374ED1EFDE3F}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{B2D5EB31-6710-4AAA-9F37-374ED1EFDE3F}.Debug|x86.Build.0 = Debug|Any CPU
-		{B2D5EB31-6710-4AAA-9F37-374ED1EFDE3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B2D5EB31-6710-4AAA-9F37-374ED1EFDE3F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B2D5EB31-6710-4AAA-9F37-374ED1EFDE3F}.Release|x86.ActiveCfg = Release|Any CPU
-		{B2D5EB31-6710-4AAA-9F37-374ED1EFDE3F}.Release|x86.Build.0 = Release|Any CPU
+		{E0C9DB61-A1E6-4254-A200-A946F4353D66}.Release|x64.ActiveCfg = Release|Any CPU
+		{E0C9DB61-A1E6-4254-A200-A946F4353D66}.Release|x64.Build.0 = Release|Any CPU
+		{12DDAD24-CCBD-409F-9342-17A0E445604F}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{12DDAD24-CCBD-409F-9342-17A0E445604F}.Debug|Any CPU.Build.0 = Debug|x64
+		{12DDAD24-CCBD-409F-9342-17A0E445604F}.Debug|Any CPU.Deploy.0 = Debug|x64
+		{12DDAD24-CCBD-409F-9342-17A0E445604F}.Debug|x64.ActiveCfg = Debug|x64
+		{12DDAD24-CCBD-409F-9342-17A0E445604F}.Debug|x64.Build.0 = Debug|x64
+		{12DDAD24-CCBD-409F-9342-17A0E445604F}.Debug|x64.Deploy.0 = Debug|x64
+		{12DDAD24-CCBD-409F-9342-17A0E445604F}.Release|Any CPU.ActiveCfg = Release|x64
+		{12DDAD24-CCBD-409F-9342-17A0E445604F}.Release|Any CPU.Build.0 = Release|x64
+		{12DDAD24-CCBD-409F-9342-17A0E445604F}.Release|Any CPU.Deploy.0 = Release|x64
+		{12DDAD24-CCBD-409F-9342-17A0E445604F}.Release|x64.ActiveCfg = Release|x64
+		{12DDAD24-CCBD-409F-9342-17A0E445604F}.Release|x64.Build.0 = Release|x64
+		{12DDAD24-CCBD-409F-9342-17A0E445604F}.Release|x64.Deploy.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C28F3920-8CF1-488B-A9FC-49BB2BA865D9} = {9BCEC868-73D3-4393-8099-D4DF2DC6DB74}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8B89FF65-2B56-495E-8EA6-2B279DA440AE}

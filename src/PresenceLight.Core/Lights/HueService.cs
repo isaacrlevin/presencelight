@@ -20,15 +20,15 @@ namespace PresenceLight.Core
     }
     public class HueService : IHueService
     {
-        private readonly ConfigWrapper _options;
+        private readonly BaseConfig _options;
         private LocalHueClient _client;
 
-        public HueService(IOptionsMonitor<ConfigWrapper> optionsAccessor)
+        public HueService(IOptionsMonitor<BaseConfig> optionsAccessor)
         {
             _options = optionsAccessor.CurrentValue;
         }
 
-        public HueService(ConfigWrapper options)
+        public HueService(BaseConfig options)
         {
             _options = options;
         }
@@ -40,34 +40,124 @@ namespace PresenceLight.Core
 
 
             var command = new LightCommand();
-
+            string color = "";
             switch (availability)
             {
                 case "Available":
-                    command.SetColor(new RGBColor("#009933"));
+                    if (!_options.LightSettings.Hue.AvailableStatus.Disabled)
+                    {
+                        command.On = true;
+                        color = _options.LightSettings.Hue.AvailableStatus.Colour;
+                    }
+                    else
+                    {
+                        command.On = false;
+                        await _client.SendCommandAsync(command, new List<string> { lightId });
+                        return;
+                    }
                     break;
                 case "Busy":
-                    command.SetColor(new RGBColor("#ff3300"));
+                    if (!_options.LightSettings.Hue.BusyStatus.Disabled)
+                    {
+                        command.On = true;
+                        color = _options.LightSettings.Hue.BusyStatus.Colour;
+                    }
+                    else
+                    {
+                        command.On = false;
+                        await _client.SendCommandAsync(command, new List<string> { lightId });
+                        return;
+                    }
                     break;
                 case "BeRightBack":
-                    command.SetColor(new RGBColor("#ffff00"));
+                    if (!_options.LightSettings.Hue.BeRightBackStatus.Disabled)
+                    {
+                        command.On = true;
+                        color = _options.LightSettings.Hue.BeRightBackStatus.Colour;
+                    }
+                    else
+                    {
+                        command.On = false;
+                        await _client.SendCommandAsync(command, new List<string> { lightId });
+                        return;
+                    }
                     break;
                 case "Away":
-                    command.SetColor(new RGBColor("#ffff00"));
+                    if (!_options.LightSettings.Hue.AwayStatus.Disabled)
+                    {
+                        command.On = true;
+                        color = _options.LightSettings.Hue.AwayStatus.Colour;
+                    }
+                    else
+                    {
+                        command.On = false;
+                        await _client.SendCommandAsync(command, new List<string> { lightId });
+                        return;
+                    }
                     break;
                 case "DoNotDisturb":
-                    command.SetColor(new RGBColor("#B03CDE"));
+                    if (!_options.LightSettings.Hue.DoNotDisturbStatus.Disabled)
+                    {
+                        command.On = true;
+                        color = _options.LightSettings.Hue.DoNotDisturbStatus.Colour;
+                    }
+                    else
+                    {
+                        command.On = false;
+                        await _client.SendCommandAsync(command, new List<string> { lightId });
+                        return;
+                    }
                     break;
                 case "Offline":
-                    command.SetColor(new RGBColor("#FFFFFF"));
+                    if (!_options.LightSettings.Hue.OfflineStatus.Disabled)
+                    {
+                        command.On = true;
+                        color = _options.LightSettings.Hue.OfflineStatus.Colour;
+                    }
+                    else
+                    {
+                        command.On = false;
+                        await _client.SendCommandAsync(command, new List<string> { lightId });
+                        return;
+                    }
                     break;
                 case "Off":
-                    command.SetColor(new RGBColor("#FFFFFF"));
+                    if (!_options.LightSettings.Hue.OffStatus.Disabled)
+                    {
+                        command.On = true;
+                        color = _options.LightSettings.Hue.OffStatus.Colour;
+                    }
+                    else
+                    {
+                        command.On = false;
+                        await _client.SendCommandAsync(command, new List<string> { lightId });
+                        return;
+                    }
                     break;
                 default:
-                    command.SetColor(new RGBColor(availability));
+                    command.On = true;
+                    color = availability;
                     break;
             }
+
+            color = color.Replace("#", "");
+
+            switch (color.Length)
+            {
+
+                case var length when color.Length == 6:
+                    // Do Nothing
+                    break;
+                case var length when color.Length > 6:
+                    // Get last 6 characters
+                    color = color.Substring(color.Length - 6);
+                    break;
+                default:
+                    throw new ArgumentException("Supplied Color had an issue");
+            }
+
+            command.SetColor(new RGBColor(color));
+
 
             if (availability == "Off")
             {
@@ -120,12 +210,12 @@ namespace PresenceLight.Core
 
                     return await _client.RegisterAsync("presence-light", "presence-light");
                 }
-                catch
+                catch (Exception e)
                 {
                     return String.Empty;
                 }
             }
-            return String.Empty;
+            return _options.LightSettings.Hue.HueApiKey;
         }
 
         public async Task<string> FindBridge()

@@ -1,0 +1,139 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0-windows10.0.19041</TargetFramework>
+    <AssetTargetFallback>net472</AssetTargetFallback>
+    <OutputType>WinExe</OutputType>
+    <AssemblyName>PresenceLight</AssemblyName>
+    <Title>PresenceLight</Title>
+    <Description>PresenceLight is a solution to broadcast your Microsoft Teams presence to a Phillips Hue or LIFX light bulb. There are other solutions that do something similar, but they require a tethered solution (plugging a light into a computer via USB). What PresenceLight does is leverage the Presence Api, which is available in Microsoft Graph, allowing to retrieve your presence without having to be tethered. This could potentially allow someone to update the light bulb from a remote machine they do not use.</Description>
+    <RootNamespace>PresenceLight</RootNamespace>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <TieredCompilationQuickJitForLoops>true</TieredCompilationQuickJitForLoops>
+    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
+    <ApplicationIcon>Icon.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="Images\UnknownProfile.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!--<PackageReference Include="AppInsights.WindowsDesktop" Version="2.13.1" />-->
+    <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.16.0" />
+    <PackageReference Include="Extended.Wpf.Toolkit" Version="4.0.1" />
+    <PackageReference Include="IdentityModel.OidcClient" Version="4.0.0-preview.4" />
+    <PackageReference Include="Microsoft.ApplicationInsights.SnapshotCollector" Version="1.4.0-pre-2011.801" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OAuth" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.2.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Graph.Beta" Version="0.35.0-preview" />
+    <PackageReference Include="Microsoft.Graph.Core" Version="2.0.0-preview.3" />
+    <PackageReference Include="Microsoft.Identity.Client" Version="4.24.0" />
+    <PackageReference Include="NETStandard.HttpListener" Version="1.0.3.5" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Q42.HueApi" Version="3.16.0" />
+    <PackageReference Include="Q42.HueApi.ColorConverters" Version="3.14.0" />
+    <PackageReference Include="WpfAnimatedGif" Version="2.0.0" />
+    <PackageReference Include="YeelightAPI" Version="1.9.0" />
+
+    <ProjectReference Include="..\..\PresenceLight.Core\PresenceLight.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\Available.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Icons\Away.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Icons\BeRightBack.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Icons\Busy.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Icons\DoNotDisturb.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Icons\DoNotDisturb.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Icons\Icon.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Icons\Icon.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Icons\Inactive.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Icons\loading.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Icons\OutOfOffice.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Icons\t_Available.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Icons\t_Away.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Icons\t_BeRightBack.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Icons\t_Busy.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Icons\t_DoNotDisturb.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Icons\t_OutOfOffice.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\profileimage.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\UnknownProfile.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.Development.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.2" />
+    <PackageReference Update="Microsoft.SourceLink.GitHub" Version="1.1.0-beta-20204-02" />
+    <PackageReference Update="Nerdbank.GitVersioning" Version="3.4.161-alpha" />
+  </ItemGroup>
+
+</Project>
