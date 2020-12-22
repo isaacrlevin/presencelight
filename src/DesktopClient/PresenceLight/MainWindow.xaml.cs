@@ -49,7 +49,7 @@ namespace PresenceLight
         private ISettingsService _settingsService;
         private WindowState lastWindowState;
         private bool IsWorkingHours;
-
+        private bool previousRemoteFlag;
         #region Init
         public MainWindow(IGraphService graphService, IHueService hueService, LIFXService lifxService, IYeelightService yeelightService, IRemoteHueService remoteHueService,
             ICustomApiService customApiService, IOptionsMonitor<BaseConfig> optionsAccessor, LIFXOAuthHelper lifxOAuthHelper, DiagnosticsClient diagClient,
@@ -102,10 +102,12 @@ namespace PresenceLight
 
         private void LoadApp()
         {
-            CheckHue();
+            CheckHue(true);
             CheckLIFX();
             CheckYeelight();
             CheckAAD();
+
+            previousRemoteFlag = Config.LightSettings.Hue.UseRemoteApi;
 
             if (Config.IconType == "Transparent")
             {
@@ -282,7 +284,17 @@ namespace PresenceLight
             {
                 if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedHueLightId))
                 {
-                    await _hueService.SetColor(color, Config.LightSettings.Hue.SelectedHueLightId).ConfigureAwait(true);
+                    if (Config.LightSettings.Hue.UseRemoteApi)
+                    {
+                        if (!string.IsNullOrEmpty(Config.LightSettings.Hue.RemoteBridgeId))
+                        {
+                            await _remoteHueService.SetColor(color, Config.LightSettings.Hue.SelectedHueLightId, Config.LightSettings.Hue.RemoteBridgeId).ConfigureAwait(true);
+                        }
+                    }
+                    else
+                    {
+                        await _hueService.SetColor(color, Config.LightSettings.Hue.SelectedHueLightId).ConfigureAwait(true);
+                    }
                 }
 
                 if (Config.LightSettings.LIFX.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
@@ -332,7 +344,14 @@ namespace PresenceLight
 
                     if (Config.LightSettings.Hue.IsPhillipsHueEnabled && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedHueLightId))
                     {
-                        await _hueService.SetColor("Off", Config.LightSettings.Hue.SelectedHueLightId).ConfigureAwait(true);
+                        if (Config.LightSettings.Hue.UseRemoteApi)
+                        {
+                            await _remoteHueService.SetColor("Off", Config.LightSettings.Hue.SelectedHueLightId, Config.LightSettings.Hue.RemoteBridgeId).ConfigureAwait(true);
+                        }
+                        else
+                        {
+                            await _hueService.SetColor("Off", Config.LightSettings.Hue.SelectedHueLightId).ConfigureAwait(true);
+                        }
                     }
 
                     if (lightMode == "Graph")
@@ -563,7 +582,14 @@ namespace PresenceLight
 
                 if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedHueLightId))
                 {
-                    await _hueService.SetColor("Off", Config.LightSettings.Hue.SelectedHueLightId).ConfigureAwait(true);
+                    if (Config.LightSettings.Hue.UseRemoteApi)
+                    {
+                        await _remoteHueService.SetColor("Off", Config.LightSettings.Hue.SelectedHueLightId, Config.LightSettings.Hue.RemoteBridgeId).ConfigureAwait(true);
+                    }
+                    else
+                    {
+                        await _hueService.SetColor("Off", Config.LightSettings.Hue.SelectedHueLightId).ConfigureAwait(true);
+                    }
                 }
 
                 if (Config.LightSettings.LIFX.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
@@ -592,7 +618,14 @@ namespace PresenceLight
             {
                 if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedHueLightId))
                 {
-                    await _hueService.SetColor("Off", Config.LightSettings.Hue.SelectedHueLightId).ConfigureAwait(true);
+                    if (Config.LightSettings.Hue.UseRemoteApi)
+                    {
+                        await _remoteHueService.SetColor("Off", Config.LightSettings.Hue.SelectedHueLightId, Config.LightSettings.Hue.RemoteBridgeId).ConfigureAwait(true);
+                    }
+                    else
+                    {
+                        await _hueService.SetColor("Off", Config.LightSettings.Hue.SelectedHueLightId).ConfigureAwait(true);
+                    }
                 }
 
                 if (Config.LightSettings.LIFX.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
@@ -615,7 +648,14 @@ namespace PresenceLight
             {
                 if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedHueLightId))
                 {
-                    await _hueService.SetColor("Off", Config.LightSettings.Hue.SelectedHueLightId).ConfigureAwait(true);
+                    if (Config.LightSettings.Hue.UseRemoteApi)
+                    {
+                        await _remoteHueService.SetColor("Off", Config.LightSettings.Hue.SelectedHueLightId, Config.LightSettings.Hue.RemoteBridgeId).ConfigureAwait(true);
+                    }
+                    else
+                    {
+                        await _hueService.SetColor("Off", Config.LightSettings.Hue.SelectedHueLightId).ConfigureAwait(true);
+                    }
                 }
 
                 if (Config.LightSettings.LIFX.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
