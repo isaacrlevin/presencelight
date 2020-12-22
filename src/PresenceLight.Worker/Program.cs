@@ -1,11 +1,13 @@
 ﻿using System;
+using System.IO;
+using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
+using System.Security.Authentication;
+
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using System.Linq;
-using System.IO;
-using System.Security.Authentication;
 
 namespace PresenceLight.Worker
 {
@@ -16,55 +18,20 @@ namespace PresenceLight.Worker
             CreateHostBuilder(args).Build().Run();
         }
 
-        public static void ConfigureConfiguration(IConfigurationBuilder config)
-        {
-            config
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("PresenceLightSettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
-                .AddUserSecrets<Startup>();
-        }
-
         public static IHostBuilder CreateHostBuilder(string[] args)
         {
-            IConfigurationBuilder configBuilderForMain = new ConfigurationBuilder();
-            ConfigureConfiguration(configBuilderForMain);
-            IConfiguration configForMain = configBuilderForMain.Build();
-
             return Host.CreateDefaultBuilder(args)
-                   .ConfigureAppConfiguration(ConfigureConfiguration)
-                   .ConfigureWebHostDefaults(webBuilder =>
-                   {
-                       webBuilder
-                       .ConfigureKestrel(options =>
-                       {
-                           if (Convert.ToBoolean(configForMain["DeployedToServer"]))
-                           {
-                               var server = Dns.GetHostName();
-                               IPHostEntry heserver = Dns.GetHostEntry(server);
-                               var ip = heserver.AddressList.Where(a => a.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork).FirstOrDefault();
-
-                               if (ip != null)
-                               {
-                                   options.Listen(ip, 5001);
-                                   options.Listen(ip, 5002, listenOptions =>
-                                   {
-                                       listenOptions.UseHttps();
-                                       listenOptions.UseHttps("presencelight.pfx", "presencelight");
-                                   });
-
-                               }
-                           }
-                           if (Convert.ToBoolean(configForMain["DeployedToContainer"]))
-                           {
-                               options.ConfigureHttpsDefaults(listenOptions =>
-                               {
-                                   listenOptions.SslProtocols = SslProtocols.Tls12;
-                               });
-                           }
-                       });
-                       webBuilder.UseStartup<Startup>();
-                   });
+                .UseSystemd()
+                .ConfigureAppConfiguration((hostingContext, config) =>
+                {
+                    config.AddJsonFile("PresenceLightSettings.json", optional: false, reloadOnChange: true)
+                    .AddJsonFile($"PresenceLightSettings.Development.json", optional: true, reloadOnChange: true)
+                    .AddJsonFile($"appsettings.Development.json", optional: true, reloadOnChange: true);
+                })
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                });
         }
     }
 }
