@@ -51,7 +51,7 @@ jobs:
       with:
         setCommonVars: true
 
-    - run: echo "CloudBuildNumber $CloudBuildNumber"
+    - run: echo "BuildNumber - ${{ env.GitBuildVersionSimple }}"
 
     - name: Create Directory for Channel
       run: mkdir ${{ github.workspace }}\${{ matrix.ChannelName }}
@@ -73,7 +73,7 @@ jobs:
         $manifest.Package.Identity.Version = "${{ env.GitBuildVersionSimple }}.0"
         $manifest.Save(".\src\DesktopClient\PresenceLight.Package\Package-Nightly.appxmanifest")
       shell: powershell
-      if:  ${{ success() && matrix.ChannelName }} == 'Nightly'
+      if:  ${{ success() && matrix.ChannelName == 'Nightly' }}
 
     - name: Update appsettings.json for Standalone Version
       run: |
