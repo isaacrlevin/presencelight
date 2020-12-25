@@ -1,0 +1,292 @@
+on:
+
+  push:
+
+    branches:
+    - main
+
+    paths-ignore:
+    - azure-pipelines-worker.yml
+    - .github/workflows/main.yml
+    - src/PresenceLight.Worker/*
+    - README.md
+    - worker-README.md
+
+jobs:
+  Build_Stage_Build:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        ChannelName:
+        - Release
+        - Nightly
+        - Standalone
+
+    env:
+      group: AppSettings
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+      DOTNET_NOLOGO: true
+      BuildConfiguration: Release
+      ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+
+
+    steps:
+
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Use .NET Core SDK 5.0.x
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+
+    - name: setup-msbuild
+      uses: microsoft/setup-msbuild@v1
+
+
+    - name: Nerdbank.GitVersioning
+      uses: dotnet/nbgv@v0.3.1
+      with:
+        setCommonVars: true
+
+    - run: echo "CloudBuildNumber $CloudBuildNumber"
+
+    - name: Create Directory for Channel
+      run: mkdir ${{ github.workspace }}\${{ matrix.ChannelName }}
+      shell: powershell
+
+    - name: Update AppxManifest version
+      run: |
+        # Update appxmanifest. This must be done before build.
+        [xml]$manifest= get-content ".\src\DesktopClient\PresenceLight.Package\Package.appxmanifest"
+        $manifest.Package.Identity.Version = "${{ env.GitBuildVersionSimple }}.0"
+        $manifest.save(".\src\DesktopClient\PresenceLight.Package\Package.appxmanifest")
+      shell: powershell
+      if:  ${{ success() && matrix.ChannelName  == 'Release' }}
+
+    - name: Update Nightly AppxManifest version
+      run: |
+        # Update appxmanifest. This must be done before build.
+        [xml]$manifest = Get-Content ".\src\DesktopClient\PresenceLight.Package\Package-Nightly.appxmanifest"
+        $manifest.Package.Identity.Version = "${{ env.GitBuildVersionSimple }}.0"
+        $manifest.Save(".\src\DesktopClient\PresenceLight.Package\Package-Nightly.appxmanifest")
+      shell: powershell
+      if:  ${{ success() && matrix.ChannelName }} == 'Nightly'
+
+    - name: Update appsettings.json for Standalone Version
+      run: |
+        # Update AppSettings.json. This must be done before build.
+        $appsettings= get-content ".\src\DesktopClient\PresenceLight\appsettings.json" -raw | ConvertFrom-Json
+        $appsettings.isAppPackaged = "false"
+        $appsettings | ConvertTo-Json -depth 32| set-content '.\src\DesktopClient\PresenceLight\appsettings.json'
+      shell: powershell
+      if:  ${{ success() && matrix.ChannelName  == 'Standalone' }}
+
+    - name: Update appsettings.json for AppPackage Version
+      run: |
+        # Update AppSettings.json. This must be done before build.
+        $appsettings= get-content ".\src\DesktopClient\PresenceLight\appsettings.json" -raw | ConvertFrom-Json
+        $appsettings.isAppPackaged = "true"
+        $appsettings | ConvertTo-Json -depth 32| set-content '.\src\DesktopClient\PresenceLight\appsettings.json'
+      shell: powershell
+      if:  ${{ success() && matrix.ChannelName  != 'Standalone' }}
+
+    - name: Add Secrets to appsettings.json
+      run: |
+        # Update AppSettings.json. This must be done before build.
+        $appsettings= get-content ".\src\DesktopClient\PresenceLight\appsettings.json" -raw | ConvertFrom-Json
+        $appsettings.aadSettings.clientId = "${{ secrets.ApplicationId }}"
+        $appsettings.lightSettings.lifx.LIFXClientId = "${{ secrets.LIFXClientId }}"
+        $appsettings.lightSettings.lifx.LIFXClientSecret = "${{ secrets.LIFXClientSecret }}"
+        $appsettings.applicationInsights.instrumentationkey = "${{ secrets.InstrumentationKey }}"
+        $appsettings.lightSettings.hue.RemoteHueClientId = "${{ secrets.RemoteHueClientId }}"
+        $appsettings.lightSettings.hue.RemoteHueClientSecret = "${{ secrets.RemoteHueClientSecret }}"
+        $appsettings.lightSettings.hue.RemoteHueClientAppName = "${{ secrets.RemoteHueClientAppName }}"
+        $appsettings | ConvertTo-Json -depth 32| set-content '.\src\DesktopClient\PresenceLight\appsettings.json'
+      shell: powershell
+      if: ${{ success() && github.event_name != 'pull_request' }}
+
+    - name: Update Badge Versions
+      run: |
+        # Update badges
+        [xml]$badge = Get-Content ".\Build\ci_badge.svg"
+        $badge.svg.g[1].text[2].InnerText = "${{ env.GitBuildVersionSimple }}.0"
+        $badge.svg.g[1].text[3].InnerText = "${{ env.GitBuildVersionSimple }}.0"
+        $badge.Save("${{ github.workspace }}\${{ matrix.ChannelName }}\ci_badge.svg")
+        [xml]$badge = Get-Content ".\Build\store_badge.svg"
+        $badge.svg.g[1].text[2].InnerText = "${{ env.GitBuildVersionSimple }}.0"
+        $badge.svg.g[1].text[3].InnerText = "${{ env.GitBuildVersionSimple }}.0"
+        $badge.Save("${{ github.workspace }}\${{ matrix.ChannelName }}\stable_badge.svg")
+      shell: powershell
+
+    - name: Build Standalone Presence Light x64
+      run: dotnet publish .\src\DesktopClient\PresenceLight\PresenceLight.csproj -c ${{ env.BuildConfiguration }} /p:PublishProfile=Properties/PublishProfiles/WinX64.pubxml
+      if:  ${{ success() && matrix.ChannelName  == 'Standalone' }}
+
+    - name: Build Standalone Presence Light x86
+      run: dotnet publish .\src\DesktopClient\PresenceLight\PresenceLight.csproj -c ${{ env.BuildConfiguration }} /p:PublishProfile=Properties/PublishProfiles/WinX86.pubxml
+      if:  ${{ success() && matrix.ChannelName  == 'Standalone' }}
+
+    - name: Zip Standalone PresenceLight x64 Files
+      run: |
+        Compress-Archive -Path '.\src\DesktopClient\PresenceLight\bin\${{ env.BuildConfiguration }}\net5.0-windows10.0.19041\win-x64\publish\*' -DestinationPath ${{ github.workspace }}\${{ matrix.ChannelName }}\PresenceLight.${{ env.GitBuildVersionSimple }}-x64.zip
+      shell: powershell
+      if:  ${{ success() && matrix.ChannelName  == 'Standalone' }}
+
+    - name: Zip Standalone PresenceLight x86 Files
+      run: |
+        Compress-Archive -Path '.\src\DesktopClient\PresenceLight\bin\${{ env.BuildConfiguration }}\net5.0-windows10.0.19041\win-x86\publish\*' -DestinationPath ${{ github.workspace }}\${{ matrix.ChannelName }}\PresenceLight.${{ env.GitBuildVersionSimple }}-x86.zip
+      shell: powershell
+      if:  ${{ success() && matrix.ChannelName  == 'Standalone' }}
+
+    - name: Build Appx Package
+      run: msbuild '.\src\DesktopClient\PresenceLight.Package\PresenceLight.Package.wapproj' /p:configuration='${{ env.BuildConfiguration }}' /p:IncludeSymbols=true /p:AppxPackageDir="${{ github.workspace }}\${{ matrix.ChannelName }}\\"
+      if:  ${{ success() && matrix.ChannelName  != 'Standalone' }}
+
+    - name: Publish ${{ matrix.ChannelName }} Arifacts
+      uses: actions/upload-artifact@v2
+      with:
+        path: ${{ github.workspace }}\${{ matrix.ChannelName }}
+        name: ${{ matrix.ChannelName }}
+
+    - name: Publish signing scripts
+      uses: actions/upload-artifact@v2
+      with:
+        path: Build
+        name: SigningScripts
+      if:  ${{ success() && matrix.ChannelName  == 'Release' }}
+
+    - name: Update Chocolatey Files
+      run: |
+        # Hash the Zip Files
+        $hash64=Get-Filehash ${{ github.workspace }}\${{ matrix.ChannelName }}\PresenceLight.${{ env.GitBuildVersionSimple }}-x64.zip
+        $hash86=Get-Filehash ${{ github.workspace }}\${{ matrix.ChannelName }}\PresenceLight.${{ env.GitBuildVersionSimple }}-x86.zip
+
+        # Update ChocolateyInstall.ps1
+        $installFile = Get-Content -path ".\.chocolatey\tools\ChocolateyInstall.ps1" -Raw
+        $installFile = $installFile -replace '{ReplaceCheckSumx86}', $hash86.Hash
+        $installFile = $installFile -replace '{ReplaceCheckSumx64}', $hash64.Hash
+        $installFile = $installFile -replace '{x86Link}' , "https://github.com/isaacrlevin/PresenceLight/releases/download/v${{ env.GitBuildVersionSimple }}/PresenceLight.${{ env.GitBuildVersionSimple }}-x86.zip"
+        $installFile = $installFile -replace '{x64Link}' , "https://github.com/isaacrlevin/PresenceLight/releases/download/v${{ env.GitBuildVersionSimple }}/PresenceLight.${{ env.GitBuildVersionSimple }}-x64.zip"
+        $installFile | Set-Content -Path ".\.chocolatey\tools\ChocolateyInstall.ps1"
+
+        # Update Verification.txt
+        $verificationFile = Get-Content -path ".\.chocolatey\tools\Verification.txt"
+        $verificationFile = $verificationFile -replace '{x86Link}' , "https://github.com/isaacrlevin/PresenceLight/releases/download/v${{ env.GitBuildVersionSimple }}/PresenceLight.${{ env.GitBuildVersionSimple }}-x86.zip"
+        $verificationFile = $verificationFile -replace '{x64Link}' , "https://github.com/isaacrlevin/PresenceLight/releases/download/v${{ env.GitBuildVersionSimple }}/PresenceLight.${{ env.GitBuildVersionSimple }}-x64.zip"
+        $verificationFile = $verificationFile -replace '{HASHx64}', $hash64.Hash
+        $verificationFile = $verificationFile -replace '{HASHx86}', $hash86.Hash
+        $verificationFile | Set-Content -Path ".\.chocolatey\tools\Verification.txt"
+      shell: powershell
+      if:  ${{ success() && matrix.ChannelName  == 'Standalone' }}
+
+    - name: Publish .chocolatey scripts
+      uses: actions/upload-artifact@v2
+      with:
+        path: .chocolatey
+        name: Chocolatey
+      if:  ${{ success() && matrix.ChannelName  == 'Standalone' }}
+
+  CodeSign_Stage_CodeSign:
+    needs: Build_Stage_Build
+    environment:
+        name: CodeSign_Stage_CodeSign
+        url: ${{ steps.deploy_staging.outputs.webapp-url }}
+    name: Code Sign - CI
+    runs-on: windows-latest
+    env:
+      group: Sign Client Credentials
+      if: ${{ github.event_name != 'pull_request' }}
+    steps:
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: Download Release Artifacts
+      uses: actions/download-artifact@v2
+
+    - name: Download Standalone Artifacts
+      uses: actions/download-artifact@v2
+
+    - name: Download Nightly Artifacts
+      uses: actions/download-artifact@v2
+
+    - uses: actions/download-artifact@v2
+      with:
+        name: SigningScripts
+    - name: Install SignTool tool
+      run: dotnet tool install --tool-path . SignClient
+
+    - name: Scale Up Sign Service
+      uses: azure/cli@v1.0.0
+      with:
+        inlineScript: az appservice plan update --name levin-signserv-asp-2dnwx6q6jwiay --resource-group SignService --sku P2V2
+        azcliversion: latest
+
+    - name: Authenticode Sign AppXBundle
+      run: |
+        .\SignClient "Sign" `
+        --baseDirectory "${{ github.workspace }}\ToSign" `
+        --input "**/*.appxbundle" `
+        --config "${{ github.workspace }}\SigningScripts\appsettings.json" `
+        --filelist "${{ github.workspace }}\SigningScripts\filelist.txt" `
+        --user "${{ secrets.SignClientUser }}" `
+        --secret "${{ secrets.SignClientSecret }}" `
+        --name "PresenceLight" `
+        --description "PresenceLight" `
+        --descriptionUrl "https://github.com/isaacrlevin/PresenceLight"
+      shell: pwsh
+
+    - name: Authenticode Sign AppInstaller
+      run: |
+        .\SignClient "Sign" `
+        --baseDirectory "${{ github.workspace }}\ToSign" `
+        --input "**/*.appinstaller" `
+        --config "${{ github.workspace }}\SigningScripts\appsettings.json" `
+        --filelist "${{ github.workspace }}\SigningScripts\filelist.txt" `
+        --user "${{ secrets.SignClientUser }}" `
+        --secret "${{ secrets.SignClientSecret }}" `
+        --name "PresenceLight" `
+        --description "PresenceLight" `
+        --descriptionUrl "https://github.com/isaacrlevin/PresenceLight"
+      shell: pwsh
+
+    - name: Authenticode Sign Zip
+      run: |
+        .\SignClient "Sign" `
+        --baseDirectory "${{ github.workspace }}\ToSign" `
+        --input "**/*.zip" `
+        --config "${{ github.workspace }}\SigningScripts\appsettings.json" `
+        --filelist "${{ github.workspace }}\SigningScripts\filelist.txt" `
+        --user "${{ secrets.SignClientUser }}" `
+        --secret "${{ secrets.SignClientSecret }}" `
+        --name "PresenceLight" `
+        --description "PresenceLight" `
+        --descriptionUrl "https://github.com/isaacrlevin/PresenceLight"
+      shell: pwsh
+
+    - name: Scale Down Sign Service
+      uses: azure/cli@v1.0.0
+      with:
+        inlineScript: az appservice plan update --name levin-signserv-asp-2dnwx6q6jwiay --resource-group SignService --sku S1
+        azcliversion: latest
+
+    - name: Publish Signed Release Packages
+      uses: actions/upload-artifact@v2
+      with:
+        path: ${{ github.workspace }}/ToSign/Release
+        name: ReleaseSigned
+
+    - name: Publish Signed Nightly Packages
+      uses: actions/upload-artifact@v2
+      with:
+        path: ${{ github.workspace }}/ToSign/Nightly
+        name: NightlySigned
+
+    - name: Publish Signed Standalone Packages
+      uses: actions/upload-artifact@v2
+      with:
+        path: ${{ github.workspace }}/ToSign/Standalone
+        name: StandaloneSigned
