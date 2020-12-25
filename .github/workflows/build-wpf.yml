@@ -195,7 +195,7 @@ jobs:
         name: CodeSign_Stage_CodeSign
         url: ${{ steps.deploy_staging.outputs.webapp-url }}
     name: Code Sign - CI
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     env:
       group: Sign Client Credentials
       if: ${{ github.event_name != 'pull_request' }}
