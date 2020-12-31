@@ -23,7 +23,6 @@ jobs:
         - Standalone
 
     env:
-      group: AppSettings
       DOTNET_CLI_TELEMETRY_OPTOUT: 1
       DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
       DOTNET_NOLOGO: true
@@ -145,7 +144,7 @@ jobs:
       if:  ${{ success() && matrix.ChannelName  == 'Standalone' }}
 
     - name: Build Appx Package
-      run: | 
+      run: |
         msbuild '.\src\DesktopClient\PresenceLight.Package\PresenceLight.Package.wapproj' /p:VersionNumber=${{ env.GitBuildVersionSimple }} `
         /p:ChannelName=${{ matrix.ChannelName }} /p:configuration='${{ env.BuildConfiguration }}' /p:IncludeSymbols=true `
         /p:AppxPackageDir="${{ github.workspace }}\${{ matrix.ChannelName }}\\"
@@ -220,7 +219,7 @@ jobs:
       name: Download Signing Scripts Artifacts
       with:
         name: SigningScripts
-        path: "${{ github.workspace }}/SigningScripts" 
+        path: "${{ github.workspace }}/SigningScripts"
 
     - name: Install SignTool tool
       run: dotnet tool install --tool-path . SignClient

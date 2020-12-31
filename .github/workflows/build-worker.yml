@@ -77,6 +77,8 @@ jobs:
       if: ${{ success() && github.event_name != 'pull_request' }}
 
     - run: dotnet publish -r ${{ matrix.RID }} -c ${{ env.BuildConfiguration }} /p:PublishSingleFile=true -o ${{ github.workspace }}/${{ env.GitBuildVersionSimple }}_${{ matrix.ChannelName }} /p:Version=${{ env.GitBuildVersionSimple }}
+      name: dotnet publish ${{ matrix.RID }}
+      if: ${{ success() }}
 
     - name: Publish Arifacts
       uses: actions/upload-artifact@v2
