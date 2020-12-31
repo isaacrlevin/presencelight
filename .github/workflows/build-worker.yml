@@ -1,0 +1,216 @@
+on:
+  push:
+    branches:
+    - github-actions
+    paths-ignore:
+    - azure-pipelines-wpf.yml
+    - .github/workflows/build-wpf.yml
+    - src/DesktopClient/*
+    - README.md
+    - worker-README.md
+jobs:
+  Build_Worker:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        include:
+          - ChannelName: Windows_x64_x86
+            RID: win-x64
+          - ChannelName: Windows_ARM
+            RID: win-arm
+          - ChannelName: macOS
+            RID: osx-x64
+          - ChannelName: Linux_ARM
+            RID: linux-arm
+          - ChannelName: Linux_ARM64
+            RID: linux-x64
+          - ChannelName: Linux_Musl_x64
+            RID: linux-musl-x64
+          - ChannelName: Linux_Musl_ARM_x64
+            RID: linux-musl-x64
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+      DOTNET_NOLOGO: true
+      BuildConfiguration: Release
+      ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Use .NET Core SDK 5.0.x
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+
+    - name: Nerdbank.GitVersioning
+      uses: dotnet/nbgv@v0.3.1
+      with:
+        setCommonVars: true
+
+    - run: echo "BuildNumber ${{ env.GitBuildVersionSimple }}"
+
+    - name: Update appsettings.json
+      run: |
+        # Update AppSettings.json. This must be done before build.
+        $appsettings= get-content ".\src\PresenceLight.Worker\appsettings.json" -raw | ConvertFrom-Json
+        $appsettings.azureAd.clientId = "${{ secrets.ApplicationId }}"
+        $appsettings.azureAd.clientSecret = "${{ secrets.ClientSecret }}"
+        $appsettings.applicationInsights.instrumentationkey = "${{ secrets.InstrumentationKey }}"
+        $appsettings | ConvertTo-Json -depth 32| set-content '.\src\PresenceLight.Worker\appsettings.json'
+      shell: powershell
+      if: ${{ success() && github.event_name != 'pull_request' }}
+
+    - name: Update PresenceLightSettings.json
+      run: |
+        # Update PresenceLightSettings.json. This must be done before build.
+        $PresenceLightSettings= get-content ".\src\PresenceLight.Worker\PresenceLightSettings.json" -raw | ConvertFrom-Json
+        $PresenceLightSettings.lightSettings.lifx.LIFXClientId = "${{ secrets.LIFXClientId }}"
+        $PresenceLightSettings.lightSettings.lifx.LIFXClientSecret = "${{ secrets.LIFXClientSecret }}"
+        $PresenceLightSettings.lightSettings.hue.RemoteHueClientId = "${{ secrets.RemoteHueClientId }}"
+        $PresenceLightSettings.lightSettings.hue.RemoteHueClientSecret = "${{ secrets.RemoteHueClientSecret }}"
+        $PresenceLightSettings.lightSettings.hue.RemoteHueClientAppName = "${{ secrets.RemoteHueClientAppName }}"
+        $PresenceLightSettings | ConvertTo-Json -depth 32| set-content '.\src\PresenceLight.Worker\PresenceLightSettings.json'
+      shell: powershell
+      if: ${{ success() && github.event_name != 'pull_request' }}
+
+    - run: dotnet publish -r ${{ matrix.RID }} -c ${{ env.BuildConfiguration }} /p:PublishSingleFile=true -o ${{ github.workspace }}/${{ env.GitBuildVersionSimple }}_${{ matrix.ChannelName }} /p:Version=${{ env.GitBuildVersionSimple }}
+
+    - name: Publish Arifacts
+      uses: actions/upload-artifact@v2
+      with:
+        path: ${{ github.workspace }}\${{ env.GitBuildVersionSimple }}_${{ matrix.ChannelName }}
+        name: ${{ matrix.ChannelName }}
+
+    - name: Publish signing scripts
+      uses: actions/upload-artifact@v2
+      with:
+        path: Build
+        name: SigningScripts
+      if:  ${{ success() && matrix.ChannelName  == 'Windows_x64_x86' }}
+
+  Sign_Worker:
+    needs: Build_Worker
+    environment:
+        name: Sign_Worker
+        url: ${{ steps.deploy_staging.outputs.webapp-url }}
+    name: Code Sign - CI
+    runs-on: windows-latest
+    steps:
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Download Windows_x64_x86 Artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: Windows_x64_x86
+
+    - name: Download Windows_ARM Artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: Windows_ARM
+
+    - name: Download macOS Artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: macOS
+
+    - name: Download Linux_ARM Artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: Linux_ARM
+
+    - name: Download Linux_ARM64 Artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: Linux_ARM64
+
+    - name: Download Linux_Musl_x64 Artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: Linux_Musl_x64
+
+    - name: Download Linux_Musl_ARM_x64 Artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: Linux_Musl_ARM_x64
+
+    - name: Download Signing Scripts
+    - uses: actions/download-artifact@v2
+      with:
+        name: SigningScripts
+
+    - name: Install SignTool tool
+      run: dotnet tool install --tool-path . SignClient
+
+    - name: Scale Up Sign Service
+      uses: azure/cli@v1.0.0
+      with:
+        inlineScript: az appservice plan update --name levin-signserv-asp-2dnwx6q6jwiay --resource-group SignService --sku P2V2
+        azcliversion: latest
+
+    - name: Authenticode Sign Zip and EXE
+      run: |
+        .\SignClient "Sign" `
+        --baseDirectory "${{ github.workspace }}\ToSign" `
+        --input "**/*.{exe,zip}" `
+        --config "${{ github.workspace }}\SigningScripts\appsettings.json" `
+        --filelist "${{ github.workspace }}\SigningScripts\filelist.txt" `
+        --user "${{ secrets.SignClientUser }}" `
+        --secret "${{ secrets.SignClientSecret }}" `
+        --name "PresenceLight" `
+        --description "PresenceLight" `
+        --descriptionUrl "https://github.com/isaacrlevin/PresenceLight"
+      shell: pwsh
+
+    - name: Scale Down Sign Service
+      uses: azure/cli@v1.0.0
+      with:
+        inlineScript: az appservice plan update --name levin-signserv-asp-2dnwx6q6jwiay --resource-group SignService --sku S1
+        azcliversion: latest
+
+    - name: Publish Signed Windows_x64_x86 Packages
+      uses: actions/upload-artifact@v2
+      with:
+        path: ${{ github.workspace }}/ToSign/Windows_x64_x86
+        name: Windows_x64_x86_Signed
+
+    - name: Publish Signed Windows_ARM Packages
+      uses: actions/upload-artifact@v2
+      with:
+        path: ${{ github.workspace }}/ToSign/Windows_ARM
+        name: Windows_ARM_Signed
+
+    - name: Publish Signed macOS Packages
+      uses: actions/upload-artifact@v2
+      with:
+        path: ${{ github.workspace }}/ToSign/macOS
+        name: macOS_Signed
+
+    - name: Publish Signed Linux_ARM Packages
+      uses: actions/upload-artifact@v2
+      with:
+        path: ${{ github.workspace }}/ToSign/Linux_ARM
+        name: Linux_ARM_Signed
+
+    - name: Publish Signed Linux_ARM64 Packages
+      uses: actions/upload-artifact@v2
+      with:
+        path: ${{ github.workspace }}/ToSign/Linux_ARM64
+        name: Linux_ARM64_Signed
+
+    - name: Publish Signed Linux_Musl_x64 Packages
+      uses: actions/upload-artifact@v2
+      with:
+        path: ${{ github.workspace }}/ToSign/Linux_Musl_x64
+        name: Linux_Musl_x64_Signed
+
+    - name: Publish Signed Linux_Musl_ARM_x64 Packages
+      uses: actions/upload-artifact@v2
+      with:
+        path: ${{ github.workspace }}/ToSign/Linux_Musl_ARM_x64
+        name: Linux_Musl_ARM_x64_Signed
