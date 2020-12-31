@@ -97,7 +97,7 @@ jobs:
         name: Sign_Worker
         url: ${{ steps.deploy_staging.outputs.webapp-url }}
     name: Code Sign - CI
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
     - name: Azure Login
       uses: azure/login@v1
