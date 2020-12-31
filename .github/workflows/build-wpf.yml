@@ -13,7 +13,7 @@ on:
     - worker-README.md
 
 jobs:
-  Build_Stage_Build:
+  Build_WPF:
     runs-on: windows-latest
     strategy:
       matrix:
@@ -195,10 +195,10 @@ jobs:
         name: Chocolatey
       if:  ${{ success() && matrix.ChannelName  == 'Standalone' }}
 
-  CodeSign_Stage_CodeSign:
-    needs: Build_Stage_Build
+  Sign_WPF:
+    needs: Build_WPF
     environment:
-        name: CodeSign_Stage_CodeSign
+        name: Sign_WPF
         url: ${{ steps.deploy_staging.outputs.webapp-url }}
     name: Code Sign - CI
     runs-on: ubuntu-latest
