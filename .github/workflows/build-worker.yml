@@ -1,7 +1,7 @@
 on:
   push:
     branches:
-    - github-actions
+    - main
     paths-ignore:
     - azure-pipelines-wpf.yml
     - .github/workflows/build-wpf.yml
