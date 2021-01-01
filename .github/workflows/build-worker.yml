@@ -141,7 +141,7 @@ jobs:
       run: |
         .\SignClient "Sign" `
         --baseDirectory "${{ github.workspace }}/ToSign" `
-        --input "**/*.zip" `
+        --input "*.zip" `
         --config "${{ github.workspace }}/SigningScripts/appsettings.json" `
         --filelist "${{ github.workspace }}/SigningScripts/filelist.txt" `
         --user "${{ secrets.SignClientUser }}" `
