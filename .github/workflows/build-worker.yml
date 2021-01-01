@@ -109,14 +109,12 @@ jobs:
     name: Code Sign - CI
     runs-on: ubuntu-latest
     env:
-      group: Sign Client Credentials
       if: ${{ github.event_name != 'pull_request' }}
     steps:
     - name: Azure Login
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
-
 
     - name: Download Windows_x64_x86 Artifacts
       uses: actions/download-artifact@v2
@@ -236,3 +234,80 @@ jobs:
       with:
         path: ${{ github.workspace }}/ToSign/Linux_Musl_ARM_x64
         name: Linux_Musl_ARM_x64_Signed
+
+
+  Deploy_Worker:
+    needs: Sign_Worker
+    environment:
+        name: Deploy_Worker
+        url: ${{ steps.deploy_staging.outputs.webapp-url }}
+    name: Deploy Worker - CD
+    runs-on: ubuntu-latest
+    env:
+      if: ${{ github.event_name != 'pull_request' }}
+    steps:
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Download Windows_x64_x86 Artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: Windows_x64_x86
+        path: ${{ github.workspace }}/Sign/Windows_x64_x86
+        
+    - name: Download Windows_ARM Artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: Windows_ARM
+        path: ${{ github.workspace }}/Sign/Windows_ARM
+
+    - name: Download macOS Artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: macOS
+        path: ${{ github.workspace }}/Sign/macOS
+
+    - name: Download Linux_ARM Artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: Linux_ARM
+        path: ${{ github.workspace }}/Sign/Linux_ARM
+
+    - name: Download Linux_ARM64 Artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: Linux_ARM64
+        path: ${{ github.workspace }}/Sign/Linux_ARM64
+
+    - name: Download Linux_Musl_x64 Artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: Linux_Musl_x64
+        path: ${{ github.workspace }}/Sign/Linux_Musl_x64
+
+    - name: Download Linux_Musl_ARM_x64 Artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: Linux_Musl_ARM_x64
+        path: ${{ github.workspace }}/Sign/Linux_Musl_ARM_x64
+        
+    - name: Archive Previous Release
+      uses: azure/cli@v1.0.0
+      with:
+        inlineScript: |  
+          az storage blob copy start-batch --account-key "${{ secrets.ACCOUNT_KEY }}" --account-name "${{ secrets.ACCOUNT_NAME }}" `
+          --destination-container "${{ secrets.DEST_CONTAINER }}" --source-account-key "${{ secrets.ACCOUNT_KEY }}" `
+          --source-account-name "${{ secrets.ACCOUNT_NAME }}" --source-container "${{ secrets.CONTAINER }}"
+           
+          az storage blob delete-batch --account-key "${{ secrets.ACCOUNT_KEY }}" --account-name "${{ secrets.ACCOUNT_NAME }}" `
+          --source "${{ secrets.CONTAINER }}"
+        azcliversion: latest
+
+    - name: Upload Release to Blob Storage
+      uses: LanceMcCarthy/Action-AzureBlobUpload@v1.8.0
+      with:
+        connection_string: ${{ secrets.AZUREBLOBCONNECTIONSTRING }}
+        container_name: ${{ secrets.CONTAINER }}
+        source_folder: ${{ github.workspace }}/Sign
