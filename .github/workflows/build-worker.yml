@@ -316,4 +316,4 @@ jobs:
       with:
         connection_string: ${{ secrets.AZUREBLOBCONNECTIONSTRING }}
         container_name: ${{ secrets.CONTAINER }}
-        source_folder: ${{ github.workspace }}/Sign/
+        source_folder: ${{ github.workspace }}/Sign/*
