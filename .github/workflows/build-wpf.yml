@@ -202,7 +202,6 @@ jobs:
     name: Code Sign - CI
     runs-on: ubuntu-latest
     env:
-      group: Sign Client Credentials
       if: ${{ github.event_name != 'pull_request' }}
     steps:
     - name: Azure Login
@@ -295,3 +294,63 @@ jobs:
       with:
         path: ${{ github.workspace }}/ToSign/Standalone
         name: StandaloneSigned
+        
+  Deploy_WPF_Nightly:
+    needs: Sign_WPF
+    environment:
+        name: Deploy_WPF_Nightly
+        url: ${{ steps.deploy_staging.outputs.webapp-url }}
+    name: Deploy WPF Nightly - CD
+    runs-on: ubuntu-latest
+    env:
+      if: ${{ github.event_name != 'pull_request' }}
+    steps:
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        
+  Deploy_WPF_GitHub:
+    needs: Deploy_WPF_Nightly
+    environment:
+        name: Deploy WPF_GitHub
+        url: ${{ steps.deploy_staging.outputs.webapp-url }}
+    name: Deploy_WPF GitHub - CD
+    runs-on: ubuntu-latest
+    env:
+      if: ${{ github.event_name != 'pull_request' }}
+    steps:
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+  Deploy_WPF_Store:
+    needs: Deploy_WPF_Nightly
+    environment:
+        name: Deploy_WPF_Store
+        url: ${{ steps.deploy_staging.outputs.webapp-url }}
+    name: Deploy WPF Store - CD
+    runs-on: ubuntu-latest
+    env:
+      if: ${{ github.event_name != 'pull_request' }}
+    steps:
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        
+  Deploy_WPF_Choco:
+    needs: Deploy_WPF_Nightly
+    environment:
+        name: Deploy_WPF_Choco
+        url: ${{ steps.deploy_staging.outputs.webapp-url }}
+    name: Deploy WPF Choco - CD
+    runs-on: ubuntu-latest
+    env:
+      if: ${{ github.event_name != 'pull_request' }}
+    steps:
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
