@@ -83,7 +83,7 @@ jobs:
       shell: powershell
       if: ${{ success() && github.event_name != 'pull_request' }}
 
-    - run: dotnet publish '.\src\PresenceLight.Worker\PresenceLight.Worker' -r ${{ matrix.RID }} -c ${{ env.BuildConfiguration }} /p:PublishSingleFile=true -o ${{ github.workspace }}\${{ env.GitBuildVersionSimple }}_${{ matrix.ChannelName }} /p:Version=${{ env.GitBuildVersionSimple }}
+    - run: dotnet publish '.\src\PresenceLight.Worker\PresenceLight.Worker.csproj' -r ${{ matrix.RID }} -c ${{ env.BuildConfiguration }} /p:PublishSingleFile=true -o ${{ github.workspace }}\${{ env.GitBuildVersionSimple }}_${{ matrix.ChannelName }} /p:Version=${{ env.GitBuildVersionSimple }}
       name: dotnet publish ${{ matrix.RID }}
       if: ${{ success() }}
 
