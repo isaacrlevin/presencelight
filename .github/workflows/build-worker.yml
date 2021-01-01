@@ -316,4 +316,12 @@ jobs:
       with:
         connection_string: ${{ secrets.AZUREBLOBCONNECTIONSTRING }}
         container_name: ${{ secrets.CONTAINER }}
-        source_folder: ${{ github.workspace }}/Sign/*
+        source_folder: ${{ github.workspace }}\Sign\
+
+    - name: Upload Release to Blob Storage
+      uses: bacongobbler/azure-blob-storage-upload@v1.1.1
+      with:
+        source_dir: ${{ github.workspace }}/Sign
+        container_name: ${{ secrets.CONTAINER }}
+        connection_string: ${{ secrets.AZUREBLOBCONNECTIONSTRING }}
+        sync: true
