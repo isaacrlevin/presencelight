@@ -312,13 +312,6 @@ jobs:
         azcliversion: latest
 
     - name: Upload Release to Blob Storage
-      uses: LanceMcCarthy/Action-AzureBlobUpload@v1.8.0
-      with:
-        connection_string: ${{ secrets.AZUREBLOBCONNECTIONSTRING }}
-        container_name: ${{ secrets.CONTAINER }}
-        source_folder: ${{ github.workspace }}\Sign\
-
-    - name: Upload Release to Blob Storage
       uses: bacongobbler/azure-blob-storage-upload@v1.1.1
       with:
         source_dir: ${{ github.workspace }}/Sign
