@@ -17,8 +17,21 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        ChannelName:
-        - Release
+        include:
+          - ChannelName: Windows_x64_x86
+            RID: win-x64
+          - ChannelName: Windows_ARM
+            RID: win-arm
+          - ChannelName: macOS
+            RID: osx-x64
+          - ChannelName: Linux_ARM
+            RID: linux-arm
+          - ChannelName: Linux_ARM64
+            RID: linux-x64
+          - ChannelName: Linux_Musl_x64
+            RID: linux-musl-x64
+          - ChannelName: Linux_Musl_ARM_x64
+            RID: linux-musl-x64
 
     env:
       DOTNET_CLI_TELEMETRY_OPTOUT: 1
@@ -70,7 +83,7 @@ jobs:
       shell: powershell
       if: ${{ success() && github.event_name != 'pull_request' }}
 
-    - run: dotnet publish -r ${{ matrix.RID }} -c ${{ env.BuildConfiguration }} /p:PublishSingleFile=true -o ${{ github.workspace }}/${{ env.GitBuildVersionSimple }}_${{ matrix.ChannelName }} /p:Version=${{ env.GitBuildVersionSimple }}
+    - run: dotnet publish '.\src\PresenceLight.Worker\PresenceLight.Worker' -r ${{ matrix.RID }} -c ${{ env.BuildConfiguration }} /p:PublishSingleFile=true -o ${{ github.workspace }}\${{ env.GitBuildVersionSimple }}_${{ matrix.ChannelName }} /p:Version=${{ env.GitBuildVersionSimple }}
       name: dotnet publish ${{ matrix.RID }}
       if: ${{ success() }}
 
@@ -86,7 +99,7 @@ jobs:
       with:
         path: Build
         name: SigningScripts
-      if:  ${{ success() && matrix.ChannelName  == 'Release' }}
+      if:  ${{ success() && matrix.ChannelName  == 'Windows_x64_x86' }}
 
   Sign_Worker:
     needs: Build_Worker
