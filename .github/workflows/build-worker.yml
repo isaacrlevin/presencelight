@@ -297,17 +297,17 @@ jobs:
       uses: azure/cli@v1.0.0
       with:
         inlineScript: |  
-          az storage blob copy start-batch `
-          --account-key ${{ secrets.ACCOUNT_KEY }} `
-          --account-name ${{ secrets.ACCOUNT_NAME }} `
-          --destination-container ${{ secrets.DEST_CONTAINER }} `
-          --source-account-key ${{ secrets.ACCOUNT_KEY }} `
-          --source-account-name ${{ secrets.ACCOUNT_NAME }} `
+          az storage blob copy start-batch \
+          --account-key ${{ secrets.ACCOUNT_KEY }} \
+          --account-name ${{ secrets.ACCOUNT_NAME }} \
+          --destination-container ${{ secrets.DEST_CONTAINER }} \
+          --source-account-key ${{ secrets.ACCOUNT_KEY }} \
+          --source-account-name ${{ secrets.ACCOUNT_NAME }} \
           --source-container ${{ secrets.CONTAINER }}
            
-          az storage blob delete-batch `
-          --account-key ${{ secrets.ACCOUNT_KEY }} `
-          --account-name ${{ secrets.ACCOUNT_NAME }} `
+          az storage blob delete-batch \
+          --account-key ${{ secrets.ACCOUNT_KEY }} \
+          --account-name ${{ secrets.ACCOUNT_NAME }} \
           --source ${{ secrets.CONTAINER }}
         azcliversion: latest
 
