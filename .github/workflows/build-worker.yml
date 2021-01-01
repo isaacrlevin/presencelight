@@ -318,3 +318,88 @@ jobs:
         container_name: ${{ secrets.CONTAINER }}
         connection_string: ${{ secrets.AZUREBLOBCONNECTIONSTRING }}
         sync: true
+        
+  Deploy_Worker_DockerHub_GHPackages:
+    needs: Deploy_Worker
+    environment:
+        name: Deploy_Worker_DockerHub_GHPackages
+        url: ${{ steps.deploy_staging.outputs.webapp-url }}
+    name: Deploy Worker Docker / GH Packages - CD
+    runs-on: ubuntu-latest
+    env:
+      if: ${{ github.event_name != 'pull_request' }}
+    steps:
+      - name: Push ARM to DockerHub
+        uses: opspresso/action-docker@master
+        with:
+          args: --docker
+        env:
+          USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          DOCKERFILE: "DockerFiles/Dockerfile.debian-arm32"
+          IMAGE_NAME: "presencelight"
+          TAG_NAME: "debian-arm32"
+          BUILD_PATH: /src/
+          
+      - name: Push ARM64 to DockerHub
+        uses: opspresso/action-docker@master
+        with:
+          args: --docker
+        env:
+          USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          DOCKERFILE: "DockerFiles/Dockerfile.debian-arm64"
+          IMAGE_NAME: "presencelight"
+          TAG_NAME: "debian-arm64"
+          BUILD_PATH: /src/
+
+      - name: Push latest to DockerHub
+        uses: opspresso/action-docker@master
+        with:
+          args: --docker
+        env:
+          USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          DOCKERFILE: "DockerFiles/Dockerfile"
+          IMAGE_NAME: "presencelight"
+          TAG_NAME: "latest"
+          BUILD_PATH: /src/
+
+     # - name: Docker Build & Push to GitHub Package
+     #   uses: opspresso/action-docker@master
+     #   with:
+     #     args: --docker
+     #   env:
+     #     USERNAME: ${{ secrets.GITHUB_USERNAME }}
+     #     PASSWORD: ${{ secrets.GH_PERSONAL_TOKEN }}
+     #     REGISTRY: "docker.pkg.github.com"
+     #     DOCKERFILE: "DockerFiles/Dockerfile.debian-arm32"
+     #     IMAGE_NAME: "presencelight"
+     #     TAG_NAME: "debian-arm32"
+     #     BUILD_PATH: /src/
+     
+     # - name: Docker Build & Push to GitHub Package
+     #   uses: opspresso/action-docker@master
+     #   with:
+     #     args: --docker
+     #   env:
+     #     USERNAME: ${{ secrets.GITHUB_USERNAME }}
+     #     PASSWORD: ${{ secrets.GH_PERSONAL_TOKEN }}
+     #     REGISTRY: "docker.pkg.github.com"
+     #     DOCKERFILE: "DockerFiles/Dockerfile.debian-arm64"
+     #     IMAGE_NAME: "presencelight"
+     #     TAG_NAME: "debian-arm64"
+     #     BUILD_PATH: /src/
+
+     # - name: Docker Build & Push to GitHub Package
+     #   uses: opspresso/action-docker@master
+     #   with:
+     #     args: --docker
+     #   env:
+     #     USERNAME: ${{ secrets.GITHUB_USERNAME }}
+     #     PASSWORD: ${{ secrets.GH_PERSONAL_TOKEN }}
+     #     REGISTRY: "docker.pkg.github.com"
+     #     DOCKERFILE: "DockerFiles/Dockerfile"
+     #     IMAGE_NAME: "presencelight"
+     #     TAG_NAME: "latest"
+     #     BUILD_PATH: /src/
