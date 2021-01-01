@@ -14,7 +14,7 @@ on:
 
 jobs:
   Build_Worker: 
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     strategy:
       matrix:
         ChannelName:
@@ -27,7 +27,6 @@ jobs:
       BuildConfiguration: Release
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       GitHubReleaseUrl: https://github.com/isaacrlevin/PresenceLight/releases/download
-      Win10RID: net5.0-windows10.0.19041
 
     steps:
 
@@ -47,9 +46,39 @@ jobs:
 
     - run: echo "BuildNumber - ${{ env.GitBuildVersionSimple }}"
 
-    - name: Create Directory for Channel
-      run: mkdir ${{ github.workspace }}\${{ matrix.ChannelName }}
+    - name: Update appsettings.json
+      run: |
+        # Update AppSettings.json. This must be done before build.
+        $appsettings= get-content ".\src\PresenceLight.Worker\appsettings.json" -raw | ConvertFrom-Json
+        $appsettings.azureAd.clientId = "${{ secrets.ApplicationId }}"
+        $appsettings.azureAd.clientSecret = "${{ secrets.ClientSecret }}"
+        $appsettings.applicationInsights.instrumentationkey = "${{ secrets.InstrumentationKey }}"
+        $appsettings | ConvertTo-Json -depth 32| set-content '.\src\PresenceLight.Worker\appsettings.json'
       shell: powershell
+      if: ${{ success() && github.event_name != 'pull_request' }}
+
+    - name: Update PresenceLightSettings.json
+      run: |
+        # Update PresenceLightSettings.json. This must be done before build.
+        $PresenceLightSettings= get-content ".\src\PresenceLight.Worker\PresenceLightSettings.json" -raw | ConvertFrom-Json
+        $PresenceLightSettings.lightSettings.lifx.LIFXClientId = "${{ secrets.LIFXClientId }}"
+        $PresenceLightSettings.lightSettings.lifx.LIFXClientSecret = "${{ secrets.LIFXClientSecret }}"
+        $PresenceLightSettings.lightSettings.hue.RemoteHueClientId = "${{ secrets.RemoteHueClientId }}"
+        $PresenceLightSettings.lightSettings.hue.RemoteHueClientSecret = "${{ secrets.RemoteHueClientSecret }}"
+        $PresenceLightSettings.lightSettings.hue.RemoteHueClientAppName = "${{ secrets.RemoteHueClientAppName }}"
+        $PresenceLightSettings | ConvertTo-Json -depth 32| set-content '.\src\PresenceLight.Worker\PresenceLightSettings.json'
+      shell: powershell
+      if: ${{ success() && github.event_name != 'pull_request' }}
+
+    - run: dotnet publish -r ${{ matrix.RID }} -c ${{ env.BuildConfiguration }} /p:PublishSingleFile=true -o ${{ github.workspace }}/${{ env.GitBuildVersionSimple }}_${{ matrix.ChannelName }} /p:Version=${{ env.GitBuildVersionSimple }}
+      name: dotnet publish ${{ matrix.RID }}
+      if: ${{ success() }}
+
+    - name: Publish Arifacts
+      uses: actions/upload-artifact@v2
+      with:
+        path: ${{ github.workspace }}\${{ env.GitBuildVersionSimple }}_${{ matrix.ChannelName }}
+        name: ${{ matrix.ChannelName }}
 
 
     - name: Publish signing scripts
