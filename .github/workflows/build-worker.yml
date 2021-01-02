@@ -89,7 +89,7 @@ jobs:
 
     - name: Zip Standalone PresenceLight x64 Files
       run: |
-        Compress-Archive -Path '${{ github.workspace }}\${{ env.GitBuildVersionSimple }}_${{ matrix.ChannelName }}' `
+        Compress-Archive -Path '${{ github.workspace }}\${{ env.GitBuildVersionSimple }}_${{ matrix.ChannelName }}\' `
         -DestinationPath ${{ github.workspace }}\${{ matrix.ChannelName }}\PresenceLight.${{ env.GitBuildVersionSimple }}-x64.zip
       shell: powershell
 
