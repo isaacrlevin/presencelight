@@ -340,6 +340,31 @@ jobs:
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
         
+    - uses: actions/download-artifact@v2
+      name: Download Nightly Signed
+      with:
+        name: NightlySigned
+        path: "${{ github.workspace }}/NightlySigned"
+        
+    - name: Copy files to same directory
+      run: | 
+        mkdir "${{ github.workspace }}/NightlySigned/Upload"
+        Copy-Item "${{ github.workspace }}/NightlySigned/**/*.appxbundle" -Destination "${{ github.workspace }}/NightlySigned/Upload1"
+        Copy-Item "${{ github.workspace }}/NightlySigned/**/*.appinstaller" -Destination "${{ github.workspace }}/NightlySigned/Upload2"
+        Copy-Item "${{ github.workspace }}/NightlySigned/ci_badge.svg" -Destination "${{ github.workspace }}/NightlySigned/Upload"
+      shell: pwsh
+    
+    - name: Upload Appxbundle
+      uses: azure/cli@v1.0.0
+      with:
+        inlineScript: | 
+          az storage blob upload --connection-string ${{ secrets.AZUREBLOBCONNECTIONSTRING }} --container-name ${{ secrets.CONTAINER }} --content-type "image/svg+xml" --file "${{ github.workspace }}/NightlySigned/Upload/ci_badge.svg" --name ci_badge.svg 
+          
+          az storage blob upload-batch --connection-string ${{ secrets.AZUREBLOBCONNECTIONSTRING }} --container-name ${{ secrets.CONTAINER }} --content-type "application/vns.ms-appx" --file "${{ github.workspace }}/NightlySigned/Upload1"
+          
+          az storage blob upload-batch --connection-string ${{ secrets.AZUREBLOBCONNECTIONSTRING }} --container-name ${{ secrets.CONTAINER }} --content-type "application/xml" --file "${{ github.workspace }}/NightlySigned/Upload2" 
+        azcliversion: latest
+        
   Deploy_WPF_Choco:
     needs: Deploy_WPF_Nightly
     environment:
