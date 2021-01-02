@@ -330,9 +330,9 @@ jobs:
         inlineScript: | 
           az storage blob upload --connection-string ${{ secrets.AZUREBLOBCONNECTIONSTRING }} --container-name ${{ secrets.CONTAINER }} --content-type "image/svg+xml" --file "${{ github.workspace }}/NightlySigned/Upload/ci_badge.svg" --name ci_badge.svg 
           
-          az storage blob upload-batch --connection-string ${{ secrets.AZUREBLOBCONNECTIONSTRING }} --container-name ${{ secrets.CONTAINER }} --content-type "application/vns.ms-appx" --file "${{ github.workspace }}/NightlySigned/Upload1"
+          az storage blob upload-batch --connection-string ${{ secrets.AZUREBLOBCONNECTIONSTRING }} --container-name ${{ secrets.CONTAINER }} --content-type "application/vns.ms-appx" --source "${{ github.workspace }}/NightlySigned/Upload1"
           
-          az storage blob upload-batch --connection-string ${{ secrets.AZUREBLOBCONNECTIONSTRING }} --container-name ${{ secrets.CONTAINER }} --content-type "application/xml" --file "${{ github.workspace }}/NightlySigned/Upload2" 
+          az storage blob upload-batch --connection-string ${{ secrets.AZUREBLOBCONNECTIONSTRING }} --container-name ${{ secrets.CONTAINER }} --content-type "application/xml" --source "${{ github.workspace }}/NightlySigned/Upload2" 
         azcliversion: latest
         
   Deploy_WPF_GitHub:
