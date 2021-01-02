@@ -322,7 +322,6 @@ jobs:
         
     - name: Copy files to same directory
       run: | 
-        mkdir "${{ github.workspace }}/NightlySigned/Upload"
         Copy-Item "${{ github.workspace }}/NightlySigned/**/*.appxbundle" -Destination "${{ github.workspace }}/NightlySigned/Upload1"
         Copy-Item "${{ github.workspace }}/NightlySigned/**/*.appinstaller" -Destination "${{ github.workspace }}/NightlySigned/Upload2"
         Copy-Item "${{ github.workspace }}/NightlySigned/ci_badge.svg" -Destination "${{ github.workspace }}/NightlySigned/Upload"
@@ -332,7 +331,7 @@ jobs:
       uses: azure/cli@v1.0.0
       with:
         inlineScript: | 
-          az storage blob upload --connection-string ${{ secrets.AZUREBLOBCONNECTIONSTRING }} -c ${{ secrets.CONTAINER }} --content-type image/svg+xml -f ${{ github.workspace }}/NightlySigned/Upload/ci_badge.svg -n ci_badge.svg 
+          az storage blob upload -c nightly --content-type image/svg+xml -f ${{ github.workspace }}/NightlySigned/Upload/ci_badge.svg -n ci_badge.svg --connection-string ${{ secrets.AZUREBLOBCONNECTIONSTRING }} 
           
           az storage blob upload-batch --connection-string ${{ secrets.AZUREBLOBCONNECTIONSTRING }} -c ${{ secrets.CONTAINER }} --content-type application/vns.ms-appx --source ${{ github.workspace }}/NightlySigned/Upload1
           
