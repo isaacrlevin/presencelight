@@ -87,6 +87,12 @@ jobs:
       name: dotnet publish ${{ matrix.RID }}
       if: ${{ success() }}
 
+    - name: Zip Standalone PresenceLight x64 Files
+      run: |
+        Compress-Archive -Path '${{ github.workspace }}\${{ env.GitBuildVersionSimple }}_${{ matrix.ChannelName }}' `
+        -DestinationPath ${{ github.workspace }}\${{ matrix.ChannelName }}\PresenceLight.${{ env.GitBuildVersionSimple }}-x64.zip
+      shell: powershell
+
     - name: Publish Arifacts
       uses: actions/upload-artifact@v2
       with:
@@ -339,7 +345,7 @@ jobs:
           DOCKERFILE: "DockerFiles/Dockerfile.debian-arm32"
           IMAGE_NAME: "presencelight"
           TAG_NAME: "debian-arm32"
-          BUILD_PATH: /src/
+          BUILD_PATH: .\src\
           
       - name: Push ARM64 to DockerHub
         uses: opspresso/action-docker@master
@@ -351,7 +357,7 @@ jobs:
           DOCKERFILE: "DockerFiles/Dockerfile.debian-arm64"
           IMAGE_NAME: "presencelight"
           TAG_NAME: "debian-arm64"
-          BUILD_PATH: /src/
+          BUILD_PATH: .\src\
 
       - name: Push latest to DockerHub
         uses: opspresso/action-docker@master
@@ -363,7 +369,7 @@ jobs:
           DOCKERFILE: "DockerFiles/Dockerfile"
           IMAGE_NAME: "presencelight"
           TAG_NAME: "latest"
-          BUILD_PATH: /src/
+          BUILD_PATH: .\src\
 
      # - name: Docker Build & Push to GitHub Package
      #   uses: opspresso/action-docker@master
@@ -389,7 +395,7 @@ jobs:
      #     DOCKERFILE: "DockerFiles/Dockerfile.debian-arm64"
      #     IMAGE_NAME: "presencelight"
      #     TAG_NAME: "debian-arm64"
-     #     BUILD_PATH: /src/
+     #     BUILD_PATH: src
 
      # - name: Docker Build & Push to GitHub Package
      #   uses: opspresso/action-docker@master
