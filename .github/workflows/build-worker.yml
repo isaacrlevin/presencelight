@@ -330,7 +330,7 @@ jobs:
         sync: true
         
   Deploy_Worker_DockerHub_GHPackages:
-    needs: Deploy_Worker
+    needs: Build_Worker
     environment:
         name: Deploy_Worker_DockerHub_GHPackages
         url: ${{ steps.deploy_staging.outputs.webapp-url }}
@@ -340,6 +340,30 @@ jobs:
       if: ${{ github.event_name != 'pull_request' }}
     steps:
       - uses: actions/checkout@v2   
+
+      - name: Update appsettings.json
+        run: |
+          # Update AppSettings.json. This must be done before build.
+          $appsettings= get-content ".\src\PresenceLight.Worker\appsettings.json" -raw | ConvertFrom-Json
+          $appsettings.azureAd.clientId = "${{ secrets.ApplicationId }}"
+          $appsettings.azureAd.clientSecret = "${{ secrets.ClientSecret }}"
+          $appsettings.applicationInsights.instrumentationkey = "${{ secrets.InstrumentationKey }}"
+          $appsettings | ConvertTo-Json -depth 32| set-content '.\src\PresenceLight.Worker\appsettings.json'
+        shell: pwsh
+        if: ${{ success() && github.event_name != 'pull_request' }}
+
+      - name: Update PresenceLightSettings.json
+        run: |
+          # Update PresenceLightSettings.json. This must be done before build.
+          $PresenceLightSettings= get-content ".\src\PresenceLight.Worker\PresenceLightSettings.json" -raw | ConvertFrom-Json
+          $PresenceLightSettings.lightSettings.lifx.LIFXClientId = "${{ secrets.LIFXClientId }}"
+          $PresenceLightSettings.lightSettings.lifx.LIFXClientSecret = "${{ secrets.LIFXClientSecret }}"
+          $PresenceLightSettings.lightSettings.hue.RemoteHueClientId = "${{ secrets.RemoteHueClientId }}"
+          $PresenceLightSettings.lightSettings.hue.RemoteHueClientSecret = "${{ secrets.RemoteHueClientSecret }}"
+          $PresenceLightSettings.lightSettings.hue.RemoteHueClientAppName = "${{ secrets.RemoteHueClientAppName }}"
+          $PresenceLightSettings | ConvertTo-Json -depth 32| set-content '.\src\PresenceLight.Worker\PresenceLightSettings.json'
+        shell: pwsh
+        if: ${{ success() && github.event_name != 'pull_request' }}
 
       - name: Push ARM to DockerHub
         uses: opspresso/action-docker@master
