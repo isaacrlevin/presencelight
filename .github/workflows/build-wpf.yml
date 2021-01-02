@@ -338,7 +338,7 @@ jobs:
   Deploy_WPF_GitHub:
     needs: Deploy_WPF_Nightly
     environment:
-        name: Deploy WPF_GitHub
+        name: Deploy_WPF_GitHub
         url: ${{ steps.deploy_staging.outputs.webapp-url }}
     name: Deploy_WPF GitHub - CD
     runs-on: ubuntu-latest
