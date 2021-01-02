@@ -349,7 +349,7 @@ jobs:
           USERNAME: ${{ secrets.DOCKER_USERNAME }}
           PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
           DOCKERFILE: "${{ github.workspace }}/src/DockerFiles/Dockerfile.debian-arm32"
-          IMAGE_NAME: "presencelight"
+          IMAGE_NAME: "isaaclevin/presencelight"
           TAG_NAME: "debian-arm32"
           BUILD_PATH: "${{ github.workspace }}/src/"
           
@@ -361,7 +361,7 @@ jobs:
           USERNAME: ${{ secrets.DOCKER_USERNAME }}
           PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
           DOCKERFILE: "${{ github.workspace }}/src/DockerFiles/Dockerfile.debian-arm64"
-          IMAGE_NAME: "presencelight"
+          IMAGE_NAME: "isaaclevin/presencelight"
           TAG_NAME: "debian-arm64"
           BUILD_PATH: "${{ github.workspace }}/src/"
 
@@ -373,7 +373,7 @@ jobs:
           USERNAME: ${{ secrets.DOCKER_USERNAME }}
           PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
           DOCKERFILE: "${{ github.workspace }}/src/DockerFiles/Dockerfile"
-          IMAGE_NAME: "presencelight"
+          IMAGE_NAME: "isaaclevin/presencelight"
           TAG_NAME: "latest"
           BUILD_PATH: "${{ github.workspace }}/src/"
 
