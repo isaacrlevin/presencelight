@@ -59,6 +59,10 @@ jobs:
 
     - run: echo "BuildNumber - ${{ env.GitBuildVersionSimple }}"
 
+    - name: Create Directory for Channel
+      run: mkdir ${{ github.workspace }}\${{ matrix.ChannelName }}
+      shell: powershell
+
     - name: Update appsettings.json
       run: |
         # Update AppSettings.json. This must be done before build.
@@ -90,13 +94,13 @@ jobs:
     - name: Zip Standalone PresenceLight x64 Files
       run: |
         Compress-Archive -Path '${{ github.workspace }}\${{ env.GitBuildVersionSimple }}_${{ matrix.ChannelName }}\' `
-        -DestinationPath ${{ github.workspace }}\${{ matrix.ChannelName }}\PresenceLight.${{ env.GitBuildVersionSimple }}-x64.zip
+        -DestinationPath ${{ github.workspace }}\${{ matrix.ChannelName }}\PresenceLight.${{ matrix.ChannelName }}.${{ env.GitBuildVersionSimple }}-x64.zip
       shell: powershell
 
     - name: Publish Arifacts
       uses: actions/upload-artifact@v2
       with:
-        path: ${{ github.workspace }}\${{ env.GitBuildVersionSimple }}_${{ matrix.ChannelName }}
+        path: ${{ github.workspace }}\${{ matrix.ChannelName }}
         name: ${{ matrix.ChannelName }}
 
 
