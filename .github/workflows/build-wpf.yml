@@ -309,37 +309,7 @@ jobs:
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
-        
-  Deploy_WPF_GitHub:
-    needs: Deploy_WPF_Nightly
-    environment:
-        name: Deploy WPF_GitHub
-        url: ${{ steps.deploy_staging.outputs.webapp-url }}
-    name: Deploy_WPF GitHub - CD
-    runs-on: ubuntu-latest
-    env:
-      if: ${{ github.event_name != 'pull_request' }}
-    steps:
-    - name: Azure Login
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-  Deploy_WPF_Store:
-    needs: Deploy_WPF_Nightly
-    environment:
-        name: Deploy_WPF_Store
-        url: ${{ steps.deploy_staging.outputs.webapp-url }}
-    name: Deploy WPF Store - CD
-    runs-on: ubuntu-latest
-    env:
-      if: ${{ github.event_name != 'pull_request' }}
-    steps:
-    - name: Azure Login
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
-        
     - uses: actions/download-artifact@v2
       name: Download Nightly Signed
       with:
@@ -365,6 +335,59 @@ jobs:
           az storage blob upload-batch --connection-string ${{ secrets.AZUREBLOBCONNECTIONSTRING }} --container-name ${{ secrets.CONTAINER }} --content-type "application/xml" --file "${{ github.workspace }}/NightlySigned/Upload2" 
         azcliversion: latest
         
+  Deploy_WPF_GitHub:
+    needs: Deploy_WPF_Nightly
+    environment:
+        name: Deploy WPF_GitHub
+        url: ${{ steps.deploy_staging.outputs.webapp-url }}
+    name: Deploy_WPF GitHub - CD
+    runs-on: ubuntu-latest
+    env:
+      if: ${{ github.event_name != 'pull_request' }}
+    steps:
+      - uses: actions/download-artifact@v2
+        name: Download Nightly Signed
+        with:
+          name: StandaloneSigned
+          path: "${{ github.workspace }}/StandaloneSigned"
+          
+   #   - name: Create Release
+   #     id: create_release
+   #     uses: actions/create-release@v1
+   #     env:
+   #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+   #     with:
+   #       tag_name: ${{ github.ref }}
+   #       release_name: Release ${{ github.ref }}
+   #       draft: false
+   #       prerelease: false
+   #   - name: Upload Release Asset
+   #     id: upload-release-asset 
+   #     uses: actions/upload-release-asset@v1
+   #     env:
+   #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+   #     with:
+   #       upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+   #       asset_path: ./my-artifact.zip
+   #       asset_name: my-artifact.zip
+   #       asset_content_type: application/zip
+
+
+  Deploy_WPF_Store:
+    needs: Deploy_WPF_Nightly
+    environment:
+        name: Deploy_WPF_Store
+        url: ${{ steps.deploy_staging.outputs.webapp-url }}
+    name: Deploy WPF Store - CD
+    runs-on: ubuntu-latest
+    env:
+      if: ${{ github.event_name != 'pull_request' }}
+    steps:
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}        
+       
   Deploy_WPF_Choco:
     needs: Deploy_WPF_Nightly
     environment:
