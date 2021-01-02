@@ -339,13 +339,7 @@ jobs:
     env:
       if: ${{ github.event_name != 'pull_request' }}
     steps:
-      - uses: actions/checkout@v2
-
-
-  
-
-
-     
+      - uses: actions/checkout@v2   
 
       - name: Push ARM to DockerHub
         uses: opspresso/action-docker@master
@@ -357,7 +351,7 @@ jobs:
           DOCKERFILE: "DockerFiles/Dockerfile.debian-arm32"
           IMAGE_NAME: "presencelight"
           TAG_NAME: "debian-arm32"
-          BUILD_PATH: ./src/
+          BUILD_PATH: "${{ github.workspace }}/src/"
           
       - name: Push ARM64 to DockerHub
         uses: opspresso/action-docker@master
@@ -369,7 +363,7 @@ jobs:
           DOCKERFILE: "DockerFiles/Dockerfile.debian-arm64"
           IMAGE_NAME: "presencelight"
           TAG_NAME: "debian-arm64"
-          BUILD_PATH: ./src/
+          BUILD_PATH: "${{ github.workspace }}/src/"
 
       - name: Push latest to DockerHub
         uses: opspresso/action-docker@master
@@ -381,7 +375,7 @@ jobs:
           DOCKERFILE: "DockerFiles/Dockerfile"
           IMAGE_NAME: "presencelight"
           TAG_NAME: "latest"
-          BUILD_PATH: ./src/
+          BUILD_PATH: "${{ github.workspace }}/src/"
 
      # - name: Docker Build & Push to GitHub Package
      #   uses: opspresso/action-docker@master
