@@ -229,20 +229,24 @@ jobs:
         inlineScript: az appservice plan update --name levin-signserv-asp-2dnwx6q6jwiay --resource-group SignService --sku P2V2
         azcliversion: latest
 
-    - name: Authenticode Sign AppXBundle
-      run: |
-        .\SignClient "Sign" `
-        --baseDirectory "${{ github.workspace }}/ToSign" `
-        --input "**/*.appxbundle" `
-        --config "${{ github.workspace }}/SigningScripts/appsettings.json" `
-        --filelist "${{ github.workspace }}/SigningScripts/filelist.txt" `
-        --user "${{ secrets.SignClientUser }}" `
-        --secret "${{ secrets.SignClientSecret }}" `
-        --name "PresenceLight" `
-        --description "PresenceLight" `
-        --descriptionUrl "https://github.com/isaacrlevin/PresenceLight"
-      shell: pwsh
-
+    - uses: nick-invision/retry@v2
+      name: Authenticode Sign AppXBundle
+      with:
+        timeout_minutes: 10
+        max_attempts: 3
+        shell: pwsh
+        command: |
+          .\SignClient "Sign" `
+          --baseDirectory "${{ github.workspace }}/ToSign" `
+          --input "**/*.appxbundle" `
+          --config "${{ github.workspace }}/SigningScripts/appsettings.json" `
+          --filelist "${{ github.workspace }}/SigningScripts/filelist.txt" `
+          --user "${{ secrets.SignClientUser }}" `
+          --secret "${{ secrets.SignClientSecret }}" `
+          --name "PresenceLight" `
+          --description "PresenceLight" `
+          --descriptionUrl "https://github.com/isaacrlevin/PresenceLight"
+     
     - name: Authenticode Sign AppInstaller
       run: |
         .\SignClient "Sign" `
@@ -328,11 +332,11 @@ jobs:
       uses: azure/cli@v1.0.0
       with:
         inlineScript: | 
-          az storage blob upload --connection-string ${{ secrets.AZUREBLOBCONNECTIONSTRING }} -c ${{ secrets.CONTAINER }} --content-type "image/svg+xml" -f "${{ github.workspace }}/NightlySigned/Upload/ci_badge.svg" -n ci_badge.svg 
+          az storage blob upload --connection-string ${{ secrets.AZUREBLOBCONNECTIONSTRING }} -c ${{ secrets.CONTAINER }} --content-type image/svg+xml -f ${{ github.workspace }}/NightlySigned/Upload/ci_badge.svg -n ci_badge.svg 
           
-          az storage blob upload-batch --connection-string ${{ secrets.AZUREBLOBCONNECTIONSTRING }} -c ${{ secrets.CONTAINER }} --content-type "application/vns.ms-appx" --source "${{ github.workspace }}/NightlySigned/Upload1"
+          az storage blob upload-batch --connection-string ${{ secrets.AZUREBLOBCONNECTIONSTRING }} -c ${{ secrets.CONTAINER }} --content-type application/vns.ms-appx --source ${{ github.workspace }}/NightlySigned/Upload1
           
-          az storage blob upload-batch --connection-string ${{ secrets.AZUREBLOBCONNECTIONSTRING }} -c ${{ secrets.CONTAINER }} --content-type "application/xml" --source "${{ github.workspace }}/NightlySigned/Upload2" 
+          az storage blob upload-batch --connection-string ${{ secrets.AZUREBLOBCONNECTIONSTRING }} -c ${{ secrets.CONTAINER }} --content-type application/xml --source ${{ github.workspace }}/NightlySigned/Upload2
         azcliversion: latest
         
   Deploy_WPF_GitHub:
