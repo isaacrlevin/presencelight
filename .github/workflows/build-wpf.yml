@@ -324,15 +324,15 @@ jobs:
         Copy-Item "${{ github.workspace }}/NightlySigned/ci_badge.svg" -Destination "${{ github.workspace }}/NightlySigned/Upload"
       shell: pwsh
     
-    - name: Upload Appxbundle
+    - name: Upload Files to Blob Container
       uses: azure/cli@v1.0.0
       with:
         inlineScript: | 
-          az storage blob upload --connection-string ${{ secrets.AZUREBLOBCONNECTIONSTRING }} --container-name ${{ secrets.CONTAINER }} --content-type "image/svg+xml" --file "${{ github.workspace }}/NightlySigned/Upload/ci_badge.svg" --name ci_badge.svg 
+          az storage blob upload --connection-string ${{ secrets.AZUREBLOBCONNECTIONSTRING }} -c ${{ secrets.CONTAINER }} --content-type "image/svg+xml" -f "${{ github.workspace }}/NightlySigned/Upload/ci_badge.svg" -n ci_badge.svg 
           
-          az storage blob upload-batch --connection-string ${{ secrets.AZUREBLOBCONNECTIONSTRING }} --container-name ${{ secrets.CONTAINER }} --content-type "application/vns.ms-appx" --source "${{ github.workspace }}/NightlySigned/Upload1"
+          az storage blob upload-batch --connection-string ${{ secrets.AZUREBLOBCONNECTIONSTRING }} -c ${{ secrets.CONTAINER }} --content-type "application/vns.ms-appx" --source "${{ github.workspace }}/NightlySigned/Upload1"
           
-          az storage blob upload-batch --connection-string ${{ secrets.AZUREBLOBCONNECTIONSTRING }} --container-name ${{ secrets.CONTAINER }} --content-type "application/xml" --source "${{ github.workspace }}/NightlySigned/Upload2" 
+          az storage blob upload-batch --connection-string ${{ secrets.AZUREBLOBCONNECTIONSTRING }} -c ${{ secrets.CONTAINER }} --content-type "application/xml" --source "${{ github.workspace }}/NightlySigned/Upload2" 
         azcliversion: latest
         
   Deploy_WPF_GitHub:
