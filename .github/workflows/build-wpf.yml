@@ -194,10 +194,10 @@ jobs:
         name: Chocolatey
       if:  ${{ success() && matrix.ChannelName  == 'Standalone' }}
 
-  Sign_WPF:
+  Code_Signing:
     needs: Build_WPF
     environment:
-        name: Sign_WPF
+        name: Code_Signing
         url: ${{ steps.deploy_staging.outputs.webapp-url }}
     name: Code Sign - CI
     runs-on: ubuntu-latest
@@ -299,10 +299,10 @@ jobs:
         path: ${{ github.workspace }}/ToSign/Standalone
         name: StandaloneSigned
         
-  Deploy_WPF_Nightly:
-    needs: Sign_WPF
+  Deploy_Azure_Blob:
+    needs: Code_Signing
     environment:
-        name: Deploy_WPF_Nightly
+        name: Deploy_Azure_Blob
         url: ${{ steps.deploy_staging.outputs.webapp-url }}
     name: Deploy WPF Nightly - CD
     runs-on: ubuntu-latest
@@ -323,25 +323,28 @@ jobs:
     - name: Copy files to same directory
       run: | 
         Copy-Item "${{ github.workspace }}/NightlySigned/**/*.appxbundle" -Destination "${{ github.workspace }}/NightlySigned/Upload1"
+        dir "${{ github.workspace }}/NightlySigned/Upload1"
         Copy-Item "${{ github.workspace }}/NightlySigned/**/*.appinstaller" -Destination "${{ github.workspace }}/NightlySigned/Upload2"
+        dir "${{ github.workspace }}/NightlySigned/Upload2"
         Copy-Item "${{ github.workspace }}/NightlySigned/ci_badge.svg" -Destination "${{ github.workspace }}/NightlySigned/Upload"
+        dir "${{ github.workspace }}/NightlySigned/Upload"
       shell: pwsh
     
     - name: Upload Files to Blob Container
       uses: azure/cli@v1.0.0
       with:
         inlineScript: | 
-          az storage blob upload -c nightly --content-type image/svg+xml -f ${{ github.workspace }}/NightlySigned/Upload/ci_badge.svg -n ci_badge.svg --connection-string ${{ secrets.AZUREBLOBCONNECTIONSTRING }} 
+          az storage blob upload -c nightly --content-type image/svg+xml -f ${{ github.workspace }}/NightlySigned/Upload/ci_badge.svg -n ci_badge.svg --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }}
           
           az storage blob upload-batch --connection-string ${{ secrets.AZUREBLOBCONNECTIONSTRING }} -c ${{ secrets.CONTAINER }} --content-type application/vns.ms-appx --source ${{ github.workspace }}/NightlySigned/Upload1
           
           az storage blob upload-batch --connection-string ${{ secrets.AZUREBLOBCONNECTIONSTRING }} -c ${{ secrets.CONTAINER }} --content-type application/xml --source ${{ github.workspace }}/NightlySigned/Upload2
         azcliversion: latest
         
-  Deploy_WPF_GitHub:
-    needs: Deploy_WPF_Nightly
+  Deploy_GitHub_Release:
+    needs: Deploy_Azure_Blob
     environment:
-        name: Deploy_WPF_GitHub
+        name: Deploy_GitHub_Release
         url: ${{ steps.deploy_staging.outputs.webapp-url }}
     name: Deploy_WPF GitHub - CD
     runs-on: ubuntu-latest
@@ -377,7 +380,7 @@ jobs:
 
 
   Deploy_WPF_Store:
-    needs: Deploy_WPF_Nightly
+    needs: Deploy_Azure_Blob
     environment:
         name: Deploy_WPF_Store
         url: ${{ steps.deploy_staging.outputs.webapp-url }}
@@ -391,10 +394,10 @@ jobs:
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}        
        
-  Deploy_WPF_Choco:
-    needs: Deploy_WPF_Nightly
+  Deploy_Choco:
+    needs: Deploy_Azure_Blob
     environment:
-        name: Deploy_WPF_Choco
+        name: Deploy_Choco
         url: ${{ steps.deploy_staging.outputs.webapp-url }}
     name: Deploy WPF Choco - CD
     runs-on: ubuntu-latest
