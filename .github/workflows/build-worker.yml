@@ -247,7 +247,7 @@ jobs:
 
 
   Deploy_Azure_Blob:
-    needs: Code_Signing
+    needs: Deploy_Containers
     environment:
         name: Deploy_Azure_Blob
         url: ${{ steps.deploy_staging.outputs.webapp-url }}
