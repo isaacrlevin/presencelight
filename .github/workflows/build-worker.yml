@@ -111,10 +111,10 @@ jobs:
         name: SigningScripts
       if:  ${{ success() && matrix.ChannelName  == 'Windows_x64_x86' }}
 
-  Sign_Worker:
+  Code_Signing:
     needs: Build_Worker
     environment:
-        name: Sign_Worker
+        name: Code_Signing
         url: ${{ steps.deploy_staging.outputs.webapp-url }}
     name: Code Sign - CI
     runs-on: ubuntu-latest
@@ -246,10 +246,10 @@ jobs:
         name: Linux_Musl_ARM_x64_Signed
 
 
-  Deploy_Worker:
-    needs: Sign_Worker
+  Deploy_Azure_Blob:
+    needs: Code_Signing
     environment:
-        name: Deploy_Worker
+        name: Deploy_Azure_Blob
         url: ${{ steps.deploy_staging.outputs.webapp-url }}
     name: Deploy Worker - CD
     runs-on: ubuntu-latest
@@ -310,29 +310,29 @@ jobs:
           az storage blob copy start-batch \
           --account-key ${{ secrets.ACCOUNT_KEY }} \
           --account-name ${{ secrets.ACCOUNT_NAME }} \
-          --destination-container ${{ secrets.DEST_CONTAINER }} \
+          --destination-container ${{ secrets.WORKER_ARCHIVE_CONTAINER }} \
           --source-account-key ${{ secrets.ACCOUNT_KEY }} \
           --source-account-name ${{ secrets.ACCOUNT_NAME }} \
-          --source-container ${{ secrets.CONTAINER }}
+          --source-container ${{ secrets.WORKER_CONTAINER }}
            
           az storage blob delete-batch \
           --account-key ${{ secrets.ACCOUNT_KEY }} \
           --account-name ${{ secrets.ACCOUNT_NAME }} \
-          --source ${{ secrets.CONTAINER }}
+          --source ${{ secrets.WORKER_CONTAINER }}
         azcliversion: latest
 
     - name: Upload Release to Blob Storage
       uses: bacongobbler/azure-blob-storage-upload@v1.1.1
       with:
         source_dir: ${{ github.workspace }}/Sign
-        container_name: ${{ secrets.CONTAINER }}
+        container_name: ${{ secrets.WORKER_CONTAINER }}
         connection_string: ${{ secrets.AZUREBLOBCONNECTIONSTRING }}
         sync: true
         
-  Deploy_Worker_DockerHub_GHPackages:
+  Deploy_Containers:
     needs: Build_Worker
     environment:
-        name: Deploy_Worker_DockerHub_GHPackages
+        name: Deploy_Containers
         url: ${{ steps.deploy_staging.outputs.webapp-url }}
     name: Deploy Worker Docker / GH Packages - CD
     runs-on: ubuntu-latest
