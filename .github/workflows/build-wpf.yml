@@ -226,7 +226,7 @@ jobs:
     - name: Scale Up Sign Service
       uses: azure/cli@v1.0.0
       with:
-        inlineScript: az appservice plan update --name levin-signserv-asp-2dnwx6q6jwiay --resource-group SignService --sku P2V2
+        inlineScript: az appservice plan update --name levin-signserv-asp-2dnwx6q6jwiay --resource-group SignService --sku P3V2
         azcliversion: latest
 
     - uses: nick-invision/retry@v2
