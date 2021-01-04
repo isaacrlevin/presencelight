@@ -56,6 +56,11 @@ jobs:
     - name: Create Directory for Channel
       run: mkdir ${{ github.workspace }}\${{ matrix.ChannelName }}
       shell: powershell
+    
+    - name: Add Version File to Artifact
+      run : |
+        New-Item -Path ${{ github.workspace }}\${{ matrix.ChannelName }} -Name "version.txt" -ItemType "file" -Value "${{ env.GitBuildVersionSimple }}"
+      shell: powershell
 
     - name: Update AppxManifest version
       run: |
@@ -351,27 +356,25 @@ jobs:
         
     - name: Copy files to same directory
       run: | 
-        mkdir "${{ github.workspace }}/Upload"
-        
         get-childitem "${{ github.workspace }}/NightlySigned/*" -recurse   -include "*.appxbundle"  | Copy-Item -Destination "${{ github.workspace }}/Upload"
 
         copy-item "${{ github.workspace }}/NightlySigned/PresenceLight.Package.appinstaller" -destination "${{ github.workspace }}/Upload"
      
         copy-item "${{ github.workspace }}/NightlySigned/ci_badge.svg" -destination "${{ github.workspace }}/Upload"                                
       shell: pwsh
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
+   
     - name: Upload Files to Blob Container
       uses: azure/cli@v1.0.0
       with:
         inlineScript: | 
-          az storage blob upload-batch --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} --source ${{ github.workspace }}/Upload/ --pattern *.appxbundle                                            -d nightly  --content-type application/vns.ms-appx 
+          az storage blob upload-batch --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} --source ${{ github.workspace }}/Upload --pattern *.appxbundle                                             -d nightly  --content-type application/vns.ms-appx 
           
           az storage blob upload       --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} -f ${{ github.workspace }}/Upload/PresenceLight.Package.appinstaller -n PresenceLight.Package.appinstaller -c nightly  --content-type application/xml
           
           az storage blob upload       --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} -f ${{ github.workspace }}/Upload/ci_badge.svg -n ci_badge.svg                                             -c nightly --content-type image/svg+xml 
           
         azcliversion: latest
+
         
   Deploy_GitHub_Release:
     needs: Deploy_Azure_Blob
@@ -383,33 +386,90 @@ jobs:
     env:
       if: ${{ github.event_name != 'pull_request' }}
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - uses: heinrichreimer/github-changelog-generator-action@v2.1.1
+        id: Changelog
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          REPO: ${{ github.repository }}
+
       - uses: actions/download-artifact@v2
         name: Download Nightly Signed
         with:
           name: StandaloneSigned
           path: "${{ github.workspace }}/StandaloneSigned"
-          
-   #   - name: Create Release
-   #     id: create_release
-   #     uses: actions/create-release@v1
-   #     env:
-   #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-   #     with:
-   #       tag_name: ${{ github.ref }}
-   #       release_name: Release ${{ github.ref }}
-   #       draft: false
-   #       prerelease: false
-   #   - name: Upload Release Asset
-   #     id: upload-release-asset 
-   #     uses: actions/upload-release-asset@v1
-   #     env:
-   #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-   #     with:
-   #       upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-   #       asset_path: ./my-artifact.zip
-   #       asset_name: my-artifact.zip
-   #       asset_content_type: application/zip
 
+      - name: Get Version from File
+        run: |
+          $version = Get-Content "${{ github.workspace }}/StandaloneSigned/version.txt"
+          echo "VERSION=$version" >> $GITHUB_ENV   
+        shell: pwsh
+                  
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: "v${{ env.VERSION }}"
+          release_name: "v${{ env.VERSION }}"
+          body: |
+            ${{ steps.Changelog.outputs.changelog }}:  
+          draft: false
+          prerelease: false          
+          
+      - name: Upload Standalone Release Files
+        uses: alexellis/upload-assets@0.2.2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          asset_paths: "${{ github.workspace }}/StandaloneSigned/*.zip"
+
+  Deploy_Choco:
+    needs: Deploy_Azure_Blob
+    environment:
+        name: Deploy_Choco
+        url: ${{ steps.deploy_staging.outputs.webapp-url }}
+    name: Deploy WPF Choco - CD
+    runs-on: ubuntu-latest
+    env:
+      if: ${{ github.event_name != 'pull_request' }}
+    steps:
+      - uses: actions/download-artifact@v2
+        name: Download Nightly Signed
+        with:
+          name: StandaloneSigned
+          path: "${{ github.workspace }}/StandaloneSigned"
+
+      - uses: actions/download-artifact@v2
+        name: Download Chocolatey Artifacts
+        with:
+          name: Chocolatey
+          path: "${{ github.workspace }}/Chocolatey"
+
+      - name: Get Version from File
+        run: |
+          $version = Get-Content "${{ github.workspace }}/StandaloneSigned/version.txt"
+          echo "VERSION=$version" >> $GITHUB_ENV   
+        shell: pwsh
+        
+      - name: Push to Chocolatey
+        run: | 
+          # Chocolatey Pack
+          & choco.exe pack "${{ github.workspace }}/Chocolatey/resenceLight.nuspec" --version "{{ env.VERSION }}.0"--OutputDirectory "${{ github.workspace }}/Chocolatey"
+
+          & choco.exe apikey --key ${{ secrets.CHOCOAPIKEY }} --source https://push.chocolatey.org/
+
+          $nupkgs = gci "${{ github.workspace }}/Chocolatey/PresenceLight.*.nupkg" | Select -ExpandProperty FullName
+          foreach ($nupkg in $nupkgs){
+            & choco.exe push $nupkg --source https://push.chocolatey.org/
+          }                               
+        shell: pwsh
 
   Deploy_WPF_Store:
     needs: Deploy_Azure_Blob
@@ -424,8 +484,63 @@ jobs:
     - name: Azure Login
       uses: azure/login@v1
       with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}        
-       
+        creds: ${{ secrets.AZURE_CREDENTIALS }}  
+ 
+        
+  Deploy_GitHub_Release:
+    needs: Deploy_Azure_Blob
+    environment:
+        name: Deploy_GitHub_Release
+        url: ${{ steps.deploy_staging.outputs.webapp-url }}
+    name: Deploy_WPF GitHub - CD
+    runs-on: ubuntu-latest
+    env:
+      if: ${{ github.event_name != 'pull_request' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - uses: heinrichreimer/github-changelog-generator-action@v2.1.1
+        id: Changelog
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          REPO: ${{ github.repository }}
+
+      - uses: actions/download-artifact@v2
+        name: Download Nightly Signed
+        with:
+          name: StandaloneSigned
+          path: "${{ github.workspace }}/StandaloneSigned"
+
+      - name: Get Version from File
+        run: |
+          $version = Get-Content "${{ github.workspace }}/StandaloneSigned/version.txt"
+          echo "VERSION=$version" >> $GITHUB_ENV   
+        shell: pwsh
+                  
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: "v${{ env.VERSION }}"
+          release_name: "v${{ env.VERSION }}"
+          body: |
+            ${{ steps.Changelog.outputs.changelog }}:  
+          draft: false
+          prerelease: false          
+          
+      - name: Upload Standalone Release Files
+        uses: alexellis/upload-assets@0.2.2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          asset_paths: "${{ github.workspace }}/StandaloneSigned/*.zip"
+
   Deploy_Choco:
     needs: Deploy_Azure_Blob
     environment:
@@ -436,7 +551,48 @@ jobs:
     env:
       if: ${{ github.event_name != 'pull_request' }}
     steps:
+      - uses: actions/download-artifact@v2
+        name: Download Nightly Signed
+        with:
+          name: StandaloneSigned
+          path: "${{ github.workspace }}/StandaloneSigned"
+
+      - uses: actions/download-artifact@v2
+        name: Download Chocolatey Artifacts
+        with:
+          name: Chocolatey
+          path: "${{ github.workspace }}/Chocolatey"
+
+      - name: Get Version from File
+        run: |
+          $version = Get-Content "${{ github.workspace }}/StandaloneSigned/version.txt"
+          echo "VERSION=$version" >> $GITHUB_ENV   
+        shell: pwsh
+        
+      - name: Push to Chocolatey
+        run: | 
+          # Chocolatey Pack
+          & choco.exe pack "${{ github.workspace }}/Chocolatey/resenceLight.nuspec" --version "{{ env.VERSION }}.0"--OutputDirectory "${{ github.workspace }}/Chocolatey"
+
+          & choco.exe apikey --key ${{ secrets.CHOCOAPIKEY }} --source https://push.chocolatey.org/
+
+          $nupkgs = gci "${{ github.workspace }}/Chocolatey/PresenceLight.*.nupkg" | Select -ExpandProperty FullName
+          foreach ($nupkg in $nupkgs){
+            & choco.exe push $nupkg --source https://push.chocolatey.org/
+          }                               
+        shell: pwsh
+
+  Deploy_WPF_Store:
+    needs: Deploy_Azure_Blob
+    environment:
+        name: Deploy_WPF_Store
+        url: ${{ steps.deploy_staging.outputs.webapp-url }}
+    name: Deploy WPF Store - CD
+    runs-on: ubuntu-latest
+    env:
+      if: ${{ github.event_name != 'pull_request' }}
+    steps:
     - name: Azure Login
       uses: azure/login@v1
       with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        creds: ${{ secrets.AZURE_CREDENTIALS }}  
