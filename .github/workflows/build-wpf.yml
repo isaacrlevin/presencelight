@@ -233,7 +233,7 @@ jobs:
       name: Authenticode Sign AppXBundle
       with:
         timeout_minutes: 10
-        max_attempts: 5
+        max_attempts: 10
         shell: pwsh
         command: |
           .\SignClient "Sign" `
@@ -251,7 +251,7 @@ jobs:
       name: Authenticode Sign AppInstaller
       with:
         timeout_minutes: 10
-        max_attempts: 5
+        max_attempts: 10
         shell: pwsh
         command: |
           .\SignClient "Sign" `
@@ -270,7 +270,7 @@ jobs:
       name: Authenticode Sign Zip
       with:
         timeout_minutes: 10
-        max_attempts: 5
+        max_attempts: 10
         shell: pwsh
         command: |
           .\SignClient "Sign" `
@@ -335,7 +335,7 @@ jobs:
         
         copy-item "${{ github.workspace }}/NightlySigned/"  -rec -filter *.appinstaller -destination "${{ github.workspace }}/Upload"
         
-        copy-item "${{ github.workspace }}/NightlySigned/ci_badge.svg" -destination "${{ github.workspace }}/Upload"                                
+        copy-item "${{ github.workspace }}/NightlySigned/ci_badge.svg" -destination "${{ github.workspace }}/NightlySigned/Upload"                                
       shell: pwsh
     
     - name: Upload Files to Blob Container
