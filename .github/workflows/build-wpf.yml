@@ -230,14 +230,15 @@ jobs:
         azcliversion: latest
 
     - uses: nick-invision/retry@v2
-      name: Authenticode Sign AppXBundle
+      name: Authenticode Sign AppXBundle Nightly
       with:
-        timeout_minutes: 10
-        max_attempts: 10
+        timeout_minutes: 5
+        max_attempts: 5
+        retry_wait_seconds: 30
         shell: pwsh
         command: |
           .\SignClient "Sign" `
-          --baseDirectory "${{ github.workspace }}/ToSign" `
+          --baseDirectory "${{ github.workspace }}/ToSign/Nightly" `
           --input "**/*.appxbundle" `
           --config "${{ github.workspace }}/SigningScripts/appsettings.json" `
           --filelist "${{ github.workspace }}/SigningScripts/filelist.txt" `
@@ -246,7 +247,26 @@ jobs:
           --name "PresenceLight" `
           --description "PresenceLight" `
           --descriptionUrl "https://github.com/isaacrlevin/PresenceLight"
-     
+
+    - uses: nick-invision/retry@v2
+      name: Authenticode Sign AppXBundle Release
+      with:
+        timeout_minutes: 5
+        max_attempts: 5
+        retry_wait_seconds: 30
+        shell: pwsh
+        command: |
+          .\SignClient "Sign" `
+          --baseDirectory "${{ github.workspace }}/ToSign/Release" `
+          --input "**/*.appxbundle" `
+          --config "${{ github.workspace }}/SigningScripts/appsettings.json" `
+          --filelist "${{ github.workspace }}/SigningScripts/filelist.txt" `
+          --user "${{ secrets.SignClientUser }}" `
+          --secret "${{ secrets.SignClientSecret }}" `
+          --name "PresenceLight" `
+          --description "PresenceLight" `
+          --descriptionUrl "https://github.com/isaacrlevin/PresenceLight"
+          
     - uses: nick-invision/retry@v2
       name: Authenticode Sign AppInstaller
       with:
