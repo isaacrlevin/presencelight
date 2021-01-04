@@ -362,9 +362,9 @@ jobs:
       uses: azure/cli@v1.0.0
       with:
         inlineScript: | 
-          az storage blob upload-batch --connection-string ${{ secrets.AZUREBLOBCONNECTIONSTRING }} -c ${{ secrets.CONTAINER }} --content-type application/vns.ms-appx --source ${{ github.workspace }}/NightlySigned/Upload --pattern *.appxbundle
+          az storage blob upload-batch --connection-string ${{ secrets.AZUREBLOBCONNECTIONSTRING }} --destination ${{ secrets.CONTAINER }} --content-type application/vns.ms-appx --source ${{ github.workspace }}/NightlySigned/Upload --pattern *.appxbundle
           
-          az storage blob upload-batch --connection-string ${{ secrets.AZUREBLOBCONNECTIONSTRING }} -c ${{ secrets.CONTAINER }} --content-type application/xml --source ${{ github.workspace }}/NightlySigned/Upload --pattern *.appinstaller
+          az storage blob upload-batch --connection-string ${{ secrets.AZUREBLOBCONNECTIONSTRING }} --destination ${{ secrets.CONTAINER }} --content-type application/xml --source ${{ github.workspace }}/NightlySigned/Upload --pattern *.appinstaller
           
           az storage blob upload -c nightly --content-type image/svg+xml -f ${{ github.workspace }}/NightlySigned/Upload/ci_badge.svg -n ci_badge.svg --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }}
           
