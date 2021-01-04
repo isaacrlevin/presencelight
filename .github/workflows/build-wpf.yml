@@ -351,11 +351,11 @@ jobs:
         
     - name: Copy files to same directory
       run: | 
-        copy-item "${{ github.workspace }}/NightlySigned/"  -rec -filter *.appxbundle   -destination "${{ github.workspace }}/Upload"
-        
-        copy-item "${{ github.workspace }}/NightlySigned/"  -rec -filter *.appinstaller -destination "${{ github.workspace }}/Upload"
-        
-        copy-item "${{ github.workspace }}/NightlySigned/ci_badge.svg" -destination "${{ github.workspace }}/NightlySigned/Upload"                                
+        get-childitem "${{ github.workspace }}/NightlySigned/*" -recurse   -include "*.appxbundle"  | Copy-Item -Destination "${{ github.workspace }}/Upload"copy
+
+        copy-item "${{ github.workspace }}/NightlySigned/PresenceLight.Package.appinstaller" -destination "${{ github.workspace }}/Upload"
+     
+        copy-item "${{ github.workspace }}/NightlySigned/ci_badge.svg" -destination "${{ github.workspace }}/Upload"                                
       shell: pwsh
    
     - name: Setup tmate session
@@ -365,11 +365,11 @@ jobs:
       uses: azure/cli@v1.0.0
       with:
         inlineScript: | 
-          az storage blob upload-batch --connection-string ${{ secrets.AZUREBLOBCONNECTIONSTRING }} -d nightly --content-type application/vns.ms-appx --source ${{ github.workspace }}/NightlySigned/Upload --pattern *.appxbundle
+          az storage blob upload-batch --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} --source ${{ github.workspace }}/Upload -pattern *.appxbundle                                               -d nightly  --content-type application/vns.ms-appx 
           
-          az storage blob upload-batch --connection-string ${{ secrets.AZUREBLOBCONNECTIONSTRING }} -d nightly --content-type application/xml --source ${{ github.workspace }}/NightlySigned/Upload --pattern *.appinstaller
+          az storage blob upload       --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} -f ${{ github.workspace }}/Upload/PresenceLight.Package.appinstaller -n PresenceLight.Package.appinstaller -c nightly  --content-type application/xml
           
-          az storage blob upload -c nightly --content-type image/svg+xml -f ${{ github.workspace }}/NightlySigned/Upload/ci_badge.svg -n ci_badge.svg --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }}
+          az storage blob upload       --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} -f ${{ github.workspace }}/Upload/ci_badge.svg -n ci_badge.svg                                             -c nightly --content-type image/svg+xml 
           
         azcliversion: latest
         
