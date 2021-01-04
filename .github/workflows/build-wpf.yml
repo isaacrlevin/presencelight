@@ -351,6 +351,8 @@ jobs:
         
     - name: Copy files to same directory
       run: | 
+        mkdir "${{ github.workspace }}/Upload"
+        
         get-childitem "${{ github.workspace }}/NightlySigned/*" -recurse   -include "*.appxbundle"  | Copy-Item -Destination "${{ github.workspace }}/Upload"
 
         copy-item "${{ github.workspace }}/NightlySigned/PresenceLight.Package.appinstaller" -destination "${{ github.workspace }}/Upload"
