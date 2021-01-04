@@ -359,7 +359,8 @@ jobs:
      
         copy-item "${{ github.workspace }}/NightlySigned/ci_badge.svg" -destination "${{ github.workspace }}/Upload"                                
       shell: pwsh
-   
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
     - name: Upload Files to Blob Container
       uses: azure/cli@v1.0.0
       with:
