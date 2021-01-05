@@ -356,11 +356,13 @@ jobs:
         
     - name: Copy files to same directory
       run: | 
-        get-childitem "${{ github.workspace }}/NightlySigned/*" -recurse   -include "*.appxbundle"  | Copy-Item -Destination "${{ github.workspace }}/Upload"
+        mkdir "${{ github.workspace }}/Upload"
+ 
+        get-childitem "${{ github.workspace }}/NightlySigned/*" -recurse   -include "*.appxbundle"  | Copy-Item -Destination "${{ github.workspace }}/Upload/"
 
-        copy-item "${{ github.workspace }}/NightlySigned/PresenceLight.Package.appinstaller" -destination "${{ github.workspace }}/Upload"
+        copy-item "${{ github.workspace }}/NightlySigned/PresenceLight.Package.appinstaller" -destination "${{ github.workspace }}/Upload/"
      
-        copy-item "${{ github.workspace }}/NightlySigned/ci_badge.svg" -destination "${{ github.workspace }}/Upload"                                
+        copy-item "${{ github.workspace }}/NightlySigned/ci_badge.svg" -destination "${{ github.workspace }}/Upload/"                                
       shell: pwsh
     
     - name: Setup tmate session
