@@ -372,7 +372,7 @@ jobs:
       uses: azure/cli@v1.0.0
       with:
         inlineScript: | 
-          az storage blob upload-batch --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} --source ${{ github.workspace }}/Upload --pattern *.appxbundle                                             -d nightly  --content-type application/vns.ms-appx 
+          az storage blob upload-batch --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} --source ${{ github.workspace }}/Upload/ --pattern *.appxbundle                                             -d nightly  --content-type application/vns.ms-appx 
           
           az storage blob upload       --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} -f ${{ github.workspace }}/Upload/PresenceLight.Package.appinstaller -n PresenceLight.Package.appinstaller -c nightly  --content-type application/xml
           
