@@ -367,7 +367,7 @@ jobs:
         source_dir: ${{ github.workspace }}/Upload
         container_name: nightly
         connection_string: ${{ secrets.AZUREBLOBCONNECTIONSTRING }}
-        extra_args: --pattern *.appxbundle -d nightly --content-type application/vns.ms-appx
+        extra_args: --pattern *.appxbundle --content-type application/vns.ms-appx
   
     - name: Upload Files to Blob Container
       uses: azure/cli@v1.0.0
