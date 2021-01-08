@@ -359,8 +359,8 @@ jobs:
         Copy-Item "${{ github.workspace }}/NightlySigned" -Destination "${{ github.workspace }}/Upload" -Recurse -Verbose                              
       shell: pwsh
     
-    #- name: Setup tmate session
-    #  uses: mxschmitt/action-tmate@v3
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
     
     - uses: bacongobbler/azure-blob-storage-upload@v1.1.1
       with:
