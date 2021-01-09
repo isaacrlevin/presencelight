@@ -373,6 +373,7 @@ jobs:
       uses: azure/cli@v1.0.0
       with:
         inlineScript: | 
+          dir .\Upload\
           az storage blob upload --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} -f /home/runner/work/PresenceLight/PresenceLight/Upload/ci_badge.svg -n ci_badge.svg -c nightly --content-type image/svg+xml  --debug
           az storage blob upload --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} -f /home/runner/work/PresenceLight/PresenceLight/Upload/PresenceLight.Package.appinstaller -n PresenceLight.Package.appinstaller -c nightly --content-type application/xml  --debug 
           az storage blob upload-batch --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} --source /home/runner/work/PresenceLight/PresenceLight/Upload --pattern *.appxbundle -d nightly --content-type application/vns.ms-appx --debug
