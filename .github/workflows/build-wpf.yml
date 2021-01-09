@@ -357,28 +357,22 @@ jobs:
     - name: Copy files to same directory
       run: | 
         Copy-Item "${{ github.workspace }}/NightlySigned" -Destination "${{ github.workspace }}/Upload" -Recurse -Verbose   
-        dir .\Upload\                     
+        dir .\Upload\         
+        az storage blob upload --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} -f /home/runner/work/PresenceLight/PresenceLight/Upload/ci_badge.svg -n ci_badge.svg -c nightly --content-type image/svg+xml  --debug
+
+        az storage blob upload --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} -f /home/runner/work/PresenceLight/PresenceLight/Upload/PresenceLight.Package.appinstaller -n PresenceLight.Package.appinstaller -c nightly --content-type application/xml  --debug 
+
+        az storage blob upload-batch --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} --source /home/runner/work/PresenceLight/PresenceLight/Upload --pattern *.appxbundle -d nightly --content-type application/vns.ms-appx --debug
+
+        
+        
       shell: pwsh
     
   #  - name: Setup tmate session
   #    uses: mxschmitt/action-tmate@v3
     
-  #  - uses: bacongobbler/azure-blob-storage-upload@v1.1.1
-  #    with:
-  #      source_dir: ${{ github.workspace }}/Upload
-  #      container_name: nightly
-  #      connection_string: ${{ secrets.AZUREBLOBCONNECTIONSTRING }}
-  #      extra_args: --pattern *.appxbundle --content-type application/vns.ms-appx
-  
-    - name: Upload Files to Blob Container
-      uses: azure/cli@v1.0.0
-      with:
-        inlineScript: | 
-          
-          az storage blob upload --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} -f /home/runner/work/PresenceLight/PresenceLight/Upload/ci_badge.svg -n ci_badge.svg -c nightly --content-type image/svg+xml  --debug
-          az storage blob upload --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} -f /home/runner/work/PresenceLight/PresenceLight/Upload/PresenceLight.Package.appinstaller -n PresenceLight.Package.appinstaller -c nightly --content-type application/xml  --debug 
-          az storage blob upload-batch --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} --source /home/runner/work/PresenceLight/PresenceLight/Upload --pattern *.appxbundle -d nightly --content-type application/vns.ms-appx --debug
-        azcliversion: latest      
+
+
  
         
   Deploy_GitHub_Release:
