@@ -405,9 +405,8 @@ jobs:
 
       - name: Get Version from File
         run: |
-          $version = Get-Content "${{ github.workspace }}/StandaloneSigned/version.txt"
-          echo "VERSION=$version" >> $GITHUB_ENV   
-        shell: pwsh
+          version=$(<"${{ github.workspace }}/StandaloneSigned/version.txt") 
+          echo "VERSION=$version" >> $GITHUB_ENV
                   
       - name: Create Release
         id: create_release
@@ -427,7 +426,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
-          asset_paths: "${{ github.workspace }}/StandaloneSigned/*.zip"
+          asset_paths: "${{ github.workspace }}/StandaloneSigned/Presence*"
 
   Deploy_Choco:
     needs: Deploy_Azure_Blob
