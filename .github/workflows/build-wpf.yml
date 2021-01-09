@@ -426,7 +426,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
-          asset_paths: "${{ github.workspace }}/StandaloneSigned/Presence*"
+          asset_paths: '["${{ github.workspace }}/StandaloneSigned/*.zip"]' 
 
   Deploy_Choco:
     needs: Deploy_Azure_Blob
