@@ -421,12 +421,29 @@ jobs:
           draft: false
           prerelease: false          
           
-      - name: Upload Standalone Release Files
-        uses: alexellis/upload-assets@0.2.2
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          asset_paths: '["/home/runner/work/PresenceLight/PresenceLight/StandaloneSigned/*"]' 
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          asset_path: "/home/runner/work/PresenceLight/PresenceLight/StandaloneSigned/PresenceLight.${{ env.VERSION }}-x64.zip" 
+          asset_name: "PresenceLight.${{ env.VERSION }}-x64.zip"
+          asset_content_type: application/zip
+
+     - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          asset_path: "/home/runner/work/PresenceLight/PresenceLight/StandaloneSigned/PresenceLight.${{ env.VERSION }}-x86.zip" 
+          asset_name: "PresenceLight.${{ env.VERSION }}-x86.zip"
+          asset_content_type: application/zip
+
+
 
   Deploy_Choco:
     needs: Deploy_Azure_Blob
