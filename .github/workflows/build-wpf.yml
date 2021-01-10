@@ -8,6 +8,7 @@ on:
     paths-ignore:
     - azure-pipelines-worker.yml
     - .github/workflows/build-worker.yml
+    - .github/workflows/test.yml
     - src/PresenceLight.Worker/*
     - README.md
     - worker-README.md
