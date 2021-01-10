@@ -387,12 +387,15 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: heinrichreimer/github-changelog-generator-action@v2.1.1
-        id: Changelog
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build Changelog
+
+        id: github_release
+
+        uses: mikepenz/release-changelog-builder-action@main
+
         env:
-          REPO: ${{ github.repository }}
+
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/download-artifact@v2
         name: Download Nightly Signed
@@ -413,8 +416,8 @@ jobs:
         with:
           tag_name: "v${{ env.VERSION }}"
           release_name: "v${{ env.VERSION }}"
-          body: |
-            ${{ steps.Changelog.outputs.changelog }}:  
+          body: ${{steps.github_release.outputs.changelog}} 
+            
           draft: false
           prerelease: false          
           
