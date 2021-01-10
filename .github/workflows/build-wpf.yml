@@ -363,9 +363,6 @@ jobs:
         az storage blob upload --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} -f /home/runner/work/PresenceLight/PresenceLight/Upload/PresenceLight.Package.appinstaller -n PresenceLight.Package.appinstaller -c nightly --content-type application/xml  --debug 
 
         az storage blob upload-batch --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} --source /home/runner/work/PresenceLight/PresenceLight/Upload --pattern *.appxbundle -d nightly --content-type application/vns.ms-appx --debug
-
-        
-        
       shell: pwsh
     
   #  - name: Setup tmate session
@@ -432,8 +429,8 @@ jobs:
           asset_name: "PresenceLight.${{ env.VERSION }}-x64.zip"
           asset_content_type: application/zip
 
-     - name: Upload Release Asset
-        id: upload-release-asset 
+      - name: Upload Release Asset
+        id: upload-release-asset2
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -442,8 +439,6 @@ jobs:
           asset_path: "/home/runner/work/PresenceLight/PresenceLight/StandaloneSigned/PresenceLight.${{ env.VERSION }}-x86.zip" 
           asset_name: "PresenceLight.${{ env.VERSION }}-x86.zip"
           asset_content_type: application/zip
-
-
 
   Deploy_Choco:
     needs: Deploy_Azure_Blob
