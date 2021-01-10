@@ -41,19 +41,25 @@ jobs:
 
     - run: echo "BuildNumber - ${{ env.GitBuildVersionSimple }}"
  
-    - uses: heinrichreimer/github-changelog-generator-action@v2.1.1
-      id: heinrichreimer
+    - name: Generate changelog
+      id: changelog
+      uses: jaywcjlove/changelog-generator@main
       with:
-        token: ${{ secrets.GITHUB_TOKEN }}   
+        token: ${{ secrets.GITHUB_TOKEN }}
+        filter: ''
         
     - name: Create Release
-      id: create_release1
-      uses: actions/create-release@v1
+      id: create_release
+      uses: actions/create-release@latest
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: "heinrichreimer"
-        release_name: "heinrichreimer"
-        body: ${{ steps.heinrichreimer.outputs.changelogs }} 
+        tag_name: ${{ github.ref }}
+        release_name: ${{ github.ref }}
+        body: |
+          ${{ steps.changelog.outputs.compareurl }}
+          ${{ steps.changelog.outputs.changelog }}
+        draft: false
+        prerelease: false
       
        
