@@ -40,37 +40,11 @@ jobs:
         setCommonVars: true
 
     - run: echo "BuildNumber - ${{ env.GitBuildVersionSimple }}"
-
  
     - uses: heinrichreimer/github-changelog-generator-action@v2.1.1
       id: heinrichreimer
       with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        
-       
-    - uses: notlmn/release-with-changelog@v3
-      id: notlmn
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Generate changelog
-      id: jaywcjlove
-      uses: jaywcjlove/changelog-generator@main
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Conventional Changelog Action
-      id: TriPSs
-      uses: TriPSs/conventional-changelog-action@v3
-      with:
-        github-token: ${{ secrets.github_token }}
-        
-    - name: "Build Changelog"
-      id: mikepenz
-      uses: mikepenz/release-changelog-builder-action@main
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+        token: ${{ secrets.GITHUB_TOKEN }}   
         
     - name: Create Release
       id: create_release1
@@ -83,30 +57,3 @@ jobs:
         body: ${{ steps.heinrichreimer.outputs.changelogs }} 
       
        
-    - name: Create Release
-      id: create_release3
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: "jaywcjlove"
-        release_name: "jaywcjlove"
-        body: ${{ steps.jaywcjlove.outputs.changelog }} 
-      
-    - name: Create Release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.github_token }}
-      with:
-        tag_name: "TriPSs"
-        release_name: "TriPSs"
-        body: ${{ steps.TriPSs.outputs.clean_changelog }}
-        
-    - name: Create Release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.github_token }}
-      with:
-        tag_name: "mikepenz"
-        release_name: "mikepenz"
-        body: ${{ steps.mikepenz.outputs.changelog }}
