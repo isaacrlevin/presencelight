@@ -394,7 +394,7 @@ jobs:
         uses: mikepenz/release-changelog-builder-action@main
 
         env:
-
+          commitMode: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/download-artifact@v2
