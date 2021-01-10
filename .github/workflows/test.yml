@@ -47,13 +47,10 @@ jobs:
 
     - run: echo "BuildNumber - ${{ env.GitBuildVersionSimple }}"
 
-    uses: heinrichreimer/github-changelog-generator-action@v2.1.1
-    id: gh1
-    with:
-      token: ${{ secrets.GITHUB_TOKEN }}
-    
-    - run echo "${{steps.gh1.outputs.changelog}} "
-      
- 
+    - uses: heinrichreimer/github-changelog-generator-action@v2.1.1
+      id: gh1
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
 
- 
+    - run: echo "${{ steps.gh1.outputs.changelog }}"
+      
