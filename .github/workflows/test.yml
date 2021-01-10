@@ -45,6 +45,6 @@ jobs:
       id: changelogs
       uses: heineiuo/create-changelogs@master
 
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
+    - run: |
+        echo "${{ steps.changelogs.outputs.changelogs }}"
       
