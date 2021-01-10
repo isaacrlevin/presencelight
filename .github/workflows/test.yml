@@ -14,7 +14,7 @@ on:
 
 jobs:
   Build_Worker: 
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         include:
