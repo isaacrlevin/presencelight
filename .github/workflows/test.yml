@@ -1,0 +1,59 @@
+on:
+
+  push:
+
+    branches:
+    - main
+
+    paths-ignore:
+    - azure-pipelines-wpf.yml
+    - .github/workflows/build-wpf.yml
+    - src/DesktopClient/*
+    - README.md
+    - worker-README.md
+
+jobs:
+  Build_Worker: 
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        include:
+          - ChannelName: Windows_x64_x86
+            RID: win-x64
+
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+      DOTNET_NOLOGO: true
+      BuildConfiguration: Release
+      ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+      GitHubReleaseUrl: https://github.com/isaacrlevin/PresenceLight/releases/download
+
+    steps:
+
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Use .NET Core SDK 5.0.x
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+
+    - name: Nerdbank.GitVersioning
+      uses: dotnet/nbgv@v0.3.1
+      with:
+        setCommonVars: true
+
+    - run: echo "BuildNumber - ${{ env.GitBuildVersionSimple }}"
+
+    uses: heinrichreimer/github-changelog-generator-action@v2.1.1
+    id: gh1
+    with:
+      token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - run echo "${{steps.gh1.outputs.changelog}} "
+      
+ 
+
+ 
