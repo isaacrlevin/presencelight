@@ -47,11 +47,7 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         
-    - uses: Helmisek/conventional-changelog-generator@v1.0.4
-      id: Helmisek
-      with:
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
-        
+       
     - uses: notlmn/release-with-changelog@v3
       id: notlmn
       with:
@@ -75,7 +71,6 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-
         
     - name: Create Release
       id: create_release1
@@ -87,16 +82,7 @@ jobs:
         release_name: "heinrichreimer"
         body: ${{ steps.heinrichreimer.outputs.changelogs }} 
       
-    - name: Create Release
-      id: create_release2
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: "Helmisek"
-        release_name: "Helmisek"
-        body: ${{ steps.Helmisek.outputs.changelog }} 
-        
+       
     - name: Create Release
       id: create_release3
       uses: actions/create-release@v1
@@ -121,6 +107,6 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.github_token }}
       with:
-        tag_name: "TrimikepenzPSs"
+        tag_name: "mikepenz"
         release_name: "mikepenz"
         body: ${{ steps.mikepenz.outputs.changelog }}
