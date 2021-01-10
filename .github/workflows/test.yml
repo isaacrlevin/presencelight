@@ -41,10 +41,7 @@ jobs:
 
     - run: echo "BuildNumber - ${{ env.GitBuildVersionSimple }}"
 
-    - name: Create changelogs
-      id: heineiuo
-      uses: heineiuo/create-changelogs@master
-  
+ 
     - uses: heinrichreimer/github-changelog-generator-action@v2.1.1
       id: heinrichreimer
       with:
@@ -78,15 +75,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: "heineiuo"
-        release_name: "heineiuo"
-        body: ${{ steps.heineiuo.outputs.changelogs }} 
+
         
     - name: Create Release
       id: create_release1
