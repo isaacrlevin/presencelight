@@ -9,6 +9,7 @@ on:
     - azure-pipelines-wpf.yml
     - .github/workflows/build-wpf.yml
     - src/DesktopClient/*
+    - .github/workflows/test.yml
     - README.md
     - worker-README.md
 
