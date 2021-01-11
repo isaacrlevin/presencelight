@@ -368,10 +368,6 @@ jobs:
     
   #  - name: Setup tmate session
   #    uses: mxschmitt/action-tmate@v3
-    
-
-
- 
         
   Deploy_GitHub_Release:
     needs: Deploy_Azure_Blob
@@ -388,12 +384,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Build Changelog
-
-        id: github_release
-
-        uses: mikepenz/release-changelog-builder-action@main
-
+      - name: Generate changelog
+        id: changelog
+        uses: jaywcjlove/changelog-generator@main
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          filter: ''
         env:
           commitMode: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -407,20 +403,21 @@ jobs:
       - name: Get Version from File
         run: |
           version=$(<"${{ github.workspace }}/StandaloneSigned/version.txt") 
-          echo "VERSION=$version" >> $GITHUB_ENV
-                  
+          echo "VERSION=$version" >> $GITHUB_ENV      
+          
       - name: Create Release
         id: create_release
-        uses: actions/create-release@v1
+        uses: actions/create-release@latest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: "v${{ env.VERSION }}"
           release_name: "v${{ env.VERSION }}"
-          body: ${{steps.github_release.outputs.changelog}} 
-            
+          body: |
+            ${{ steps.changelog.outputs.compareurl }}
+            ${{ steps.changelog.outputs.changelog }}
           draft: false
-          prerelease: false          
+          prerelease: false
           
       - name: Upload Release Asset
         id: upload-release-asset 
