@@ -455,28 +455,28 @@ jobs:
         name: Download Nightly Signed
         with:
           name: StandaloneSigned
-          path: "${{ github.workspace }}\StandaloneSigned"
+          path: "${{ github.workspace }}\\StandaloneSigned"
 
       - uses: actions/download-artifact@v2
         name: Download Chocolatey Artifacts
         with:
           name: Chocolatey
-          path: "${{ github.workspace }}\Chocolatey"
+          path: "${{ github.workspace }}\\Chocolatey"
 
       - name: Get Version from File
         run: |
-          $version = Get-Content "${{ github.workspace }}\StandaloneSigned\version.txt"
+          $version = Get-Content "${{ github.workspace }}\\StandaloneSigned\\version.txt"
           echo "VERSION=$version" >> $GITHUB_ENV   
         shell: pwsh
         
       - name: Push to Chocolatey
         run: | 
           # Chocolatey Pack
-          & choco.exe pack "${{ github.workspace }}\Chocolatey\PresenceLight.nuspec" --version "{{ env.VERSION }}.0"--OutputDirectory "${{ github.workspace }}\Chocolatey"
+          & choco.exe pack "${{ github.workspace }}\\Chocolatey\\PresenceLight.nuspec" --version "{{ env.VERSION }}.0"--OutputDirectory "${{ github.workspace }}\\Chocolatey"
 
           & choco.exe apikey --key ${{ secrets.CHOCOAPIKEY }} --source https://push.chocolatey.org/
 
-          $nupkgs = gci "${{ github.workspace }}\Chocolatey/PresenceLight.*.nupkg" | Select -ExpandProperty FullName
+          $nupkgs = gci "${{ github.workspace }}\\Chocolatey\\PresenceLight.*.nupkg" | Select -ExpandProperty FullName
           foreach ($nupkg in $nupkgs){
             & choco.exe push $nupkg --source https://push.chocolatey.org/
           }                               
