@@ -430,8 +430,6 @@ jobs:
     runs-on: windows-latest
     env:
       if: ${{ github.event_name != 'pull_request' }}
-      ACTIONS_ALLOW_UNSECURE_COMMANDS: true
-      GitHubReleaseUrl: https://github.com/isaacrlevin/PresenceLight/releases/download
 
     steps:
       - uses: actions/download-artifact@v2
@@ -455,8 +453,8 @@ jobs:
 
         run: |
           # Hash the Zip Files          
-          Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}/v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x86.zip" -OutFile ${{ github.workspace }}\Download\PresenceLight.${{ env.VERSION }}-x86.zip
-          Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}/v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x86.zip" -OutFile ${{ github.workspace }}\Download\PresenceLight.${{ env.VERSION }}-x64.zip          
+          Invoke-WebRequest -Uri "https://github.com/isaacrlevin/PresenceLight/releases/download/v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x86.zip" -OutFile ${{ github.workspace }}\Download\PresenceLight.${{ env.VERSION }}-x86.zip
+          Invoke-WebRequest -Uri "https://github.com/isaacrlevin/PresenceLight/releases/download/v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x86.zip" -OutFile ${{ github.workspace }}\Download\PresenceLight.${{ env.VERSION }}-x64.zip          
           $hash64=Get-Filehash ${{ github.workspace }}\Download\PresenceLight.${{ env.VERSION }}-x64.zip
           $hash86=Get-Filehash ${{ github.workspace }}\Download\PresenceLight.${{ env.VERSION }}-x86.zip
 
@@ -464,14 +462,14 @@ jobs:
           $installFile = Get-Content -path ".\.chocolatey\tools\ChocolateyInstall.ps1" -Raw
           $installFile = $installFile -replace '{ReplaceCheckSumx86}', $hash86.Hash
           $installFile = $installFile -replace '{ReplaceCheckSumx64}', $hash64.Hash
-          $installFile = $installFile -replace '{x86Link}' , "${{ env.GitHubReleaseUrl }}/v${{ env.GitBuildVersionSimple }}/PresenceLight.${{ env.GitBuildVersionSimple }}-x86.zip"
-          $installFile = $installFile -replace '{x64Link}' , "${{ env.GitHubReleaseUrl }}/v${{ env.GitBuildVersionSimple }}/PresenceLight.${{ env.GitBuildVersionSimple }}-x64.zip"
+          $installFile = $installFile -replace '{x86Link}' , "https://github.com/isaacrlevin/PresenceLight/releases/download/v${{ env.GitBuildVersionSimple }}/PresenceLight.${{ env.GitBuildVersionSimple }}-x86.zip"
+          $installFile = $installFile -replace '{x64Link}' , "https://github.com/isaacrlevin/PresenceLight/releases/download/v${{ env.GitBuildVersionSimple }}/PresenceLight.${{ env.GitBuildVersionSimple }}-x64.zip"
           $installFile | Set-Content -Path ".\.chocolatey\tools\ChocolateyInstall.ps1"
           
           # Update Verification.txt
           $verificationFile = Get-Content -path ".\.chocolatey\tools\Verification.txt"
-          $verificationFile = $verificationFile -replace '{x86Link}' , "${{ env.GitHubReleaseUrl }}/v${{ env.GitBuildVersionSimple }}/PresenceLight.${{ env.GitBuildVersionSimple }}-x86.zip"
-          $verificationFile = $verificationFile -replace '{x64Link}' , "${{ env.GitHubReleaseUrl }}/v${{ env.GitBuildVersionSimple }}/PresenceLight.${{ env.GitBuildVersionSimple }}-x64.zip"
+          $verificationFile = $verificationFile -replace '{x86Link}' , "https://github.com/isaacrlevin/PresenceLight/releases/download/v${{ env.GitBuildVersionSimple }}/PresenceLight.${{ env.GitBuildVersionSimple }}-x86.zip"
+          $verificationFile = $verificationFile -replace '{x64Link}' , "https://github.com/isaacrlevin/PresenceLight/releases/download/v${{ env.GitBuildVersionSimple }}/PresenceLight.${{ env.GitBuildVersionSimple }}-x64.zip"
           $verificationFile = $verificationFile -replace '{HASHx64}', $hash64.Hash
           $verificationFile = $verificationFile -replace '{HASHx86}', $hash86.Hash
           $verificationFile | Set-Content -Path ".\.chocolatey\tools\Verification.txt"
