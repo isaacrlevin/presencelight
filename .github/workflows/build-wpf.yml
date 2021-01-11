@@ -347,11 +347,8 @@ jobs:
         az storage blob upload --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} -f /home/runner/work/PresenceLight/PresenceLight/Upload/PresenceLight.Package.appinstaller -n PresenceLight.Package.appinstaller -c nightly --content-type application/xml  --debug 
 
         az storage blob upload-batch --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} --source /home/runner/work/PresenceLight/PresenceLight/Upload --pattern *.appxbundle -d nightly --content-type application/vns.ms-appx --debug
-      shell: pwsh
-    
-  #  - name: Setup tmate session
-  #    uses: mxschmitt/action-tmate@v3
-        
+      shell: pwsh    
+       
   Deploy_GitHub_Release:
     needs: Deploy_Azure_Blob
     environment:
@@ -433,6 +430,9 @@ jobs:
     runs-on: windows-latest
     env:
       if: ${{ github.event_name != 'pull_request' }}
+      ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+      GitHubReleaseUrl: https://github.com/isaacrlevin/PresenceLight/releases/download
+
     steps:
       - uses: actions/download-artifact@v2
         name: Download Nightly Signed
