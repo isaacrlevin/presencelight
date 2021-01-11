@@ -177,7 +177,6 @@ jobs:
         name: SigningScripts
       if:  ${{ success() && matrix.ChannelName  == 'Release' }}
 
-
     - name: Publish .chocolatey scripts
       uses: actions/upload-artifact@v2
       with:
@@ -275,7 +274,6 @@ jobs:
           --name "PresenceLight" `
           --description "PresenceLight" `
           --descriptionUrl "https://github.com/isaacrlevin/PresenceLight"
-
 
     - uses: nick-invision/retry@v2
       name: Authenticode Sign Zip
@@ -449,62 +447,35 @@ jobs:
           path: "${{ github.workspace }}\\Chocolatey"
 
       - name: Get Version from File
-
         run: |
-
           $version = Get-Content "${{ github.workspace }}\\Chocolatey\\version.txt"
-
           echo "VERSION=$version" >> $GITHUB_ENV   
-
         shell: pwsh
       - name: Update Chocolatey Files
 
         run: |
-
-          # Hash the Zip Files
-          
-          Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}/v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x86.zip" OutFile ${{ github.workspace }}\Download\PresenceLight.${{ env.VERSION }}-x86.zip
-
-          Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}/v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x86.zip" OutFile ${{ github.workspace }}\Download\PresenceLight.${{ env.VERSION }}-x64.zip
-
- 
-          
+          # Hash the Zip Files          
+          Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}/v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x86.zip" -OutFile ${{ github.workspace }}\Download\PresenceLight.${{ env.VERSION }}-x86.zip
+          Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}/v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x86.zip" -OutFile ${{ github.workspace }}\Download\PresenceLight.${{ env.VERSION }}-x64.zip          
           $hash64=Get-Filehash ${{ github.workspace }}\Download\PresenceLight.${{ env.VERSION }}-x64.zip
-
           $hash86=Get-Filehash ${{ github.workspace }}\Download\PresenceLight.${{ env.VERSION }}-x86.zip
 
           # Update ChocolateyInstall.ps1
-
           $installFile = Get-Content -path ".\.chocolatey\tools\ChocolateyInstall.ps1" -Raw
-
           $installFile = $installFile -replace '{ReplaceCheckSumx86}', $hash86.Hash
-
           $installFile = $installFile -replace '{ReplaceCheckSumx64}', $hash64.Hash
-
           $installFile = $installFile -replace '{x86Link}' , "${{ env.GitHubReleaseUrl }}/v${{ env.GitBuildVersionSimple }}/PresenceLight.${{ env.GitBuildVersionSimple }}-x86.zip"
-
           $installFile = $installFile -replace '{x64Link}' , "${{ env.GitHubReleaseUrl }}/v${{ env.GitBuildVersionSimple }}/PresenceLight.${{ env.GitBuildVersionSimple }}-x64.zip"
-
           $installFile | Set-Content -Path ".\.chocolatey\tools\ChocolateyInstall.ps1"
-
+          
           # Update Verification.txt
-
           $verificationFile = Get-Content -path ".\.chocolatey\tools\Verification.txt"
-
           $verificationFile = $verificationFile -replace '{x86Link}' , "${{ env.GitHubReleaseUrl }}/v${{ env.GitBuildVersionSimple }}/PresenceLight.${{ env.GitBuildVersionSimple }}-x86.zip"
-
           $verificationFile = $verificationFile -replace '{x64Link}' , "${{ env.GitHubReleaseUrl }}/v${{ env.GitBuildVersionSimple }}/PresenceLight.${{ env.GitBuildVersionSimple }}-x64.zip"
-
           $verificationFile = $verificationFile -replace '{HASHx64}', $hash64.Hash
-
           $verificationFile = $verificationFile -replace '{HASHx86}', $hash86.Hash
-
           $verificationFile | Set-Content -Path ".\.chocolatey\tools\Verification.txt"
-
         shell: powershell
-
-  
-
         
       - name: Push to Chocolatey
         run: | 
