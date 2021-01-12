@@ -480,15 +480,15 @@ jobs:
       - name: Push to Chocolatey
         run: | 
           # Chocolatey Pack
-          & choco.exe pack "${{ github.workspace }}\\Chocolatey\\PresenceLight.nuspec" --version "{{ env.VERSION }}.0"--OutputDirectory "${{ github.workspace }}\\Chocolatey"
+          & choco.exe pack "${{ github.workspace }}\\Chocolatey\\PresenceLight.nuspec" --version "{{ env.VERSION }}.0" --OutputDirectory "${{ github.workspace }}\\Chocolatey"
 
-          & choco.exe apikey --key ${{ secrets.CHOCOAPIKEY }} --source https://push.chocolatey.org/
+          & choco.exe apikey --key "${{ secrets.CHOCOAPIKEY }}" --source https://push.chocolatey.org/
 
           $nupkgs = gci "${{ github.workspace }}\\Chocolatey\\PresenceLight.*.nupkg" | Select -ExpandProperty FullName
           foreach ($nupkg in $nupkgs){
             & choco.exe push $nupkg --source https://push.chocolatey.org/
           }                               
-        shell: pwsh
+        shell: powershell
 
   Deploy_WPF_Store:
     needs: Deploy_Azure_Blob
