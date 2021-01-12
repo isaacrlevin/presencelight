@@ -480,7 +480,7 @@ jobs:
       - name: Push to Chocolatey
         run: | 
           # Chocolatey Pack
-          & choco.exe pack "${{ github.workspace }}\\Chocolatey\\PresenceLight.nuspec" --version "{{ env.VERSION }}.0" --OutputDirectory "${{ github.workspace }}\\Chocolatey"
+          & choco.exe pack "${{ github.workspace }}\\Chocolatey\\PresenceLight.nuspec" --version "${{ env.VERSION }}.0" --OutputDirectory "${{ github.workspace }}\\Chocolatey"
 
           & choco.exe apikey --key "${{ secrets.CHOCOAPIKEY }}" --source https://push.chocolatey.org/
 
