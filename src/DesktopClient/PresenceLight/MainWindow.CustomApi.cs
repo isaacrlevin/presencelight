@@ -6,6 +6,7 @@ using System.Windows.Documents;
 using LifxCloud.NET.Models;
 using PresenceLight.Telemetry;
 using System.Windows.Navigation;
+using PresenceLight.Core;
 
 namespace PresenceLight
 {
@@ -103,6 +104,7 @@ namespace PresenceLight
         {
             try
             {
+                Config = Helpers.CleanColors(Config);
                 await _settingsService.SaveSettings(Config).ConfigureAwait(true);
                 lblCustomApiSaved.Visibility = Visibility.Visible;
                 SyncOptions();

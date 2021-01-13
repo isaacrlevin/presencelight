@@ -56,6 +56,9 @@ stages:
 
     - powershell: |
         mkdir $(Build.ArtifactStagingDirectory)\$(ChannelName)
+      displayName: Create Directory for Channel
+
+    - powershell: |
         # Update appxmanifest. This must be done before build.
         [xml]$manifest= get-content ".\src\DesktopClient\PresenceLight.Package\Package.appxmanifest"
         $manifest.Package.Identity.Version = "$(GitBuildVersionSimple).0"
@@ -64,7 +67,6 @@ stages:
       condition: and(succeeded(), eq(variables['ChannelName'], 'Release'))
 
     - powershell: |
-        mkdir $(Build.ArtifactStagingDirectory)\$(ChannelName)
         # Update appxmanifest. This must be done before build.
         [xml]$manifest = Get-Content ".\src\DesktopClient\PresenceLight.Package\Package-Nightly.appxmanifest"
         $manifest.Package.Identity.Version = "$(GitBuildVersionSimple).0"
@@ -77,7 +79,7 @@ stages:
         $appsettings= get-content ".\src\DesktopClient\PresenceLight\appsettings.json" -raw | ConvertFrom-Json
         $appsettings.isAppPackaged = "false"
         $appsettings | ConvertTo-Json -depth 32| set-content '.\src\DesktopClient\PresenceLight\appsettings.json'
-      displayName: Update appsettings.json for Standalone
+      displayName: Update appsettings.json for Standalone Version
       condition: and(succeeded(), eq(variables['ChannelName'], 'Standalone'))
 
     - powershell: |
@@ -85,7 +87,7 @@ stages:
         $appsettings= get-content ".\src\DesktopClient\PresenceLight\appsettings.json" -raw | ConvertFrom-Json
         $appsettings.isAppPackaged = "true"
         $appsettings | ConvertTo-Json -depth 32| set-content '.\src\DesktopClient\PresenceLight\appsettings.json'
-      displayName: Update appsettings.json for AppPackage
+      displayName: Update appsettings.json for AppPackage Version
       condition: and(succeeded(), not(eq(variables['ChannelName'], 'Standalone')))
 
     - powershell: |
@@ -96,7 +98,7 @@ stages:
         $appsettings.lightSettings.lifx.LIFXClientSecret = "$(LIFXClientSecret)"
         $appsettings.applicationInsights.instrumentationkey = "$(InstrumentationKey)"
         $appsettings | ConvertTo-Json -depth 32| set-content '.\src\DesktopClient\PresenceLight\appsettings.json'
-      displayName: Update appsettings.json
+      displayName: Add Secrets to appsettings.json
       condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')))
 
 
@@ -113,7 +115,7 @@ stages:
       displayName: Update Badge Versions
 
     - task: DotNetCoreCLI@2
-      displayName: Build Presence Light for $(ChannelName)
+      displayName: Build Standalone Presence Light x64
       inputs:
         command: publish
         projects: '.\src\DesktopClient\PresenceLight\PresenceLight.csproj'
@@ -124,7 +126,7 @@ stages:
       condition: and(succeeded(), eq(variables['ChannelName'], 'Standalone'))
 
     - task: DotNetCoreCLI@2
-      displayName: Build Presence Light for $(ChannelName)
+      displayName: Build Standalone Presence Light x86
       inputs:
         command: publish
         projects: '.\src\DesktopClient\PresenceLight\PresenceLight.csproj'
@@ -135,7 +137,7 @@ stages:
       condition: and(succeeded(), eq(variables['ChannelName'], 'Standalone'))
 
     - task: ArchiveFiles@1
-      displayName: Zip PresenceLight x64 Files
+      displayName: Zip Standalone PresenceLight x64 Files
       inputs:
         archiveType: default
         rootFolder: '.\src\DesktopClient\PresenceLight\bin\$(BuildConfiguration)\net5.0-windows10.0.19041\win-x64\publish\'
@@ -144,7 +146,7 @@ stages:
       condition: and(succeeded(), eq(variables['ChannelName'], 'Standalone'))
 
     - task: ArchiveFiles@1
-      displayName: Zip PresenceLight x86 Files
+      displayName: Zip Standalone PresenceLight x86 Files
       inputs:
         archiveType: default
         rootFolder: '.\src\DesktopClient\PresenceLight\bin\$(BuildConfiguration)\net5.0-windows10.0.19041\win-x86\publish\'
@@ -162,13 +164,41 @@ stages:
       condition: and(succeeded(), not(eq(variables['ChannelName'], 'Standalone')))
 
     - publish: $(Build.ArtifactStagingDirectory)\$(ChannelName)
-      displayName: Publish Arifacts
+      displayName: Publish $(ChannelName) Arifacts
       artifact: $(ChannelName)
 
     - publish: Build
       displayName: Publish signing scripts
       artifact: SigningScripts
       condition: and(succeeded(), eq(variables['ChannelName'], 'Release'))
+
+    - powershell: |
+        # Hash the Zip Files
+        $hash64=Get-Filehash $(Build.ArtifactStagingDirectory)\$(ChannelName)\PresenceLight.$(Build.BuildNumber)-x64.zip
+        $hash86=Get-Filehash $(Build.ArtifactStagingDirectory)\$(ChannelName)\PresenceLight.$(Build.BuildNumber)-x86.zip
+
+        # Update ChocolateyInstall.ps1
+        $installFile = Get-Content -path ".\.chocolatey\tools\ChocolateyInstall.ps1" -Raw
+        $installFile = $installFile -replace '{ReplaceCheckSumx86}', $hash86.Hash
+        $installFile = $installFile -replace '{ReplaceCheckSumx64}', $hash64.Hash
+        $installFile = $installFile -replace '{x86Link}' , "https://github.com/isaacrlevin/PresenceLight/releases/download/v$(Build.BuildNumber)/PresenceLight.$(Build.BuildNumber)-x86.zip"
+        $installFile = $installFile -replace '{x64Link}' , "https://github.com/isaacrlevin/PresenceLight/releases/download/v$(Build.BuildNumber)/PresenceLight.$(Build.BuildNumber)-x64.zip"
+        $installFile | Set-Content -Path ".\.chocolatey\tools\ChocolateyInstall.ps1" 
+
+        # Update Verification.txt
+        $verificationFile = Get-Content -path ".\.chocolatey\tools\Verification.txt" 
+        $verificationFile = $verificationFile -replace '{x86Link}' , "https://github.com/isaacrlevin/PresenceLight/releases/download/v$(Build.BuildNumber)/PresenceLight.$(Build.BuildNumber)-x86.zip"
+        $verificationFile = $verificationFile -replace '{x64Link}' , "https://github.com/isaacrlevin/PresenceLight/releases/download/v$(Build.BuildNumber)/PresenceLight.$(Build.BuildNumber)-x64.zip"
+        $verificationFile = $verificationFile -replace '{HASHx64}', $hash64.Hash
+        $verificationFile = $verificationFile -replace '{HASHx86}', $hash86.Hash
+        $verificationFile | Set-Content -Path ".\.chocolatey\tools\Verification.txt" 
+      displayName: Update Chocolatey Files
+      condition: and(succeeded(), eq(variables['ChannelName'], 'Standalone'))
+
+    - publish: .chocolatey
+      displayName: Publish .chocolatey scripts
+      artifact: Chocolatey
+      condition: and(succeeded(), eq(variables['ChannelName'], 'Standalone'))
 
 - stage: CodeSign
   condition: and(succeeded('Build'), not(eq(variables['build.reason'], 'PullRequest')))

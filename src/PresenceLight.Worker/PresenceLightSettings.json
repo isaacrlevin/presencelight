@@ -91,11 +91,17 @@
       }
     },
     "Hue": {
+      "RemoteHueClientId": "",
+      "RemoteHueClientSecret": "",
+      "RemoteHueClientAppName": "",
       "HueApiKey": "",
+      "RemoteHueApiKey": "",
       "SelectedHueLightId": "",
       "HueBrightness": 100,
       "HueIpAddress": "",
       "IsPhillipsHueEnabled": false,
+      "UseRemoteApi": false,
+      "RemoteBridgeId": "",
       "AvailableStatus": {
         "Disabled": false,
         "Colour": "#009933"

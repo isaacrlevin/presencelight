@@ -8,36 +8,149 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Diagnostics;
+using System.Net.Sockets;
+using System.Net;
 
 namespace PresenceLight.Core
 {
-    public interface IHueService
+    public interface IRemoteHueService
     {
-        Task SetColor(string availability, string lightId);
-        Task<string> RegisterBridge();
+        Task SetColor(string availability, string lightId, string bridgeId);
+        Task<(string bridgeId, string apiKey, string bridgeIp)> RegisterBridge();
         Task<IEnumerable<Light>> CheckLights();
-        Task<string> FindBridge();
     }
-    public class HueService : IHueService
+    public class RemoteHueService : IRemoteHueService
     {
         private readonly BaseConfig _options;
-        private LocalHueClient _client;
+        private RemoteHueClient _client;
+        private readonly IRemoteAuthenticationClient _authClient;
 
-        public HueService(IOptionsMonitor<BaseConfig> optionsAccessor)
+        public RemoteHueService(IOptionsMonitor<BaseConfig> optionsAccessor)
         {
             _options = optionsAccessor.CurrentValue;
+            _authClient = new RemoteAuthenticationClient(_options.LightSettings.Hue.RemoteHueClientId, _options.LightSettings.Hue.RemoteHueClientSecret, _options.LightSettings.Hue.RemoteHueClientAppName);
         }
 
-        public HueService(BaseConfig options)
+        public RemoteHueService(BaseConfig options)
         {
             _options = options;
+            _authClient = new RemoteAuthenticationClient(_options.LightSettings.Hue.RemoteHueClientId, _options.LightSettings.Hue.RemoteHueClientSecret, _options.LightSettings.Hue.RemoteHueClientAppName);
         }
 
-        public async Task SetColor(string availability, string lightId)
+        private async Task GetAccessToken()
         {
-            _client = new LocalHueClient(_options.LightSettings.Hue.HueIpAddress);
-            _client.Initialize(_options.LightSettings.Hue.HueApiKey);
+            Uri authorizeUri = _authClient.BuildAuthorizeUri(_options.LightSettings.Hue.RemoteHueClientAppName, _options.LightSettings.Hue.RemoteHueClientAppName);
 
+            TryBindListenerOnFreePort(out HttpListener http, out int port, out string redirectURI);
+
+            Helpers.OpenBrowser(authorizeUri.ToString());
+
+            // Waits for the OAuth authorization response.
+            var context = await http.GetContextAsync();
+
+            //Sends an HTTP response to the browser.
+            var response = context.Response;
+
+            string responseString = string.Format("<html><head><meta http-equiv='refresh' content='10;url=https://www.philips-hue.com/'></head><body>Please return to the app.</body></html>");
+            var buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
+            response.ContentLength64 = buffer.Length;
+            var responseOutput = response.OutputStream;
+            Task responseTask = responseOutput.WriteAsync(buffer, 0, buffer.Length).ContinueWith((task) =>
+            {
+                responseOutput.Close();
+                http.Stop();
+                Debug.WriteLine("HTTP server stopped.");
+            });
+
+
+            // extracts the code
+            var code = context.Request.QueryString.Get("code") ?? "";
+            var incoming_state = context.Request.QueryString.Get("state");
+
+            var accessToken = await _authClient.GetToken(code);
+
+            _client = new RemoteHueClient(_authClient.GetValidToken);
+        }
+
+        private static bool TryBindListenerOnFreePort(out HttpListener httpListener, out int port, out string uri)
+        {
+            // IANA suggested range for dynamic or private ports
+            const int MinPort = 49215;
+            const int MaxPort = 65535;
+
+            for (port = MinPort; port < MaxPort; port++)
+            {
+                httpListener = new HttpListener();
+                uri = $"http://localhost:{port}/";
+                httpListener.Prefixes.Add(uri);
+                try
+                {
+                    httpListener.Start();
+                    return true;
+                }
+                catch
+                {
+                    // nothing to do here -- the listener disposes itself when Start throws
+                }
+            }
+
+            port = 0;
+            uri = null;
+            httpListener = null;
+            return false;
+        }
+
+        public async Task<(string bridgeId, string apiKey, string bridgeIp)> RegisterBridge()
+        {
+            try
+            {
+                await GetAccessToken();
+                var bridges = await _client.GetBridgesAsync();
+
+                string bridgeId;
+                string bridgeIp;
+                if (string.IsNullOrEmpty(_options.LightSettings.Hue.RemoteBridgeId))
+                {
+                    bridgeId = bridges.First().Id;
+                    bridgeIp = bridges.First().InternalIpaddress;
+                }
+                else
+                {
+                    bridgeId = _options.LightSettings.Hue.RemoteBridgeId;
+                    bridgeIp = _options.LightSettings.Hue.HueIpAddress;
+                }
+
+                string apiKey;
+                if (string.IsNullOrEmpty(_options.LightSettings.Hue.HueApiKey))
+                {
+                    apiKey = await _client.RegisterAsync(bridgeId, _options.LightSettings.Hue.RemoteHueClientAppName);
+                }
+                else
+                {
+                    apiKey = _options.LightSettings.Hue.HueApiKey;
+                }
+
+                if (!_client.IsInitialized)
+                {
+                    _client.Initialize(bridgeId, apiKey);
+                }
+
+                //Register app
+                return (bridgeId, apiKey, bridgeIp);
+            }
+            catch (Exception ex)
+            {
+                return ("", "", "");
+            }
+        }
+
+        public async Task SetColor(string availability, string lightId, string bridgeId)
+        {
+            if (_client == null)
+            {
+                return;
+            }
 
             var command = new LightCommand();
             string color = "";
@@ -196,53 +309,14 @@ namespace PresenceLight.Core
             await _client.SendCommandAsync(command, new List<string> { lightId });
         }
 
-        //Need to wire up a way to do this without user intervention
-        public async Task<string> RegisterBridge()
-        {
-            if (string.IsNullOrEmpty(_options.LightSettings.Hue.HueApiKey))
-            {
-                try
-                {
-                    _client = new LocalHueClient(_options.LightSettings.Hue.HueIpAddress);
-
-                    //Make sure the user has pressed the button on the bridge before calling RegisterAsync
-                    //It will throw an LinkButtonNotPressedException if the user did not press the button
-
-                    return await _client.RegisterAsync("presence-light", "presence-light");
-                }
-                catch (Exception e)
-                {
-                    return String.Empty;
-                }
-            }
-            return _options.LightSettings.Hue.HueApiKey;
-        }
-
-        public async Task<string> FindBridge()
-        {
-            try
-            {
-                IBridgeLocator locator = new HttpBridgeLocator(); //Or: LocalNetworkScanBridgeLocator, MdnsBridgeLocator, MUdpBasedBridgeLocator
-                var bridges = await locator.LocateBridgesAsync(TimeSpan.FromSeconds(5));
-                if (bridges.Count() > 0)
-                {
-                    return bridges.FirstOrDefault().IpAddress;
-                }
-            }
-            catch
-            {
-                return String.Empty;
-            }
-            return String.Empty;
-        }
-
         public async Task<IEnumerable<Light>> CheckLights()
         {
-            if (_client == null)
+            if (_client == null || !_client.IsInitialized)
             {
-                _client = new LocalHueClient(_options.LightSettings.Hue.HueIpAddress);
-                _client.Initialize(_options.LightSettings.Hue.HueApiKey);
+                _client = new RemoteHueClient(_authClient.GetValidToken);
+                _client.Initialize(_options.LightSettings.Hue.RemoteBridgeId, _options.LightSettings.Hue.HueApiKey);
             }
+
             var lights = await _client.GetLightsAsync();
             // if there are no lights, get some
             if (lights.Count() == 0)
@@ -252,6 +326,11 @@ namespace PresenceLight.Core
                 lights = await _client.GetNewLightsAsync();
             }
             return lights;
+        }
+
+        public Task<string> FindBridge()
+        {
+            throw new NotImplementedException();
         }
     }
 }

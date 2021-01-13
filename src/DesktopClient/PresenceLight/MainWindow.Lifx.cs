@@ -6,6 +6,7 @@ using System.Windows.Documents;
 using LifxCloud.NET.Models;
 using PresenceLight.Telemetry;
 using System.Windows.Navigation;
+using PresenceLight.Core;
 
 namespace PresenceLight
 {
@@ -28,6 +29,7 @@ namespace PresenceLight
         private async void SaveLIFX_Click(object sender, RoutedEventArgs e)
         {
             btnLIFX.IsEnabled = false;
+            Config = Helpers.CleanColors(Config);
             await _settingsService.SaveSettings(Config).ConfigureAwait(true);
             lblLIFXSaved.Visibility = Visibility.Visible;
             btnLIFX.IsEnabled = true;

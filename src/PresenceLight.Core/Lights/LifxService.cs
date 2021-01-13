@@ -167,6 +167,23 @@ namespace PresenceLight.Core
                 color = $"#{color.Substring(3)}";
             }
 
+
+            color = color.Replace("#", "");
+
+            switch (color.Length)
+            {
+
+                case var length when color.Length == 6:
+                    // Do Nothing
+                    break;
+                case var length when color.Length > 6:
+                    // Get last 6 characters
+                    color = color.Substring(color.Length - 6);
+                    break;
+                default:
+                    throw new ArgumentException("Supplied Color had an issue");
+            }
+
             if (availability == "Off")
             {
                 var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
