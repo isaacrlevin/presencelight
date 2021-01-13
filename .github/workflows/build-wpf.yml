@@ -417,7 +417,7 @@ jobs:
           asset_content_type: application/zip
 
   Deploy_Choco:
-    needs: Deploy_Azure_Blob
+    needs: Deploy_GitHub_Release
     environment:
         name: Deploy_Choco
         url: ${{ steps.deploy_staging.outputs.webapp-url }}
