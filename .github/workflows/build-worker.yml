@@ -65,7 +65,7 @@ jobs:
       run: mkdir ${{ github.workspace }}\${{ matrix.ChannelName }}
       shell: powershell
 
-          - name: Add Version File to Artifact
+    - name: Add Version File to Artifact
       run : |
         New-Item -Path ${{ github.workspace }}\${{ matrix.ChannelName }} -Name "version.txt" -ItemType "file" -Value "${{ env.GitBuildVersionSimple }}"
       shell: powershell
