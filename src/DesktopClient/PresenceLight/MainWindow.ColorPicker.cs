@@ -5,6 +5,7 @@ using System.Windows.Media;
 using PresenceLight.Telemetry;
 using System.Globalization;
 
+
 namespace PresenceLight
 {
     public partial class MainWindow : Window

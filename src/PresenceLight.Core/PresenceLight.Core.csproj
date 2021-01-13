@@ -21,9 +21,9 @@
     <PackageReference Include="Microsoft.Graph.Beta" Version="0.35.0-preview" />
     <PackageReference Include="Microsoft.Identity.Client" Version="4.24.0" />
 
-    <PackageReference Include="Q42.HueApi" Version="3.16.0" />
+    <PackageReference Include="Q42.HueApi" Version="3.17.0" />
     <PackageReference Include="Q42.HueApi.ColorConverters" Version="3.14.0" />
     <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="5.0.0" />
-    <PackageReference Include="YeelightAPI" Version="1.9.0" />
+    <PackageReference Include="YeelightAPI" Version="1.10.0" />
   </ItemGroup>
 </Project>
