@@ -472,47 +472,47 @@ jobs:
           commitMode: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Download Windows_x64_x86 Artifacts
-      uses: actions/download-artifact@v2
-      with:
-        name: Windows_x64_x86
-        path: ${{ github.workspace }}/Sign/Windows_x64_x86
-        
-    - name: Download Windows_ARM Artifacts
-      uses: actions/download-artifact@v2
-      with:
-        name: Windows_ARM
-        path: ${{ github.workspace }}/Sign/Windows_ARM
+      - name: Download Windows_x64_x86 Artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: Windows_x64_x86
+          path: ${{ github.workspace }}/Sign/Windows_x64_x86
+          
+      - name: Download Windows_ARM Artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: Windows_ARM
+          path: ${{ github.workspace }}/Sign/Windows_ARM
 
-    - name: Download macOS Artifacts
-      uses: actions/download-artifact@v2
-      with:
-        name: macOS
-        path: ${{ github.workspace }}/Sign/macOS
+      - name: Download macOS Artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: macOS
+          path: ${{ github.workspace }}/Sign/macOS
 
-    - name: Download Linux_ARM Artifacts
-      uses: actions/download-artifact@v2
-      with:
-        name: Linux_ARM
-        path: ${{ github.workspace }}/Sign/Linux_ARM
+      - name: Download Linux_ARM Artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: Linux_ARM
+          path: ${{ github.workspace }}/Sign/Linux_ARM
 
-    - name: Download Linux_ARM64 Artifacts
-      uses: actions/download-artifact@v2
-      with:
-        name: Linux_ARM64
-        path: ${{ github.workspace }}/Sign/Linux_ARM64
+      - name: Download Linux_ARM64 Artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: Linux_ARM64
+          path: ${{ github.workspace }}/Sign/Linux_ARM64
 
-    - name: Download Linux_Musl_x64 Artifacts
-      uses: actions/download-artifact@v2
-      with:
-        name: Linux_Musl_x64
-        path: ${{ github.workspace }}/Sign/Linux_Musl_x64
+      - name: Download Linux_Musl_x64 Artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: Linux_Musl_x64
+          path: ${{ github.workspace }}/Sign/Linux_Musl_x64
 
-    - name: Download Linux_Musl_ARM_x64 Artifacts
-      uses: actions/download-artifact@v2
-      with:
-        name: Linux_Musl_ARM_x64
-        path: ${{ github.workspace }}/Sign/Linux_Musl_ARM_x64
+      - name: Download Linux_Musl_ARM_x64 Artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: Linux_Musl_ARM_x64
+          path: ${{ github.workspace }}/Sign/Linux_Musl_ARM_x64
 
       - name: Get Version from File
         run: |
