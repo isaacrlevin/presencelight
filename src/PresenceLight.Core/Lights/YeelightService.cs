@@ -124,7 +124,7 @@ namespace PresenceLight.Core
         {
             try
             {
-                List<Device> devices = await DeviceLocator.Discover();
+                IEnumerable<Device> devices = await DeviceLocator.DiscoverAsync();
                 this.deviceGroup = new DeviceGroup(devices);
                 return this.deviceGroup;
             }
