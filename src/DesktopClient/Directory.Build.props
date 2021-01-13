@@ -1,0 +1,46 @@
+<Project>
+
+  <PropertyGroup>
+    <Authors>Isaac Levin</Authors>
+    <Copyright>© 2020 Isaac Levin</Copyright>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <NoWarn>1701;1702;1705;1591;NU1701</NoWarn>
+
+    <IsLegacyProject>$(MSBuildProjectName.Equals('PresenceLight'))</IsLegacyProject>
+    <IsPackageProject>$(MSBuildProjectName.Contains('.Package'))</IsPackageProject>
+    <DebugType>embedded</DebugType>
+
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <UseWpf>true</UseWpf>
+    <UseWindowsForms>true</UseWindowsForms>
+    <MSBuildWarningsAsMessages>$(MSBuildWarningsAsMessages);NETSDK1107</MSBuildWarningsAsMessages>
+
+    <LangVersion>preview</LangVersion>
+    <NullableContextOptions>enable</NullableContextOptions>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <NuGetDependencyVersion>5.8.0</NuGetDependencyVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Nerdbank.GitVersioning" Version="3.3.37" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.2" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
+  </ItemGroup>
+
+  <PropertyGroup>
+    <ReleaseChannel Condition="'$(ChannelName)' == '' ">Debug</ReleaseChannel>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <DefineConstants Condition="'$(ChannelName)' == 'Nightly' ">$(DefineConstants);NIGHTLY</DefineConstants>
+    <DefineConstants Condition="'$(ChannelName)' == 'Release' ">$(DefineConstants);RELEASE</DefineConstants>
+    <DefineConstants Condition="'$(ChannelName)' == 'Standalone' ">$(DefineConstants);STANDALONE</DefineConstants>
+  </PropertyGroup>
+
+</Project>

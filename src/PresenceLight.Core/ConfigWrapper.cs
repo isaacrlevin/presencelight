@@ -1,43 +1,13 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
-using Microsoft.Graph;
+using Microsoft.Graph.TermStore;
+
+using Newtonsoft.Json;
 
 namespace PresenceLight.Core
 {
-    public class ConfigWrapper
-    {
-        public string? IconType { get; set; }
-        public LightSettings LightSettings { get; set; }
-
-        public string? ClientId { get; set; }
-
-        public string? ClientSecret { get; set; }
-
-        public string? Instance { get; set; }
-
-        public string? RedirectUri { get; set; }
-
-        public string? CallbackPath { get; set; }
-
-        public string? ApiScopes { get; set; }
-    }
-
-    public class AADSettings
-    {
-        public string? ClientId { get; set; }
-
-        public string? ClientSecret { get; set; }
-
-        public string? Instance { get; set; }
-
-        public string? RedirectUri { get; set; }
-
-        public string? CallbackPath { get; set; }
-
-        public string? ApiScopes { get; set; }
-    }
-
     public class LightSettings
     {
         public string HoursPassedStatus { get; set; }
@@ -49,6 +19,16 @@ namespace PresenceLight.Core
         public bool UseWorkingHours { get; set; }
 
         public string WorkingHoursStartTime { get; set; }
+
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonProperty(Required = Required.Default)]
+        public DateTime? WorkingHoursStartTimeAsDate { get; set; }
+
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonProperty(Required = Required.Default)]
+        public DateTime? WorkingHoursEndTimeAsDate { get; set; }
 
         public string WorkingHoursEndTime { get; set; }
 
@@ -64,7 +44,6 @@ namespace PresenceLight.Core
 
         public Yeelight Yeelight { get; set; }
     }
-
 
     public class Custom
     {
@@ -183,6 +162,11 @@ namespace PresenceLight.Core
 
     public class Hue
     {
+        public string? RemoteHueClientId { get; set; }
+
+        public string? RemoteHueClientAppName { get; set; }
+
+        public string? RemoteHueClientSecret { get; set; }
         public string? HueApiKey { get; set; }
 
         public string? SelectedHueLightId { get; set; }
@@ -209,6 +193,9 @@ namespace PresenceLight.Core
         public AvailabilityStatus OfflineStatus { get; set; }
 
         public AvailabilityStatus OffStatus { get; set; }
+        public bool UseRemoteApi { get; set; }
+
+        public string RemoteBridgeId { get; set; }
     }
 
     public class AvailabilityStatus
@@ -216,8 +203,8 @@ namespace PresenceLight.Core
         public Boolean Disabled { get; set; }
 
         public string? Colour { get; set; }
-    }
 
+    }
 
     public class Yeelight
     {
@@ -240,5 +227,21 @@ namespace PresenceLight.Core
         public AvailabilityStatus OfflineStatus { get; set; }
 
         public AvailabilityStatus OffStatus { get; set; }
+    }
+
+    public class AADSettings
+    {
+        public string? ClientId { get; set; }
+
+        public string? Instance { get; set; }
+
+        public string? RedirectUri { get; set; }
+    }
+
+    public class BaseConfig
+    {
+        public bool SendDiagnosticData { get; set; }
+        public string? IconType { get; set; }
+        public LightSettings LightSettings { get; set; }
     }
 }

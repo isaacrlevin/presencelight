@@ -24,17 +24,17 @@ namespace PresenceLight.Core
             // TODO: Make this configurable
             Timeout = TimeSpan.FromSeconds(10)
         };
+        private readonly BaseConfig _options;
 
-        private readonly ConfigWrapper _options;
         private readonly IWorkingHoursService _workingHoursService;
 
-        public CustomApiService(IOptionsMonitor<ConfigWrapper> optionsAccessor, IWorkingHoursService workingHoursService)
+        public CustomApiService(IOptionsMonitor<BaseConfig> optionsAccessor, IWorkingHoursService workingHoursService)
         {
             _options = optionsAccessor.CurrentValue;
             _workingHoursService = workingHoursService;
         }
 
-        public CustomApiService(ConfigWrapper options, IWorkingHoursService workingHoursService)
+        public CustomApiService(BaseConfig options, IWorkingHoursService workingHoursService)
         {
             _options = options;
             _workingHoursService = workingHoursService;

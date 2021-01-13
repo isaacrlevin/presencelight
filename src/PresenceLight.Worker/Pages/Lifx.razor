@@ -3,7 +3,7 @@
 @inject LIFXService _lifxService
 @inject AppState appState
 @inject IModalService Modal
-@inject IOptionsMonitor<ConfigWrapper> Config
+@inject IOptionsMonitor<BaseConfig> Config
 
 
 <div class="container text-body" style="overflow:hidden">
@@ -32,66 +32,75 @@
                         @if (!string.IsNullOrEmpty(Config.CurrentValue.LightSettings.LIFX.LIFXApiKey))
                         {
                             <button @onclick="@((ev) => CheckLIFX("Lights"))" class="btn btn-primary" type="submit">Get Lights</button>
-
+                            <span>&nbsp;&nbsp;</span>
                             <button @onclick="@((ev) => CheckLIFX("Groups"))" class="btn btn-primary" type="submit">Get Groups</button>
                         }
-                        @if (appState.LIFXLights != null)
+                        <br /><br />
+                        if (isLoadingLights)
                         {
-                            <br /><br />
-
-                            @if (showLifxMessage)
+                            <Circle Center="true" />
+                        }
+                        else
+                        {
+                            @if (appState.LIFXLights != null)
                             {
-                                <span class="@lifxMessageClass">@lifxMessage</span>
+                                <br /><br />
+
+                                @if (showLifxMessage)
+                                {
+                                    <span class="@lifxMessageClass">@lifxMessage</span>
+                                }
+
+                                <br /><br />
+                                <span><strong>@lastType</strong></span>
+                                <div class="form-group col-3 centering text-center">
+                                    <select class="form-control" @onchange="OnChange">
+                                        <option disabled="disabled">Select</option>
+                                        @foreach (var light in appState.LIFXLights)
+                                        {
+                                            if (light.GetType() == typeof(LifxCloud.NET.Models.Group))
+                                            {
+                                                var obj = (LifxCloud.NET.Models.Group)light;
+
+                                                @if (Config.CurrentValue.LightSettings.LIFX.SelectedLIFXItemId == $"group_id:{obj.Id}")
+                                                {
+                                                    <option selected="selected" value=group_id:@obj.Id>@obj.Label</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value=group_id:@obj.Id>@obj.Label</option>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                var obj = (LifxCloud.NET.Models.Light)light;
+
+                                                @if (Config.CurrentValue.LightSettings.LIFX.SelectedLIFXItemId == $"id:{obj.Id}")
+                                                {
+                                                    <option selected="selected" value=id:@obj.Id>@obj.Label</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value=id:@obj.Id>@obj.Label</option>
+                                                }
+                                            }
+
+                                        }
+                                    </select>
+                                </div>
                             }
-
-                            <br /><br />
-                            <div class="form-group col-3 centering text-center">
-                                <select class="form-control" @onchange="OnChange">
-                                    <option disabled="disabled">Select</option>
-                                    @foreach (var light in appState.LIFXLights)
-                                    {
-                                        if (light.GetType() == typeof(LifxCloud.NET.Models.Group))
-                                        {
-                                            var obj = (LifxCloud.NET.Models.Group)light;
-
-                                            @if (Config.CurrentValue.LightSettings.LIFX.SelectedLIFXItemId == obj.Id)
-                                            {
-                                                <option selected="selected" value=group_id:@obj.Id>@obj.Label</option>
-                                            }
-                                            else
-                                            {
-                                                <option value=group_id:@obj.Id>@obj.Label</option>
-                                            }
-                                        }
-                                        else
-                                        {
-                                            var obj = (LifxCloud.NET.Models.Light)light;
-
-                                            @if (Config.CurrentValue.LightSettings.LIFX.SelectedLIFXItemId == obj.Id)
-                                            {
-                                                <option selected="selected" value=id:@obj.Id>@obj.Label</option>
-                                            }
-                                            else
-                                            {
-                                                <option value=id:@obj.Id>@obj.Label</option>
-                                            }
-                                        }
-
-                                    }
-                                </select>
-                            </div>
-                        }
-                        <br />
-                        <br />
-                        @if (!string.IsNullOrEmpty(Config.CurrentValue.LightSettings.LIFX.LIFXApiKey))
-                        {
-                            <button class="btn btn-primary" @onclick="Save">Save LIFX Settings</button>
-                        }
-                        <br />
-                        <br />
-                        @if (settingsSaved)
-                        {
-                            <span class="text-success">@message</span>
+                            <br />
+                            <br />
+                            @if (!string.IsNullOrEmpty(Config.CurrentValue.LightSettings.LIFX.LIFXApiKey))
+                            {
+                                <button class="btn btn-primary" @onclick="Save">Save LIFX Settings</button>
+                            }
+                            <br />
+                            <br />
+                            @if (settingsSaved)
+                            {
+                                <span class="text-success">@message</span>
+                            }
                         }
                     }
                 </div>
@@ -107,6 +116,8 @@
 
     bool showLifxMessage = false;
     string lifxMessage;
+    string lastType = "";
+    bool isLoadingLights = false;
     private void Save()
     {
         System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/PresenceLightSettings.json", JsonConvert.SerializeObject(Config.CurrentValue, Formatting.Indented));
@@ -116,26 +127,49 @@
 
     async Task CheckLIFX(string type)
     {
+        isLoadingLights = true;
+        if (string.IsNullOrEmpty(lastType) || type != lastType)
+        {
+            Config.CurrentValue.LightSettings.LIFX.SelectedLIFXItemId = string.Empty;
+            lastType = type;
+        }
+
         if (!string.IsNullOrEmpty(Config.CurrentValue.LightSettings.LIFX.LIFXApiKey))
         {
             try
             {
+                System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/PresenceLightSettings.json", JsonConvert.SerializeObject(Config.CurrentValue, Formatting.Indented));
+
                 if (type == "Groups")
                 {
-                    appState.SetLIFXLights(await _lifxService.GetAllGroupsAsync());
+                    appState.SetLIFXLights(await _lifxService.GetAllGroupsAsync(Config.CurrentValue.LightSettings.LIFX.LIFXApiKey));
+
+                    if (string.IsNullOrEmpty(Config.CurrentValue.LightSettings.LIFX.SelectedLIFXItemId) && appState.LIFXLights.Count() > 0)
+                    {
+                        var obj = (LifxCloud.NET.Models.Group)appState.LIFXLights.FirstOrDefault();
+                        Config.CurrentValue.LightSettings.LIFX.SelectedLIFXItemId = $"group_id:{obj.Id}";
+                    }
                 }
                 else
                 {
-                    appState.SetLIFXLights(await _lifxService.GetAllLightsAsync());
+                    appState.SetLIFXLights(await _lifxService.GetAllLightsAsync(Config.CurrentValue.LightSettings.LIFX.LIFXApiKey));
+
+                    if (string.IsNullOrEmpty(Config.CurrentValue.LightSettings.LIFX.SelectedLIFXItemId) && appState.LIFXLights.Count() > 0)
+                    {
+                        var obj = (LifxCloud.NET.Models.Light)appState.LIFXLights.FirstOrDefault();
+                        Config.CurrentValue.LightSettings.LIFX.SelectedLIFXItemId = $"id:{obj.Id}";
+                    }
                 }
+
+                System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/PresenceLightSettings.json", JsonConvert.SerializeObject(Config.CurrentValue, Formatting.Indented));
+
 
                 showLifxMessage = true;
                 lifxMessage = "Connected to LIFX Cloud";
                 lifxMessageClass = "text-success";
             }
-            catch (Exception ex)
+            catch
             {
-                //DiagnosticsClient.TrackException(ex);
                 showLifxMessage = true;
                 lifxMessage = "Error Occured Connecting to LIFX, please try again";
                 lifxMessageClass = "text-danger";
@@ -144,6 +178,8 @@
             }
 
         }
+
+        isLoadingLights = false;
     }
 
 
@@ -157,6 +193,27 @@
     protected override async Task OnInitializedAsync()
     {
         appState.OnChange += RaiseStateHasChanged;
+
+        if (Config.CurrentValue.LightSettings.LIFX.IsLIFXEnabled
+        && !string.IsNullOrEmpty(Config.CurrentValue.LightSettings.LIFX.LIFXApiKey)
+        && !string.IsNullOrEmpty(Config.CurrentValue.LightSettings.LIFX.SelectedLIFXItemId))
+        {
+            isLoadingLights = true;
+            if (Config.CurrentValue.LightSettings.LIFX.SelectedLIFXItemId.Contains("group"))
+            {
+                appState.SetLIFXLights(await _lifxService.GetAllGroupsAsync(Config.CurrentValue.LightSettings.LIFX.LIFXApiKey));
+                lastType = "Groups";
+            }
+            else
+            {
+                appState.SetLIFXLights(await _lifxService.GetAllLightsAsync(Config.CurrentValue.LightSettings.LIFX.LIFXApiKey));
+                lastType = "Lights";
+            }
+            showLifxMessage = true;
+            lifxMessage = "Connected to LIFX Cloud";
+            lifxMessageClass = "text-success";
+            isLoadingLights = false;
+        }
     }
 
     public void Dispose()

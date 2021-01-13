@@ -14,14 +14,14 @@ namespace PresenceLight.Core
     public class WorkingHoursService : IWorkingHoursService
 
     {
-        private readonly ConfigWrapper _options;
+        private readonly BaseConfig _options;
 
-        public WorkingHoursService(IOptionsMonitor<ConfigWrapper> optionsAccessor)
+        public WorkingHoursService(IOptionsMonitor<BaseConfig> optionsAccessor)
         {
             _options = optionsAccessor.CurrentValue;
         }
 
-        public WorkingHoursService(ConfigWrapper options)
+        public WorkingHoursService(BaseConfig options)
         {
             _options = options;
         }

@@ -1,6 +1,8 @@
 {
-  "IconType": "White",
+  "SendDiagnosticData": false,
+  "IconType": "",
   "LightSettings": {
+    "HoursPassedStatus": "",
     "SyncLights": true,
     "WorkingDays": "",
     "UseWorkingHours": false,
@@ -22,10 +24,34 @@
       "CustomApiAwayUri": "",
       "CustomApiDoNotDisturbMethod": "",
       "CustomApiDoNotDisturbUri": "",
+      "CustomApiAvailableIdleMethod": "",
+      "CustomApiAvailableIdleUri": "",
       "CustomApiOfflineMethod": "",
       "CustomApiOfflineUri": "",
       "CustomApiOffMethod": "",
       "CustomApiOffUri": "",
+      "CustomApiActivityAvailableMethod": "",
+      "CustomApiActivityAvailableUri": "",
+      "CustomApiActivityInACallMethod": "",
+      "CustomApiActivityInACallUri": "",
+      "CustomApiActivityInAMeetingMethod": "",
+      "CustomApiActivityInAMeetingUri": "",
+      "CustomApiActivityPresentingMethod": "",
+      "CustomApiActivityPresentingUri": "",
+      "CustomApiActivityBusyMethod": "",
+      "CustomApiActivityBusyUri": "",
+      "CustomApiActivityAwayMethod": "",
+      "CustomApiActivityAwayUri": "",
+      "CustomApiActivityBeRightBackMethod": "",
+      "CustomApiActivityBeRightBackUri": "",
+      "CustomApiActivityDoNotDisturbMethod": "",
+      "CustomApiActivityDoNotDisturbUri": "",
+      "CustomApiActivityIdleMethod": "",
+      "CustomApiActivityIdleUri": "",
+      "CustomApiActivityOfflineMethod": "",
+      "CustomApiActivityOfflineUri": "",
+      "CustomApiActivityOffMethod": "",
+      "CustomApiActivityOffUri": "",
       "CustomApiTimeout": 100.0
     },
     "LIFX": {
@@ -33,26 +59,110 @@
       "LIFXClientId": "",
       "LIFXClientSecret": "",
       "IsLIFXEnabled": false,
-      "SelectedLIFXItemId": "",
-      "LIFXBrightness": 100
+      "SelectedLIFXItemId": "group_id:",
+      "LIFXBrightness": 100,
+      "AvailableStatus": {
+        "Disabled": false,
+        "Colour": "#009933"
+      },
+      "BusyStatus": {
+        "Disabled": false,
+        "Colour": "#FF3300"
+      },
+      "AwayStatus": {
+        "Disabled": false,
+        "Colour": "#FFFF00"
+      },
+      "BeRightBackStatus": {
+        "Disabled": false,
+        "Colour": "#FFFF00"
+      },
+      "DoNotDisturbStatus": {
+        "Disabled": false,
+        "Colour": "#B03CDE"
+      },
+      "OfflineStatus": {
+        "Disabled": false,
+        "Colour": "#FFFFFF"
+      },
+      "OffStatus": {
+        "Disabled": false,
+        "Colour": "#FFFFFF"
+      }
     },
     "Hue": {
+      "RemoteHueClientId": "",
+      "RemoteHueClientSecret": "",
+      "RemoteHueClientAppName": "",
       "HueApiKey": "",
+      "RemoteHueApiKey": "",
       "SelectedHueLightId": "",
       "HueBrightness": 100,
       "HueIpAddress": "",
-      "IsPhillipsHueEnabled": true
+      "IsPhillipsHueEnabled": false,
+      "UseRemoteApi": false,
+      "RemoteBridgeId": "",
+      "AvailableStatus": {
+        "Disabled": false,
+        "Colour": "#009933"
+      },
+      "BusyStatus": {
+        "Disabled": false,
+        "Colour": "#FF3300"
+      },
+      "AwayStatus": {
+        "Disabled": false,
+        "Colour": "#FFFF00"
+      },
+      "BeRightBackStatus": {
+        "Disabled": false,
+        "Colour": "#FFFF00"
+      },
+      "DoNotDisturbStatus": {
+        "Disabled": false,
+        "Colour": "#B03CDE"
+      },
+      "OfflineStatus": {
+        "Disabled": false,
+        "Colour": "#FFFFFF"
+      },
+      "OffStatus": {
+        "Disabled": false,
+        "Colour": "#FFFFFF"
+      }
     },
     "Yeelight": {
       "SelectedYeelightId": "",
       "YeelightBrightness": 100,
-      "IsYeelightEnabled": false
+      "IsYeelightEnabled": false,
+      "AvailableStatus": {
+        "Disabled": false,
+        "Colour": "#009933"
+      },
+      "BusyStatus": {
+        "Disabled": false,
+        "Colour": "#FF3300"
+      },
+      "AwayStatus": {
+        "Disabled": false,
+        "Colour": "#FFFF00"
+      },
+      "BeRightBackStatus": {
+        "Disabled": false,
+        "Colour": "#FFFF00"
+      },
+      "DoNotDisturbStatus": {
+        "Disabled": false,
+        "Colour": "#B03CDE"
+      },
+      "OfflineStatus": {
+        "Disabled": false,
+        "Colour": "#FFFFFF"
+      },
+      "OffStatus": {
+        "Disabled": false,
+        "Colour": "#FFFFFF"
+      }
     }
-  },
-  "ClientId": "f8119f58-4523-44c1-ab72-b2e0c815bd6a",
-  "ClientSecret": "io2~p.3-2~x646_TMC-uo4tL9610mA2RxO",
-  "Instance": "https://login.microsoftonline.com/",
-  "RedirectUri": "https://localhost:5001/signin-oidc",
-  "CallbackPath": "/signin-oidc",
-  "ApiScopes": "User.Read offline_access"
+  }
 }
