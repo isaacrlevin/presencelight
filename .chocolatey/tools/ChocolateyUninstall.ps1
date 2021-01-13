@@ -1,1 +1,1 @@
-﻿Get-AppxPackage -Name 37828IsaacLevin.197278F15330A | Remove-AppxPackage
+﻿Uninstall-ChocolateyPackage  -PackageName "presencelight"

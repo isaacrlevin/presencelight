@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <LangVersion>8.0</LangVersion>
-        <RuntimeIdentifiers>win-x64;win-x86</RuntimeIdentifiers>
+    <TargetFramework>net5.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>annotations</Nullable>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -11,24 +11,19 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Graph\MsalAuthenticationProvider.cs" />
-  </ItemGroup>
+    <PackageReference Include="LifxCloud" Version="1.1.12" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Graph.Beta" Version="0.35.0-preview" />
+    <PackageReference Include="Microsoft.Identity.Client" Version="4.24.0" />
 
-
-  <ItemGroup>
-    <PackageReference Include="LifxCloud" Version="1.1.11" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.7" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.7" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.7" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="3.1.7" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.7" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.7" />
-    <PackageReference Include="Microsoft.Graph.Beta" Version="0.15.0-preview" />
-    <PackageReference Include="Microsoft.Identity.Client" Version="4.17.1" />
-
-    <PackageReference Include="Q42.HueApi" Version="3.15.4" />
+    <PackageReference Include="Q42.HueApi" Version="3.17.0" />
     <PackageReference Include="Q42.HueApi.ColorConverters" Version="3.14.0" />
-    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="4.7.0" />
-    <PackageReference Include="YeelightAPI" Version="1.9.0" />
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="5.0.0" />
+    <PackageReference Include="YeelightAPI" Version="1.10.0" />
   </ItemGroup>
 </Project>
