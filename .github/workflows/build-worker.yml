@@ -407,45 +407,14 @@ jobs:
           TAG_NAME: "latest"
           BUILD_PATH: "${{ github.workspace }}/src/"
 
-      - name: Push ARM32 to GitHub Packages
-        uses: opspresso/action-docker@master
+      - name: Push latest to GitHub Packages
+        uses: VaultVulp/gp-docker-action@1.1.7
         with:
-          args: --docker
-        env:
-          USERNAME: ${{ secrets.GITHUB_USERNAME }}
-          PASSWORD: ${{ secrets.GH_PERSONAL_TOKEN }}
-          REGISTRY: "docker.pkg.github.com"
-          DOCKERFILE: "${{ github.workspace }}/src/DockerFiles/Dockerfile.debian-arm32"
-          IMAGE_NAME: "isaacrlevin/presencelight"
-          TAG_NAME: "debian-arm32"
-          BUILD_PATH: "${{ github.workspace }}/src/"
-     
-      - name: Push ARM64 to GitHub Packages
-        uses: opspresso/action-docker@master
-        with:
-          args: --docker
-        env:
-          USERNAME: ${{ secrets.GITHUB_USERNAME }}
-          PASSWORD: ${{ secrets.GH_PERSONAL_TOKEN }}
-          REGISTRY: "docker.pkg.github.com"
-          DOCKERFILE: "${{ github.workspace }}/src/DockerFiles/Dockerfile.debian-arm64"
-          IMAGE_NAME: "isaacrlevin/presencelight"
-          TAG_NAME: "debian-arm64"
-          BUILD_PATH: "${{ github.workspace }}/src/"
-
-      - name: Push latest GitHub Packages
-        uses: opspresso/action-docker@master
-        with:
-          args: --docker
-        env:
-          USERNAME: ${{ secrets.GITHUB_USERNAME }}
-          PASSWORD: ${{ secrets.GH_PERSONAL_TOKEN }}
-          REGISTRY: "docker.pkg.github.com"
-          DOCKERFILE: "${{ github.workspace }}/src/DockerFiles/Dockerfile"
-          IMAGE_NAME: "isaacrlevin/presencelight"
-          TAG_NAME: "latest"
-          BUILD_PATH: "${{ github.workspace }}/src/"
-
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          image-name: presencelight 
+          image-tag: "latest"
+          docker-file: "${{ github.workspace }}/src/DockerFiles/Dockerfile"
+          build-context: "${{ github.workspace }}/src/"
        
   Deploy_GitHub_Release:
     needs: Deploy_Azure_Blob
@@ -516,7 +485,7 @@ jobs:
 
       - name: Get Version from File
         run: |
-          version=$(<"${{ github.workspace }}/Linux_ARM64/version.txt") 
+          version=$(<"${{ github.workspace }}/Sign/Linux_ARM64/version.txt") 
           echo "VERSION=$version" >> $GITHUB_ENV      
           
       - name: Create Release
