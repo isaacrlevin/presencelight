@@ -42,6 +42,8 @@ namespace PresenceLight.Core
 
         public Hue Hue { get; set; }
 
+        public Wiz Wiz {get; set;}
+
         public Yeelight Yeelight { get; set; }
     }
 
@@ -160,6 +162,38 @@ namespace PresenceLight.Core
         public AvailabilityStatus OffStatus { get; set; }
     }
 
+    public class Wiz
+    {
+        public bool IsWizEnabled {get; set;}
+
+        [Required]
+        [RegularExpression(@"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b",
+        ErrorMessage = "Not a valid IP Address")]
+        public string WizIpAddress {get; set;}
+
+        public string WizMacAddress {get; set;}
+
+       public string SelectedWizLightId {get; set;}
+
+       public int WizBrightness {get; set;}
+
+        public bool IsPhillipsHueEnabled { get; set; }
+
+        public AvailabilityStatus AvailableStatus { get; set; }
+
+        public AvailabilityStatus BusyStatus { get; set; }
+
+        public AvailabilityStatus AwayStatus { get; set; }
+
+        public AvailabilityStatus BeRightBackStatus { get; set; }
+
+        public AvailabilityStatus DoNotDisturbStatus { get; set; }
+
+        public AvailabilityStatus OfflineStatus { get; set; }
+
+        public AvailabilityStatus OffStatus { get; set; }
+    }
+
     public class Hue
     {
         public string? RemoteHueClientId { get; set; }
@@ -193,6 +227,7 @@ namespace PresenceLight.Core
         public AvailabilityStatus OfflineStatus { get; set; }
 
         public AvailabilityStatus OffStatus { get; set; }
+
         public bool UseRemoteApi { get; set; }
 
         public string RemoteBridgeId { get; set; }
