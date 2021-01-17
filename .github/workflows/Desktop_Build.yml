@@ -384,7 +384,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: "Desktop v${{ env.VERSION }}"
+          tag_name: "Desktop-v${{ env.VERSION }}"
           release_name: "Desktop v${{ env.VERSION }}"
           body: |
             ${{ steps.changelog.outputs.compareurl }}
