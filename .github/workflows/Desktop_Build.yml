@@ -30,7 +30,7 @@ jobs:
       DOTNET_NOLOGO: true
       BuildConfiguration: Release
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
-      GitHubReleaseUrl: https://github.com/isaacrlevin/presencelight/releases/download
+      GitHubReleaseUrl: https://github.com/isaacrlevin/presencelight/releases/download/Desktop-
       Win10RID: net5.0-windows10.0.19041
 
     steps:
@@ -231,7 +231,7 @@ jobs:
           --secret "${{ secrets.SignClientSecret }}" `
           --name "PresenceLight" `
           --description "PresenceLight" `
-          --descriptionUrl "https://github.com/isaacrlevin/PresenceLight"
+          --descriptionUrl "https://github.com/isaacrlevin/presencelight"
 
     - uses: nick-invision/retry@v2
       name: Authenticode Sign AppXBundle Release
@@ -250,7 +250,7 @@ jobs:
           --secret "${{ secrets.SignClientSecret }}" `
           --name "PresenceLight" `
           --description "PresenceLight" `
-          --descriptionUrl "https://github.com/isaacrlevin/PresenceLight"
+          --descriptionUrl "https://github.com/isaacrlevin/presencelight"
 
     - uses: nick-invision/retry@v2
       name: Authenticode Sign AppInstaller
@@ -268,7 +268,7 @@ jobs:
           --secret "${{ secrets.SignClientSecret }}" `
           --name "PresenceLight" `
           --description "PresenceLight" `
-          --descriptionUrl "https://github.com/isaacrlevin/PresenceLight"
+          --descriptionUrl "https://github.com/isaacrlevin/presencelight"
 
     - uses: nick-invision/retry@v2
       name: Authenticode Sign Zip
@@ -423,7 +423,7 @@ jobs:
     runs-on: windows-latest
     env:
       if: ${{ github.event_name != 'pull_request' }}
-      GitHubReleaseUrl: https://github.com/isaacrlevin/presencelight/releases/download
+      GitHubReleaseUrl: https://github.com/isaacrlevin/presencelight/releases/download/Desktop-
 
     steps:
       - uses: actions/download-artifact@v2
