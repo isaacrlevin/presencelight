@@ -122,7 +122,7 @@
                 hueMessage = "App Registered with Bridge";
                 hueMessageClass = "text-success";
 
-                appState.SetHueLights(await _hueService.CheckLights());
+                appState.SetHueLights(await _hueService.GetLights());
 
                 if (string.IsNullOrEmpty(Config.CurrentValue.LightSettings.Hue.SelectedHueLightId) && appState.HueLights.Count() > 0)
                 {
@@ -159,7 +159,7 @@
 
         if (!string.IsNullOrEmpty(tempConfig.LightSettings.Hue.HueApiKey))
         {
-            appState.SetHueLights(await _hueService.CheckLights());
+            appState.SetHueLights(await _hueService.GetLights());
         }
 
         appState.OnChange += RaiseStateHasChanged;

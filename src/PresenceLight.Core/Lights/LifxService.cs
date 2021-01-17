@@ -16,7 +16,7 @@ namespace PresenceLight.Core
             _options = optionsAccessor.CurrentValue;
         }
 
-        public async Task<List<Light>> GetAllLightsAsync(string apiKey = null)
+        public async Task<List<Light>> GetAllLights(string apiKey = null)
         {
             if (!string.IsNullOrEmpty(apiKey))
             {
@@ -32,7 +32,7 @@ namespace PresenceLight.Core
             return await _client.ListLights(Selector.All);
         }
 
-        public async Task<List<Group>> GetAllGroupsAsync(string apiKey = null)
+        public async Task<List<Group>> GetAllGroups(string apiKey = null)
         {
             if (!string.IsNullOrEmpty(apiKey))
             {
@@ -45,8 +45,14 @@ namespace PresenceLight.Core
             _client = await LifxCloudClient.CreateAsync(_options.LightSettings.LIFX.LIFXApiKey);
             return await _client.ListGroups(Selector.All);
         }
-        public async Task SetColor(string availability, Selector selector, string apiKey = null)
+        public async Task SetColor(string availability, string lightId, string apiKey = null)
         {
+            if (string.IsNullOrEmpty(lightId))
+            {
+                throw new ArgumentNullException();
+            }
+            Selector selector = new Selector.LightId(lightId);
+
             if (!string.IsNullOrEmpty(apiKey))
             {
                 _options.LightSettings.LIFX.LIFXApiKey = apiKey;

@@ -53,7 +53,7 @@
 
             if (Config.CurrentValue.LightSettings.LIFX.IsLIFXEnabled && !string.IsNullOrEmpty(Config.CurrentValue.LightSettings.LIFX.LIFXApiKey))
             {
-                await _lifxService.SetColor(appState.CustomColor, (Selector)Config.CurrentValue.LightSettings.LIFX.SelectedLIFXItemId);
+                await _lifxService.SetColor(appState.CustomColor, Config.CurrentValue.LightSettings.LIFX.SelectedLIFXItemId);
             }
         }
     }

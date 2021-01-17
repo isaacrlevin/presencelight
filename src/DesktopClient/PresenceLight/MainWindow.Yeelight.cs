@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Windows.Controls;
 using PresenceLight.Telemetry;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace PresenceLight
 {
@@ -47,26 +48,33 @@ namespace PresenceLight
 
         private async void CheckYeelight()
         {
-            pnlYeelightBrigthness.Visibility = Visibility.Collapsed;
-            if (Config != null)
+            try
             {
-                SyncOptions();
-
-                ddlYeelightLights.ItemsSource = await _yeelightService.FindLights().ConfigureAwait(true);
-
-                foreach (var item in ddlYeelightLights.Items)
+                pnlYeelightBrigthness.Visibility = Visibility.Collapsed;
+                if (Config != null)
                 {
-                    var light = (YeelightAPI.Device)item;
-                    if (light?.Id == Config.LightSettings.Yeelight.SelectedYeelightId)
+                    SyncOptions();
+
+                    ddlYeelightLights.ItemsSource = await _yeelightService.FindLights().ConfigureAwait(true);
+
+                    foreach (var item in ddlYeelightLights.Items)
                     {
-                        ddlYeelightLights.SelectedItem = item;
+                        var light = (YeelightAPI.Device)item;
+                        if (light?.Id == Config.LightSettings.Yeelight.SelectedYeelightId)
+                        {
+                            ddlYeelightLights.SelectedItem = item;
+                        }
                     }
+                    ddlYeelightLights.Visibility = Visibility.Visible;
+                    pnlYeelightBrigthness.Visibility = Visibility.Visible;
                 }
-                ddlYeelightLights.Visibility = Visibility.Visible;
-                pnlYeelightBrigthness.Visibility = Visibility.Visible;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Error occured in LoadApp() in MainWindow");
+                _diagClient.TrackException(e);
             }
         }
-
         #endregion
     }
 }

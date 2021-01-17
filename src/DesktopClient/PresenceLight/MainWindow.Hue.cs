@@ -45,7 +45,7 @@ namespace PresenceLight
 
                 await _settingsService.SaveSettings(Config);
 
-                ddlHueLights.ItemsSource = await _remoteHueService.CheckLights();
+                ddlHueLights.ItemsSource = await _remoteHueService.GetLights();
                 SyncOptions();
 
                 SolidColorBrush fontBrush = new SolidColorBrush();
@@ -132,11 +132,11 @@ namespace PresenceLight
                         if (Config.LightSettings.Hue.UseRemoteApi)
                         {
                             await _remoteHueService.RegisterBridge();
-                            ddlHueLights.ItemsSource = await _remoteHueService.CheckLights();
+                            ddlHueLights.ItemsSource = await _remoteHueService.GetLights();
                         }
                         else
                         {
-                            ddlHueLights.ItemsSource = await _hueService.CheckLights();
+                            ddlHueLights.ItemsSource = await _hueService.GetLights();
                         }
 
                         foreach (var item in ddlHueLights.Items)
@@ -309,7 +309,7 @@ namespace PresenceLight
                 lblHueMessage.Visibility = Visibility.Collapsed;
                 pnlHueBrightness.Visibility = Visibility.Collapsed;
                 Config.LightSettings.Hue.HueApiKey = await _hueService.RegisterBridge().ConfigureAwait(true);
-                ddlHueLights.ItemsSource = await _hueService.CheckLights().ConfigureAwait(true);
+                ddlHueLights.ItemsSource = await _hueService.GetLights().ConfigureAwait(true);
                 SyncOptions();
                 pnlHueBrightness.Visibility = Visibility.Visible;
                 imgHueLoading.Visibility = Visibility.Collapsed;
