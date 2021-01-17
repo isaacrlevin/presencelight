@@ -41,7 +41,7 @@ jobs:
       DOTNET_NOLOGO: true
       BuildConfiguration: Release
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
-      GitHubReleaseUrl: https://github.com/isaacrlevin/PresenceLight/releases/download
+      GitHubReleaseUrl: https://github.com/isaacrlevin/presencelight/releases/download/Worker-
 
     steps:
 
@@ -201,7 +201,7 @@ jobs:
         --secret "${{ secrets.SignClientSecret }}" `
         --name "PresenceLight" `
         --description "PresenceLight" `
-        --descriptionUrl "https://github.com/isaacrlevin/PresenceLight"
+        --descriptionUrl "https://github.com/isaacrlevin/presencelight"
       shell: pwsh
 
     - name: Scale Down Sign Service
