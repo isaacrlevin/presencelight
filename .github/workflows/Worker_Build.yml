@@ -1,12 +1,12 @@
 on:
 
   push:
+  pull_request:
 
     branches:
     - main
 
     paths-ignore:
-    - azure-pipelines-wpf.yml
     - .github/workflows/Desktop_Build.yml
     - src/DesktopClient/*
     - README.md
