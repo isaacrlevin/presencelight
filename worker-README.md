@@ -1,5 +1,5 @@
 ![Logo](Icon.png)
-# PresenceLight
+# PresenceLight - Worker Version
 ![Build Status](https://dev.azure.com/isaaclevin/PresenceLight/_apis/build/status/CI-build-worker?branchName=main)
 
 ### Worker Version Installs
@@ -20,7 +20,7 @@ Here you will the Url for the Kestrel hosted Web Application. Going to that Url 
 
 ## Running in Docker
 
-PresenceLight can easily be configured to run in a Docker container, and I have images on my [DockerHub](https://hub.docker.com/repository/docker/isaaclevin/presencelight) for the primary Linux distros. 
+PresenceLight can easily be configured to run in a Docker container, and I have images on my [DockerHub](https://hub.docker.com/repository/docker/isaaclevin/presencelight) for the primary Linux distros.
 
 - x64 Linux (latest tag)
 - ARM64 (debian-arm64 tag)
@@ -71,18 +71,18 @@ reverse proxy that allows me to forward applications through my domain, so I can
 
 presencelight.mydomain.com
 
-The best part about this is that [Traefik](https://traefik.io/) can be configured to pull LetsEncrypt Certificates and integration with CloudFlare SSL. There is a [great blog post on this](https://www.smarthomebeginner.com/traefik-2-docker-tutorial/), that I highly reccomend if you are interested. 
+The best part about this is that [Traefik](https://traefik.io/) can be configured to pull LetsEncrypt Certificates and integration with CloudFlare SSL. There is a [great blog post on this](https://www.smarthomebeginner.com/traefik-2-docker-tutorial/), that I highly reccomend if you are interested.
 If you want SSL for your implementation, but don't want to use a reverse proxy, you can easily obtain a certificate with either
 
 - dotnet dev-certs
   - dotnet dev-certs https -ep %PATHTOYOURCERT%\my_web_domain.pfx -p crypticpassword
   - dotnet dev-certs https --trust
-- openssl (Linux) 
+- openssl (Linux)
   - [Go here make your life easier](https://www.digicert.com/easy-csr/openssl.htm)
   - openssl x509 -signkey my_web_domain.key -in my_web_domain.csr -req -days 365 -out my_web_domain.crt
   - openssl pkcs12 -inkey my_web_domain.key -in my_web_domain.crt -export -out %PATHTOYOURCERT%my_web_domain.pfx
 
-Once you have a valid .pfx file, you will need to wire up the app to use that cert, the way you do that depends on how you host your app. If you app is just running locally on the machine, 
+Once you have a valid .pfx file, you will need to wire up the app to use that cert, the way you do that depends on how you host your app. If you app is just running locally on the machine,
 you can just set environment variables for your app.
 
 - ASPNETCORE_Kestrel__Certificates__Default__Path
