@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Net;
 using System.Security.Authentication;
 
 using Microsoft.AspNetCore.Hosting;
@@ -17,11 +18,10 @@ namespace PresenceLight.Worker
         }
         private static void ConfigureConfiguration(IConfigurationBuilder config)
         {
-            config
+            config.AddEnvironmentVariables()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("PresenceLightSettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
-                .AddUserSecrets<Startup>();
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args)
@@ -32,12 +32,6 @@ namespace PresenceLight.Worker
 
             return Host.CreateDefaultBuilder(args)
                 .UseSystemd()
-                .ConfigureAppConfiguration((hostingContext, config) =>
-                {
-                    config.AddJsonFile("PresenceLightSettings.json", optional: false, reloadOnChange: true)
-                    .AddJsonFile($"PresenceLightSettings.Development.json", optional: true, reloadOnChange: true)
-                    .AddJsonFile($"appsettings.Development.json", optional: true, reloadOnChange: true);
-                })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder
@@ -49,9 +43,18 @@ namespace PresenceLight.Worker
                              {
                                  throw new ArgumentException("Supplied Server Ip Address is not configured or it is not in list of redirect Uris for Azure Active Directory");
                              }
+
                              options.Listen(System.Net.IPAddress.Parse(configForMain["ServerIP"]), 5001, listenOptions =>
                              {
-                                 listenOptions.UseHttps("presencelight.pfx", "presencelight");
+                                 var envCertPath = Environment.GetEnvironmentVariable("ASPNETCORE_Kestrel__Certificates__Default__Path");
+                                 if (string.IsNullOrEmpty(envCertPath))
+                                 {
+                                     // Cert Env Not provided, use appsettings
+                                     //assumes cert is at same level as exe
+                                     listenOptions.UseHttps(configForMain["Certificate:Name"], configForMain["Certificate:Password"]);
+                                 }
+                                 else
+                                 { }
                              });
 
                              options.ListenLocalhost(5000, listenOptions =>
@@ -62,7 +65,15 @@ namespace PresenceLight.Worker
                          {
                              options.ListenLocalhost(5001, listenOptions =>
                              {
-                                 listenOptions.UseHttps("presencelight.pfx", "presencelight");
+                                 var envCertPath = Environment.GetEnvironmentVariable("ASPNETCORE_Kestrel__Certificates__Default__Path");
+                                 if (string.IsNullOrEmpty(envCertPath))
+                                 {
+                                     // Cert Env Not provided, use appsettings
+                                     //assumes cert is at same level as exe
+                                     listenOptions.UseHttps(configForMain["Certificate:Name"], configForMain["Certificate:Password"]);
+                                 }
+                                 else
+                                 { }
                              });
 
                              options.ListenLocalhost(5000, listenOptions =>
