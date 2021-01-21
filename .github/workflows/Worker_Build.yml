@@ -1,12 +1,17 @@
 on:
 
   push:
-  pull_request:
-
     branches:
     - main
-
     paths-ignore:
+    - .github/workflows/Desktop_Build.yml
+    - src/DesktopClient/*
+    - README.md
+    - desktop-README.md
+    - Build/PublishStore/*
+
+  pull_request:
+    branches: [ main ]
     - .github/workflows/Desktop_Build.yml
     - src/DesktopClient/*
     - README.md
