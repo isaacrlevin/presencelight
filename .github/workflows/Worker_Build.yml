@@ -80,7 +80,7 @@ jobs:
         # Update AppSettings.json. This must be done before build.
         $appsettings= get-content ".\src\PresenceLight.Worker\appsettings.json" -raw | ConvertFrom-Json
 
-        $appsettings.certificate.path = "${{ secrets.CertificateName }}"
+        $appsettings.certificate.name = "${{ secrets.CertificateName }}"
         $appsettings.certificate.password = "${{ secrets.CertificatePassword }}"
 
         $appsettings.azureAd.clientId = "${{ secrets.ApplicationId }}"
@@ -365,7 +365,7 @@ jobs:
           # Update AppSettings.json. This must be done before build.
           $appsettings= get-content ".\src\PresenceLight.Worker\appsettings.json" -raw | ConvertFrom-Json
 
-          $appsettings.certificate.path = "${{ secrets.CertificateName }}"
+          $appsettings.certificate.name = "${{ secrets.CertificateName }}"
           $appsettings.certificate.password = "${{ secrets.CertificatePassword }}"
 
           $appsettings.azureAd.clientId = "${{ secrets.ApplicationId }}"
