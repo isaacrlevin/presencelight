@@ -13,4 +13,5 @@ RUN dotnet publish -c release -o /app  -r linux-arm --self-contained false
 FROM mcr.microsoft.com/dotnet/aspnet:5.0-buster-slim-arm32v7
 WORKDIR /app
 COPY --from=build /app ./
+LABEL org.opencontainers.image.source=https://github.com/isaacrlevin/presencelight
 ENTRYPOINT ["dotnet", "PresenceLight.dll"]

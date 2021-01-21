@@ -1,20 +1,25 @@
 on:
 
   push:
-
-    branches:
-    - main
-
+    branches: [ main ]
     paths-ignore:
-    - azure-pipelines-wpf.yml
-    - .github/workflows/build-wpf.yml
+    - .github/workflows/Desktop_Build.yml
     - src/DesktopClient/*
-    - .github/workflows/test.yml
     - README.md
-    - worker-README.md
+    - desktop-README.md
+    - Build/PublishStore/*
+
+  pull_request:
+    branches: [ main ]
+    paths-ignore:
+    - .github/workflows/Desktop_Build.yml
+    - src/DesktopClient/*
+    - README.md
+    - desktop-README.md
+    - Build/PublishStore/*
 
 jobs:
-  Build_Worker: 
+  Build_Worker:
     name: Build Worker
     runs-on: windows-latest
     strategy:
@@ -41,7 +46,7 @@ jobs:
       DOTNET_NOLOGO: true
       BuildConfiguration: Release
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
-      GitHubReleaseUrl: https://github.com/isaacrlevin/PresenceLight/releases/download
+      GitHubReleaseUrl: https://github.com/isaacrlevin/presencelight/releases/download/Worker-
 
     steps:
 
@@ -98,10 +103,10 @@ jobs:
       name: dotnet publish ${{ matrix.RID }}
       if: ${{ success() }}
 
-    - name: Zip Standalone PresenceLight x64 Files
+    - name: Zip PresenceLight Worker Files
       run: |
         Compress-Archive -Path '${{ github.workspace }}\${{ env.GitBuildVersionSimple }}_${{ matrix.ChannelName }}\' `
-        -DestinationPath ${{ github.workspace }}\${{ matrix.ChannelName }}\PresenceLight.${{ matrix.ChannelName }}.${{ env.GitBuildVersionSimple }}-x64.zip
+        -DestinationPath ${{ github.workspace }}\${{ matrix.ChannelName }}\PresenceLight.${{ matrix.ChannelName }}.${{ env.GitBuildVersionSimple }}.zip
       shell: powershell
 
     - name: Publish Arifacts
@@ -138,7 +143,7 @@ jobs:
       with:
         name: Windows_x64_x86
         path: ${{ github.workspace }}/ToSign/Windows_x64_x86
-        
+
     - name: Download Windows_ARM Artifacts
       uses: actions/download-artifact@v2
       with:
@@ -201,7 +206,7 @@ jobs:
         --secret "${{ secrets.SignClientSecret }}" `
         --name "PresenceLight" `
         --description "PresenceLight" `
-        --descriptionUrl "https://github.com/isaacrlevin/PresenceLight"
+        --descriptionUrl "https://github.com/isaacrlevin/presencelight"
       shell: pwsh
 
     - name: Scale Down Sign Service
@@ -272,7 +277,7 @@ jobs:
       with:
         name: Windows_x64_x86
         path: ${{ github.workspace }}/Sign/Windows_x64_x86
-        
+
     - name: Download Windows_ARM Artifacts
       uses: actions/download-artifact@v2
       with:
@@ -308,11 +313,11 @@ jobs:
       with:
         name: Linux_Musl_ARM_x64
         path: ${{ github.workspace }}/Sign/Linux_Musl_ARM_x64
-        
+
     - name: Archive Previous Release
       uses: azure/cli@v1.0.0
       with:
-        inlineScript: |  
+        inlineScript: |
           az storage blob copy start-batch \
           --account-key ${{ secrets.ACCOUNT_KEY }} \
           --account-name ${{ secrets.ACCOUNT_NAME }} \
@@ -320,7 +325,7 @@ jobs:
           --source-account-key ${{ secrets.ACCOUNT_KEY }} \
           --source-account-name ${{ secrets.ACCOUNT_NAME }} \
           --source-container ${{ secrets.WORKER_CONTAINER }}
-           
+
           az storage blob delete-batch \
           --account-key ${{ secrets.ACCOUNT_KEY }} \
           --account-name ${{ secrets.ACCOUNT_NAME }} \
@@ -334,7 +339,7 @@ jobs:
         container_name: ${{ secrets.WORKER_CONTAINER }}
         connection_string: ${{ secrets.AZUREBLOBCONNECTIONSTRING }}
         sync: true
-        
+
   Deploy_Containers:
     needs: Build_Worker
     environment:
@@ -345,7 +350,7 @@ jobs:
     env:
       if: ${{ github.event_name != 'pull_request' }}
     steps:
-      - uses: actions/checkout@v2   
+      - uses: actions/checkout@v2
 
       - name: Update appsettings.json
         run: |
@@ -371,6 +376,45 @@ jobs:
         shell: pwsh
         if: ${{ success() && github.event_name != 'pull_request' }}
 
+      - name: Push latest to GitHub
+        uses: opspresso/action-docker@master
+        with:
+          args: --docker
+        env:
+          USERNAME: isaacrlevin
+          REGISTRY: "ghcr.io"
+          PASSWORD: ${{ secrets.GH_PERSONAL_TOKEN }}
+          DOCKERFILE: "${{ github.workspace }}/src/DockerFiles/Dockerfile"
+          IMAGE_NAME: "isaacrlevin/presencelight"
+          TAG_NAME: "latest"
+          BUILD_PATH: "${{ github.workspace }}/src/"
+
+      - name: Push ARM to GitHub
+        uses: opspresso/action-docker@master
+        with:
+          args: --docker
+        env:
+          USERNAME: isaacrlevin
+          REGISTRY: "ghcr.io"
+          PASSWORD: ${{ secrets.GH_PERSONAL_TOKEN }}
+          DOCKERFILE: "${{ github.workspace }}/src/DockerFiles/Dockerfile.debian-arm32"
+          IMAGE_NAME: "isaacrlevin/presencelight"
+          TAG_NAME: "debian-arm32"
+          BUILD_PATH: "${{ github.workspace }}/src/"
+
+      - name: Push ARM64 to GitHub
+        uses: opspresso/action-docker@master
+        with:
+          args: --docker
+        env:
+          USERNAME: isaacrlevin
+          REGISTRY: "ghcr.io"
+          PASSWORD: ${{ secrets.GH_PERSONAL_TOKEN }}
+          DOCKERFILE: "${{ github.workspace }}/src/DockerFiles/Dockerfile.debian-arm64"
+          IMAGE_NAME: "isaacrlevin/presencelight"
+          TAG_NAME: "debian-arm64"
+          BUILD_PATH: "${{ github.workspace }}/src/"
+
       - name: Push ARM to DockerHub
         uses: opspresso/action-docker@master
         with:
@@ -382,7 +426,7 @@ jobs:
           IMAGE_NAME: "isaaclevin/presencelight"
           TAG_NAME: "debian-arm32"
           BUILD_PATH: "${{ github.workspace }}/src/"
-          
+
       - name: Push ARM64 to DockerHub
         uses: opspresso/action-docker@master
         with:
@@ -407,15 +451,6 @@ jobs:
           TAG_NAME: "latest"
           BUILD_PATH: "${{ github.workspace }}/src/"
 
-      - name: Push latest to GitHub Packages
-        uses: VaultVulp/gp-docker-action@1.1.7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          image-name: presencelight 
-          image-tag: "latest"
-          docker-file: "${{ github.workspace }}/src/DockerFiles/Dockerfile"
-          build-context: "${{ github.workspace }}/src/"
-       
   Deploy_GitHub_Release:
     needs: Deploy_Azure_Blob
     environment:
@@ -446,7 +481,7 @@ jobs:
         with:
           name: Windows_x64_x86
           path: ${{ github.workspace }}/Sign/Windows_x64_x86
-          
+
       - name: Download Windows_ARM Artifacts
         uses: actions/download-artifact@v2
         with:
@@ -485,26 +520,97 @@ jobs:
 
       - name: Get Version from File
         run: |
-          version=$(<"${{ github.workspace }}/Sign/Linux_ARM64/version.txt") 
-          echo "VERSION=$version" >> $GITHUB_ENV      
-          
+          version=$(<"${{ github.workspace }}/Sign/Linux_ARM64/version.txt")
+          echo "VERSION=$version" >> $GITHUB_ENV
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@latest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: "v${{ env.VERSION }}"
+          tag_name: "Worker-v${{ env.VERSION }}"
           release_name: "Worker v${{ env.VERSION }}"
           body: |
             ${{ steps.changelog.outputs.compareurl }}
             ${{ steps.changelog.outputs.changelog }}
           draft: false
           prerelease: false
-          
-      - name: Upload Releases
-        uses: alexellis/upload-assets@0.2.2
+
+      - name: Upload Release Asset
+        id: upload-release-Linux_Musl_ARM_x64
+        uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          asset_paths: '["${{ github.workspace }}/Sign"]'
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          asset_path: "/home/runner/work/presencelight/presencelight/Sign/Linux_Musl_ARM_x64/PresenceLight.Linux_Musl_ARM_x64.${{ env.VERSION }}.zip"
+          asset_name: "PresenceLight.Linux_Musl_ARM_x64.${{ env.VERSION }}.zip"
+          asset_content_type: application/zip
+
+      - name: Upload Release Asset
+        id: upload-release-Windows_x64_x86
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          asset_path: "/home/runner/work/presencelight/presencelight/Sign/Windows_x64_x86/PresenceLight.Windows_x64_x86.${{ env.VERSION }}.zip"
+          asset_name: "PresenceLight.Windows_x64_x86.${{ env.VERSION }}.zip"
+          asset_content_type: application/zip
+
+      - name: Upload Release Asset
+        id: upload-release-Windows_ARM
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          asset_path: "/home/runner/work/presencelight/presencelight/Sign/Windows_ARM/PresenceLight.Windows_ARM.${{ env.VERSION }}.zip"
+          asset_name: "PresenceLight.Windows_ARM.${{ env.VERSION }}.zip"
+          asset_content_type: application/zip
+
+      - name: Upload Release Asset
+        id: upload-release-macOS
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          asset_path: "/home/runner/work/presencelight/presencelight/Sign/macOS/PresenceLight.macOS.${{ env.VERSION }}.zip"
+          asset_name: "PresenceLight.macOS.${{ env.VERSION }}.zip"
+          asset_content_type: application/zip
+
+      - name: Upload Release Asset
+        id: upload-release-Linux_ARM
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          asset_path: "/home/runner/work/presencelight/presencelight/Sign/Linux_ARM/PresenceLight.Linux_ARM.${{ env.VERSION }}.zip"
+          asset_name: "PresenceLight.Linux_ARM.${{ env.VERSION }}.zip"
+          asset_content_type: application/zip
+
+      - name: Upload Release Asset
+        id: upload-release-Linux_ARM64
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          asset_path: "/home/runner/work/presencelight/presencelight/Sign/Linux_ARM64/PresenceLight.Linux_ARM64.${{ env.VERSION }}.zip"
+          asset_name: "PresenceLight.Linux_ARM64.${{ env.VERSION }}.zip"
+          asset_content_type: application/zip
+
+      - name: Upload Release Asset
+        id: upload-release-Linux_Musl_x64
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          asset_path: "/home/runner/work/presencelight/presencelight/Sign/Linux_Musl_x64/PresenceLight.Linux_Musl_x64.${{ env.VERSION }}.zip"
+          asset_name: "PresenceLight.Linux_Musl_x64.${{ env.VERSION }}.zip"
+          asset_content_type: application/zip
+
