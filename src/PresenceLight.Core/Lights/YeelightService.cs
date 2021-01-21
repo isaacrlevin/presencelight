@@ -34,6 +34,12 @@ namespace PresenceLight.Core
 
         public async Task SetColor(string availability, string lightId)
         {
+            if (string.IsNullOrEmpty(lightId))
+            {
+                throw new ArgumentOutOfRangeException("Yeelight Selected Light Id Invalid");
+            }
+
+
             var device = this.deviceGroup.FirstOrDefault(x => x.Id == lightId);
 
             if (device == null)

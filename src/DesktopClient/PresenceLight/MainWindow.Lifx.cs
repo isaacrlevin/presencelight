@@ -46,7 +46,7 @@ namespace PresenceLight
             {
                 if (Config.LightSettings.LIFX.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey) && !string.IsNullOrEmpty(Config.LightSettings.LIFX.SelectedLIFXItemId))
                 {
-                    ddlLIFXLights.ItemsSource = await _lifxService.GetAllLightsAsync().ConfigureAwait(true);
+                    ddlLIFXLights.ItemsSource = await _lifxService.GetAllLights().ConfigureAwait(true);
 
                     foreach (var item in ddlLIFXLights.Items)
                     {
@@ -62,7 +62,7 @@ namespace PresenceLight
 
                     if (ddlLIFXLights.SelectedItem == null)
                     {
-                        ddlLIFXLights.ItemsSource = await _lifxService.GetAllGroupsAsync().ConfigureAwait(true);
+                        ddlLIFXLights.ItemsSource = await _lifxService.GetAllGroups().ConfigureAwait(true);
 
                         foreach (var item in ddlLIFXLights.Items)
                         {
@@ -135,11 +135,11 @@ namespace PresenceLight
                     SyncOptions();
                     if (((System.Windows.Controls.Button)sender).Name == "btnGetLIFXGroups")
                     {
-                        ddlLIFXLights.ItemsSource = await _lifxService.GetAllGroupsAsync().ConfigureAwait(true);
+                        ddlLIFXLights.ItemsSource = await _lifxService.GetAllGroups().ConfigureAwait(true);
                     }
                     else
                     {
-                        ddlLIFXLights.ItemsSource = await _lifxService.GetAllLightsAsync().ConfigureAwait(true);
+                        ddlLIFXLights.ItemsSource = await _lifxService.GetAllLights().ConfigureAwait(true);
                     }
                     lblLIFXMessage.Visibility = Visibility.Visible;
                     pnlLIFXBrightness.Visibility = Visibility.Visible;
