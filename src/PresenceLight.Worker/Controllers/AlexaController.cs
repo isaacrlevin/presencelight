@@ -78,7 +78,7 @@ namespace PresenceLight.Worker.Controllers
 
                     if (Config.LightSettings.LIFX.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
                     {
-                        await _lifxService.SetColor(_appState.CustomColor, (Selector)Config.LightSettings.LIFX.SelectedLIFXItemId);
+                        await _lifxService.SetColor(_appState.CustomColor, Config.LightSettings.LIFX.SelectedLIFXItemId);
                     }
                 }
             }

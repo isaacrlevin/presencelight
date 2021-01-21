@@ -24,6 +24,9 @@ namespace PresenceLight.Worker
         private LIFXService _lifxService;
         private ICustomApiService _customApiService;
 
+        private GraphServiceClient c;
+
+
         public Worker(IHueService hueService,
                       ILogger<Worker> logger,
                       IOptionsMonitor<BaseConfig> optionsAccessor,
@@ -45,6 +48,8 @@ namespace PresenceLight.Worker
             {
                 if (_appState.IsUserAuthenticated)
                 {
+                    c = _appState.GraphServiceClient;
+                    _logger.LogInformation("User is Authenticated, poll lights");
                     try
                     {
                         await GetData();
@@ -76,11 +81,14 @@ namespace PresenceLight.Worker
 
             if (Config.LightSettings.LIFX.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
             {
-                await _lifxService.SetColor(presence.Availability, (Selector)Config.LightSettings.LIFX.SelectedLIFXItemId);
+                await _lifxService.SetColor(presence.Availability, Config.LightSettings.LIFX.SelectedLIFXItemId);
+                _logger.LogInformation($"Setting LIFX Light: { Config.LightSettings.Hue.SelectedHueLightId}, Graph Presence: {presence.Availability}");
             }
 
             while (_appState.IsUserAuthenticated)
             {
+
+
                 if (_appState.LightMode == "Graph")
                 {
                     presence = await GetPresence();
@@ -94,7 +102,8 @@ namespace PresenceLight.Worker
 
                     if (Config.LightSettings.LIFX.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
                     {
-                        await _lifxService.SetColor(presence.Availability, (Selector)Config.LightSettings.LIFX.SelectedLIFXItemId);
+                        await _lifxService.SetColor(presence.Availability, Config.LightSettings.LIFX.SelectedLIFXItemId);
+                        _logger.LogInformation($"Setting LIFX Light: { Config.LightSettings.LIFX.SelectedLIFXItemId}, Graph Presence: {presence.Availability}");
                     }
                     if (Config.LightSettings.Custom.IsCustomApiEnabled)
                     {
@@ -112,7 +121,7 @@ namespace PresenceLight.Worker
         {
             try
             {
-                var me = await _appState.GraphServiceClient.Me.Request().GetAsync();
+                var me = await c.Me.Request().GetAsync();
                 _logger.LogInformation($"User is {me.DisplayName}");
                 return me;
             }
@@ -127,7 +136,7 @@ namespace PresenceLight.Worker
         {
             try
             {
-                var photoStream = await _appState.GraphServiceClient.Me.Photo.Content.Request().GetAsync();
+                var photoStream = await c.Me.Photo.Content.Request().GetAsync();
                 var memoryStream = new MemoryStream();
                 photoStream.CopyTo(memoryStream);
 
@@ -148,7 +157,7 @@ namespace PresenceLight.Worker
         {
             try
             {
-                var presence = await _appState.GraphServiceClient.Me.Presence.Request().GetAsync();
+                var presence = await c.Me.Presence.Request().GetAsync();
 
                 var r = new Regex(@"
                 (?<=[A-Z])(?=[A-Z][a-z]) |
