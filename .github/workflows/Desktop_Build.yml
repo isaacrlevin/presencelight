@@ -1,21 +1,23 @@
 on:
-
   push:
-
-    branches:
-    - main
-
+    branches: [ main ]
     paths-ignore:
-    - azure-pipelines-worker.yml
-    - .github/workflows/build-worker.yml
-    - .github/workflows/test.yml
+    - .github/workflows/Worker_Build.yml
     - src/PresenceLight.Worker/*
     - README.md
     - worker-README.md
 
+  pull_request:
+    branches: [ main ]
+    paths-ignore:
+    - .github/workflows/Worker_Build.yml
+    - src/PresenceLight.Worker/*
+    - README.md
+    - worker-README.md
 jobs:
+
   Build_WPF:
-    name: Build WPF 
+    name: Build WPF
     runs-on: windows-latest
     strategy:
       matrix:
@@ -30,7 +32,7 @@ jobs:
       DOTNET_NOLOGO: true
       BuildConfiguration: Release
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
-      GitHubReleaseUrl: https://github.com/isaacrlevin/PresenceLight/releases/download
+      GitHubReleaseUrl: https://github.com/isaacrlevin/presencelight/releases/download/Desktop-
       Win10RID: net5.0-windows10.0.19041
 
     steps:
@@ -58,14 +60,14 @@ jobs:
     - name: Create Directory for Channel
       run: mkdir ${{ github.workspace }}\${{ matrix.ChannelName }}
       shell: powershell
-    
+
     - name: Add Version File to Artifact
       run : |
         New-Item -Path ${{ github.workspace }}\.chocolatey -Name "version.txt" -ItemType "file" -Value "${{ env.GitBuildVersionSimple }}"
 
         New-Item -Path ${{ github.workspace }}\${{ matrix.ChannelName }} -Name "version.txt" -ItemType "file" -Value "${{ env.GitBuildVersionSimple }}"
       shell: powershell
-        
+
     - name: Update AppxManifest version
       run: |
         # Update appxmanifest. This must be done before build.
@@ -231,7 +233,7 @@ jobs:
           --secret "${{ secrets.SignClientSecret }}" `
           --name "PresenceLight" `
           --description "PresenceLight" `
-          --descriptionUrl "https://github.com/isaacrlevin/PresenceLight"
+          --descriptionUrl "https://github.com/isaacrlevin/presencelight"
 
     - uses: nick-invision/retry@v2
       name: Authenticode Sign AppXBundle Release
@@ -250,8 +252,8 @@ jobs:
           --secret "${{ secrets.SignClientSecret }}" `
           --name "PresenceLight" `
           --description "PresenceLight" `
-          --descriptionUrl "https://github.com/isaacrlevin/PresenceLight"
-          
+          --descriptionUrl "https://github.com/isaacrlevin/presencelight"
+
     - uses: nick-invision/retry@v2
       name: Authenticode Sign AppInstaller
       with:
@@ -268,7 +270,7 @@ jobs:
           --secret "${{ secrets.SignClientSecret }}" `
           --name "PresenceLight" `
           --description "PresenceLight" `
-          --descriptionUrl "https://github.com/isaacrlevin/PresenceLight"
+          --descriptionUrl "https://github.com/isaacrlevin/presencelight"
 
     - uses: nick-invision/retry@v2
       name: Authenticode Sign Zip
@@ -286,7 +288,7 @@ jobs:
           --secret "${{ secrets.SignClientSecret }}" `
           --name "PresenceLight" `
           --description "PresenceLight" `
-          --descriptionUrl "https://github.com/isaacrlevin/PresenceLight"
+          --descriptionUrl "https://github.com/isaacrlevin/presencelight"
 
     - name: Scale Down Sign Service
       uses: azure/cli@v1.0.0
@@ -311,7 +313,7 @@ jobs:
       with:
         path: ${{ github.workspace }}/ToSign/Standalone
         name: StandaloneSigned
-        
+
   Deploy_Azure_Blob:
     needs: Code_Signing
     environment:
@@ -332,18 +334,16 @@ jobs:
       with:
         name: NightlySigned
         path: "${{ github.workspace }}/NightlySigned"
-        
+
     - name: Copy files to same directory
-      run: | 
-        Copy-Item "${{ github.workspace }}/NightlySigned" -Destination "${{ github.workspace }}/Upload" -Recurse -Verbose   
-        dir .\Upload\         
-        az storage blob upload --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} -f /home/runner/work/PresenceLight/PresenceLight/Upload/ci_badge.svg -n ci_badge.svg -c nightly --content-type image/svg+xml  --debug
+      run: |
+        Copy-Item "${{ github.workspace }}/NightlySigned" -Destination "${{ github.workspace }}/Upload" -Recurse -Verbose
+        dir .\Upload\
+        az storage blob upload --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} -f /home/runner/work/presencelight/presencelight/Upload/ci_badge.svg -n ci_badge.svg -c nightly --content-type image/svg+xml  --debug
+        az storage blob upload --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} -f /home/runner/work/presencelight/presencelight/Upload/presencelight.Package.appinstaller -n PresenceLight.Package.appinstaller -c nightly --content-type application/xml  --debug
+        az storage blob upload-batch --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} --source /home/runner/work/presencelight/presencelight/Upload --pattern *.appxbundle -d nightly --content-type application/vns.ms-appx --debug
+      shell: pwsh
 
-        az storage blob upload --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} -f /home/runner/work/PresenceLight/PresenceLight/Upload/PresenceLight.Package.appinstaller -n PresenceLight.Package.appinstaller -c nightly --content-type application/xml  --debug 
-
-        az storage blob upload-batch --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} --source /home/runner/work/PresenceLight/PresenceLight/Upload --pattern *.appxbundle -d nightly --content-type application/vns.ms-appx --debug
-      shell: pwsh    
-       
   Deploy_GitHub_Release:
     needs: Deploy_Azure_Blob
     environment:
@@ -377,31 +377,31 @@ jobs:
 
       - name: Get Version from File
         run: |
-          version=$(<"${{ github.workspace }}/StandaloneSigned/version.txt") 
-          echo "VERSION=$version" >> $GITHUB_ENV      
-          
+          version=$(<"${{ github.workspace }}/StandaloneSigned/version.txt")
+          echo "VERSION=$version" >> $GITHUB_ENV
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@latest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: "v${{ env.VERSION }}"
-          release_name: "WPF v${{ env.VERSION }}"
+          tag_name: "Desktop-v${{ env.VERSION }}"
+          release_name: "Desktop v${{ env.VERSION }}"
           body: |
             ${{ steps.changelog.outputs.compareurl }}
             ${{ steps.changelog.outputs.changelog }}
           draft: false
           prerelease: false
-          
+
       - name: Upload Release Asset
-        id: upload-release-asset 
+        id: upload-release-asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-          asset_path: "/home/runner/work/PresenceLight/PresenceLight/StandaloneSigned/PresenceLight.${{ env.VERSION }}-x64.zip" 
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          asset_path: "/home/runner/work/presencelight/presencelight/StandaloneSigned/PresenceLight.${{ env.VERSION }}-x64.zip"
           asset_name: "PresenceLight.${{ env.VERSION }}-x64.zip"
           asset_content_type: application/zip
 
@@ -411,8 +411,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-          asset_path: "/home/runner/work/PresenceLight/PresenceLight/StandaloneSigned/PresenceLight.${{ env.VERSION }}-x86.zip" 
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          asset_path: "/home/runner/work/presencelight/presencelight/StandaloneSigned/PresenceLight.${{ env.VERSION }}-x86.zip"
           asset_name: "PresenceLight.${{ env.VERSION }}-x86.zip"
           asset_content_type: application/zip
 
@@ -425,7 +425,7 @@ jobs:
     runs-on: windows-latest
     env:
       if: ${{ github.event_name != 'pull_request' }}
-      GitHubReleaseUrl: https://github.com/isaacrlevin/PresenceLight/releases/download  
+      GitHubReleaseUrl: https://github.com/isaacrlevin/presencelight/releases/download/Desktop-
 
     steps:
       - uses: actions/download-artifact@v2
@@ -442,16 +442,16 @@ jobs:
 
       - name: Get Version from File
         run: |
-          version=$(<"${{ github.workspace }}\\Chocolatey\\version.txt") 
-          echo "VERSION=$version" >> $GITHUB_ENV    
+          version=$(<"${{ github.workspace }}\\Chocolatey\\version.txt")
+          echo "VERSION=$version" >> $GITHUB_ENV
         shell: bash
 
       - name: Update Chocolatey Files
         run: |
-          # Hash the Zip Files          
+          # Hash the Zip Files
           mkdir "${{ github.workspace }}\Download"
-          Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}/v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x86.zip" -OutFile "${{ github.workspace }}\\Download\\PresenceLight.${{ env.VERSION }}-x86.zip"
-          Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}/v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x86.zip" -OutFile "${{ github.workspace }}\\Download\\PresenceLight.${{ env.VERSION }}-x64.zip"
+          Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x86.zip" -OutFile "${{ github.workspace }}\\Download\\PresenceLight.${{ env.VERSION }}-x86.zip"
+          Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x86.zip" -OutFile "${{ github.workspace }}\\Download\\PresenceLight.${{ env.VERSION }}-x64.zip"
           $hash64=Get-Filehash ${{ github.workspace }}\\Download\\PresenceLight.${{ env.VERSION }}-x64.zip
           $hash86=Get-Filehash ${{ github.workspace }}\\Download\\PresenceLight.${{ env.VERSION }}-x86.zip
 
@@ -459,21 +459,21 @@ jobs:
           $installFile = Get-Content -path "${{ github.workspace }}\\Chocolatey\\tools\\ChocolateyInstall.ps1" -Raw
           $installFile = $installFile -replace '{ReplaceCheckSumx86}', $hash86.Hash
           $installFile = $installFile -replace '{ReplaceCheckSumx64}', $hash64.Hash
-          $installFile = $installFile -replace '{x86Link}' , "${{ env.GitHubReleaseUrl }}/v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x86.zip"
-          $installFile = $installFile -replace '{x64Link}' , "${{ env.GitHubReleaseUrl }}/v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x64.zip"
+          $installFile = $installFile -replace '{x86Link}' , "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x86.zip"
+          $installFile = $installFile -replace '{x64Link}' , "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x64.zip"
           $installFile | Set-Content -Path "${{ github.workspace }}\\Chocolatey\\tools\\ChocolateyInstall.ps1"
-          
+
           # Update Verification.txt
           $verificationFile = Get-Content -path "${{ github.workspace }}\\Chocolatey\\tools\\Verification.txt"
-          $verificationFile = $verificationFile -replace '{x86Link}' , "${{ env.GitHubReleaseUrl }}\\v${{ env.VERSION }}\\PresenceLight.${{ env.VERSION }}-x86.zip"
-          $verificationFile = $verificationFile -replace '{x64Link}' , "${{ env.GitHubReleaseUrl }}\\v${{ env.VERSION }}\\PresenceLight.${{ env.VERSION }}-x64.zip"
+          $verificationFile = $verificationFile -replace '{x86Link}' , "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x86.zip"
+          $verificationFile = $verificationFile -replace '{x64Link}' , "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x64.zip"
           $verificationFile = $verificationFile -replace '{HASHx64}', $hash64.Hash
           $verificationFile = $verificationFile -replace '{HASHx86}', $hash86.Hash
           $verificationFile | Set-Content -Path "${{ github.workspace }}\\Chocolatey\\tools\\Verification.txt"
         shell: powershell
-        
+
       - name: Push to Chocolatey
-        run: | 
+        run: |
           # Chocolatey Pack
           & choco.exe pack "${{ github.workspace }}\\Chocolatey\\PresenceLight.nuspec" --version "${{ env.VERSION }}.0" --OutputDirectory "${{ github.workspace }}\\Chocolatey"
 
@@ -482,13 +482,14 @@ jobs:
           $nupkgs = gci "${{ github.workspace }}\\Chocolatey\\PresenceLight.*.nupkg" | Select -ExpandProperty FullName
           foreach ($nupkg in $nupkgs){
             & choco.exe push $nupkg --source https://push.chocolatey.org/
-          }                               
+          }
         shell: powershell
 
-  Deploy_WPF_Store:
+
+  Deploy_Store:
     needs: Deploy_Azure_Blob
     environment:
-        name: Deploy_WPF_Store
+        name: Deploy_Store
         url: ${{ steps.deploy_staging.outputs.webapp-url }}
     name: Deploy WPF Windows Store
     runs-on: ubuntu-latest
@@ -498,4 +499,48 @@ jobs:
     - name: Azure Login
       uses: azure/login@v1
       with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}  
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - uses: actions/download-artifact@v2
+      name: Download Signing Scripts Artifacts
+      with:
+        name: SigningScripts
+        path: "${{ github.workspace }}/SigningScripts"
+
+    - uses: actions/download-artifact@v2
+      name: Download Release Signed
+      with:
+        name: ReleaseSigned
+        path: "${{ github.workspace }}/ReleaseSigned"
+
+    - name: Get Version from File
+      run: |
+        dir "${{ github.workspace }}/ReleaseSigned"
+        version=$(<"${{ github.workspace }}/ReleaseSigned/version.txt")
+        echo "VERSION=$version" >> $GITHUB_ENV
+
+    - name: Update .ENV File
+      working-directory: "${{ github.workspace }}/SigningScripts/StorePublish"
+      run: |
+        # Update Verification.txt
+        $envFile = Get-Content -path ./.env
+        $envFile = $envFile -replace '{TENANT}' ,"${{ secrets.STORE_TENANT }}"
+        $envFile = $envFile -replace '{CLIENT_ID}' ,"${{ secrets.STORE_CLIENT_ID }}"
+        $envFile = $envFile -replace '{CLIENT_SECRET}', "${{ secrets.STORE_CLIENT_SECRET }}"
+        $envFile = $envFile -replace '{ENDPOINT}', "${{ secrets.ENDPOINT }}"
+        $envFile = $envFile -replace '{APP_ID}', "${{ secrets.APP_ID }}"
+        $envFile = $envFile -replace '{PACKAGE_PATH}', "${{ github.workspace }}/ReleaseSigned/PresenceLight.Package_${{ env.VERSION }}.0_x64_bundle.appxupload"
+        $envFile | Set-Content -Path ./.env
+
+        echo $envFile
+      shell: pwsh
+
+    - uses: bahmutov/npm-install@v1
+      name: NPM Install
+      with:
+        working-directory: "${{ github.workspace }}/SigningScripts/StorePublish"
+
+    - name: Publish to Store
+      working-directory: "${{ github.workspace }}/SigningScripts/StorePublish"
+      run: |
+        npm run publish
