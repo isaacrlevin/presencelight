@@ -1,5 +1,5 @@
 ![Logo](https://github.com/isaacrlevin/PresenceLight/raw/main/Icon.png)
-# PresenceLight
+# PresenceLight - Desktop Version
 
 ![.github/workflows/Desktop_Build.yml](https://github.com/isaacrlevin/presencelight/workflows/.github/workflows/Desktop_Build.yml/badge.svg)
 

@@ -142,7 +142,7 @@
 
                 if (type == "Groups")
                 {
-                    appState.SetLIFXLights(await _lifxService.GetAllGroupsAsync(LightsConfig.CurrentValue.LightSettings.LIFX.LIFXApiKey));
+                    appState.SetLIFXLights(await _lifxService.GetAllGroups(LightsConfig.CurrentValue.LightSettings.LIFX.LIFXApiKey));
 
                     if (string.IsNullOrEmpty(LightsConfig.CurrentValue.LightSettings.LIFX.SelectedLIFXItemId) && appState.LIFXLights.Count() > 0)
                     {
@@ -152,7 +152,7 @@
                 }
                 else
                 {
-                    appState.SetLIFXLights(await _lifxService.GetAllLightsAsync(LightsConfig.CurrentValue.LightSettings.LIFX.LIFXApiKey));
+                    appState.SetLIFXLights(await _lifxService.GetAllLights(LightsConfig.CurrentValue.LightSettings.LIFX.LIFXApiKey));
 
                     if (string.IsNullOrEmpty(LightsConfig.CurrentValue.LightSettings.LIFX.SelectedLIFXItemId) && appState.LIFXLights.Count() > 0)
                     {
@@ -201,12 +201,12 @@
             isLoadingLights = true;
             if (LightsConfig.CurrentValue.LightSettings.LIFX.SelectedLIFXItemId.Contains("group"))
             {
-                appState.SetLIFXLights(await _lifxService.GetAllGroupsAsync(LightsConfig.CurrentValue.LightSettings.LIFX.LIFXApiKey));
+                appState.SetLIFXLights(await _lifxService.GetAllGroups(LightsConfig.CurrentValue.LightSettings.LIFX.LIFXApiKey));
                 lastType = "Groups";
             }
             else
             {
-                appState.SetLIFXLights(await _lifxService.GetAllLightsAsync(LightsConfig.CurrentValue.LightSettings.LIFX.LIFXApiKey));
+                appState.SetLIFXLights(await _lifxService.GetAllLights(LightsConfig.CurrentValue.LightSettings.LIFX.LIFXApiKey));
                 lastType = "Lights";
             }
             showLifxMessage = true;

@@ -87,6 +87,11 @@
         <uap:SplashScreen Image="Images\SplashScreen.png"  BackgroundColor="transparent"/>
         <uap:LockScreen BadgeLogo="Images\BadgeLogo.png" Notification="badge"/>
       </uap:VisualElements>
+        <Extensions>
+            <desktop:Extension Category="windows.startupTask" Executable="PresenceLight\PresenceLight.exe" EntryPoint="Windows.FullTrustApplication">
+                <desktop:StartupTask TaskId="PresenceLight" Enabled="true" DisplayName="PresenceLight" />
+            </desktop:Extension>
+        </Extensions>
     </Application>
   </Applications>
 

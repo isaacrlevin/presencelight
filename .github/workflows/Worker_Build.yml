@@ -79,8 +79,13 @@ jobs:
       run: |
         # Update AppSettings.json. This must be done before build.
         $appsettings= get-content ".\src\PresenceLight.Worker\appsettings.json" -raw | ConvertFrom-Json
+
+        $appsettings.certificate.path = "${{ secrets.CertificateName }}"
+        $appsettings.certificate.password = "${{ secrets.CertificatePassword }}"
+
         $appsettings.azureAd.clientId = "${{ secrets.ApplicationId }}"
         $appsettings.azureAd.clientSecret = "${{ secrets.ClientSecret }}"
+
         $appsettings.applicationInsights.instrumentationkey = "${{ secrets.InstrumentationKey }}"
         $appsettings | ConvertTo-Json -depth 32| set-content '.\src\PresenceLight.Worker\appsettings.json'
       shell: powershell
@@ -90,11 +95,14 @@ jobs:
       run: |
         # Update PresenceLightSettings.json. This must be done before build.
         $PresenceLightSettings= get-content ".\src\PresenceLight.Worker\PresenceLightSettings.json" -raw | ConvertFrom-Json
+
         $PresenceLightSettings.lightSettings.lifx.LIFXClientId = "${{ secrets.LIFXClientId }}"
         $PresenceLightSettings.lightSettings.lifx.LIFXClientSecret = "${{ secrets.LIFXClientSecret }}"
+
         $PresenceLightSettings.lightSettings.hue.RemoteHueClientId = "${{ secrets.RemoteHueClientId }}"
         $PresenceLightSettings.lightSettings.hue.RemoteHueClientSecret = "${{ secrets.RemoteHueClientSecret }}"
         $PresenceLightSettings.lightSettings.hue.RemoteHueClientAppName = "${{ secrets.RemoteHueClientAppName }}"
+
         $PresenceLightSettings | ConvertTo-Json -depth 32| set-content '.\src\PresenceLight.Worker\PresenceLightSettings.json'
       shell: powershell
       if: ${{ success() && github.event_name != 'pull_request' }}
@@ -356,8 +364,13 @@ jobs:
         run: |
           # Update AppSettings.json. This must be done before build.
           $appsettings= get-content ".\src\PresenceLight.Worker\appsettings.json" -raw | ConvertFrom-Json
+
+          $appsettings.certificate.path = "${{ secrets.CertificateName }}"
+          $appsettings.certificate.password = "${{ secrets.CertificatePassword }}"
+
           $appsettings.azureAd.clientId = "${{ secrets.ApplicationId }}"
           $appsettings.azureAd.clientSecret = "${{ secrets.ClientSecret }}"
+
           $appsettings.applicationInsights.instrumentationkey = "${{ secrets.InstrumentationKey }}"
           $appsettings | ConvertTo-Json -depth 32| set-content '.\src\PresenceLight.Worker\appsettings.json'
         shell: pwsh
@@ -367,11 +380,14 @@ jobs:
         run: |
           # Update PresenceLightSettings.json. This must be done before build.
           $PresenceLightSettings= get-content ".\src\PresenceLight.Worker\PresenceLightSettings.json" -raw | ConvertFrom-Json
+
           $PresenceLightSettings.lightSettings.lifx.LIFXClientId = "${{ secrets.LIFXClientId }}"
           $PresenceLightSettings.lightSettings.lifx.LIFXClientSecret = "${{ secrets.LIFXClientSecret }}"
+
           $PresenceLightSettings.lightSettings.hue.RemoteHueClientId = "${{ secrets.RemoteHueClientId }}"
           $PresenceLightSettings.lightSettings.hue.RemoteHueClientSecret = "${{ secrets.RemoteHueClientSecret }}"
           $PresenceLightSettings.lightSettings.hue.RemoteHueClientAppName = "${{ secrets.RemoteHueClientAppName }}"
+
           $PresenceLightSettings | ConvertTo-Json -depth 32| set-content '.\src\PresenceLight.Worker\PresenceLightSettings.json'
         shell: pwsh
         if: ${{ success() && github.event_name != 'pull_request' }}
