@@ -1,5 +1,6 @@
 {
-  "IconType": "White",
+  "SendDiagnosticData": false,
+  "IconType": "",
   "LightSettings": {
     "HoursPassedStatus": "",
     "SyncLights": true,
@@ -57,8 +58,8 @@
       "LIFXApiKey": "",
       "LIFXClientId": "",
       "LIFXClientSecret": "",
-      "IsLIFXEnabled": true,
-      "SelectedLIFXItemId": "",
+      "IsLIFXEnabled": false,
+      "SelectedLIFXItemId": "group_id:",
       "LIFXBrightness": 100,
       "AvailableStatus": {
         "Disabled": false,
@@ -90,11 +91,17 @@
       }
     },
     "Hue": {
+      "RemoteHueClientId": "",
+      "RemoteHueClientSecret": "",
+      "RemoteHueClientAppName": "",
       "HueApiKey": "",
+      "RemoteHueApiKey": "",
       "SelectedHueLightId": "",
       "HueBrightness": 100,
       "HueIpAddress": "",
-      "IsPhillipsHueEnabled": true,
+      "IsPhillipsHueEnabled": false,
+      "UseRemoteApi": false,
+      "RemoteBridgeId": "",
       "AvailableStatus": {
         "Disabled": false,
         "Colour": "#009933"
@@ -157,11 +164,5 @@
         "Colour": "#FFFFFF"
       }
     }
-  },
-  "ClientId": "f8119f58-4523-44c1-ab72-b2e0c815bd6a",
-  "ClientSecret": "io2~p.3-2~x646_TMC-uo4tL9610mA2RxO",
-  "Instance": "https://login.microsoftonline.com/",
-  "RedirectUri": "https://localhost:5001/signin-oidc",
-  "CallbackPath": "/signin-oidc",
-  "ApiScopes": "User.Read offline_access"
+  }
 }

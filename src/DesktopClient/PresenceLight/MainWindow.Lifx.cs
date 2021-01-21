@@ -6,6 +6,7 @@ using System.Windows.Documents;
 using LifxCloud.NET.Models;
 using PresenceLight.Telemetry;
 using System.Windows.Navigation;
+using PresenceLight.Core;
 
 namespace PresenceLight
 {
@@ -28,13 +29,18 @@ namespace PresenceLight
         private async void SaveLIFX_Click(object sender, RoutedEventArgs e)
         {
             btnLIFX.IsEnabled = false;
-            await SettingsService.SaveSettings(Config).ConfigureAwait(true);
+            Config = Helpers.CleanColors(Config);
+            await _settingsService.SaveSettings(Config).ConfigureAwait(true);
             lblLIFXSaved.Visibility = Visibility.Visible;
             btnLIFX.IsEnabled = true;
         }
 
         private async void CheckLIFX()
         {
+            imgLIFXLoading.Visibility = Visibility.Visible;
+            pnlLIFXBrightness.Visibility = Visibility.Collapsed;
+            lblLIFXMessage.Visibility = Visibility.Collapsed;
+
             SolidColorBrush fontBrush = new SolidColorBrush();
             try
             {
@@ -83,12 +89,14 @@ namespace PresenceLight
             }
             catch (Exception ex)
             {
-                DiagnosticsClient.TrackException(ex);
+                _diagClient.TrackException(ex);
 
                 lblLIFXMessage.Text = "Error Occured Connecting to LIFX, please try again";
                 fontBrush.Color = MapColor("#ff3300");
                 lblLIFXMessage.Foreground = fontBrush;
             }
+
+            imgLIFXLoading.Visibility = Visibility.Collapsed;
         }
 
         private void ddlLIFXLights_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -113,6 +121,9 @@ namespace PresenceLight
 
         private async void CheckLIFX_Click(object sender, RoutedEventArgs e)
         {
+            imgLIFXLoading.Visibility = Visibility.Visible;
+            pnlLIFXBrightness.Visibility = Visibility.Collapsed;
+            lblLIFXMessage.Visibility = Visibility.Collapsed;
             SolidColorBrush fontBrush = new SolidColorBrush();
 
             if (!string.IsNullOrEmpty(lifxApiKey.Text))
@@ -130,7 +141,7 @@ namespace PresenceLight
                     {
                         ddlLIFXLights.ItemsSource = await _lifxService.GetAllLightsAsync().ConfigureAwait(true);
                     }
-
+                    lblLIFXMessage.Visibility = Visibility.Visible;
                     pnlLIFXBrightness.Visibility = Visibility.Visible;
                     lblLIFXMessage.Text = "Connected to LIFX Cloud";
                     fontBrush.Color = MapColor("#009933");
@@ -138,8 +149,8 @@ namespace PresenceLight
                 }
                 catch (Exception ex)
                 {
-                    DiagnosticsClient.TrackException(ex);
-
+                    _diagClient.TrackException(ex);
+                    lblLIFXMessage.Visibility = Visibility.Visible;
                     pnlLIFXBrightness.Visibility = Visibility.Collapsed;
                     lblLIFXMessage.Text = "Error Occured Connecting to LIFX, please try again";
                     fontBrush.Color = MapColor("#ff3300");
@@ -166,6 +177,8 @@ namespace PresenceLight
                 lblLIFXMessage.Foreground = fontBrush;
 
             }
+
+            imgLIFXLoading.Visibility = Visibility.Collapsed;
         }
 
         private void cbIsLIFXEnabledChanged(object sender, RoutedEventArgs e)

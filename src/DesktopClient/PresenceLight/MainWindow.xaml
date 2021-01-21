@@ -117,8 +117,12 @@
                         <RowDefinition Height="50" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
-                    <Grid Grid.Column="1" Grid.ColumnSpan="4">
+                    <Grid Grid.Column="1" Grid.ColumnSpan="1">
                         <CheckBox x:Name="cbIsPhillipsEnabled" IsChecked="{Binding LightSettings.Hue.IsPhillipsHueEnabled}" Content="Connect to Phillips Hue" Grid.Column="1" Grid.ColumnSpan="4" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbIsPhillipsEnabledChanged" Checked="cbIsPhillipsEnabledChanged" />
+                    </Grid>
+                    <Grid x:Name="pnlHueApi" Grid.Column="2" Grid.ColumnSpan="2">
+                        <CheckBox x:Name="cbUseRemoteHueApi" IsChecked="{Binding LightSettings.Hue.UseRemoteApi}" Content="Use Remote Api" Grid.Column="1" Grid.ColumnSpan="4" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbUseRemoteApiChanged" Checked="cbUseRemoteApiChanged" />
+                        <Button Grid.Row="1" VerticalAlignment="Center" x:Name="remoteHueButton" HorizontalAlignment="Left" Grid.Column="1" Height="23" Width="120" Content="Login to Hue Cloud" Click="HueApiKey_Get" Grid.ColumnSpan="2" Margin="214,20,0,0"/>
                     </Grid>
                     <Grid x:Name="pnlPhillips"  Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3">
                         <Grid.ColumnDefinitions>
@@ -130,7 +134,7 @@
                             <RowDefinition Height="10" />
                             <RowDefinition Height="23" />
                             <RowDefinition Height="46" />
-                            <RowDefinition Height="23"/>
+                            <RowDefinition Height="60"/>
                             <RowDefinition Height="42.02"/>
                             <RowDefinition Height="107*" />
                             <RowDefinition Height="114*"/>
@@ -139,11 +143,11 @@
                         </Grid.RowDefinitions>
                         <Label Grid.Row="1" Grid.Column="0"  Content="Hue Bridge IP Address" />
                         <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding LightSettings.Hue.HueIpAddress}" x:Name="hueIpAddress" HorizontalAlignment="Left" Height="23"  TextWrapping="Wrap" VerticalAlignment="Center" Width="120" TextChanged="HueIpAddress_TextChanged"/>
-                        <Button Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="1" Height="23" Width="120" Content="Find Bridge" Click="FindBridge_Click" Grid.ColumnSpan="2" Margin="214,0,0,0"/>
+                        <Button Grid.Row="1" VerticalAlignment="Center" x:Name="btnFindBridge" HorizontalAlignment="Left" Grid.Column="1" Height="23" Width="120" Content="Find Bridge" Click="FindBridge_Click" Grid.ColumnSpan="2" Margin="214,0,0,0"/>
 
                         <Button Grid.Row="2" Grid.Column="1" x:Name="btnRegister" Height="23" Width="120" HorizontalAlignment="Left" Content="Register Bridge"  Click="RegisterBridge_Click" Grid.ColumnSpan="2" Margin="214,11,0,11"/>
 
-                        <Label Grid.Row="2" VerticalAlignment="Top" Grid.Column="1" HorizontalAlignment="Center" Margin="0,20,0,0" >
+                        <Label Grid.Row="3" VerticalAlignment="Top" Grid.Column="1" HorizontalAlignment="Center" Margin="0,0,0,0" >
                             <TextBlock  x:Name="lblHueMessage" TextWrapping="Wrap"   TextAlignment="Center">
                             </TextBlock>
                         </Label>
@@ -198,7 +202,7 @@
                             <CheckBox x:Name="cbIsPhillipsOffStatusDisabled" IsChecked="{Binding LightSettings.Hue.OffStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="8" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbIsPhillipsOffStatusDisabledChanged" Checked="cbIsPhillipsOffStatusDisabledChanged" />
                         </Grid>
 
-                        <Image Grid.Row="4" Grid.Column="1" x:Name="imgLoading" Visibility="Collapsed" gif:ImageBehavior.AnimatedSource="Icons/loading.gif" Width="75" Margin="70,42,69,215" Grid.RowSpan="4"  />
+                        <Image Grid.Row="4" Grid.Column="1" x:Name="imgHueLoading" Visibility="Collapsed" gif:ImageBehavior.AnimatedSource="Icons/loading.gif" Width="75" Margin="70,42,69,215" Grid.RowSpan="4"  />
                         <Button Grid.Row="7" VerticalAlignment="Bottom" Grid.Column="1" x:Name="btnHue" Height="45" Width="170" Content="Save"  Click="SaveHue_Click" />
                         <Label Grid.Row="7" Grid.Column="1" x:Name="lblHueSaved" HorizontalAlignment="Center" Visibility="Visible" Content="Settings Updated" Foreground="Green" Margin="0,225,0,0" Grid.RowSpan="2" />
                     </Grid>
@@ -281,8 +285,12 @@
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <Grid Grid.Column="1" Grid.ColumnSpan="4">
-                        <CheckBox x:Name="cbIsLIFXEnabled" IsChecked="{Binding LightSettings.LIFX.IsLIFXEnabled}" Content="Connect to LIFX Light" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbIsLIFXEnabledChanged" Checked="cbIsLIFXEnabledChanged" Grid.Column="1" Grid.ColumnSpan="4" />
-                        <TextBlock x:Name="getTokenLink" Grid.Column="4"  Margin="200,20,0,0" >
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="141*"/>
+                            <ColumnDefinition Width="553*"/>
+                        </Grid.ColumnDefinitions>
+                        <CheckBox x:Name="cbIsLIFXEnabled" IsChecked="{Binding LightSettings.LIFX.IsLIFXEnabled}" Content="Connect to LIFX Light" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbIsLIFXEnabledChanged" Checked="cbIsLIFXEnabledChanged" />
+                        <TextBlock x:Name="getTokenLink" Grid.Column="1"  Margin="59,20,0,0" >
                             <Hyperlink NavigateUri="https://cloud.lifx.com/settings"  RequestNavigate="LIFXToken_Get">
                             Get Token
                         </Hyperlink>
@@ -652,6 +660,9 @@
                     <Label Grid.Column="1" Margin="0,0,0,0" Grid.Row="5" Content="Icon Type" />
                     <RadioButton Grid.Column="2" Grid.Row="5" GroupName="IconType" x:Name="Transparent" Margin="0,0,0,0" Content="Transparent" HorizontalAlignment="Left" VerticalAlignment="Top" />
                     <RadioButton Grid.Column="2" Grid.Row="5" GroupName="IconType" x:Name="White" Margin="0,20,0,0" Content="White" HorizontalAlignment="Left"  VerticalAlignment="Top"/>
+
+                    <CheckBox x:Name="cbSendDiagnosticData" VerticalAlignment="Bottom" IsChecked="{Binding SendDiagnosticData}" Grid.Row="5" Content="Send Diagnostic Data" Grid.Column="1" HorizontalAlignment="Left" Margin="0,0,0,0" />
+
                     <Button Grid.Column="0" Grid.Row="6" Height="45" x:Name="btnSettings" Width="170" Content="Save" Click="SaveSettings_Click" Grid.ColumnSpan="4" />
                     <Label Grid.Column="0"  HorizontalAlignment="Center" Grid.Row="7" x:Name="lblSettingSaved" Visibility="Collapsed" Content="Settings Updated" Foreground="Green" Grid.ColumnSpan="4"/>
                 </Grid>

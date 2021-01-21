@@ -26,14 +26,14 @@ namespace PresenceLight.Core
             Timeout = TimeSpan.FromSeconds(10)
         };
 
-        private readonly ConfigWrapper _options;
+        private readonly BaseConfig _options;
 
-        public CustomApiService(IOptionsMonitor<ConfigWrapper> optionsAccessor)
+        public CustomApiService(IOptionsMonitor<BaseConfig> optionsAccessor)
         {
             _options = optionsAccessor.CurrentValue;
         }
 
-        public CustomApiService(ConfigWrapper options)
+        public CustomApiService(BaseConfig options)
         {
             _options = options;
         }

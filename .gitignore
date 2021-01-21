@@ -383,3 +383,11 @@ MigrationBackup/
 
 /src/lib/RCWPF/2020.1.218.45.NoXaml.Trial
 /sign.ps1
+/src/DesktopClient/PresenceLight/appsettings.Development.json
+/src/PresenceLight.Worker/PresenceLightSettings.Development.json
+/src/PresenceLight.Worker/appsettings.Development.json
+src/local-action-test-wpf.ps1
+.github/workflows/test.yml
+Build/StorePublish/.env.local
+Build/StorePublish/node_modules
+Build/StorePublish/temp.zip
