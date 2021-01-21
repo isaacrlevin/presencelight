@@ -11,6 +11,7 @@ using System.Windows.Navigation;
 
 using LifxCloud.NET.Models;
 
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Graph;
 using Microsoft.Identity.Client;
@@ -50,11 +51,14 @@ namespace PresenceLight
         private WindowState lastWindowState;
         private bool IsWorkingHours;
         private bool previousRemoteFlag;
+        private readonly ILogger<MainWindow> _logger;
+
         #region Init
         public MainWindow(IGraphService graphService, IHueService hueService, LIFXService lifxService, IYeelightService yeelightService, IRemoteHueService remoteHueService,
-            ICustomApiService customApiService, IOptionsMonitor<BaseConfig> optionsAccessor, LIFXOAuthHelper lifxOAuthHelper, DiagnosticsClient diagClient,
+            ICustomApiService customApiService, IOptionsMonitor<BaseConfig> optionsAccessor, LIFXOAuthHelper lifxOAuthHelper, DiagnosticsClient diagClient, ILogger<MainWindow> logger,
             ISettingsService settingsService)
         {
+            _logger = logger;
             InitializeComponent();
 
             System.Windows.Application.Current.SessionEnding += new SessionEndingCancelEventHandler(Current_SessionEnding);
@@ -102,50 +106,59 @@ namespace PresenceLight
 
         private void LoadApp()
         {
-            CheckHue(true);
-            CheckLIFX();
-            CheckYeelight();
-            CheckAAD();
-
-            previousRemoteFlag = Config.LightSettings.Hue.UseRemoteApi;
-
-            if (Config.IconType == "Transparent")
+            try
             {
-                Transparent.IsChecked = true;
+                CheckHue(true);
+                CheckLIFX();
+                CheckYeelight();
+                CheckAAD();
+
+                previousRemoteFlag = Config.LightSettings.Hue.UseRemoteApi;
+
+                if (Config.IconType == "Transparent")
+                {
+                    Transparent.IsChecked = true;
+                }
+                else
+                {
+                    White.IsChecked = true;
+                }
+
+                switch (Config.LightSettings.HoursPassedStatus)
+                {
+                    case "Keep":
+                        HourStatusKeep.IsChecked = true;
+                        break;
+                    case "White":
+                        HourStatusWhite.IsChecked = true;
+                        break;
+                    case "Off":
+                        HourStatusOff.IsChecked = true;
+                        break;
+                    default:
+                        HourStatusKeep.IsChecked = true;
+                        break;
+                }
+
+                PopulateWorkingDays();
+
+                notificationIcon.Text = PresenceConstants.Inactive;
+                notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(String.Empty, IconConstants.Inactive)));
+
+                turnOffButton.Visibility = Visibility.Collapsed;
+                turnOnButton.Visibility = Visibility.Collapsed;
+
+                Config.LightSettings.WorkingHoursStartTimeAsDate = string.IsNullOrEmpty(Config.LightSettings.WorkingHoursStartTime) ? null : DateTime.Parse(Config.LightSettings.WorkingHoursStartTime, null);
+                Config.LightSettings.WorkingHoursEndTimeAsDate = string.IsNullOrEmpty(Config.LightSettings.WorkingHoursEndTime) ? null : DateTime.Parse(Config.LightSettings.WorkingHoursEndTime, null);
+
+
+                CallGraph().ConfigureAwait(true);
             }
-            else
+            catch (Exception e)
             {
-                White.IsChecked = true;
+                _logger.LogError(e, "Error occured in LoadApp() in MainWindow");
+                _diagClient.TrackException(e);
             }
-
-            switch (Config.LightSettings.HoursPassedStatus)
-            {
-                case "Keep":
-                    HourStatusKeep.IsChecked = true;
-                    break;
-                case "White":
-                    HourStatusWhite.IsChecked = true;
-                    break;
-                case "Off":
-                    HourStatusOff.IsChecked = true;
-                    break;
-                default:
-                    HourStatusKeep.IsChecked = true;
-                    break;
-            }
-
-            PopulateWorkingDays();
-
-            notificationIcon.Text = PresenceConstants.Inactive;
-            notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(String.Empty, IconConstants.Inactive)));
-
-            turnOffButton.Visibility = Visibility.Collapsed;
-            turnOnButton.Visibility = Visibility.Collapsed;
-
-            Config.LightSettings.WorkingHoursStartTimeAsDate = string.IsNullOrEmpty(Config.LightSettings.WorkingHoursStartTime) ? null : DateTime.Parse(Config.LightSettings.WorkingHoursStartTime, null);
-            Config.LightSettings.WorkingHoursEndTimeAsDate = string.IsNullOrEmpty(Config.LightSettings.WorkingHoursEndTime) ? null : DateTime.Parse(Config.LightSettings.WorkingHoursEndTime, null);
-
-            CallGraph().ConfigureAwait(true);
         }
 
         private void SyncOptions()
@@ -259,23 +272,25 @@ namespace PresenceLight
                         }
                     }
                 }
+
+                loadingPanel.Visibility = Visibility.Collapsed;
+                this.signInPanel.Visibility = Visibility.Collapsed;
+
+
+                dataPanel.Visibility = Visibility.Visible;
+                await _settingsService.SaveSettings(Config).ConfigureAwait(true);
+
+                turnOffButton.Visibility = Visibility.Visible;
+                turnOnButton.Visibility = Visibility.Collapsed;
+
+                await InteractWithLights().ConfigureAwait(true);
             }
 
             catch (Exception e)
             {
+                _logger.LogError(e, "Error occured in CallGraph() in MainWindow");
                 _diagClient.TrackException(e);
             }
-            loadingPanel.Visibility = Visibility.Collapsed;
-            this.signInPanel.Visibility = Visibility.Collapsed;
-
-
-            dataPanel.Visibility = Visibility.Visible;
-            await _settingsService.SaveSettings(Config).ConfigureAwait(true);
-
-            turnOffButton.Visibility = Visibility.Visible;
-            turnOnButton.Visibility = Visibility.Collapsed;
-
-            await InteractWithLights().ConfigureAwait(true);
         }
 
         public async Task SetColor(string color, string? activity = null)
@@ -299,7 +314,7 @@ namespace PresenceLight
 
                 if (Config.LightSettings.LIFX.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
                 {
-                    await _lifxService.SetColor(color, (Selector)Config.LightSettings.LIFX.SelectedLIFXItemId).ConfigureAwait(true);
+                    await _lifxService.SetColor(color, Config.LightSettings.LIFX.SelectedLIFXItemId).ConfigureAwait(true);
                 }
 
                 if (Config.LightSettings.Yeelight.IsYeelightEnabled && !string.IsNullOrEmpty(Config.LightSettings.Yeelight.SelectedYeelightId))
@@ -323,7 +338,9 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
+                _logger.LogError(e, "Error Occured in SetColor MainWindow");
                 _diagClient.TrackException(e);
+                throw;
             }
         }
 
@@ -389,8 +406,9 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
+                _logger.LogError(e, "Error Occured in LoadImager MainWindow");
                 _diagClient.TrackException(e);
-                return null;
+                throw;
             }
         }
 
@@ -466,7 +484,9 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
+                _logger.LogError(e, "Error Occured in GetPresence MainWindow");
                 _diagClient.TrackException(e);
+                throw;
             }
         }
         #endregion
@@ -474,7 +494,16 @@ namespace PresenceLight
         #region Graph Calls
         public async Task<Presence> GetPresence()
         {
-            return await _graphServiceClient.Me.Presence.Request().GetAsync().ConfigureAwait(true);
+            try
+            {
+                return await _graphServiceClient.Me.Presence.Request().GetAsync().ConfigureAwait(true);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error Occured in GetPresence MainWindow");
+                _diagClient.TrackException(ex);
+                throw;
+            }
         }
 
         public async Task<byte[]?> GetPhoto()
@@ -492,9 +521,11 @@ namespace PresenceLight
                     return ReadFully(photo);
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                return null;
+                _logger.LogError(ex, "Error Occured in GetPresence MainWindow");
+                _diagClient.TrackException(ex);
+                throw;
             }
         }
 
@@ -514,22 +545,32 @@ namespace PresenceLight
 
         public async Task<(User User, Presence Presence)> GetBatchContent()
         {
-            IUserRequest userRequest = _graphServiceClient.Me.Request();
-            IPresenceRequest presenceRequest = _graphServiceClient.Me.Presence.Request();
+            try
+            {
+                IUserRequest userRequest = _graphServiceClient.Me.Request();
+                IPresenceRequest presenceRequest = _graphServiceClient.Me.Presence.Request();
 
-            BatchRequestContent batchRequestContent = new BatchRequestContent();
+                BatchRequestContent batchRequestContent = new BatchRequestContent();
 
-            var userRequestId = batchRequestContent.AddBatchRequestStep(userRequest);
-            var presenceRequestId = batchRequestContent.AddBatchRequestStep(presenceRequest);
+                var userRequestId = batchRequestContent.AddBatchRequestStep(userRequest);
+                var presenceRequestId = batchRequestContent.AddBatchRequestStep(presenceRequest);
 
-            BatchResponseContent returnedResponse = await _graphServiceClient.Batch.Request().PostAsync(batchRequestContent).ConfigureAwait(true);
+                BatchResponseContent returnedResponse = await _graphServiceClient.Batch.Request().PostAsync(batchRequestContent).ConfigureAwait(true);
 
-            User user = await returnedResponse.GetResponseByIdAsync<User>(userRequestId).ConfigureAwait(true);
-            Presence presence = await returnedResponse.GetResponseByIdAsync<Presence>(presenceRequestId).ConfigureAwait(true);
+                User user = await returnedResponse.GetResponseByIdAsync<User>(userRequestId).ConfigureAwait(true);
+                Presence presence = await returnedResponse.GetResponseByIdAsync<Presence>(presenceRequestId).ConfigureAwait(true);
 
-            return (User: user, Presence: presence);
+                return (User: user, Presence: presence);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error Occured in GetBatchContent MainWindow");
+                _diagClient.TrackException(ex);
+                throw;
+            }
         }
-        #endregion      
+
+        #endregion
 
         private void TabControl_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
@@ -537,8 +578,6 @@ namespace PresenceLight
             lblLIFXSaved.Visibility = Visibility.Collapsed;
             lblSettingSaved.Visibility = Visibility.Collapsed;
         }
-
-
 
         #region Tray Methods
 
@@ -595,7 +634,7 @@ namespace PresenceLight
                 if (Config.LightSettings.LIFX.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
                 {
 
-                    await _lifxService.SetColor("Off", (Selector)Config.LightSettings.LIFX.SelectedLIFXItemId).ConfigureAwait(true);
+                    await _lifxService.SetColor("Off", Config.LightSettings.LIFX.SelectedLIFXItemId).ConfigureAwait(true);
                 }
 
                 turnOffButton.Visibility = Visibility.Collapsed;
@@ -608,6 +647,7 @@ namespace PresenceLight
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error Occured in OnTurnOffSyncClock MainWindow");
                 _diagClient.TrackException(ex);
             }
         }
@@ -631,13 +671,14 @@ namespace PresenceLight
                 if (Config.LightSettings.LIFX.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
                 {
 
-                    await _lifxService.SetColor("Off", (Selector)Config.LightSettings.LIFX.SelectedLIFXItemId).ConfigureAwait(true);
+                    await _lifxService.SetColor("Off", Config.LightSettings.LIFX.SelectedLIFXItemId).ConfigureAwait(true);
                 }
                 await _settingsService.SaveSettings(Config).ConfigureAwait(true);
                 System.Windows.Application.Current.Shutdown();
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error Occured in OnExitClick MainWindow");
                 _diagClient.TrackException(ex);
             }
         }
@@ -661,7 +702,7 @@ namespace PresenceLight
                 if (Config.LightSettings.LIFX.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
                 {
 
-                    await _lifxService.SetColor("Off", (Selector)Config.LightSettings.LIFX.SelectedLIFXItemId).ConfigureAwait(true);
+                    await _lifxService.SetColor("Off", Config.LightSettings.LIFX.SelectedLIFXItemId).ConfigureAwait(true);
                 }
 
                 if (Config.LightSettings.Custom.IsCustomApiEnabled && !string.IsNullOrEmpty(Config.LightSettings.Custom.CustomApiOffMethod) && !string.IsNullOrEmpty(Config.LightSettings.Custom.CustomApiOffUri))
@@ -673,6 +714,7 @@ namespace PresenceLight
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error Occured in Current_SessionEnding MainWindow");
                 _diagClient.TrackException(ex);
             }
         }
@@ -781,6 +823,7 @@ namespace PresenceLight
                                 }
                                 catch (Exception ex)
                                 {
+                                    _logger.LogError(ex, "Error Occured in InteractWithLights MainWindow");
                                     _diagClient.TrackException(ex);
                                 }
                                 break;
@@ -792,6 +835,7 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
+                _logger.LogError(e, "Error Occured in InteractWithLights MainWindow");
                 _diagClient.TrackException(e);
             }
         }

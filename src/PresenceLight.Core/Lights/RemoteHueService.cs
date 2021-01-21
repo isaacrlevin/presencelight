@@ -18,7 +18,7 @@ namespace PresenceLight.Core
     {
         Task SetColor(string availability, string lightId, string bridgeId);
         Task<(string bridgeId, string apiKey, string bridgeIp)> RegisterBridge();
-        Task<IEnumerable<Light>> CheckLights();
+        Task<IEnumerable<Light>> GetLights();
     }
     public class RemoteHueService : IRemoteHueService
     {
@@ -147,6 +147,12 @@ namespace PresenceLight.Core
 
         public async Task SetColor(string availability, string lightId, string bridgeId)
         {
+            if (string.IsNullOrEmpty(lightId))
+            {
+                throw new ArgumentOutOfRangeException("Remote Hue Selected Light Id Invalid");
+            }
+
+
             if (_client == null)
             {
                 return;
@@ -309,7 +315,7 @@ namespace PresenceLight.Core
             await _client.SendCommandAsync(command, new List<string> { lightId });
         }
 
-        public async Task<IEnumerable<Light>> CheckLights()
+        public async Task<IEnumerable<Light>> GetLights()
         {
             if (_client == null || !_client.IsInitialized)
             {

@@ -15,7 +15,7 @@ namespace PresenceLight.Core
     {
         Task SetColor(string availability, string lightId);
         Task<string> RegisterBridge();
-        Task<IEnumerable<Light>> CheckLights();
+        Task<IEnumerable<Light>> GetLights();
         Task<string> FindBridge();
     }
     public class HueService : IHueService
@@ -35,6 +35,11 @@ namespace PresenceLight.Core
 
         public async Task SetColor(string availability, string lightId)
         {
+            if (string.IsNullOrEmpty(lightId))
+            {
+                throw new ArgumentOutOfRangeException("Hue Selected Light Id Invalid");
+            }
+
             _client = new LocalHueClient(_options.LightSettings.Hue.HueIpAddress);
             _client.Initialize(_options.LightSettings.Hue.HueApiKey);
 
@@ -236,7 +241,7 @@ namespace PresenceLight.Core
             return String.Empty;
         }
 
-        public async Task<IEnumerable<Light>> CheckLights()
+        public async Task<IEnumerable<Light>> GetLights()
         {
             if (_client == null)
             {
