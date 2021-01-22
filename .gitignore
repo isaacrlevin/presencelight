@@ -391,3 +391,4 @@ src/local-action-test-wpf.ps1
 Build/StorePublish/.env.local
 Build/StorePublish/node_modules
 Build/StorePublish/temp.zip
+Build/StorePublish/.env
