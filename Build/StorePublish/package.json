@@ -8,7 +8,7 @@
     "publish": "node --trace-warnings -r ts-node/register -r tsconfig-paths/register src/store-publish/publish.ts"
   },
   "dependencies": {
-    "azure-storage": "^1.3.1",
+    "@azure/storage-blob": "^12.4.0",
     "dotenv": "^8.2.0",
     "glob": "^7.0.3",
     "jszip": "^3.1.1",
