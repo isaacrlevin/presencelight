@@ -8,20 +8,40 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
+using NLog.Web;
+
 namespace PresenceLight.Worker
 {
     public class Program
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            var logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
+            logger.Debug("Starting PresenceLight");
+            try
+            {
+                CreateHostBuilder(args).Build().Run();
+            }
+            catch (Exception ex)
+            {
+                //NLog: catch setup errors
+                logger.Error(ex, "Stopped program because of exception");
+                throw;
+            }
+            finally
+            {
+                // Ensure to flush and stop internal timers/threads before application-exit (Avoid segmentation fault on Linux)
+                NLog.LogManager.Shutdown();
+            }
         }
-        private static void ConfigureConfiguration(IConfigurationBuilder config)
+            private static void ConfigureConfiguration(IConfigurationBuilder config)
         {
             config.AddEnvironmentVariables()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("PresenceLightSettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
+                .AddJsonFile($"appsettings.Development.json", optional: true)
+                .AddJsonFile($"PresenceLightSettings.Development.json", optional: true);
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args)
@@ -89,7 +109,8 @@ namespace PresenceLight.Worker
                          }
                      })
                      .UseContentRoot(Directory.GetCurrentDirectory());
-                    webBuilder.UseStartup<Startup>();
+                    webBuilder.UseStartup<Startup>()
+                    .UseNLog();
                 });
         }
     }

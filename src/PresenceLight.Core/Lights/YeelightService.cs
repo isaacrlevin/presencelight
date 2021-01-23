@@ -8,6 +8,7 @@ using System.Threading;
 using YeelightAPI;
 using System.Drawing;
 using Q42.HueApi.ColorConverters;
+using Microsoft.Extensions.Logging;
 
 namespace PresenceLight.Core
 {
@@ -21,9 +22,11 @@ namespace PresenceLight.Core
         private readonly BaseConfig _options;
 
         private DeviceGroup deviceGroup;
+        private readonly ILogger<YeelightService> _logger;
 
-        public YeelightService(IOptionsMonitor<BaseConfig> optionsAccessor)
+        public YeelightService(IOptionsMonitor<BaseConfig> optionsAccessor, ILogger<YeelightService> logger)
         {
+            _logger = logger;
             _options = optionsAccessor.CurrentValue;
         }
 

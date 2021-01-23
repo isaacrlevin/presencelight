@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Net.Http;
 using Microsoft.Graph;
+using Microsoft.Extensions.Logging;
 
 namespace PresenceLight.Core
 {
@@ -25,10 +26,12 @@ namespace PresenceLight.Core
             Timeout = TimeSpan.FromSeconds(10)
         };
 
+        private readonly ILogger<CustomApiService> _logger;
         private readonly BaseConfig _options;
 
-        public CustomApiService(IOptionsMonitor<BaseConfig> optionsAccessor)
+        public CustomApiService(IOptionsMonitor<BaseConfig> optionsAccessor, ILogger<CustomApiService> logger)
         {
+            _logger = logger;
             _options = optionsAccessor.CurrentValue;
         }
 

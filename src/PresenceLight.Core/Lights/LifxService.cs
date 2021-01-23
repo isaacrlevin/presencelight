@@ -3,6 +3,7 @@ using LifxCloud.NET;
 using LifxCloud.NET.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace PresenceLight.Core
 {
@@ -10,9 +11,11 @@ namespace PresenceLight.Core
     {
         private readonly BaseConfig _options;
         private LifxCloudClient _client;
+        private readonly ILogger<LIFXService> _logger;
 
-        public LIFXService(Microsoft.Extensions.Options.IOptionsMonitor<BaseConfig> optionsAccessor)
+        public LIFXService(Microsoft.Extensions.Options.IOptionsMonitor<BaseConfig> optionsAccessor, ILogger<LIFXService> logger)
         {
+            _logger = logger;
             _options = optionsAccessor.CurrentValue;
         }
 

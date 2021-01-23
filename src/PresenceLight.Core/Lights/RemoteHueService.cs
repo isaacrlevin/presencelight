@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Net.Sockets;
 using System.Net;
+using Microsoft.Extensions.Logging;
 
 namespace PresenceLight.Core
 {
@@ -25,9 +26,11 @@ namespace PresenceLight.Core
         private readonly BaseConfig _options;
         private RemoteHueClient _client;
         private readonly IRemoteAuthenticationClient _authClient;
+        private readonly ILogger<RemoteHueService> _logger;
 
-        public RemoteHueService(IOptionsMonitor<BaseConfig> optionsAccessor)
+        public RemoteHueService(IOptionsMonitor<BaseConfig> optionsAccessor, ILogger<RemoteHueService> logger)
         {
+            _logger = logger;
             _options = optionsAccessor.CurrentValue;
             _authClient = new RemoteAuthenticationClient(_options.LightSettings.Hue.RemoteHueClientId, _options.LightSettings.Hue.RemoteHueClientSecret, _options.LightSettings.Hue.RemoteHueClientAppName);
         }

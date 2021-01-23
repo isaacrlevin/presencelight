@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace PresenceLight.Core
 {
@@ -22,9 +23,11 @@ namespace PresenceLight.Core
     {
         private readonly BaseConfig _options;
         private LocalHueClient _client;
+        private readonly ILogger<HueService> _logger;
 
-        public HueService(IOptionsMonitor<BaseConfig> optionsAccessor)
+        public HueService(IOptionsMonitor<BaseConfig> optionsAccessor, ILogger<HueService> logger)
         {
+            _logger = logger;
             _options = optionsAccessor.CurrentValue;
         }
 
