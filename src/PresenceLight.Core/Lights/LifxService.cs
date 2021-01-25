@@ -51,7 +51,16 @@ namespace PresenceLight.Core
             {
                 throw new ArgumentNullException();
             }
-            Selector selector = new Selector.LightId(lightId);
+
+            Selector selector;
+            if (lightId.Contains("group"))
+            {
+                selector = new Selector.GroupId(lightId.Replace("group_id:",""));
+            }
+            else
+            {
+                selector = new Selector.LightId(lightId.Replace("id:",""));
+            }
 
             if (!string.IsNullOrEmpty(apiKey))
             {
