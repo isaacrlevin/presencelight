@@ -12,13 +12,13 @@ namespace PresenceLight.Telemetry
 
         public AppVersionTelemetryInitializer()
         {
-            _wpfVersion = typeof(System.Windows.Application).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
+            _wpfVersion = ThisAppInfo.GetDotNetRuntimeInfo();
             _appVersion = ThisAppInfo.GetPackageVersion();
         }
 
         public void Initialize(ITelemetry telemetry)
         {            
-            telemetry.Context.GlobalProperties["WPF version"] = _wpfVersion;            
+            telemetry.Context.GlobalProperties[".NET Runtime Version"] = _wpfVersion;            
             telemetry.Context.Component.Version = _appVersion;
         }
     }

@@ -16,23 +16,39 @@ namespace PresenceLight
 
         private async void LIFXToken_Get(object sender, RequestNavigateEventArgs e)
         {
-            string accessToken = await _lIFXOAuthHelper.InitiateTokenRetrieval().ConfigureAwait(true);
-            if (!string.IsNullOrEmpty(accessToken))
+            try
             {
-                lifxApiKey.Text = accessToken;
-                Config.LightSettings.LIFX.LIFXApiKey = accessToken;
-                SyncOptions();
+                string accessToken = await _lIFXOAuthHelper.InitiateTokenRetrieval().ConfigureAwait(true);
+                if (!string.IsNullOrEmpty(accessToken))
+                {
+                    lifxApiKey.Text = accessToken;
+                    Config.LightSettings.LIFX.LIFXApiKey = accessToken;
+                    SyncOptions();
+                }
+                this.Activate();
             }
-            this.Activate();
+            catch (Exception ex)
+            {
+                Helpers.AppendLogger(_logger, "Error occured Getting LIFX Token", ex);
+                _diagClient.TrackException(ex);
+            }
         }
 
         private async void SaveLIFX_Click(object sender, RoutedEventArgs e)
         {
-            btnLIFX.IsEnabled = false;
-            Config = Helpers.CleanColors(Config);
-            await _settingsService.SaveSettings(Config).ConfigureAwait(true);
-            lblLIFXSaved.Visibility = Visibility.Visible;
-            btnLIFX.IsEnabled = true;
+            try
+            {
+                btnLIFX.IsEnabled = false;
+                Config = Helpers.CleanColors(Config);
+                await _settingsService.SaveSettings(Config).ConfigureAwait(true);
+                lblLIFXSaved.Visibility = Visibility.Visible;
+                btnLIFX.IsEnabled = true;
+            }
+            catch (Exception ex)
+            {
+                Helpers.AppendLogger(_logger, "Error occured Saving LIFX Settings", ex);
+                _diagClient.TrackException(ex);
+            }
         }
 
         private async void CheckLIFX()
@@ -90,7 +106,7 @@ namespace PresenceLight
             catch (Exception ex)
             {
                 _diagClient.TrackException(ex);
-
+                Helpers.AppendLogger(_logger, "Error occured Checking LIFX", ex);
                 lblLIFXMessage.Text = "Error Occured Connecting to LIFX, please try again";
                 fontBrush.Color = MapColor("#ff3300");
                 lblLIFXMessage.Foreground = fontBrush;
@@ -113,7 +129,7 @@ namespace PresenceLight
                 {
                     Config.LightSettings.LIFX.SelectedLIFXItemId = $"id:{((LifxCloud.NET.Models.Light)ddlLIFXLights.SelectedItem).Id}";
                 }
-                
+
                 SyncOptions();
             }
             e.Handled = true;
@@ -149,6 +165,7 @@ namespace PresenceLight
                 }
                 catch (Exception ex)
                 {
+                    Helpers.AppendLogger(_logger, "Error Getting LIFX Lights", ex);
                     _diagClient.TrackException(ex);
                     lblLIFXMessage.Visibility = Visibility.Visible;
                     pnlLIFXBrightness.Visibility = Visibility.Collapsed;
@@ -159,7 +176,6 @@ namespace PresenceLight
             }
             else
             {
-
                 Run run1 = new Run("Valid LIFX Key Required ");
                 Run run2 = new Run(" https://cloud.lifx.com/settings");
 
@@ -193,7 +209,7 @@ namespace PresenceLight
                 getTokenLink.Visibility = Visibility.Collapsed;
                 pnlLIFX.Visibility = Visibility.Collapsed;
             }
-            
+
             SyncOptions();
             e.Handled = true;
         }
