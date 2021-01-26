@@ -40,6 +40,13 @@ namespace PresenceLight.Core
             _options = options;
         }
 
+        public async Task<string> SetColor(string availability, string? activity)
+        {
+            string result = await SetAvailability(availability);
+            result += await SetActivity(activity);
+            return result;
+        }
+
         private async Task<string> CallCustomApiForActivityChanged(object sender, string newActivity)
         {
             string method = string.Empty;
@@ -146,13 +153,6 @@ namespace PresenceLight.Core
             return await PerformWebRequest(method, uri, result);
         }
 
-        public async Task<string> SetColor(string availability, string? activity)
-        {
-            string result = await SetAvailability(availability);
-            result += await SetActivity(activity);
-            return result;
-        }
-
         private async Task<string> SetAvailability(string availability)
         {
             string result = "";
@@ -175,13 +175,15 @@ namespace PresenceLight.Core
             return result;
         }
 
-        private static async Task<string> PerformWebRequest(string method, string uri, string result)
+        private async Task<string> PerformWebRequest(string method, string uri, string result)
         {
             if (!string.IsNullOrEmpty(method) && !string.IsNullOrEmpty(uri))
             {
                 try
                 {
                     HttpResponseMessage response = new HttpResponseMessage();
+
+                    _logger.LogInformation($"Sending {method} methd to {uri}");
                     switch (method)
                     {
                         case "GET":
@@ -192,11 +194,13 @@ namespace PresenceLight.Core
                             break;
                     }
 
+
                     string responseBody = await response.Content.ReadAsStringAsync();
                     result = $"{(int)response.StatusCode} {response.StatusCode}: {responseBody}";
                 }
                 catch (Exception e)
                 {
+                    _logger.LogError(e, "Error Performing Web Request - CustomApiService");
                     result = $"Error: {e.Message}";
                 }
             }

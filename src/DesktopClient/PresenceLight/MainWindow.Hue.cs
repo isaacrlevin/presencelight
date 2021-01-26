@@ -318,7 +318,7 @@ namespace PresenceLight
             catch (Exception ex)
             {
                 _diagClient.TrackException(ex);
-
+               
                 lblHueMessage.Text = "Error Occured registering bridge, please try again";
                 fontBrush.Color = MapColor("#ff3300");
                 lblHueMessage.Foreground = fontBrush;
