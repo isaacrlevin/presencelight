@@ -71,7 +71,7 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error occured in LoadApp() in MainWindow");
+                Helpers.AppendLogger(_logger, "Error occured", e);
                 _diagClient.TrackException(e);
             }
         }

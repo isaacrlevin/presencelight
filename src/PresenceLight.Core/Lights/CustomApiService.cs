@@ -182,8 +182,6 @@ namespace PresenceLight.Core
                 try
                 {
                     HttpResponseMessage response = new HttpResponseMessage();
-
-                    _logger.LogInformation($"Sending {method} methd to {uri}");
                     switch (method)
                     {
                         case "GET":
@@ -197,10 +195,12 @@ namespace PresenceLight.Core
 
                     string responseBody = await response.Content.ReadAsStringAsync();
                     result = $"{(int)response.StatusCode} {response.StatusCode}: {responseBody}";
+                    string message = $"Sending {method} methd to {uri}";
+                    Helpers.AppendLogger(_logger, message);
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e, "Error Performing Web Request - CustomApiService");
+                    Helpers.AppendLogger(_logger, "Error Performing Web Request", e);
                     result = $"Error: {e.Message}";
                 }
             }

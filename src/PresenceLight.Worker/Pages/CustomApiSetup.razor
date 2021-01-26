@@ -212,50 +212,20 @@
 </div>
 
 @code {
-    private List<string> _customApiFieldNames = new List<string>
-{
-        "CustomApiAvailableMethod",
-        "CustomApiAvailableUri",
-        "CustomApiBusyMethod",
-        "CustomApiBusyUri",
-        "CustomApiBeRightBackMethod",
-        "CustomApiBeRightBackUri",
-        "CustomApiAwayMethod",
-        "CustomApiAwayUri",
-        "CustomApiDoNotDisturbMethod",
-        "CustomApiDoNotDisturbUri",
-        "CustomApiOfflineMethod",
-        "CustomApiOfflineUri",
-        "CustomApiOffMethod",
-        "CustomApiOffUri",
-        "CustomApiActivityAvailableMethod",
-        "CustomApiActivityAvailableUri",
-        "CustomApiActivityInACallMethod",
-        "CustomApiActivityInACallUri",
-        "CustomApiActivityInAMeetingMethod",
-        "CustomApiActivityInAMeetingUri",
-        "CustomApiActivityPresentingMethod",
-        "CustomApiActivityPresentingUri",
-        "CustomApiActivityBusyMethod",
-        "CustomApiActivityBusyUri",
-        "CustomApiActivityAwayMethod",
-        "CustomApiActivityAwayUri",
-        "CustomApiActivityBeRightBackMethod",
-        "CustomApiActivityBeRightBackUri",
-        "CustomApiActivityDoNotDisturbMethod",
-        "CustomApiActivityDoNotDisturbUri",
-        "CustomApiActivityOfflineMethod",
-        "CustomApiActivityOfflineUri",
-        "CustomApiActivityOffMethod",
-        "CustomApiActivityOffUri"
-    };
-
     private void Save()
     {
-        System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/PresenceLightSettings.json", JsonConvert.SerializeObject(Config.CurrentValue, Formatting.Indented));
-        _customApiService = new CustomApiService(Config.CurrentValue);
-        message = "Settings Saved";
-        settingsSaved = true;
+        try
+        {
+            System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/PresenceLightSettings.json", JsonConvert.SerializeObject(Config.CurrentValue, Formatting.Indented));
+            _customApiService = new CustomApiService(Config.CurrentValue);
+            message = "Settings Saved";
+            settingsSaved = true;
+        }
+        catch (Exception e)
+        {
+            Helpers.AppendLogger(_logger, "Error Occured Saving Custom Api Settings", e);
+            throw e;
+        }
     }
 
     bool settingsSaved = false;
@@ -264,9 +234,8 @@
     private void OnChange(ChangeEventArgs e)
     {
         var light = e.Value.ToString();
-        Config.CurrentValue.LightSettings.Hue.SelectedHueLightId = light;
+        Config.CurrentValue.LightSettings.Custom.SelectedCustomLightId = light;
     }
-
 
     public void Dispose()
     {

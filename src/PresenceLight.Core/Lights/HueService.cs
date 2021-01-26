@@ -48,6 +48,7 @@ namespace PresenceLight.Core
                 _client = new LocalHueClient(_options.LightSettings.Hue.HueIpAddress);
                 _client.Initialize(_options.LightSettings.Hue.HueApiKey);
 
+                string message = "";
 
                 var command = new LightCommand();
                 string color = "";
@@ -62,8 +63,9 @@ namespace PresenceLight.Core
                         else
                         {
                             command.On = false;
-                            _logger.LogInformation($"Turning Hue Light {lightId} Off - HueService:SetColor");
                             await _client.SendCommandAsync(command, new List<string> { lightId });
+                            message = $"Turning Hue Light {lightId} Off";
+                            Helpers.AppendLogger(_logger, message);
                             return;
                         }
                         break;
@@ -76,8 +78,9 @@ namespace PresenceLight.Core
                         else
                         {
                             command.On = false;
-                            _logger.LogInformation($"Turning Hue Light {lightId} Off - HueService:SetColor");
                             await _client.SendCommandAsync(command, new List<string> { lightId });
+                            message = $"Turning Hue Light {lightId} Off";
+                            Helpers.AppendLogger(_logger, message);
                             return;
                         }
                         break;
@@ -90,8 +93,9 @@ namespace PresenceLight.Core
                         else
                         {
                             command.On = false;
-                            _logger.LogInformation($"Turning Hue Light {lightId} Off - HueService:SetColor");
                             await _client.SendCommandAsync(command, new List<string> { lightId });
+                            message = $"Turning Hue Light {lightId} Off";
+                            Helpers.AppendLogger(_logger, message);
                             return;
                         }
                         break;
@@ -104,8 +108,9 @@ namespace PresenceLight.Core
                         else
                         {
                             command.On = false;
-                            _logger.LogInformation($"Turning Hue Light {lightId} Off - HueService:SetColor");
                             await _client.SendCommandAsync(command, new List<string> { lightId });
+                            message = $"Turning Hue Light {lightId} Off";
+                            Helpers.AppendLogger(_logger, message);
                             return;
                         }
                         break;
@@ -118,8 +123,9 @@ namespace PresenceLight.Core
                         else
                         {
                             command.On = false;
-                            _logger.LogInformation($"Turning Hue Light {lightId} Off - HueService:SetColor");
                             await _client.SendCommandAsync(command, new List<string> { lightId });
+                            message = $"Turning Hue Light {lightId} Off";
+                            Helpers.AppendLogger(_logger, message);
                             return;
                         }
                         break;
@@ -132,8 +138,9 @@ namespace PresenceLight.Core
                         else
                         {
                             command.On = false;
-                            _logger.LogInformation($"Turning Hue Light {lightId} Off - HueService:SetColor");
                             await _client.SendCommandAsync(command, new List<string> { lightId });
+                            message = $"Turning Hue Light {lightId} Off";
+                            Helpers.AppendLogger(_logger, message);
                             return;
                         }
                         break;
@@ -146,8 +153,9 @@ namespace PresenceLight.Core
                         else
                         {
                             command.On = false;
-                            _logger.LogInformation($"Turning Hue Light {lightId} Off - HueService:SetColor");
                             await _client.SendCommandAsync(command, new List<string> { lightId });
+                            message = $"Turning Hue Light {lightId} Off";
+                            Helpers.AppendLogger(_logger, message);
                             return;
                         }
                         break;
@@ -179,8 +187,9 @@ namespace PresenceLight.Core
                 if (availability == "Off")
                 {
                     command.On = false;
-                    _logger.LogInformation($"Turning Hue Light {lightId} Off - HueService:SetColor");
                     await _client.SendCommandAsync(command, new List<string> { lightId });
+                    message = $"Turning Hue Light {lightId} Off";
+                    Helpers.AppendLogger(_logger, message);
                     return;
                 }
 
@@ -211,12 +220,13 @@ namespace PresenceLight.Core
                     }
                 }
 
-                _logger.LogInformation($"Setting Hue Light {lightId} to {color} - HueService:SetColor");
                 await _client.SendCommandAsync(command, new List<string> { lightId });
+                message = $"Setting Hue Light {lightId} to {color}";
+                Helpers.AppendLogger(_logger, message);
             }
             catch (Exception e)
             {
-                _logger.LogError("Error Occurred Setting Color - HueServce", e);
+                Helpers.AppendLogger(_logger, "Error Occurred Setting Color", e);
                 throw;
             }
         }
@@ -237,7 +247,7 @@ namespace PresenceLight.Core
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError("Error Occurred Registering Bridge - HueServce", e);
+                    Helpers.AppendLogger(_logger, "Error Occurred Registering Bridge", e);
                     return String.Empty;
                 }
             }
@@ -257,7 +267,7 @@ namespace PresenceLight.Core
             }
             catch (Exception e)
             {
-                _logger.LogError("Error Occurred Finding Bridge - HueServce", e);
+                Helpers.AppendLogger(_logger, "Error Occurred Finding Bridge", e);
                 return String.Empty;
             }
             return String.Empty;
@@ -284,7 +294,7 @@ namespace PresenceLight.Core
             }
             catch (Exception e)
             {
-                _logger.LogError("Error Occurred Getting Lights - HueServce", e);
+                Helpers.AppendLogger(_logger, "Error Occurred Getting Bridge", e);
                 throw;
             }
 
