@@ -4,7 +4,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+
+using Microsoft.Extensions.Logging;
 
 namespace PresenceLight.Core
 {
@@ -37,6 +40,20 @@ namespace PresenceLight.Core
                 {
                     throw;
                 }
+            }
+        }
+
+        public static void AppendLogger(ILogger _logger, string message, Exception e = null,
+                                        [CallerMemberName] string memberName = "", [CallerFilePath] string fileName = "", [CallerLineNumber] int lineNumber = 0)
+        {
+            message = $"{message} - {fileName.Split("\\").LastOrDefault().Replace(".cs","")}:{memberName} Line: {lineNumber}";
+            if (e != null)
+            {
+                _logger.LogError(message, e);
+            }
+            else
+            {
+                _logger.LogInformation(message);
             }
         }
 

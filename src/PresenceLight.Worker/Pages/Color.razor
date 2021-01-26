@@ -6,6 +6,7 @@
 @inject IHueService _hueService;
 @inject LIFXService _lifxService;
 @inject IJSRuntime jsRuntime;
+@inject ILogger<Color> _logger;
 
 <div class="container text-body">
     <div class="row">
@@ -27,34 +28,41 @@
 
 
 @code {
-
     bool isGraphDisabled = false;
     string color;
 
 
     async Task SetColor()
     {
-        color = await jsRuntime.InvokeAsync<string>("getColor");
-
-        appState.SetLightMode("Custom");
-        isGraphDisabled = false;
-
-        if (appState.LightMode == "Custom")
+        try
         {
-            appState.SetCustomColor(color);
+            color = await jsRuntime.InvokeAsync<string>("getColor");
+
+            appState.SetLightMode("Custom");
+            isGraphDisabled = false;
+
+            if (appState.LightMode == "Custom")
+            {
+                appState.SetCustomColor(color);
+            }
+
+            if (appState.LightMode == "Custom")
+            {
+                if (!string.IsNullOrEmpty(Config.CurrentValue.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.CurrentValue.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.CurrentValue.LightSettings.Hue.SelectedHueLightId))
+                {
+                    await _hueService.SetColor(appState.CustomColor, Config.CurrentValue.LightSettings.Hue.SelectedHueLightId);
+                }
+
+                if (Config.CurrentValue.LightSettings.LIFX.IsLIFXEnabled && !string.IsNullOrEmpty(Config.CurrentValue.LightSettings.LIFX.LIFXApiKey))
+                {
+                    await _lifxService.SetColor(appState.CustomColor, Config.CurrentValue.LightSettings.LIFX.SelectedLIFXItemId);
+                }
+            }
         }
-
-        if (appState.LightMode == "Custom")
+        catch (Exception e)
         {
-            if (!string.IsNullOrEmpty(Config.CurrentValue.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.CurrentValue.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.CurrentValue.LightSettings.Hue.SelectedHueLightId))
-            {
-                await _hueService.SetColor(appState.CustomColor, Config.CurrentValue.LightSettings.Hue.SelectedHueLightId);
-            }
-
-            if (Config.CurrentValue.LightSettings.LIFX.IsLIFXEnabled && !string.IsNullOrEmpty(Config.CurrentValue.LightSettings.LIFX.LIFXApiKey))
-            {
-                await _lifxService.SetColor(appState.CustomColor, Config.CurrentValue.LightSettings.LIFX.SelectedLIFXItemId);
-            }
+            Helpers.AppendLogger(_logger, "Error Occured Setting Custom Color", e);
+            throw e;
         }
     }
 

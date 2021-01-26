@@ -4,6 +4,7 @@ using PresenceLight.Core;
 using PresenceLight.Telemetry;
 using System.Threading.Tasks;
 using Windows.Storage;
+using Microsoft.Extensions.Logging;
 
 namespace PresenceLight.Services
 {
@@ -12,9 +13,11 @@ namespace PresenceLight.Services
         private const string SETTINGS_FILENAME = "settings.json";
         private static readonly StorageFolder _settingsFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
         private DiagnosticsClient _diagClient;
+        private readonly ILogger<AppPackageSettingsService> _logger;
 
-        public AppPackageSettingsService(DiagnosticsClient diagClient)
+        public AppPackageSettingsService(DiagnosticsClient diagClient, ILogger<AppPackageSettingsService> logger)
         {
+            _logger = logger;
             _diagClient = diagClient;
         }
 
@@ -30,6 +33,7 @@ namespace PresenceLight.Services
             }
             catch (Exception e)
             {
+                Helpers.AppendLogger(_logger, "Error saving Settings", e);
                 _diagClient.TrackException(e);
                 return null;
             }
@@ -66,6 +70,7 @@ namespace PresenceLight.Services
             }
             catch (Exception e)
             {
+                Helpers.AppendLogger(_logger, "Error Saving Settings", e);
                 _diagClient.TrackException(e);
                 return false;
             }
@@ -81,6 +86,7 @@ namespace PresenceLight.Services
             }
             catch (Exception e)
             {
+                Helpers.AppendLogger(_logger, "Error Deleting Settings File", e);
                 _diagClient.TrackException(e);
                 return false;
             }
@@ -109,6 +115,7 @@ namespace PresenceLight.Services
             }
             catch (Exception e)
             {
+                Helpers.AppendLogger(_logger, "Error Finding Settings File", e);
                 _diagClient.TrackException(e);
                 return false;
             }

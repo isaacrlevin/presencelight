@@ -111,6 +111,7 @@ namespace PresenceLight
             }
             catch (Exception ex)
             {
+                Helpers.AppendLogger(_logger, "Error Occured Saving Custom Api Settings", ex);
                 _diagClient.TrackException(ex);
             }
         }

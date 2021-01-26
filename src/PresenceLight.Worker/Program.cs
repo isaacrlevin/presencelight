@@ -8,20 +8,42 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
+using NLog.Web;
+
 namespace PresenceLight.Worker
 {
     public class Program
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            var logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
+            logger.Debug("Starting PresenceLight");
+            try
+            {
+                CreateHostBuilder(args).Build().Run();
+            }
+            catch (Exception ex)
+            {
+                //NLog: catch setup errors
+                logger.Error(ex, "Stopped program because of exception");
+                throw;
+            }
+            finally
+            {
+                // Ensure to flush and stop internal timers/threads before application-exit (Avoid segmentation fault on Linux)
+                NLog.LogManager.Shutdown();
+            }
         }
         private static void ConfigureConfiguration(IConfigurationBuilder config)
         {
             config.AddEnvironmentVariables()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("PresenceLightSettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
+                .AddJsonFile($"appsettings.Development.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"PresenceLightSettings.Development.json", optional: true, reloadOnChange: false);
+
+            config.Build();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args)
@@ -31,10 +53,27 @@ namespace PresenceLight.Worker
             IConfiguration configForMain = configBuilderForMain.Build();
 
             return Host.CreateDefaultBuilder(args)
-                .UseSystemd()
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder
+                     .ConfigureAppConfiguration((hostingContext, config) =>
+                     {
+                         config.Sources.Clear();
+
+                         var env = hostingContext.HostingEnvironment;
+
+                         config.SetBasePath(Directory.GetCurrentDirectory());
+                         config.AddJsonFile("PresenceLightSettings.json", optional: false, reloadOnChange: true);
+                         config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
+                         config.AddJsonFile($"appsettings.Development.json", optional: true, reloadOnChange: true);
+                         config.AddJsonFile($"PresenceLightSettings.Development.json", optional: true, reloadOnChange: false);
+                         config.AddEnvironmentVariables();
+
+                         if (args != null)
+                         {
+                             config.AddCommandLine(args);
+                         }
+                     })
                     .ConfigureKestrel(options =>
                      {
                          if (Convert.ToBoolean(configForMain["DeployedToServer"]))
@@ -89,7 +128,8 @@ namespace PresenceLight.Worker
                          }
                      })
                      .UseContentRoot(Directory.GetCurrentDirectory());
-                    webBuilder.UseStartup<Startup>();
+                    webBuilder.UseStartup<Startup>()
+                    .UseNLog();
                 });
         }
     }

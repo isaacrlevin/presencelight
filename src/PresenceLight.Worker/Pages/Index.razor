@@ -3,11 +3,12 @@
 @using Microsoft.Identity.Web
 @using Microsoft.Graph
 
+
 @inject AppState appState
 @inject IOptionsMonitor<BaseConfig> Config
 @inject Microsoft.Graph.GraphServiceClient GraphServiceClient
 @inject MicrosoftIdentityConsentAndConditionalAccessHandler ConsentHandler
-
+@inject ILogger<Index> _logger;
 
 
 <SpinLoader IsLoading="@(appState.Presence == null)">
@@ -57,6 +58,7 @@
                 }
                 catch (Exception ex)
                 {
+                    Helpers.AppendLogger(_logger, "Error Occured loading Index", ex);
                     appState.SetLightMode("");
                     appState.SetUserAuthentication(false);
                     ConsentHandler.HandleException(ex);
