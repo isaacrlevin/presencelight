@@ -40,8 +40,7 @@ $packageArgs = @{
 
 Install-ChocolateyZipPackage @packageArgs
 
-$installPath    = Join-Path $toolsDir 'PresenceLight'
-$exePath = Join-Path $installPath 'PresenceLight.exe'
+$exePath = Join-Path $toolsDir 'PresenceLight.exe'
 
 
 Write-Output "Adding shortcut to Start Menu"
