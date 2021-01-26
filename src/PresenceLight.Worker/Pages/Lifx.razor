@@ -174,7 +174,7 @@
                 lifxMessage = "Connected to LIFX Cloud";
                 lifxMessageClass = "text-success";
             }
-            catch
+            catch (Exception e)
             {
                 Helpers.AppendLogger(_logger, "Error Occured Getting LIFX Lights", e);
                 showLifxMessage = true;

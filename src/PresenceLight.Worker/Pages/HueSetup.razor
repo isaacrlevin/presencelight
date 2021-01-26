@@ -4,7 +4,7 @@
 @inject AppState appState
 @inject IModalService Modal
 @inject IOptionsMonitor<BaseConfig> Config
-@inject ILogger<HueSetup> _logger;
+@inject ILogger<HueSetup    > _logger;
 
 <div class="container text-body" style="overflow:hidden">
     <div class="row">
@@ -116,9 +116,9 @@
             {
                 tempConfig.LightSettings.Hue.HueApiKey = await _hueService.RegisterBridge();
             }
-            catch
+            catch (Exception ex)
             {
-                Helpers.AppendLogger(_logger, "Error Occured Registering Hue Bridge", e);
+                Helpers.AppendLogger(_logger, "Error Occured Registering Hue Bridge", ex);
                 hueMessage = "Error Occured registering bridge, please try again";
                 showHueMessage = true;
                 hueMessageClass = "text-danger";
