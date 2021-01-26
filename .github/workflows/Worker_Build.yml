@@ -80,7 +80,7 @@ jobs:
         # Update AppSettings.json. This must be done before build.
         $appsettings= get-content ".\src\PresenceLight.Worker\appsettings.json" -raw | ConvertFrom-Json
 
-        $appsettings.certificate.path = "${{ secrets.CertificateName }}"
+        $appsettings.certificate.name = "${{ secrets.CertificateName }}"
         $appsettings.certificate.password = "${{ secrets.CertificatePassword }}"
 
         $appsettings.azureAd.clientId = "${{ secrets.ApplicationId }}"
@@ -133,13 +133,12 @@ jobs:
 
   Code_Signing:
     needs: Build_Worker
+    if: ${{ github.event_name != 'pull_request' }}
     environment:
         name: Code_Signing
         url: ${{ steps.deploy_staging.outputs.webapp-url }}
     name: Code Sign Worker
     runs-on: ubuntu-latest
-    env:
-      if: ${{ github.event_name != 'pull_request' }}
     steps:
     - name: Azure Login
       uses: azure/login@v1
@@ -267,13 +266,12 @@ jobs:
 
   Deploy_Azure_Blob:
     needs: Code_Signing
+    if: ${{ github.event_name != 'pull_request' }}
     environment:
         name: Deploy_Azure_Blob
         url: ${{ steps.deploy_staging.outputs.webapp-url }}
     name: Deploy Worker Website
     runs-on: ubuntu-latest
-    env:
-      if: ${{ github.event_name != 'pull_request' }}
     steps:
     - name: Azure Login
       uses: azure/login@v1
@@ -350,13 +348,12 @@ jobs:
 
   Deploy_Containers:
     needs: Build_Worker
+    if: ${{ github.event_name != 'pull_request' }}
     environment:
         name: Deploy_Containers
         url: ${{ steps.deploy_staging.outputs.webapp-url }}
     name: Deploy Worker Containers (DockerHub / GitHub Packages)
     runs-on: ubuntu-latest
-    env:
-      if: ${{ github.event_name != 'pull_request' }}
     steps:
       - uses: actions/checkout@v2
 
@@ -365,7 +362,7 @@ jobs:
           # Update AppSettings.json. This must be done before build.
           $appsettings= get-content ".\src\PresenceLight.Worker\appsettings.json" -raw | ConvertFrom-Json
 
-          $appsettings.certificate.path = "${{ secrets.CertificateName }}"
+          $appsettings.certificate.name = "${{ secrets.CertificateName }}"
           $appsettings.certificate.password = "${{ secrets.CertificatePassword }}"
 
           $appsettings.azureAd.clientId = "${{ secrets.ApplicationId }}"
@@ -469,13 +466,12 @@ jobs:
 
   Deploy_GitHub_Release:
     needs: Deploy_Azure_Blob
+    if: ${{ github.event_name != 'pull_request' }}
     environment:
         name: Deploy_GitHub_Release
         url: ${{ steps.deploy_staging.outputs.webapp-url }}
     name: Deploy Worker GitHub Release
     runs-on: ubuntu-latest
-    env:
-      if: ${{ github.event_name != 'pull_request' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2

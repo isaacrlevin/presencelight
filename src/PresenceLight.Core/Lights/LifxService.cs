@@ -21,7 +21,7 @@ namespace PresenceLight.Core
 
         public async Task<List<Light>> GetAllLights(string apiKey = null)
         {
-            try { 
+            try {
             if (!string.IsNullOrEmpty(apiKey))
             {
                 _options.LightSettings.LIFX.LIFXApiKey = apiKey;
