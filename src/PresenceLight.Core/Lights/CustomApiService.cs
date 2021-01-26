@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Net.Http;
 using Microsoft.Graph;
+using Microsoft.Extensions.Logging;
 
 namespace PresenceLight.Core
 {
@@ -25,16 +26,25 @@ namespace PresenceLight.Core
             Timeout = TimeSpan.FromSeconds(10)
         };
 
+        private readonly ILogger<CustomApiService> _logger;
         private readonly BaseConfig _options;
 
-        public CustomApiService(IOptionsMonitor<BaseConfig> optionsAccessor)
+        public CustomApiService(IOptionsMonitor<BaseConfig> optionsAccessor, ILogger<CustomApiService> logger)
         {
+            _logger = logger;
             _options = optionsAccessor.CurrentValue;
         }
 
         public CustomApiService(BaseConfig options)
         {
             _options = options;
+        }
+
+        public async Task<string> SetColor(string availability, string? activity)
+        {
+            string result = await SetAvailability(availability);
+            result += await SetActivity(activity);
+            return result;
         }
 
         private async Task<string> CallCustomApiForActivityChanged(object sender, string newActivity)
@@ -143,13 +153,6 @@ namespace PresenceLight.Core
             return await PerformWebRequest(method, uri, result);
         }
 
-        public async Task<string> SetColor(string availability, string? activity)
-        {
-            string result = await SetAvailability(availability);
-            result += await SetActivity(activity);
-            return result;
-        }
-
         private async Task<string> SetAvailability(string availability)
         {
             string result = "";
@@ -172,7 +175,7 @@ namespace PresenceLight.Core
             return result;
         }
 
-        private static async Task<string> PerformWebRequest(string method, string uri, string result)
+        private async Task<string> PerformWebRequest(string method, string uri, string result)
         {
             if (!string.IsNullOrEmpty(method) && !string.IsNullOrEmpty(uri))
             {
@@ -189,11 +192,15 @@ namespace PresenceLight.Core
                             break;
                     }
 
+
                     string responseBody = await response.Content.ReadAsStringAsync();
                     result = $"{(int)response.StatusCode} {response.StatusCode}: {responseBody}";
+                    string message = $"Sending {method} methd to {uri}";
+                    Helpers.AppendLogger(_logger, message);
                 }
                 catch (Exception e)
                 {
+                    Helpers.AppendLogger(_logger, "Error Performing Web Request", e);
                     result = $"Error: {e.Message}";
                 }
             }

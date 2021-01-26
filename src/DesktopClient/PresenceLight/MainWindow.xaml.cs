@@ -156,7 +156,7 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error occured in LoadApp() in MainWindow");
+                Helpers.AppendLogger(_logger, "Error occured", e);
                 _diagClient.TrackException(e);
             }
         }
@@ -288,7 +288,7 @@ namespace PresenceLight
 
             catch (Exception e)
             {
-                _logger.LogError(e, "Error occured in CallGraph() in MainWindow");
+                Helpers.AppendLogger(_logger, "Error occured", e);
                 _diagClient.TrackException(e);
             }
         }
@@ -338,7 +338,7 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error Occured in SetColor MainWindow");
+                Helpers.AppendLogger(_logger, "Error Occured", e);
                 _diagClient.TrackException(e);
                 throw;
             }
@@ -346,6 +346,7 @@ namespace PresenceLight
 
         private async void SignOutButton_Click(object sender, RoutedEventArgs e)
         {
+            Helpers.AppendLogger(_logger, "Signing out of Graph PresenceLight Sync");
             lightMode = "Graph";
             var accounts = await WPFAuthorizationProvider.Application.GetAccountsAsync().ConfigureAwait(true);
             if (accounts.Any())
@@ -406,7 +407,7 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error Occured in LoadImager MainWindow");
+                Helpers.AppendLogger(_logger, "Error Occured in LoadImager", e);
                 _diagClient.TrackException(e);
                 throw;
             }
@@ -484,7 +485,7 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error Occured in GetPresence MainWindow");
+                Helpers.AppendLogger(_logger, "Error Occured", e);
                 _diagClient.TrackException(e);
                 throw;
             }
@@ -498,10 +499,10 @@ namespace PresenceLight
             {
                 return await _graphServiceClient.Me.Presence.Request().GetAsync().ConfigureAwait(true);
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                _logger.LogError(ex, "Error Occured in GetPresence MainWindow");
-                _diagClient.TrackException(ex);
+                Helpers.AppendLogger(_logger, "Error Occured", e);
+                _diagClient.TrackException(e);
                 throw;
             }
         }
@@ -521,10 +522,10 @@ namespace PresenceLight
                     return ReadFully(photo);
                 }
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                _logger.LogError(ex, "Error Occured in GetPresence MainWindow");
-                _diagClient.TrackException(ex);
+                Helpers.AppendLogger(_logger, "Error Occured", e);
+                _diagClient.TrackException(e);
                 throw;
             }
         }
@@ -545,6 +546,7 @@ namespace PresenceLight
 
         public async Task<(User User, Presence Presence)> GetBatchContent()
         {
+            Helpers.AppendLogger(_logger, "Getting Graph Data: Profle, Image, Presence");
             try
             {
                 IUserRequest userRequest = _graphServiceClient.Me.Request();
@@ -562,10 +564,10 @@ namespace PresenceLight
 
                 return (User: user, Presence: presence);
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                _logger.LogError(ex, "Error Occured in GetBatchContent MainWindow");
-                _diagClient.TrackException(ex);
+                Helpers.AppendLogger(_logger, "Error Occured", e);
+                _diagClient.TrackException(e);
                 throw;
             }
         }
@@ -611,6 +613,7 @@ namespace PresenceLight
             turnOnButton.Visibility = Visibility.Collapsed;
 
             this.WindowState = this.lastWindowState;
+            Helpers.AppendLogger(_logger, "Turning On PresenceLight Sync");
         }
 
         private async void OnTurnOffSyncClick(object sender, RoutedEventArgs e)
@@ -647,9 +650,10 @@ namespace PresenceLight
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error Occured in OnTurnOffSyncClock MainWindow");
+                Helpers.AppendLogger(_logger, "Error Occured", ex);
                 _diagClient.TrackException(ex);
             }
+            Helpers.AppendLogger(_logger, "Turning Off PresenceLight Sync");
         }
 
         private async void OnExitClick(object sender, RoutedEventArgs e)
@@ -678,9 +682,10 @@ namespace PresenceLight
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error Occured in OnExitClick MainWindow");
+                Helpers.AppendLogger(_logger, "Error Occured", ex);
                 _diagClient.TrackException(ex);
             }
+            Helpers.AppendLogger(_logger, "PresenceLight Exiting");
         }
 
         private async void Current_SessionEnding(object sender, SessionEndingCancelEventArgs e)
@@ -714,9 +719,11 @@ namespace PresenceLight
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error Occured in Current_SessionEnding MainWindow");
+                Helpers.AppendLogger(_logger, "Error Occured", ex);
                 _diagClient.TrackException(ex);
             }
+
+            Helpers.AppendLogger(_logger, "PresenceLight Session Ending");
         }
         #endregion
 
@@ -780,6 +787,7 @@ namespace PresenceLight
                         switch (lightMode)
                         {
                             case "Graph":
+                                Helpers.AppendLogger(_logger, "PresenceLight Running in Teams Mode");
                                 presence = await System.Threading.Tasks.Task.Run(() => GetPresence()).ConfigureAwait(true);
 
                                 if (newColor == string.Empty)
@@ -801,7 +809,7 @@ namespace PresenceLight
                                 MapUI(presence, null, null);
                                 break;
                             case "Theme":
-
+                                Helpers.AppendLogger(_logger, "PresenceLight Running in Theme Mode");
                                 try
                                 {
                                     var theme = ((SolidColorBrush)SystemParameters.WindowGlassBrush).Color;
@@ -823,7 +831,7 @@ namespace PresenceLight
                                 }
                                 catch (Exception ex)
                                 {
-                                    _logger.LogError(ex, "Error Occured in InteractWithLights MainWindow");
+                                    Helpers.AppendLogger(_logger, "Error Occured", ex);
                                     _diagClient.TrackException(ex);
                                 }
                                 break;
@@ -835,7 +843,7 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error Occured in InteractWithLights MainWindow");
+                Helpers.AppendLogger(_logger, "Error Occured", e);
                 _diagClient.TrackException(e);
             }
         }

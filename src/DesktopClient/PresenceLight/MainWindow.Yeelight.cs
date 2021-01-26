@@ -30,10 +30,17 @@ namespace PresenceLight
 
         private async void FindYeelights_Click(object sender, RoutedEventArgs e)
         {
+            try {
             pnlYeelightBrigthness.Visibility = Visibility.Collapsed;
             var deviceGroup = await _yeelightService.FindLights().ConfigureAwait(true);
             ddlYeelightLights.ItemsSource = deviceGroup.ToList();
             pnlYeelightBrigthness.Visibility = Visibility;
+            }
+            catch (Exception ex)
+            {
+                Helpers.AppendLogger(_logger, "Error occured Finding YeeLights", ex);
+                _diagClient.TrackException(ex);
+            }
         }
 
         private void ddlYeelightLights_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
@@ -71,7 +78,7 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error occured in LoadApp() in MainWindow");
+                Helpers.AppendLogger(_logger, "Error occured Checking YeeLight", e);
                 _diagClient.TrackException(e);
             }
         }

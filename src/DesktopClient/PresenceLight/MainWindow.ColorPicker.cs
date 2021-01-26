@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using PresenceLight.Telemetry;
 using System.Globalization;
-
+using PresenceLight.Core;
 
 namespace PresenceLight
 {
@@ -19,36 +19,52 @@ namespace PresenceLight
 
         private async void SyncTheme_Click(object sender, RoutedEventArgs e)
         {
-            lightMode = "Theme";
-            syncTeamsButton.IsEnabled = true;
-            syncThemeButton.IsEnabled = false;
+            try
+            {
+                lightMode = "Theme";
+                syncTeamsButton.IsEnabled = true;
+                syncThemeButton.IsEnabled = false;
 
-            var theme = ((SolidColorBrush)SystemParameters.WindowGlassBrush).Color;
+                var theme = ((SolidColorBrush)SystemParameters.WindowGlassBrush).Color;
 
-            string color = $"#{theme.ToString(CultureInfo.InvariantCulture).Substring(3)}";
+                string color = $"#{theme.ToString(CultureInfo.InvariantCulture).Substring(3)}";
 
-            lblTheme.Content = $"Theme Color is {color}";
-            lblTheme.Foreground = (SolidColorBrush)SystemParameters.WindowGlassBrush;
-            lblTheme.Visibility = Visibility.Visible;
+                lblTheme.Content = $"Theme Color is {color}";
+                lblTheme.Foreground = (SolidColorBrush)SystemParameters.WindowGlassBrush;
+                lblTheme.Visibility = Visibility.Visible;
 
-            await SetColor(color).ConfigureAwait(true);
+                await SetColor(color).ConfigureAwait(true);
+            }
+            catch (Exception ex)
+            {
+                Helpers.AppendLogger(_logger, "Error occured Setting Theme Color", ex);
+                _diagClient.TrackException(ex);
+            }
         }
 
 
         private async void SetColor_Click(object sender, RoutedEventArgs e)
         {
-            if (ColorGrid.SelectedColor.HasValue)
+            try
             {
-                lightMode = "Custom";
-                syncTeamsButton.IsEnabled = true;
-                syncThemeButton.IsEnabled = true;
-
-                string color = $"#{ColorGrid.HexadecimalString.ToString().Substring(3)}";
-
-                if (lightMode == "Custom")
+                if (ColorGrid.SelectedColor.HasValue)
                 {
-                    await SetColor(color).ConfigureAwait(true);
+                    lightMode = "Custom";
+                    syncTeamsButton.IsEnabled = true;
+                    syncThemeButton.IsEnabled = true;
+
+                    string color = $"#{ColorGrid.HexadecimalString.ToString().Substring(3)}";
+
+                    if (lightMode == "Custom")
+                    {
+                        await SetColor(color).ConfigureAwait(true);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Helpers.AppendLogger(_logger, "Error occured Setting Custom Color", ex);
+                _diagClient.TrackException(ex);
             }
         }
     }
