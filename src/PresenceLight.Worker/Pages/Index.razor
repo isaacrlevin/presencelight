@@ -3,11 +3,12 @@
 @using Microsoft.Identity.Web
 @using Microsoft.Graph
 
+
 @inject AppState appState
 @inject IOptionsMonitor<BaseConfig> Config
 @inject Microsoft.Graph.GraphServiceClient GraphServiceClient
 @inject MicrosoftIdentityConsentAndConditionalAccessHandler ConsentHandler
-
+@inject ILogger<Index> _logger;
 
 
 <SpinLoader IsLoading="@(appState.Presence == null)">
@@ -29,8 +30,8 @@
                                 <img class="image" src="@appState.ProfileImage" />
                                 <div class="circle bottom-right @appState.Presence?.Availability"></div>
                             </div>
-                            <h3>Availability: @appState.Presence?.Availability</h3>
-                            <h3>Activity: @appState.Presence?.Activity</h3>
+                            <h3>Availability: @Helpers.HumanifyText(appState.Presence?.Availability)</h3>
+                            <h3>Activity: @Helpers.HumanifyText(appState.Presence?.Activity)</h3>
                         </div>
                     </div>
                 </div>
@@ -57,6 +58,7 @@
                 }
                 catch (Exception ex)
                 {
+                    Helpers.AppendLogger(_logger, "Error Occured loading Index", ex);
                     appState.SetLightMode("");
                     appState.SetUserAuthentication(false);
                     ConsentHandler.HandleException(ex);

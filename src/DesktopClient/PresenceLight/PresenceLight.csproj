@@ -30,6 +30,7 @@
     <PackageReference Include="IdentityModel.OidcClient" Version="4.0.0-preview.4" />
     <PackageReference Include="Microsoft.ApplicationInsights.SnapshotCollector" Version="1.4.0-pre-2011.801" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OAuth" Version="2.2.0" />
+    <PackageReference Include="Microsoft.ApplicationInsights.NLogTarget" Version="2.16.0" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.2.7" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.2.0" />
@@ -125,6 +126,10 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="nlog.config" CopyToOutputDirectory="Always" />
   </ItemGroup>
 
   <ItemGroup>

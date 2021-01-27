@@ -4,7 +4,7 @@
 @inject AppState appState
 @inject IModalService Modal
 @inject IOptionsMonitor<BaseConfig> Config
-
+@inject ILogger<Lifx> _logger;
 
 <div class="container text-body" style="overflow:hidden">
     <div class="row">
@@ -120,9 +120,17 @@
     bool isLoadingLights = false;
     private void Save()
     {
-        System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/PresenceLightSettings.json", JsonConvert.SerializeObject(Config.CurrentValue, Formatting.Indented));
-        message = "Settings Saved";
-        settingsSaved = true;
+        try
+        {
+            SettingsService.SaveSettings(Config.CurrentValue);
+            message = "Settings Saved";
+            settingsSaved = true;
+        }
+        catch (Exception e)
+        {
+            Helpers.AppendLogger(_logger, "Error Occured Saving Lifx Settings", e);
+            throw e;
+        }
     }
 
     async Task CheckLIFX(string type)
@@ -138,8 +146,7 @@
         {
             try
             {
-                System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/PresenceLightSettings.json", JsonConvert.SerializeObject(Config.CurrentValue, Formatting.Indented));
-
+                Save();
                 if (type == "Groups")
                 {
                     appState.SetLIFXLights(await _lifxService.GetAllGroups(Config.CurrentValue.LightSettings.LIFX.LIFXApiKey));
@@ -161,15 +168,15 @@
                     }
                 }
 
-                System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/PresenceLightSettings.json", JsonConvert.SerializeObject(Config.CurrentValue, Formatting.Indented));
-
+                Save();
 
                 showLifxMessage = true;
                 lifxMessage = "Connected to LIFX Cloud";
                 lifxMessageClass = "text-success";
             }
-            catch
+            catch (Exception e)
             {
+                Helpers.AppendLogger(_logger, "Error Occured Getting LIFX Lights", e);
                 showLifxMessage = true;
                 lifxMessage = "Error Occured Connecting to LIFX, please try again";
                 lifxMessageClass = "text-danger";
@@ -192,27 +199,35 @@
 
     protected override async Task OnInitializedAsync()
     {
-        appState.OnChange += RaiseStateHasChanged;
-
-        if (Config.CurrentValue.LightSettings.LIFX.IsLIFXEnabled
-        && !string.IsNullOrEmpty(Config.CurrentValue.LightSettings.LIFX.LIFXApiKey)
-        && !string.IsNullOrEmpty(Config.CurrentValue.LightSettings.LIFX.SelectedLIFXItemId))
+        try
         {
-            isLoadingLights = true;
-            if (Config.CurrentValue.LightSettings.LIFX.SelectedLIFXItemId.Contains("group"))
+            appState.OnChange += RaiseStateHasChanged;
+
+            if (Config.CurrentValue.LightSettings.LIFX.IsLIFXEnabled
+            && !string.IsNullOrEmpty(Config.CurrentValue.LightSettings.LIFX.LIFXApiKey)
+            && !string.IsNullOrEmpty(Config.CurrentValue.LightSettings.LIFX.SelectedLIFXItemId))
             {
-                appState.SetLIFXLights(await _lifxService.GetAllGroups(Config.CurrentValue.LightSettings.LIFX.LIFXApiKey));
-                lastType = "Groups";
+                isLoadingLights = true;
+                if (Config.CurrentValue.LightSettings.LIFX.SelectedLIFXItemId.Contains("group"))
+                {
+                    appState.SetLIFXLights(await _lifxService.GetAllGroups(Config.CurrentValue.LightSettings.LIFX.LIFXApiKey));
+                    lastType = "Groups";
+                }
+                else
+                {
+                    appState.SetLIFXLights(await _lifxService.GetAllLights(Config.CurrentValue.LightSettings.LIFX.LIFXApiKey));
+                    lastType = "Lights";
+                }
+                showLifxMessage = true;
+                lifxMessage = "Connected to LIFX Cloud";
+                lifxMessageClass = "text-success";
+                isLoadingLights = false;
             }
-            else
-            {
-                appState.SetLIFXLights(await _lifxService.GetAllLights(Config.CurrentValue.LightSettings.LIFX.LIFXApiKey));
-                lastType = "Lights";
-            }
-            showLifxMessage = true;
-            lifxMessage = "Connected to LIFX Cloud";
-            lifxMessageClass = "text-success";
-            isLoadingLights = false;
+        }
+        catch (Exception e)
+        {
+            Helpers.AppendLogger(_logger, "Error Occured loading LIFX Setup", e);
+            throw e;
         }
     }
 

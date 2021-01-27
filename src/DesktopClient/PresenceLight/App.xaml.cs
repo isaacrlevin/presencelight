@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
+using NLog;
 using NLog.Extensions.Logging;
 
 using PresenceLight.Core;
@@ -53,7 +54,8 @@ namespace PresenceLight
             if (SingleInstanceAppMutex.TakeExclusivity())
             {
                 Exit += (_, __) => SingleInstanceAppMutex.ReleaseExclusivity();
-
+                var logger = LogManager.GetCurrentClassLogger();
+                logger.Debug("Starting PresenceLight");
                 try
                 {
                     ContinueStartup();
@@ -61,11 +63,13 @@ namespace PresenceLight
                 catch (Exception ex) when (IsCriticalFontLoadFailure(ex))
                 {
                     Trace.WriteLine($"## Warning Notify ##: {ex}");
+                    logger.Error(ex, "Stopped program because of exception");
                     OnCriticalFontLoadFailure();
                 }
             }
             else
             {
+                LogManager.Shutdown();
                 Shutdown();
             }
         }
@@ -113,6 +117,7 @@ namespace PresenceLight
             services.AddSingleton<LIFXService, LIFXService>();
             services.AddSingleton<IYeelightService, YeelightService>();
             services.AddSingleton<ICustomApiService, CustomApiService>();
+            services.AddSingleton<IWorkingHoursService, WorkingHoursService>();
             services.AddSingleton<LIFXOAuthHelper, LIFXOAuthHelper>();
             services.AddSingleton<ThisAppInfo, ThisAppInfo>();
             services.AddSingleton<MainWindow>();

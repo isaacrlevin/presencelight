@@ -51,83 +51,62 @@ namespace PresenceLight.Core
 
         public string? SelectedCustomLightId { get; set; }
 
-        public string? CustomApiAvailableMethod { get; set; }
-
-        public string? CustomApiAvailableUri { get; set; }
-
-        public string? CustomApiBusyMethod { get; set; }
-
-        public string? CustomApiBusyUri { get; set; }
-
-        public string? CustomApiBeRightBackMethod { get; set; }
-
-        public string? CustomApiBeRightBackUri { get; set; }
-
-        public string? CustomApiAwayMethod { get; set; }
-
-        public string? CustomApiAwayUri { get; set; }
-
-        public string? CustomApiDoNotDisturbMethod { get; set; }
-
-        public string? CustomApiDoNotDisturbUri { get; set; }
-
-        public string? CustomApiAvailableIdleMethod { get; set; }
-
-        public string? CustomApiAvailableIdleUri { get; set; }
-
-        public string? CustomApiOfflineMethod { get; set; }
-
-        public string? CustomApiOfflineUri { get; set; }
-
-        public string? CustomApiOffMethod { get; set; }
-
-        public string? CustomApiOffUri { get; set; }
-
-        public string? CustomApiActivityAvailableMethod { get; set; }
-
-        public string? CustomApiActivityAvailableUri { get; set; }
-
-        public string? CustomApiActivityInACallMethod { get; set; }
-
-        public string? CustomApiActivityInACallUri { get; set; }
-
-        public string? CustomApiActivityInAMeetingMethod { get; set; }
-
-        public string? CustomApiActivityInAMeetingUri { get; set; }
-
-        public string? CustomApiActivityPresentingMethod { get; set; }
-
-        public string? CustomApiActivityPresentingUri { get; set; }
-
-        public string? CustomApiActivityBusyMethod { get; set; }
-
-        public string? CustomApiActivityBusyUri { get; set; }
-
-        public string? CustomApiActivityAwayMethod { get; set; }
-
-        public string? CustomApiActivityAwayUri { get; set; }
-
-        public string? CustomApiActivityBeRightBackMethod { get; set; }
-
-        public string? CustomApiActivityBeRightBackUri { get; set; }
-
-        public string? CustomApiActivityDoNotDisturbMethod { get; set; }
-
-        public string? CustomApiActivityDoNotDisturbUri { get; set; }
-
-        public string? CustomApiActivityIdleMethod { get; set; }
-
-        public string? CustomApiActivityIdleUri { get; set; }
-
-        public string? CustomApiActivityOfflineMethod { get; set; }
-
-        public string? CustomApiActivityOfflineUri { get; set; }
-
-        public string? CustomApiActivityOffMethod { get; set; }
-
-        public string? CustomApiActivityOffUri { get; set; }
-
         public double CustomApiTimeout { get; set; }
+
+        public CustomApiSetting CustomApiAvailable { get; set; }
+
+
+        public CustomApiSetting CustomApiBusy { get; set; }
+
+
+        public CustomApiSetting CustomApiBeRightBack { get; set; }
+
+
+        public CustomApiSetting CustomApiAway { get; set; }
+
+
+        public CustomApiSetting CustomApiDoNotDisturb { get; set; }
+
+
+        public CustomApiSetting CustomApiAvailableIdle { get; set; }
+
+
+        public CustomApiSetting CustomApiOffline { get; set; }
+
+
+        public CustomApiSetting CustomApiOff { get; set; }
+
+
+        public CustomApiSetting CustomApiActivityAvailable { get; set; }
+
+
+        public CustomApiSetting CustomApiActivityInACall { get; set; }
+
+
+        public CustomApiSetting CustomApiActivityInAMeeting { get; set; }
+
+
+        public CustomApiSetting CustomApiActivityPresenting { get; set; }
+
+        public CustomApiSetting CustomApiActivityBusy { get; set; }
+
+
+        public CustomApiSetting CustomApiActivityAway { get; set; }
+
+
+        public CustomApiSetting CustomApiActivityBeRightBack { get; set; }
+
+
+        public CustomApiSetting CustomApiActivityDoNotDisturb { get; set; }
+
+
+        public CustomApiSetting CustomApiActivityIdle { get; set; }
+
+
+        public CustomApiSetting CustomApiActivityOffline { get; set; }
+
+
+        public CustomApiSetting CustomApiActivityOff { get; set; }
     }
 
     public class LIFX
@@ -204,6 +183,12 @@ namespace PresenceLight.Core
 
         public string? Colour { get; set; }
 
+    }
+
+    public class CustomApiSetting
+    {
+        public string? Method { get; set; }
+        public string? Uri { get; set; }
     }
 
     public class Yeelight

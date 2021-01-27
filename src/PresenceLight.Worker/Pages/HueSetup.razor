@@ -4,7 +4,7 @@
 @inject AppState appState
 @inject IModalService Modal
 @inject IOptionsMonitor<BaseConfig> Config
-
+@inject ILogger<HueSetup    > _logger;
 
 <div class="container text-body" style="overflow:hidden">
     <div class="row">
@@ -76,15 +76,22 @@
 </div>
 
 @code {
-
     private BaseConfig tempConfig;
 
     private void Save()
     {
-        System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/PresenceLightSettings.json", JsonConvert.SerializeObject(Config.CurrentValue, Formatting.Indented));
-        _hueService = new HueService(Config.CurrentValue);
-        message = "Settings Saved";
-        settingsSaved = true;
+        try
+        {
+            SettingsService.SaveSettings(Config.CurrentValue);
+            _hueService = new HueService(Config.CurrentValue);
+            message = "Settings Saved";
+            settingsSaved = true;
+        }
+        catch (Exception e)
+        {
+            Helpers.AppendLogger(_logger, "Error Occured Saving Hue Settings", e);
+            throw e;
+        }
     }
 
     bool settingsSaved = false;
@@ -109,8 +116,9 @@
             {
                 tempConfig.LightSettings.Hue.HueApiKey = await _hueService.RegisterBridge();
             }
-            catch
+            catch (Exception ex)
             {
+                Helpers.AppendLogger(_logger, "Error Occured Registering Hue Bridge", ex);
                 hueMessage = "Error Occured registering bridge, please try again";
                 showHueMessage = true;
                 hueMessageClass = "text-danger";
@@ -118,26 +126,34 @@
 
             if (!string.IsNullOrEmpty(tempConfig.LightSettings.Hue.HueApiKey))
             {
-                showHueMessage = true;
-                hueMessage = "App Registered with Bridge";
-                hueMessageClass = "text-success";
-
-                appState.SetHueLights(await _hueService.GetLights());
-
-                if (string.IsNullOrEmpty(Config.CurrentValue.LightSettings.Hue.SelectedHueLightId) && appState.HueLights.Count() > 0)
+                try
                 {
-                    tempConfig.LightSettings.Hue.SelectedHueLightId = appState.HueLights.FirstOrDefault().Id;
-                }
+                    showHueMessage = true;
+                    hueMessage = "App Registered with Bridge";
+                    hueMessageClass = "text-success";
 
+                    appState.SetHueLights(await _hueService.GetLights());
+
+                    if (string.IsNullOrEmpty(Config.CurrentValue.LightSettings.Hue.SelectedHueLightId) && appState.HueLights.Count() > 0)
+                    {
+                        tempConfig.LightSettings.Hue.SelectedHueLightId = appState.HueLights.FirstOrDefault().Id;
+                    }
+                }
+                catch (Exception e)
+                {
+                    Helpers.AppendLogger(_logger, "Error Occured Getting Hue Lights", e);
+                    throw e;
+                }
                 Config.CurrentValue.LightSettings.Hue.HueIpAddress = tempConfig.LightSettings.Hue.HueIpAddress;
                 Config.CurrentValue.LightSettings.Hue.HueApiKey = tempConfig.LightSettings.Hue.HueApiKey;
                 Config.CurrentValue.LightSettings.Hue.SelectedHueLightId = tempConfig.LightSettings.Hue.SelectedHueLightId;
 
-                System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/PresenceLightSettings.json", JsonConvert.SerializeObject(Config.CurrentValue, Formatting.Indented));
-
+                Save();
             }
+
             else
             {
+                Helpers.AppendLogger(_logger, "Hue Api Key not configured");
                 hueMessage = "Api Key Not Created, please try again and ensure you press the sync button on your bridge";
                 showHueMessage = true;
                 hueMessageClass = "text-danger";
@@ -155,14 +171,22 @@
 
     protected override async Task OnInitializedAsync()
     {
-        tempConfig = Config.CurrentValue;
-
-        if (!string.IsNullOrEmpty(tempConfig.LightSettings.Hue.HueApiKey))
+        try
         {
-            appState.SetHueLights(await _hueService.GetLights());
-        }
+            tempConfig = Config.CurrentValue;
 
-        appState.OnChange += RaiseStateHasChanged;
+            if (!string.IsNullOrEmpty(tempConfig.LightSettings.Hue.HueApiKey))
+            {
+                appState.SetHueLights(await _hueService.GetLights());
+            }
+
+            appState.OnChange += RaiseStateHasChanged;
+        }
+        catch (Exception e)
+        {
+            Helpers.AppendLogger(_logger, "Error Occured loading Hue Setup", e);
+            throw e;
+        }
     }
 
     public void Dispose()

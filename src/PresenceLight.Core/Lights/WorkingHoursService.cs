@@ -8,7 +8,7 @@ namespace PresenceLight.Core
     {
         public bool UseWorkingHours { get; }
 
-        public bool OutsideWorkingHours { get; }
+        public bool IsInWorkingHours { get; }
     }
 
     public class WorkingHoursService : IWorkingHoursService
@@ -36,28 +36,45 @@ namespace PresenceLight.Core
                 return _options.LightSettings.UseWorkingHours;
             }
         }
-
-        /// <summary>
-        /// If the current datetime is outside of the range of teh working hours then return false.
-        /// </summary>
-        public bool OutsideWorkingHours
+        public bool IsInWorkingHours
         {
             get
             {
-                DateTime startDate = DateTime.Parse(_options.LightSettings.WorkingHoursStartTime, CultureInfo.InvariantCulture);
-                DateTime endDate = DateTime.Parse(_options.LightSettings.WorkingHoursEndTime, CultureInfo.InvariantCulture);
+                bool IsWorkingHours = false;
 
-                if (_options.LightSettings.WorkingDays.Contains(DateTime.Now.DayOfWeek.ToString()) &&
-                    DateTime.Now >= startDate &&
-                    DateTime.Now < endDate)
+                if (string.IsNullOrEmpty(_options.LightSettings.WorkingHoursStartTime) || string.IsNullOrEmpty(_options.LightSettings.WorkingHoursEndTime) || string.IsNullOrEmpty(_options.LightSettings.WorkingDays))
                 {
+                    IsWorkingHours = false;
                     return false;
                 }
-                else
+
+                if (!_options.LightSettings.WorkingDays.Contains(DateTime.Now.DayOfWeek.ToString(), StringComparison.OrdinalIgnoreCase))
                 {
-                    return true;
+                    IsWorkingHours = false;
+                    return false;
                 }
 
+                // convert datetime to a TimeSpan
+                bool validStart = TimeSpan.TryParse(_options.LightSettings.WorkingHoursStartTime, out TimeSpan start);
+                bool validEnd = TimeSpan.TryParse(_options.LightSettings.WorkingHoursEndTime, out TimeSpan end);
+                if (!validEnd || !validStart)
+                {
+                    IsWorkingHours = false;
+                    return false;
+                }
+
+                TimeSpan now = DateTime.Now.TimeOfDay;
+                // see if start comes before end
+                if (start < end)
+                {
+                    IsWorkingHours = start <= now && now <= end;
+                    return IsWorkingHours;
+                }
+                // start is after end, so do the inverse comparison
+
+                IsWorkingHours = !(end < now && now < start);
+
+                return IsWorkingHours;
             }
         }
     }

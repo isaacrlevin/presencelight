@@ -37,61 +37,61 @@ namespace PresenceLight
             switch (sourceComboBox.Name)
             {
                 case "customApiAvailableMethod":
-                    Config.LightSettings.Custom.CustomApiAvailableMethod = selectedText;
+                    Config.LightSettings.Custom.CustomApiAvailable.Method = selectedText;
                     break;
                 case "customApiBusyMethod":
-                    Config.LightSettings.Custom.CustomApiBusyMethod = selectedText;
+                    Config.LightSettings.Custom.CustomApiBusy.Method = selectedText;
                     break;
                 case "customApiBeRightBackMethod":
-                    Config.LightSettings.Custom.CustomApiBeRightBackMethod = selectedText;
+                    Config.LightSettings.Custom.CustomApiBeRightBack.Method = selectedText;
                     break;
                 case "customApiAwayMethod":
-                    Config.LightSettings.Custom.CustomApiAwayMethod = selectedText;
+                    Config.LightSettings.Custom.CustomApiAway.Method = selectedText;
                     break;
                 case "customApiDoNotDisturbMethod":
-                    Config.LightSettings.Custom.CustomApiDoNotDisturbMethod = selectedText;
+                    Config.LightSettings.Custom.CustomApiDoNotDisturb.Method = selectedText;
                     break;
                 case "customApiAvailableIdleMethod":
-                    Config.LightSettings.Custom.CustomApiAvailableIdleMethod = selectedText;
+                    Config.LightSettings.Custom.CustomApiAvailableIdle.Method = selectedText;
                     break;
                 case "customApiOfflineMethod":
-                    Config.LightSettings.Custom.CustomApiOfflineMethod = selectedText;
+                    Config.LightSettings.Custom.CustomApiOffline.Method = selectedText;
                     break;
                 case "customApiOffMethod":
-                    Config.LightSettings.Custom.CustomApiOffMethod = selectedText;
+                    Config.LightSettings.Custom.CustomApiOff.Method = selectedText;
                     break;
                 case "customApiActivityAvailableMethod":
-                    Config.LightSettings.Custom.CustomApiActivityAvailableMethod = selectedText;
+                    Config.LightSettings.Custom.CustomApiActivityAvailable.Method = selectedText;
                     break;
                 case "customApiActivityPresentingMethod":
-                    Config.LightSettings.Custom.CustomApiActivityPresentingMethod = selectedText;
+                    Config.LightSettings.Custom.CustomApiActivityPresenting.Method = selectedText;
                     break;
                 case "customApiActivityInACallMethod":
-                    Config.LightSettings.Custom.CustomApiActivityInACallMethod = selectedText;
+                    Config.LightSettings.Custom.CustomApiActivityInACall.Method = selectedText;
                     break;
                 case "customApiActivityInAMeetingMethod":
-                    Config.LightSettings.Custom.CustomApiActivityInAMeetingMethod = selectedText;
+                    Config.LightSettings.Custom.CustomApiActivityInAMeeting.Method = selectedText;
                     break;
                 case "customApiActivityBusyMethod":
-                    Config.LightSettings.Custom.CustomApiActivityBusyMethod = selectedText;
+                    Config.LightSettings.Custom.CustomApiActivityBusy.Method = selectedText;
                     break;
                 case "customApiActivityAwayMethod":
-                    Config.LightSettings.Custom.CustomApiActivityAwayMethod = selectedText;
+                    Config.LightSettings.Custom.CustomApiActivityAway.Method = selectedText;
                     break;
                 case "customApiActivityBeRightBackMethod":
-                    Config.LightSettings.Custom.CustomApiActivityBeRightBackMethod = selectedText;
+                    Config.LightSettings.Custom.CustomApiActivityBeRightBack.Method = selectedText;
                     break;
                 case "customApiActivityDoNotDisturbMethod":
-                    Config.LightSettings.Custom.CustomApiActivityDoNotDisturbMethod = selectedText;
+                    Config.LightSettings.Custom.CustomApiActivityDoNotDisturb.Method = selectedText;
                     break;
                 case "customApiActivityIdleMethod":
-                    Config.LightSettings.Custom.CustomApiActivityIdleMethod = selectedText;
+                    Config.LightSettings.Custom.CustomApiActivityIdle.Method = selectedText;
                     break;
                 case "customApiActivityOfflineMethod":
-                    Config.LightSettings.Custom.CustomApiActivityOfflineMethod = selectedText;
+                    Config.LightSettings.Custom.CustomApiActivityOffline.Method = selectedText;
                     break;
                 case "customApiActivityOffMethod":
-                    Config.LightSettings.Custom.CustomApiActivityOffMethod = selectedText;
+                    Config.LightSettings.Custom.CustomApiActivityOff.Method = selectedText;
                     break;
                 default:
                     break;
@@ -111,6 +111,7 @@ namespace PresenceLight
             }
             catch (Exception ex)
             {
+                Helpers.AppendLogger(_logger, "Error Occured Saving Custom Api Settings", ex);
                 _diagClient.TrackException(ex);
             }
         }
