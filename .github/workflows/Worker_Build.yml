@@ -133,7 +133,7 @@ jobs:
 
   Code_Signing:
     needs: Build_Worker
-    if: ${{ github.event_name != 'pull_request' }}   
+    if: ${{ github.event_name != 'pull_request' }}
     environment:
         name: Code_Signing
         url: ${{ steps.deploy_staging.outputs.webapp-url }}
@@ -266,7 +266,7 @@ jobs:
 
   Deploy_Azure_Blob:
     needs: Code_Signing
-    if: ${{ github.event_name != 'pull_request' }}   
+    if: ${{ github.event_name != 'pull_request' }}
     environment:
         name: Deploy_Azure_Blob
         url: ${{ steps.deploy_staging.outputs.webapp-url }}
@@ -348,7 +348,7 @@ jobs:
 
   Deploy_Containers:
     needs: Build_Worker
-    if: ${{ github.event_name != 'pull_request' }}       
+    if: ${{ github.event_name != 'pull_request' }}
     environment:
         name: Deploy_Containers
         url: ${{ steps.deploy_staging.outputs.webapp-url }}
@@ -466,7 +466,7 @@ jobs:
 
   Deploy_GitHub_Release:
     needs: Deploy_Azure_Blob
-    if: ${{ github.event_name != 'pull_request' }}   
+    if: ${{ github.event_name != 'pull_request' }}
     environment:
         name: Deploy_GitHub_Release
         url: ${{ steps.deploy_staging.outputs.webapp-url }}

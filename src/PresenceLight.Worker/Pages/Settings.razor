@@ -2,7 +2,7 @@
 
 
 @inject IOptionsMonitor<BaseConfig> Config
-
+@inject ILogger<Settings> _logger;
 
 <div class="container text-body" style="overflow:hidden">
     <h1 class="centering text-center">Settings</h1>
@@ -43,15 +43,22 @@
 
 
 @code {
-
     bool settingsSaved = false;
     string message;
 
 
     void SaveSettings()
     {
-        System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/PresenceLightSettings.json", JsonConvert.SerializeObject(Config.CurrentValue, Formatting.Indented));
-        message = "Settings Saved";
-        settingsSaved = true;
+        try
+        {
+            SettingsService.SaveSettings(Config.CurrentValue);
+            message = "Settings Saved";
+            settingsSaved = true;
+        }
+        catch (Exception e)
+        {
+            Helpers.AppendLogger(_logger, "Error Occured Saving Settings", e);
+            throw e;
+        }
     }
 }

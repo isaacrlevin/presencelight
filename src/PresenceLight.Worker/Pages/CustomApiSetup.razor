@@ -4,267 +4,72 @@
 @inject AppState appState
 @inject IModalService Modal
 @inject IOptionsMonitor<BaseConfig> Config
-@inject IWorkingHoursService _workingHoursService
+@inject ILogger<CustomApiSetup> _logger;
 
 <div class="container text-body" style="overflow:hidden">
     <div class="row">
         <div class="container-fluid">
             <div class="row-fluid">
-                <div class="centering text-center">
+                <div>
                     <h1 class="centering text-center">Configure Custom API</h1>
                     <br />
                     <br />
+                    <div class="centering text-center">
                     <input type="checkbox" checked="@Config.CurrentValue.LightSettings.Custom.IsCustomApiEnabled" @bind-value="@Config.CurrentValue.LightSettings.Custom.IsCustomApiEnabled" /> Connect to Custom HTTP API
+                    </div>
                     <br />
                     <br />
                     @if (Config.CurrentValue.LightSettings.Custom.IsCustomApiEnabled)
                     {
-                        <EditForm Model="@Config" OnValidSubmit="Save">
-                            <h2>Availability Options</h2>
-                            <div class="form-group row">
-                                <label class="col-sm-2 col-form-label" for="CustomApiAvailableUri">Available: </label>
-                                <div class="col-sm-2">
-                                    <InputSelect class="form-control" @bind-Value="@Config.CurrentValue.LightSettings.Custom.CustomApiAvailableMethod">
-                                        <option disabled="disabled">Select</option>
-                                        <option value="GET">GET</option>
-                                        <option value="POST">POST</option>
-                                    </InputSelect>
-                                </div>
-                                <div class="col-sm-8">
-                                    <InputText id="CustomApiAvailableUri" class="form-control" @bind-Value="@Config.CurrentValue.LightSettings.Custom.CustomApiAvailableUri" />
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label class="col-sm-2 col-form-label" for="CustomApiBusyUri">Busy: </label>
-                                <div class="col-sm-2">
-                                    <InputSelect class="form-control" @bind-Value="@Config.CurrentValue.LightSettings.Custom.CustomApiBusyMethod">
-                                        <option disabled="disabled">Select</option>
-                                        <option value="GET">GET</option>
-                                        <option value="POST">POST</option>
-                                    </InputSelect>
-                                </div>
-                                <div class="col-sm-8">
-                                    <InputText class="form-control" id="CustomApiBusyUri" @bind-Value="@Config.CurrentValue.LightSettings.Custom.CustomApiBusyUri" />
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label class="col-sm-2 col-form-label" for="CustomApiBeRightBackUri">Be Right Back: </label>
-                                <div class="col-sm-2">
-                                    <InputSelect class="form-control" @bind-Value="@Config.CurrentValue.LightSettings.Custom.CustomApiBeRightBackMethod">
-                                        <option disabled="disabled">Select</option>
-                                        <option value="GET">GET</option>
-                                        <option value="POST">POST</option>
-                                    </InputSelect>
-                                </div><div class="col-sm-8">
-                                    <InputText class="form-control" id="CustomApiBeRightBackUri" @bind-Value="@Config.CurrentValue.LightSettings.Custom.CustomApiBeRightBackUri" />
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label class="col-sm-2 col-form-label" for="CustomApiAwayUri">Away: </label>
-                                <div class="col-sm-2">
-                                    <InputSelect class="form-control" @bind-Value="@Config.CurrentValue.LightSettings.Custom.CustomApiAwayMethod">
-                                        <option disabled="disabled">Select</option>
-                                        <option value="GET">GET</option>
-                                        <option value="POST">POST</option>
-                                    </InputSelect>
-                                </div><div class="col-sm-8">
-                                    <InputText class="form-control" id="CustomApiAwayUri" @bind-Value="@Config.CurrentValue.LightSettings.Custom.CustomApiAwayUri" />
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label class="col-sm-2 col-form-label" for="CustomApiDoNotDisturbUri">Do Not Disturb: </label>
-                                <div class="col-sm-2">
-                                    <InputSelect class="form-control" @bind-Value="@Config.CurrentValue.LightSettings.Custom.CustomApiDoNotDisturbMethod">
-                                        <option disabled="disabled">Select</option>
-                                        <option value="GET">GET</option>
-                                        <option value="POST">POST</option>
-                                    </InputSelect>
-                                </div><div class="col-sm-8">
-                                    <InputText class="form-control" id="CustomApiDoNotDisturbUri" @bind-Value="@Config.CurrentValue.LightSettings.Custom.CustomApiDoNotDisturbUri" />
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label class="col-sm-2 col-form-label" for="CustomApiAvailableIdleUri">Available Idle: </label>
-                                <div class="col-sm-2">
-                                    <InputSelect class="form-control" @bind-Value="@Config.CurrentValue.LightSettings.Custom.CustomApiAvailableIdleMethod">
-                                        <option disabled="disabled">Select</option>
-                                        <option value="GET">GET</option>
-                                        <option value="POST">POST</option>
-                                    </InputSelect>
-                                </div><div class="col-sm-8">
-                                    <InputText class="form-control" id="CustomApiAvailableIdleUri" @bind-Value="@Config.CurrentValue.LightSettings.Custom.CustomApiAvailableIdleUri" />
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label class="col-sm-2 col-form-label" for="CustomApiOfflineUri">Offline: </label>
-                                <div class="col-sm-2">
-                                    <InputSelect class="form-control" @bind-Value="@Config.CurrentValue.LightSettings.Custom.CustomApiOfflineMethod">
-                                        <option disabled="disabled">Select</option>
-                                        <option value="GET">GET</option>
-                                        <option value="POST">POST</option>
-                                    </InputSelect>
-                                </div><div class="col-sm-8">
-                                    <InputText class="form-control" id="CustomApiOfflineUri" @bind-Value="@Config.CurrentValue.LightSettings.Custom.CustomApiOfflineUri" />
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label class="col-sm-2 col-form-label" for="CustomApiOffUri">Off: </label>
-                                <div class="col-sm-2">
-                                    <InputSelect class="form-control" @bind-Value="@Config.CurrentValue.LightSettings.Custom.CustomApiOffMethod">
-                                        <option disabled="disabled">Select</option>
-                                        <option value="GET">GET</option>
-                                        <option value="POST">POST</option>
-                                    </InputSelect>
-                                </div><div class="col-sm-8">
-                                    <InputText class="form-control" id="CustomApiOffUri" @bind-Value="@Config.CurrentValue.LightSettings.Custom.CustomApiOffUri" />
-                                </div>
-                            </div>
-                            <br />
-
-
-                            <h2>Activity Options</h2>
-                            <div class="form-group row">
-                                <label class="col-sm-2 col-form-label" for="CustomApiActivityAvailableUri">Available: </label>
-                                <div class="col-sm-2">
-                                    <InputSelect class="form-control" @bind-Value="@Config.CurrentValue.LightSettings.Custom.CustomApiActivityAvailableMethod">
-                                        <option disabled="disabled">Select</option>
-                                        <option value="GET">GET</option>
-                                        <option value="POST">POST</option>
-                                    </InputSelect>
-                                </div><div class="col-sm-8">
-                                    <InputText class="form-control" id="CustomApiActivityAvailableUri" @bind-Value="@Config.CurrentValue.LightSettings.Custom.CustomApiActivityAvailableUri" />
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label class="col-sm-2 col-form-label" for="CustomApiActivityPresentingUri">Presenting: </label>
-                                <div class="col-sm-2">
-                                    <InputSelect class="form-control" @bind-Value="@Config.CurrentValue.LightSettings.Custom.CustomApiActivityPresentingMethod">
-                                        <option disabled="disabled">Select</option>
-                                        <option value="GET">GET</option>
-                                        <option value="POST">POST</option>
-                                    </InputSelect>
-                                </div><div class="col-sm-8">
-                                    <InputText class="form-control" id="CustomApiActivityPresentingUri" @bind-Value="@Config.CurrentValue.LightSettings.Custom.CustomApiActivityPresentingUri" />
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label class="col-sm-2 col-form-label" for="CustomApiActivityInACallUri">In A Call: </label>
-                                <div class="col-sm-2">
-                                    <InputSelect class="form-control" @bind-Value="@Config.CurrentValue.LightSettings.Custom.CustomApiActivityInACallMethod">
-                                        <option disabled="disabled">Select</option>
-                                        <option value="GET">GET</option>
-                                        <option value="POST">POST</option>
-                                    </InputSelect>
-                                </div><div class="col-sm-8">
-                                    <InputText class="form-control" id="CustomApiActivityInACallUri" @bind-Value="@Config.CurrentValue.LightSettings.Custom.CustomApiActivityInACallUri" />
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label class="col-sm-2 col-form-label" for="CustomApiActivityInAMeetingUri">In A Meeting: </label>
-                                <div class="col-sm-2">
-                                    <InputSelect class="form-control" @bind-Value="@Config.CurrentValue.LightSettings.Custom.CustomApiActivityInAMeetingMethod">
-                                        <option disabled="disabled">Select</option>
-                                        <option value="GET">GET</option>
-                                        <option value="POST">POST</option>
-                                    </InputSelect>
-                                </div><div class="col-sm-8">
-                                    <InputText class="form-control" id="CustomApiActivityInAMeetingUri" @bind-Value="@Config.CurrentValue.LightSettings.Custom.CustomApiActivityInAMeetingUri" />
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label class="col-sm-2 col-form-label" for="CustomApiActivityBusyUri">Busy: </label>
-                                <div class="col-sm-2">
-                                    <InputSelect class="form-control" @bind-Value="@Config.CurrentValue.LightSettings.Custom.CustomApiActivityBusyMethod">
-                                        <option disabled="disabled">Select</option>
-                                        <option value="GET">GET</option>
-                                        <option value="POST">POST</option>
-                                    </InputSelect>
-                                </div><div class="col-sm-8">
-                                    <InputText class="form-control" id="CustomApiActivityBusyUri" @bind-Value="@Config.CurrentValue.LightSettings.Custom.CustomApiActivityBusyUri" />
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label class="col-sm-2 col-form-label" for="CustomApiActivityAwayUri">Away: </label>
-                                <div class="col-sm-2">
-                                    <InputSelect class="form-control" @bind-Value="@Config.CurrentValue.LightSettings.Custom.CustomApiActivityAwayMethod">
-                                        <option disabled="disabled">Select</option>
-                                        <option value="GET">GET</option>
-                                        <option value="POST">POST</option>
-                                    </InputSelect>
-                                </div><div class="col-sm-8">
-                                    <InputText class="form-control" id="CustomApiActivityAwayUri" @bind-Value="@Config.CurrentValue.LightSettings.Custom.CustomApiActivityAwayUri" />
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label class="col-sm-2 col-form-label" for="CustomApiActivityBeRightBackUri">Be Right Back: </label>
-                                <div class="col-sm-2">
-                                    <InputSelect class="form-control" @bind-Value="@Config.CurrentValue.LightSettings.Custom.CustomApiActivityBeRightBackMethod">
-                                        <option disabled="disabled">Select</option>
-                                        <option value="GET">GET</option>
-                                        <option value="POST">POST</option>
-                                    </InputSelect>
-                                </div><div class="col-sm-8">
-                                    <InputText class="form-control" id="CustomApiActivityBeRightBackUri" @bind-Value="@Config.CurrentValue.LightSettings.Custom.CustomApiActivityBeRightBackUri" />
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label class="col-sm-2 col-form-label" for="CustomApiActivityOfflineUri">Offline: </label>
-                                <div class="col-sm-2">
-                                    <InputSelect class="form-control" @bind-Value="@Config.CurrentValue.LightSettings.Custom.CustomApiActivityOfflineMethod">
-                                        <option disabled="disabled">Select</option>
-                                        <option value="GET">GET</option>
-                                        <option value="POST">POST</option>
-                                    </InputSelect>
-                                </div><div class="col-sm-8">
-                                    <InputText class="form-control" id="CustomApiActivityOfflineUri" @bind-Value="@Config.CurrentValue.LightSettings.Custom.CustomApiActivityOfflineUri" />
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label class="col-sm-2 col-form-label" for="CustomApiActivityDoNotDisturbUri">Do Not Disturb: </label>
-                                <div class="col-sm-2">
-                                    <InputSelect class="form-control" @bind-Value="@Config.CurrentValue.LightSettings.Custom.CustomApiActivityDoNotDisturbMethod">
-                                        <option disabled="disabled">Select</option>
-                                        <option value="GET">GET</option>
-                                        <option value="POST">POST</option>
-                                    </InputSelect>
-                                </div><div class="col-sm-8">
-                                    <InputText class="form-control" id="CustomApiActivityDoNotDisturbUri" @bind-Value="@Config.CurrentValue.LightSettings.Custom.CustomApiActivityDoNotDisturbUri" />
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label class="col-sm-2 col-form-label" for="CustomApiActivityIdleUri">Idle: </label>
-                                <div class="col-sm-2">
-                                    <InputSelect class="form-control" @bind-Value="@Config.CurrentValue.LightSettings.Custom.CustomApiActivityIdleMethod">
-                                        <option disabled="disabled">Select</option>
-                                        <option value="GET">GET</option>
-                                        <option value="POST">POST</option>
-                                    </InputSelect>
-                                </div><div class="col-sm-8">
-                                    <InputText class="form-control" id="CustomApiActivityIdleUri" @bind-Value="@Config.CurrentValue.LightSettings.Custom.CustomApiActivityIdleUri" />
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label class="col-sm-2 col-form-label" for="CustomApiActivityOffUri">Off: </label>
-                                <div class="col-sm-2">
-                                    <InputSelect class="form-control" @bind-Value="@Config.CurrentValue.LightSettings.Custom.CustomApiActivityOffMethod">
-                                        <option disabled="disabled">Select</option>
-                                        <option value="GET">GET</option>
-                                        <option value="POST">POST</option>
-                                    </InputSelect>
-                                </div><div class="col-sm-8">
-                                    <InputText class="form-control" id="CustomApiActivityOffUri" @bind-Value="@Config.CurrentValue.LightSettings.Custom.CustomApiActivityOffUri" />
-                                </div>
-                            </div>
-
-                            <br />
-                            <button class="btn btn-primary" @onclick="Save">Save Custom API Settings</button>
-                            <br />
-                            <br />
-                            @if (settingsSaved)
+                        @foreach (var customApiSetting in Config.CurrentValue.LightSettings.Custom.GetType().GetProperties())
+                        {
+                            @if (customApiSetting.PropertyType.Name == "CustomApiSetting")
                             {
-                                <span class="text-success">@message</span>
+                                object customApiSettingValue = customApiSetting.GetValue(Config.CurrentValue.LightSettings.Custom, null);
+                                var lab = $"{customApiSetting.Name}Uri";
+
+                                <div class="form-group row">
+
+                                    <label class="col-sm-3 col-form-label" for="@lab">@Helpers.HumanifyText(customApiSetting.Name.Replace("CustomApi","")):</label>
+
+                                    @foreach (var setting in customApiSettingValue.GetType().GetProperties())
+                                    {
+                                        object settingValue = setting.GetValue(customApiSettingValue, null);
+
+                                        if (setting.Name == "Method")
+                                        {
+                                            <div class="col-sm-2">
+                                                <select class="form-control" value="@settingValue?.ToString()" @onchange="@((ChangeEventArgs e) => OnChange(e, setting, customApiSettingValue))">
+                                                    <option value="" disabled="disabled">Select</option>
+                                                    <option value="GET">GET</option>
+                                                    <option value="POST">POST</option>
+                                                </select>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="col-sm-7">
+                                                <input type="text" id="@lab" value="@settingValue?.ToString()" @onchange="@((ChangeEventArgs e) => OnChange(e, setting, customApiSettingValue))" class="form-control" />
+                                            </div>
+                                        }
+                                    }
+                                </div>
                             }
-                        </EditForm>
+                        }
+
+                        <br />
+                        <br />
+
+                        <button class="btn btn-primary" @onclick="Save">Save LIFX Settings</button>
+
+                        <br />
+                        <br />
+                        <div class="centering text-center">
+                        @if (settingsSaved)
+                        {
+                            <span class="text-success">@message</span>
+                        }
+                        </div>
                     }
                 </div>
             </div>
@@ -273,61 +78,44 @@
 </div>
 
 @code {
-    private List<string> _customApiFieldNames = new List<string>
-{
-        "CustomApiAvailableMethod",
-        "CustomApiAvailableUri",
-        "CustomApiBusyMethod",
-        "CustomApiBusyUri",
-        "CustomApiBeRightBackMethod",
-        "CustomApiBeRightBackUri",
-        "CustomApiAwayMethod",
-        "CustomApiAwayUri",
-        "CustomApiDoNotDisturbMethod",
-        "CustomApiDoNotDisturbUri",
-        "CustomApiOfflineMethod",
-        "CustomApiOfflineUri",
-        "CustomApiOffMethod",
-        "CustomApiOffUri",
-        "CustomApiActivityAvailableMethod",
-        "CustomApiActivityAvailableUri",
-        "CustomApiActivityInACallMethod",
-        "CustomApiActivityInACallUri",
-        "CustomApiActivityInAMeetingMethod",
-        "CustomApiActivityInAMeetingUri",
-        "CustomApiActivityPresentingMethod",
-        "CustomApiActivityPresentingUri",
-        "CustomApiActivityBusyMethod",
-        "CustomApiActivityBusyUri",
-        "CustomApiActivityAwayMethod",
-        "CustomApiActivityAwayUri",
-        "CustomApiActivityBeRightBackMethod",
-        "CustomApiActivityBeRightBackUri",
-        "CustomApiActivityDoNotDisturbMethod",
-        "CustomApiActivityDoNotDisturbUri",
-        "CustomApiActivityOfflineMethod",
-        "CustomApiActivityOfflineUri",
-        "CustomApiActivityOffMethod",
-        "CustomApiActivityOffUri"
-    };
-
     private void Save()
     {
-        System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/PresenceLightSettings.json", JsonConvert.SerializeObject(Config.CurrentValue, Formatting.Indented));
-        _customApiService = new CustomApiService(Config.CurrentValue, _workingHoursService);
-       message = "Settings Saved";
-        settingsSaved = true;
+        try
+        {
+            SettingsService.SaveSettings(Config.CurrentValue);
+            _customApiService = new CustomApiService(Config.CurrentValue);
+            message = "Settings Saved";
+            settingsSaved = true;
+        }
+        catch (Exception e)
+        {
+            Helpers.AppendLogger(_logger, "Error Occured Saving Custom Api Settings", e);
+            throw e;
+        }
     }
 
     bool settingsSaved = false;
     string message;
 
-    private void OnChange(ChangeEventArgs e)
+    private void OnChange(ChangeEventArgs e, object setting, object customApiSettingValue)
     {
-        var light = e.Value.ToString();
-        Config.CurrentValue.LightSettings.Hue.SelectedHueLightId = light;
+        var newSetting = e.Value;
+        ((PropertyInfo)setting).SetValue(customApiSettingValue, newSetting);
     }
 
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+
+            appState.OnChange += RaiseStateHasChanged;
+        }
+        catch (Exception e)
+        {
+            Helpers.AppendLogger(_logger, "Error Occured loading Hue Setup", e);
+            throw e;
+        }
+    }
 
     public void Dispose()
     {

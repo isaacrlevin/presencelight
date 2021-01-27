@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Net.Http;
 using Microsoft.Graph;
+using Microsoft.Extensions.Logging;
 
 namespace PresenceLight.Core
 {
@@ -16,6 +17,7 @@ namespace PresenceLight.Core
 
     public class CustomApiService : ICustomApiService
     {
+        private IWorkingHoursService _workingHoursService;
         private string _currentAvailability = string.Empty;
         private string _currentActivity = string.Empty;
 
@@ -24,20 +26,34 @@ namespace PresenceLight.Core
             // TODO: Make this configurable
             Timeout = TimeSpan.FromSeconds(10)
         };
+
+        private readonly ILogger<CustomApiService> _logger;
         private readonly BaseConfig _options;
 
-        private readonly IWorkingHoursService _workingHoursService;
-
-        public CustomApiService(IOptionsMonitor<BaseConfig> optionsAccessor, IWorkingHoursService workingHoursService)
+        public CustomApiService(IOptionsMonitor<BaseConfig> optionsAccessor, ILogger<CustomApiService> logger, IWorkingHoursService workingHoursService)
         {
+            _logger = logger;
             _options = optionsAccessor.CurrentValue;
             _workingHoursService = workingHoursService;
         }
 
-        public CustomApiService(BaseConfig options, IWorkingHoursService workingHoursService)
+        public CustomApiService(BaseConfig options)
         {
             _options = options;
-            _workingHoursService = workingHoursService;
+        }
+
+        public async Task<string> SetColor(string availability, string? activity)
+        {
+            if (this._workingHoursService.UseWorkingHours
+                && !this._workingHoursService.IsInWorkingHours)
+            {
+                // If we are outside of working hours we should signal that we are off
+                availability = activity = "Off";
+            }
+
+            string result = await SetAvailability(availability);
+            result += await SetActivity(activity);
+            return result;
         }
 
         private async Task<string> CallCustomApiForActivityChanged(object sender, string newActivity)
@@ -49,48 +65,48 @@ namespace PresenceLight.Core
             switch (newActivity)
             {
                 case "Available":
-                    method = _options.LightSettings.Custom.CustomApiActivityAvailableMethod;
-                    uri = _options.LightSettings.Custom.CustomApiActivityAvailableUri;
+                    method = _options.LightSettings.Custom.CustomApiActivityAvailable.Method;
+                    uri = _options.LightSettings.Custom.CustomApiActivityAvailable.Uri;
                     break;
                 case "Presenting":
-                    method = _options.LightSettings.Custom.CustomApiActivityPresentingMethod;
-                    uri = _options.LightSettings.Custom.CustomApiActivityPresentingUri;
+                    method = _options.LightSettings.Custom.CustomApiActivityPresenting.Method;
+                    uri = _options.LightSettings.Custom.CustomApiActivityPresenting.Uri;
                     break;
                 case "InACall":
-                    method = _options.LightSettings.Custom.CustomApiActivityInACallMethod;
-                    uri = _options.LightSettings.Custom.CustomApiActivityInACallUri;
+                    method = _options.LightSettings.Custom.CustomApiActivityInACall.Method;
+                    uri = _options.LightSettings.Custom.CustomApiActivityInACall.Uri;
                     break;
                 case "InAMeeting":
-                    method = _options.LightSettings.Custom.CustomApiActivityInAMeetingMethod;
-                    uri = _options.LightSettings.Custom.CustomApiActivityInAMeetingUri;
+                    method = _options.LightSettings.Custom.CustomApiActivityInAMeeting.Method;
+                    uri = _options.LightSettings.Custom.CustomApiActivityInAMeeting.Uri;
                     break;
                 case "Busy":
-                    method = _options.LightSettings.Custom.CustomApiActivityBusyMethod;
-                    uri = _options.LightSettings.Custom.CustomApiActivityBusyUri;
+                    method = _options.LightSettings.Custom.CustomApiActivityBusy.Method;
+                    uri = _options.LightSettings.Custom.CustomApiActivityBusy.Uri;
                     break;
                 case "Away":
-                    method = _options.LightSettings.Custom.CustomApiActivityAwayMethod;
-                    uri = _options.LightSettings.Custom.CustomApiActivityAwayUri;
+                    method = _options.LightSettings.Custom.CustomApiActivityAway.Method;
+                    uri = _options.LightSettings.Custom.CustomApiActivityAway.Uri;
                     break;
                 case "BeRightBack":
-                    method = _options.LightSettings.Custom.CustomApiActivityBeRightBackMethod;
-                    uri = _options.LightSettings.Custom.CustomApiActivityBeRightBackUri;
+                    method = _options.LightSettings.Custom.CustomApiActivityBeRightBack.Method;
+                    uri = _options.LightSettings.Custom.CustomApiActivityBeRightBack.Uri;
                     break;
                 case "DoNotDisturb":
-                    method = _options.LightSettings.Custom.CustomApiActivityDoNotDisturbMethod;
-                    uri = _options.LightSettings.Custom.CustomApiActivityDoNotDisturbUri;
+                    method = _options.LightSettings.Custom.CustomApiActivityDoNotDisturb.Method;
+                    uri = _options.LightSettings.Custom.CustomApiActivityDoNotDisturb.Uri;
                     break;
                 case "Idle":
-                    method = _options.LightSettings.Custom.CustomApiActivityIdleMethod;
-                    uri = _options.LightSettings.Custom.CustomApiActivityIdleUri;
+                    method = _options.LightSettings.Custom.CustomApiActivityIdle.Method;
+                    uri = _options.LightSettings.Custom.CustomApiActivityIdle.Uri;
                     break;
                 case "Offline":
-                    method = _options.LightSettings.Custom.CustomApiActivityOfflineMethod;
-                    uri = _options.LightSettings.Custom.CustomApiActivityOfflineUri;
+                    method = _options.LightSettings.Custom.CustomApiActivityOffline.Method;
+                    uri = _options.LightSettings.Custom.CustomApiActivityOffline.Uri;
                     break;
                 case "Off":
-                    method = _options.LightSettings.Custom.CustomApiActivityOffMethod;
-                    uri = _options.LightSettings.Custom.CustomApiActivityOffUri;
+                    method = _options.LightSettings.Custom.CustomApiActivityOff.Method;
+                    uri = _options.LightSettings.Custom.CustomApiActivityOff.Uri;
                     break;
                 default:
                     break;
@@ -108,56 +124,42 @@ namespace PresenceLight.Core
             switch (newAvailability)
             {
                 case "Available":
-                    method = _options.LightSettings.Custom.CustomApiAvailableMethod;
-                    uri = _options.LightSettings.Custom.CustomApiAvailableUri;
+                    method = _options.LightSettings.Custom.CustomApiAvailable.Method;
+                    uri = _options.LightSettings.Custom.CustomApiAvailable.Uri;
                     break;
                 case "Busy":
-                    method = _options.LightSettings.Custom.CustomApiBusyMethod;
-                    uri = _options.LightSettings.Custom.CustomApiBusyUri;
+                    method = _options.LightSettings.Custom.CustomApiBusy.Method;
+                    uri = _options.LightSettings.Custom.CustomApiBusy.Uri;
                     break;
                 case "BeRightBack":
-                    method = _options.LightSettings.Custom.CustomApiBeRightBackMethod;
-                    uri = _options.LightSettings.Custom.CustomApiBeRightBackUri;
+                    method = _options.LightSettings.Custom.CustomApiBeRightBack.Method;
+                    uri = _options.LightSettings.Custom.CustomApiBeRightBack.Uri;
                     break;
                 case "Away":
-                    method = _options.LightSettings.Custom.CustomApiAwayMethod;
-                    uri = _options.LightSettings.Custom.CustomApiAwayUri;
+                    method = _options.LightSettings.Custom.CustomApiAway.Method;
+                    uri = _options.LightSettings.Custom.CustomApiAway.Uri;
                     break;
                 case "DoNotDisturb":
-                    method = _options.LightSettings.Custom.CustomApiDoNotDisturbMethod;
-                    uri = _options.LightSettings.Custom.CustomApiDoNotDisturbUri;
+                    method = _options.LightSettings.Custom.CustomApiDoNotDisturb.Method;
+                    uri = _options.LightSettings.Custom.CustomApiDoNotDisturb.Uri;
                     break;
                 case "AvailableIdle":
-                    method = _options.LightSettings.Custom.CustomApiAvailableIdleMethod;
-                    uri = _options.LightSettings.Custom.CustomApiAvailableIdleUri;
+                    method = _options.LightSettings.Custom.CustomApiAvailableIdle.Method;
+                    uri = _options.LightSettings.Custom.CustomApiAvailableIdle.Uri;
                     break;
                 case "Offline":
-                    method = _options.LightSettings.Custom.CustomApiOfflineMethod;
-                    uri = _options.LightSettings.Custom.CustomApiOfflineUri;
+                    method = _options.LightSettings.Custom.CustomApiOffline.Method;
+                    uri = _options.LightSettings.Custom.CustomApiOffline.Uri;
                     break;
                 case "Off":
-                    method = _options.LightSettings.Custom.CustomApiOffMethod;
-                    uri = _options.LightSettings.Custom.CustomApiOffUri;
+                    method = _options.LightSettings.Custom.CustomApiOff.Method;
+                    uri = _options.LightSettings.Custom.CustomApiOff.Uri;
                     break;
                 default:
                     break;
             }
 
             return await PerformWebRequest(method, uri, result);
-        }
-
-        public async Task<string> SetColor(string availability, string? activity)
-        {
-            if (this._workingHoursService.UseWorkingHours
-                && this._workingHoursService.OutsideWorkingHours)
-            {
-                // If we are outside of working hours we should signal that we are off
-                availability = activity = "Off";
-            }
-
-            string result = await SetAvailability(availability);
-            result += await SetActivity(activity);
-            return result;
         }
 
         private async Task<string> SetAvailability(string availability)
@@ -182,7 +184,7 @@ namespace PresenceLight.Core
             return result;
         }
 
-        private static async Task<string> PerformWebRequest(string method, string uri, string result)
+        private async Task<string> PerformWebRequest(string method, string uri, string result)
         {
             if (!string.IsNullOrEmpty(method) && !string.IsNullOrEmpty(uri))
             {
@@ -199,11 +201,15 @@ namespace PresenceLight.Core
                             break;
                     }
 
+
                     string responseBody = await response.Content.ReadAsStringAsync();
                     result = $"{(int)response.StatusCode} {response.StatusCode}: {responseBody}";
+                    string message = $"Sending {method} methd to {uri}";
+                    Helpers.AppendLogger(_logger, message);
                 }
                 catch (Exception e)
                 {
+                    Helpers.AppendLogger(_logger, "Error Performing Web Request", e);
                     result = $"Error: {e.Message}";
                 }
             }
