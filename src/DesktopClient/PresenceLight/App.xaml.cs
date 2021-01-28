@@ -117,6 +117,7 @@ namespace PresenceLight
             services.AddSingleton<LIFXService, LIFXService>();
             services.AddSingleton<IYeelightService, YeelightService>();
             services.AddSingleton<ICustomApiService, CustomApiService>();
+            services.AddSingleton<IWorkingHoursService, WorkingHoursService>();
             services.AddSingleton<LIFXOAuthHelper, LIFXOAuthHelper>();
             services.AddSingleton<ThisAppInfo, ThisAppInfo>();
             services.AddSingleton<MainWindow>();

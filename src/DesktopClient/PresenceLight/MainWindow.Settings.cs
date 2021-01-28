@@ -22,7 +22,7 @@ namespace PresenceLight
 
                 Config = await _settingsService.LoadSettings().ConfigureAwait(true) ?? throw new NullReferenceException("Settings Load Service Returned null");
 
-                if (Config.LightSettings.UseWorkingHours)
+                if (_workingHoursService.UseWorkingHours)
                 {
                     pnlWorkingHours.Visibility = Visibility.Visible;
                     SyncOptions();
@@ -290,7 +290,7 @@ namespace PresenceLight
                 Config.LightSettings.WorkingHoursEndTime = Config.LightSettings.WorkingHoursEndTimeAsDate.HasValue ? Config.LightSettings.WorkingHoursEndTimeAsDate.Value.TimeOfDay.ToString() : string.Empty;
             }
 
-            if (Config.LightSettings.UseWorkingHours)
+            if (_workingHoursService.UseWorkingHours)
             {
                 pnlWorkingHours.Visibility = Visibility.Visible;
             }
@@ -301,43 +301,6 @@ namespace PresenceLight
 
             SyncOptions();
             e.Handled = true;
-        }
-
-        bool IsInWorkingHours()
-        {
-            if (string.IsNullOrEmpty(Config.LightSettings.WorkingHoursStartTime) || string.IsNullOrEmpty(Config.LightSettings.WorkingHoursEndTime) || string.IsNullOrEmpty(Config.LightSettings.WorkingDays))
-            {
-                IsWorkingHours = false;
-                return false;
-            }
-
-            if (!Config.LightSettings.WorkingDays.Contains(DateTime.Now.DayOfWeek.ToString(), StringComparison.OrdinalIgnoreCase))
-            {
-                IsWorkingHours = false;
-                return false;
-            }
-
-            // convert datetime to a TimeSpan
-            bool validStart = TimeSpan.TryParse(Config.LightSettings.WorkingHoursStartTime, out TimeSpan start);
-            bool validEnd = TimeSpan.TryParse(Config.LightSettings.WorkingHoursEndTime, out TimeSpan end);
-            if (!validEnd || !validStart)
-            {
-                IsWorkingHours = false;
-                return false;
-            }
-
-            TimeSpan now = DateTime.Now.TimeOfDay;
-            // see if start comes before end
-            if (start < end)
-            {
-                IsWorkingHours = start <= now && now <= end;
-                return IsWorkingHours;
-            }
-            // start is after end, so do the inverse comparison
-
-            IsWorkingHours = !(end < now && now < start);
-
-            return IsWorkingHours;
         }
 
         private void time_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)

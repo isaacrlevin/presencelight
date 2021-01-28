@@ -8,6 +8,111 @@
     <h1 class="centering text-center">Settings</h1>
     <br />
     <br />
+    <div class="row centering text-center">
+        <div class="col-5">
+            <input type="checkbox" checked="@Config.CurrentValue.LightSettings.SyncLights" @bind-value="@Config.CurrentValue.LightSettings.SyncLights" /> <strong>Light Sync Enabled</strong>
+        </div><div class="col-5">
+            <input type="checkbox" checked="@Config.CurrentValue.LightSettings.UseWorkingHours" @bind-value="@Config.CurrentValue.LightSettings.UseWorkingHours" /> <strong>Configure Working Hours</strong>
+        </div>
+    </div>
+    <br />
+    <br />
+    <div style="height: 300px ">
+        @if (Config.CurrentValue.LightSettings.UseWorkingHours)
+        {
+            <h5><strong>Working Days</strong></h5>
+            <br />
+            <div class="row centering text-center">
+                <div class="col-1_5 ">
+                    <input @bind-value="Sunday" checked="@Sunday" type="checkbox" /> Sunday
+                </div>
+                <div class="col-1_5 ">
+                    <input @bind-value="Monday" checked="@Monday" type="checkbox" /> Monday
+                </div>
+                <div class="col-1_5 ">
+                    <input @bind-value="Tuesday" checked="@Tuesday" type="checkbox" /> Tuesday
+                </div>
+                <div class="col-1_5 ">
+                    <input @bind-value="Wednesday" checked="@Wednesday" type="checkbox" /> Wednesday
+                </div>
+                <div class="col-1_5 ">
+                    <input @bind-value="Thursday" checked="@Thursday" type="checkbox" /> Thursday
+                </div>
+                <div class="col-1_5 ">
+                    <input @bind-value="Friday" checked="@Friday" type="checkbox" /> Friday
+                </div>
+                <div class="col-1_5 ">
+                    <input @bind-value="Saturday" checked="@Saturday" type="checkbox" /> Saturday
+                </div>
+            </div>
+            <br />
+            <br />
+
+            <div class="row">
+                <div class="col-4">
+                    <h5><strong>Light Syncing Schedule (Working Hours)</strong></h5>
+                </div>
+
+                <div class="col-3">
+                    @{
+                        TimeSpan? startTimeSpan = Config.CurrentValue.LightSettings.WorkingHoursStartTimeAsDate == null ? null : Config.CurrentValue.LightSettings.WorkingHoursStartTimeAsDate.Value.TimeOfDay;
+
+                        <input style="width:75%" type="time" value="@startTimeSpan" @onchange="@((ChangeEventArgs e) => OnTimeChanged(e, "start"))" />
+                    }
+                </div>
+                <div class="col-3">
+                    @{
+                        TimeSpan? endTimeSpan = Config.CurrentValue.LightSettings.WorkingHoursEndTimeAsDate == null ? null : Config.CurrentValue.LightSettings.WorkingHoursEndTimeAsDate.Value.TimeOfDay;
+
+                        <input style="width:75%" type="time" value="@endTimeSpan" @onchange="@((ChangeEventArgs e) => OnTimeChanged(e, "end"))" />
+                    }
+                </div>
+            </div>
+
+            <br />
+            <br />
+
+            <div class="row">
+                <div class="col-4">
+                    <h5><strong>Light Status When After Hours Are Reached</strong></h5>
+                </div>
+                <div class="col-4">
+                    <input type="radio" checked="@statusOff" @onchange="@((ChangeEventArgs e) => OnStatusChanged(e))" value="Off" name="reached" /> Off
+                    <br />
+                    <input type="radio" checked="@statusWhite" @onchange="@((ChangeEventArgs e) => OnStatusChanged(e))" value="White" name="reached" /> White
+                    <br />
+                    <input type="radio" checked="@statusKeep" @onchange="@((ChangeEventArgs e) => OnStatusChanged(e))" value="Keep" name="reached" /> Keep
+                </div>
+            </div>
+            <br />
+            <br />
+        }
+    </div>
+    <div class="row">
+        <div class="col-3">
+            <input type="checkbox" checked="@Config.CurrentValue.LightSettings.UseDefaultBrightness" @bind-value="@Config.CurrentValue.LightSettings.UseDefaultBrightness" /> Lights Use Same Brightness
+        </div>
+    </div>
+    <br />
+    <br />
+    <div style="height: 100px ">
+        @if (Config.CurrentValue.LightSettings.UseDefaultBrightness)
+        {
+            <div class="row">
+                <div class="col-4">
+                    <h5>Brightness</h5>
+                </div>
+                <div class="col-4">
+                    <Slider TValue="int" @bind-Value="@Config.CurrentValue.LightSettings.DefaultBrightness" Step="1" Min="0" Max="100" />
+                </div>
+                <div class="col-1">
+                    <input style="width:50px" @bind-value="@Config.CurrentValue.LightSettings.DefaultBrightness" type="text" />
+                </div>
+            </div>
+            <br />
+            <br />
+        }
+    </div>
     <div class="row">
         <div class="col-4">
             <h5>Teams Presence Polling Interval</h5>
@@ -19,26 +124,18 @@
             <input style="width:50px" @bind-value="@Config.CurrentValue.LightSettings.PollingInterval" type="text" />
         </div>
     </div>
-    <br /><br />
-    <div class="row">
-        <div class="col-4">
-            <h5>Brightness</h5>
-        </div>
-        <div class="col-4">
-            <Slider TValue="int" @bind-Value="@Config.CurrentValue.LightSettings.DefaultBrightness" Step="1" Min="0" Max="100" />
-        </div>
-        <div class="col-1">
-            <input style="width:50px" @bind-value="@Config.CurrentValue.LightSettings.DefaultBrightness" type="text" />
-        </div>
+
+    <br />
+    <br />
+    <div class="centering text-center">
+        <button @onclick="SaveSettings" class="btn btn-primary">Save Settings</button>
+        <br />
+        <br />
+        @if (settingsSaved)
+        {
+            <span class="text-success">@message</span>
+        }
     </div>
-    <br />
-    <br />
-    <button @onclick="SaveSettings" class="btn btn-primary">Save Settings</button>
-    <br /><br />
-    @if (settingsSaved)
-    {
-        <span class="text-success">@message</span>
-    }
 </div>
 
 
@@ -46,12 +143,40 @@
     bool settingsSaved = false;
     string message;
 
+    bool Monday;
+    bool Tuesday;
+    bool Wednesday;
+    bool Thursday;
+    bool Friday;
+    bool Saturday;
+    bool Sunday;
+
+    bool statusOff;
+    bool statusWhite;
+    bool statusKeep;
 
     void SaveSettings()
     {
         try
         {
-            System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/PresenceLightSettings.json", JsonConvert.SerializeObject(Config.CurrentValue, Formatting.Indented));
+            SetWorkingDays();
+
+            if (statusOff)
+            {
+                Config.CurrentValue.LightSettings.HoursPassedStatus = "Off";
+            }
+
+            if (statusWhite)
+            {
+                Config.CurrentValue.LightSettings.HoursPassedStatus = "White";
+            }
+
+            if (statusKeep)
+            {
+                Config.CurrentValue.LightSettings.HoursPassedStatus = "Keep";
+            }
+
+            SettingsService.SaveSettings(Config.CurrentValue);
             message = "Settings Saved";
             settingsSaved = true;
         }
@@ -60,5 +185,153 @@
             Helpers.AppendLogger(_logger, "Error Occured Saving Settings", e);
             throw e;
         }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Config.CurrentValue.LightSettings.WorkingHoursStartTimeAsDate = string.IsNullOrEmpty(Config.CurrentValue.LightSettings.WorkingHoursStartTime) ? null : DateTime.Parse(Config.CurrentValue.LightSettings.WorkingHoursStartTime, null);
+        Config.CurrentValue.LightSettings.WorkingHoursEndTimeAsDate = string.IsNullOrEmpty(Config.CurrentValue.LightSettings.WorkingHoursEndTime) ? null : DateTime.Parse(Config.CurrentValue.LightSettings.WorkingHoursEndTime, null);
+
+        switch (Config.CurrentValue.LightSettings.HoursPassedStatus)
+        {
+            case "Keep":
+                statusKeep = true;
+                break;
+            case "White":
+                statusWhite = true;
+                break;
+            case "Off":
+                statusOff = true;
+                break;
+            default:
+                statusKeep = true;
+                break;
+        }
+
+
+        PopulateWorkingDays();
+    }
+
+    void OnStatusChanged(ChangeEventArgs e)
+    {
+        switch (e.Value)
+        {
+            case "Keep":
+                statusKeep = true;
+                statusWhite = false;
+                statusOff = false;
+                break;
+            case "White":
+                statusKeep = false;
+                statusWhite = true;
+                statusOff = false;
+                break;
+            case "Off":
+                statusKeep = false;
+                statusWhite = false;
+                statusOff = true;
+                break;
+            default:
+                statusKeep = true;
+                statusWhite = false;
+                statusKeep = false;
+                break;
+        }
+    }
+
+    void OnTimeChanged(ChangeEventArgs e, object setting)
+    {
+        if (setting.ToString() == "start")
+        {
+            Config.CurrentValue.LightSettings.WorkingHoursStartTime = e.Value.ToString();
+        }
+
+        if (setting.ToString() == "end")
+        {
+            Config.CurrentValue.LightSettings.WorkingHoursEndTime = e.Value.ToString();
+        }
+    }
+
+    private void PopulateWorkingDays()
+    {
+        if (!string.IsNullOrEmpty(Config.CurrentValue.LightSettings.WorkingDays))
+        {
+            if (Config.CurrentValue.LightSettings.WorkingDays.Contains("Monday", StringComparison.OrdinalIgnoreCase))
+            {
+                Monday = true;
+            }
+
+            if (Config.CurrentValue.LightSettings.WorkingDays.Contains("Tuesday", StringComparison.OrdinalIgnoreCase))
+            {
+                Tuesday = true;
+            }
+
+            if (Config.CurrentValue.LightSettings.WorkingDays.Contains("Wednesday", StringComparison.OrdinalIgnoreCase))
+            {
+                Wednesday = true;
+            }
+
+            if (Config.CurrentValue.LightSettings.WorkingDays.Contains("Thursday", StringComparison.OrdinalIgnoreCase))
+            {
+                Thursday = true;
+            }
+
+            if (Config.CurrentValue.LightSettings.WorkingDays.Contains("Friday", StringComparison.OrdinalIgnoreCase))
+            {
+                Friday = true;
+            }
+
+            if (Config.CurrentValue.LightSettings.WorkingDays.Contains("Saturday", StringComparison.OrdinalIgnoreCase))
+            {
+                Saturday = true;
+            }
+
+            if (Config.CurrentValue.LightSettings.WorkingDays.Contains("Sunday", StringComparison.OrdinalIgnoreCase))
+            {
+                Sunday = true;
+            }
+        }
+    }
+
+    private void SetWorkingDays()
+    {
+        List<string> days = new List<string>();
+
+        if (Monday)
+        {
+            days.Add("Monday");
+        }
+
+        if (Tuesday)
+        {
+            days.Add("Tuesday");
+        }
+
+        if (Wednesday)
+        {
+            days.Add("Wednesday");
+        }
+
+        if (Thursday)
+        {
+            days.Add("Thursday");
+        }
+
+        if (Friday)
+        {
+            days.Add("Friday");
+        }
+
+        if (Saturday)
+        {
+            days.Add("Saturday");
+        }
+
+        if (Sunday)
+        {
+            days.Add("Sunday");
+        }
+
+        Config.CurrentValue.LightSettings.WorkingDays = string.Join("|", days);
     }
 }

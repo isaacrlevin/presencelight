@@ -23,18 +23,19 @@ namespace PresenceLight.Worker
         private readonly ILogger<Worker> _logger;
         private LIFXService _lifxService;
         private ICustomApiService _customApiService;
-
         private GraphServiceClient c;
-
+        private IWorkingHoursService _workingHoursService;
 
         public Worker(IHueService hueService,
                       ILogger<Worker> logger,
                       IOptionsMonitor<BaseConfig> optionsAccessor,
                       AppState appState,
                       LIFXService lifxService,
+                      IWorkingHoursService workingHoursService,
                       ICustomApiService customApiService)
         {
             Config = optionsAccessor.CurrentValue;
+            _workingHoursService = workingHoursService;
             _hueService = hueService;
             _lifxService = lifxService;
             _customApiService = customApiService;
@@ -172,9 +173,6 @@ namespace PresenceLight.Worker
                 (?<=[A-Z])(?=[A-Z][a-z]) |
                  (?<=[^A-Z])(?=[A-Z]) |
                  (?<=[A-Za-z])(?=[^A-Za-z])", RegexOptions.IgnorePatternWhitespace);
-
-                presence.Activity = r.Replace(presence.Activity, " ");
-
 
                 Helpers.AppendLogger(_logger, $"Presence is {presence.Availability}");
                 return presence;
