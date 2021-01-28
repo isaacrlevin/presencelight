@@ -90,6 +90,7 @@ namespace PresenceLight.Worker
             services.AddSingleton<IHueService, HueService>();
             services.AddSingleton<ICustomApiService, CustomApiService>();
             services.AddSingleton<AppState, AppState>();
+            services.AddSingleton<IWorkingHoursService, WorkingHoursService>();
             services.AddBlazoredModal();
             services.AddHostedService<Worker>();
             services.AddApplicationInsightsTelemetry(Configuration.GetValue<string>("ApplicationInsights:InstrumentationKey"));
