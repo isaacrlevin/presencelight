@@ -11,7 +11,13 @@ using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 
 namespace PresenceLight.Core
-{
+{    public enum HoursPassedStatus
+    {
+        Off,
+        Keep,
+        White
+    }
+
     public static class Helpers
     {
         public static void OpenBrowser(string url)
@@ -47,7 +53,7 @@ namespace PresenceLight.Core
         public static void AppendLogger(ILogger _logger, string message, Exception e = null,
                                         [CallerMemberName] string memberName = "", [CallerFilePath] string fileName = "", [CallerLineNumber] int lineNumber = 0)
         {
-            message = $"{message} - {fileName.Split("\\").LastOrDefault().Replace(".cs","")}:{memberName} Line: {lineNumber}";
+            message = $"{message} - {fileName.Split("\\").LastOrDefault().Replace(".cs", "")}:{memberName} Line: {lineNumber}";
             if (e != null)
             {
                 _logger.LogError(message, e);
@@ -128,5 +134,14 @@ namespace PresenceLight.Core
 
             return obj;
         }
+
+        public static string HoursPassedStatusString(HoursPassedStatus status) =>
+            status switch
+            {
+                HoursPassedStatus.Keep => "Keep",
+                HoursPassedStatus.White => "White",
+                HoursPassedStatus.Off => "Off",
+                _ => throw new ArgumentException(message: "Invalid HoursPassedStatus Value", paramName: nameof(status)),
+            };
     }
 }
