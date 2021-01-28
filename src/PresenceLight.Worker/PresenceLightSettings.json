@@ -2,7 +2,7 @@
   "SendDiagnosticData": false,
   "IconType": "",
   "LightSettings": {
-    "HoursPassedStatus": "",
+    "HoursPassedStatus": "Keep",
     "SyncLights": true,
     "WorkingDays": "",
     "UseWorkingHours": false,
