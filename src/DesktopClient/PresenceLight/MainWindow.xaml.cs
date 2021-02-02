@@ -48,13 +48,13 @@ namespace PresenceLight
         private readonly IGraphService _graphservice;
         private DiagnosticsClient _diagClient;
         private ISettingsService _settingsService;
+        private IWorkingHoursService _workingHoursService;
         private WindowState lastWindowState;
-        private bool IsWorkingHours;
         private bool previousRemoteFlag;
         private readonly ILogger<MainWindow> _logger;
 
         #region Init
-        public MainWindow(IGraphService graphService, IHueService hueService, LIFXService lifxService, IYeelightService yeelightService, IRemoteHueService remoteHueService,
+        public MainWindow(IGraphService graphService, IHueService hueService, LIFXService lifxService, IYeelightService yeelightService, IRemoteHueService remoteHueService, IWorkingHoursService workingHoursService,
             ICustomApiService customApiService, IOptionsMonitor<BaseConfig> optionsAccessor, LIFXOAuthHelper lifxOAuthHelper, DiagnosticsClient diagClient, ILogger<MainWindow> logger,
             ISettingsService settingsService)
         {
@@ -65,6 +65,7 @@ namespace PresenceLight
 
             LoadAboutMe();
 
+            _workingHoursService = workingHoursService;
             _graphservice = graphService;
             _yeelightService = yeelightService;
             _lifxService = lifxService;
@@ -228,7 +229,7 @@ namespace PresenceLight
 
                 if (Config.LightSettings.SyncLights)
                 {
-                    if (!Config.LightSettings.UseWorkingHours)
+                    if (!_workingHoursService.UseWorkingHours)
                     {
                         if (lightMode == "Graph")
                         {
@@ -237,8 +238,8 @@ namespace PresenceLight
                     }
                     else
                     {
-                        bool previousWorkingHours = IsWorkingHours;
-                        if (IsInWorkingHours())
+                        bool previousWorkingHours = _workingHoursService.IsInWorkingHours;
+                        if (_workingHoursService.IsInWorkingHours)
                         {
                             if (lightMode == "Graph")
                             {
@@ -710,7 +711,7 @@ namespace PresenceLight
                     await _lifxService.SetColor("Off", Config.LightSettings.LIFX.SelectedLIFXItemId).ConfigureAwait(true);
                 }
 
-                if (Config.LightSettings.Custom.IsCustomApiEnabled && !string.IsNullOrEmpty(Config.LightSettings.Custom.CustomApiOffMethod) && !string.IsNullOrEmpty(Config.LightSettings.Custom.CustomApiOffUri))
+                if (Config.LightSettings.Custom.IsCustomApiEnabled && !string.IsNullOrEmpty(Config.LightSettings.Custom.CustomApiOff.Method) && !string.IsNullOrEmpty(Config.LightSettings.Custom.CustomApiOff.Uri))
                 {
                     await _customApiService.SetColor("Off", "Off").ConfigureAwait(true);
                 }
@@ -740,7 +741,7 @@ namespace PresenceLight
 
                     if (Config.LightSettings.SyncLights)
                     {
-                        if (!Config.LightSettings.UseWorkingHours)
+                        if (!_workingHoursService.UseWorkingHours)
                         {
                             if (lightMode == "Graph")
                             {
@@ -749,8 +750,8 @@ namespace PresenceLight
                         }
                         else
                         {
-                            bool previousWorkingHours = IsWorkingHours;
-                            if (IsInWorkingHours())
+                            bool previousWorkingHours = _workingHoursService.IsInWorkingHours;
+                            if (_workingHoursService.IsInWorkingHours)
                             {
                                 if (lightMode == "Graph")
                                 {
@@ -777,7 +778,6 @@ namespace PresenceLight
                                     }
                                     touchLight = true;
                                 }
-
                             }
                         }
                     }

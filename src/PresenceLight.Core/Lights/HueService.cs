@@ -24,9 +24,11 @@ namespace PresenceLight.Core
         private readonly BaseConfig _options;
         private LocalHueClient _client;
         private readonly ILogger<HueService> _logger;
+        private readonly IWorkingHoursService _workingHoursService;
 
-        public HueService(IOptionsMonitor<BaseConfig> optionsAccessor, ILogger<HueService> logger)
+        public HueService(IOptionsMonitor<BaseConfig> optionsAccessor, ILogger<HueService> logger, IWorkingHoursService workingHoursService)
         {
+            _workingHoursService = workingHoursService;
             _logger = logger;
             _options = optionsAccessor.CurrentValue;
         }
@@ -45,184 +47,188 @@ namespace PresenceLight.Core
 
             try
             {
-                _client = new LocalHueClient(_options.LightSettings.Hue.HueIpAddress);
-                _client.Initialize(_options.LightSettings.Hue.HueApiKey);
-
-                string message = "";
-
-                var command = new LightCommand();
-                string color = "";
-                switch (availability)
+                if (this._workingHoursService.UseWorkingHours
+     && !this._workingHoursService.IsInWorkingHours)
                 {
-                    case "Available":
-                        if (!_options.LightSettings.Hue.AvailableStatus.Disabled)
-                        {
-                            command.On = true;
-                            color = _options.LightSettings.Hue.AvailableStatus.Colour;
-                        }
-                        else
-                        {
-                            command.On = false;
-                            await _client.SendCommandAsync(command, new List<string> { lightId });
-                            message = $"Turning Hue Light {lightId} Off";
-                            Helpers.AppendLogger(_logger, message);
-                            return;
-                        }
-                        break;
-                    case "Busy":
-                        if (!_options.LightSettings.Hue.BusyStatus.Disabled)
-                        {
-                            command.On = true;
-                            color = _options.LightSettings.Hue.BusyStatus.Colour;
-                        }
-                        else
-                        {
-                            command.On = false;
-                            await _client.SendCommandAsync(command, new List<string> { lightId });
-                            message = $"Turning Hue Light {lightId} Off";
-                            Helpers.AppendLogger(_logger, message);
-                            return;
-                        }
-                        break;
-                    case "BeRightBack":
-                        if (!_options.LightSettings.Hue.BeRightBackStatus.Disabled)
-                        {
-                            command.On = true;
-                            color = _options.LightSettings.Hue.BeRightBackStatus.Colour;
-                        }
-                        else
-                        {
-                            command.On = false;
-                            await _client.SendCommandAsync(command, new List<string> { lightId });
-                            message = $"Turning Hue Light {lightId} Off";
-                            Helpers.AppendLogger(_logger, message);
-                            return;
-                        }
-                        break;
-                    case "Away":
-                        if (!_options.LightSettings.Hue.AwayStatus.Disabled)
-                        {
-                            command.On = true;
-                            color = _options.LightSettings.Hue.AwayStatus.Colour;
-                        }
-                        else
-                        {
-                            command.On = false;
-                            await _client.SendCommandAsync(command, new List<string> { lightId });
-                            message = $"Turning Hue Light {lightId} Off";
-                            Helpers.AppendLogger(_logger, message);
-                            return;
-                        }
-                        break;
-                    case "DoNotDisturb":
-                        if (!_options.LightSettings.Hue.DoNotDisturbStatus.Disabled)
-                        {
-                            command.On = true;
-                            color = _options.LightSettings.Hue.DoNotDisturbStatus.Colour;
-                        }
-                        else
-                        {
-                            command.On = false;
-                            await _client.SendCommandAsync(command, new List<string> { lightId });
-                            message = $"Turning Hue Light {lightId} Off";
-                            Helpers.AppendLogger(_logger, message);
-                            return;
-                        }
-                        break;
-                    case "Offline":
-                        if (!_options.LightSettings.Hue.OfflineStatus.Disabled)
-                        {
-                            command.On = true;
-                            color = _options.LightSettings.Hue.OfflineStatus.Colour;
-                        }
-                        else
-                        {
-                            command.On = false;
-                            await _client.SendCommandAsync(command, new List<string> { lightId });
-                            message = $"Turning Hue Light {lightId} Off";
-                            Helpers.AppendLogger(_logger, message);
-                            return;
-                        }
-                        break;
-                    case "Off":
-                        if (!_options.LightSettings.Hue.OffStatus.Disabled)
-                        {
-                            command.On = true;
-                            color = _options.LightSettings.Hue.OffStatus.Colour;
-                        }
-                        else
-                        {
-                            command.On = false;
-                            await _client.SendCommandAsync(command, new List<string> { lightId });
-                            message = $"Turning Hue Light {lightId} Off";
-                            Helpers.AppendLogger(_logger, message);
-                            return;
-                        }
-                        break;
-                    default:
-                        command.On = true;
-                        color = availability;
-                        break;
-                }
+                    _client = new LocalHueClient(_options.LightSettings.Hue.HueIpAddress);
+                    _client.Initialize(_options.LightSettings.Hue.HueApiKey);
 
-                color = color.Replace("#", "");
+                    string message = "";
 
-                switch (color.Length)
-                {
+                    var command = new LightCommand();
+                    string color = "";
+                    switch (availability)
+                    {
+                        case "Available":
+                            if (!_options.LightSettings.Hue.AvailableStatus.Disabled)
+                            {
+                                command.On = true;
+                                color = _options.LightSettings.Hue.AvailableStatus.Colour;
+                            }
+                            else
+                            {
+                                command.On = false;
+                                await _client.SendCommandAsync(command, new List<string> { lightId });
+                                message = $"Turning Hue Light {lightId} Off";
+                                Helpers.AppendLogger(_logger, message);
+                                return;
+                            }
+                            break;
+                        case "Busy":
+                            if (!_options.LightSettings.Hue.BusyStatus.Disabled)
+                            {
+                                command.On = true;
+                                color = _options.LightSettings.Hue.BusyStatus.Colour;
+                            }
+                            else
+                            {
+                                command.On = false;
+                                await _client.SendCommandAsync(command, new List<string> { lightId });
+                                message = $"Turning Hue Light {lightId} Off";
+                                Helpers.AppendLogger(_logger, message);
+                                return;
+                            }
+                            break;
+                        case "BeRightBack":
+                            if (!_options.LightSettings.Hue.BeRightBackStatus.Disabled)
+                            {
+                                command.On = true;
+                                color = _options.LightSettings.Hue.BeRightBackStatus.Colour;
+                            }
+                            else
+                            {
+                                command.On = false;
+                                await _client.SendCommandAsync(command, new List<string> { lightId });
+                                message = $"Turning Hue Light {lightId} Off";
+                                Helpers.AppendLogger(_logger, message);
+                                return;
+                            }
+                            break;
+                        case "Away":
+                            if (!_options.LightSettings.Hue.AwayStatus.Disabled)
+                            {
+                                command.On = true;
+                                color = _options.LightSettings.Hue.AwayStatus.Colour;
+                            }
+                            else
+                            {
+                                command.On = false;
+                                await _client.SendCommandAsync(command, new List<string> { lightId });
+                                message = $"Turning Hue Light {lightId} Off";
+                                Helpers.AppendLogger(_logger, message);
+                                return;
+                            }
+                            break;
+                        case "DoNotDisturb":
+                            if (!_options.LightSettings.Hue.DoNotDisturbStatus.Disabled)
+                            {
+                                command.On = true;
+                                color = _options.LightSettings.Hue.DoNotDisturbStatus.Colour;
+                            }
+                            else
+                            {
+                                command.On = false;
+                                await _client.SendCommandAsync(command, new List<string> { lightId });
+                                message = $"Turning Hue Light {lightId} Off";
+                                Helpers.AppendLogger(_logger, message);
+                                return;
+                            }
+                            break;
+                        case "Offline":
+                            if (!_options.LightSettings.Hue.OfflineStatus.Disabled)
+                            {
+                                command.On = true;
+                                color = _options.LightSettings.Hue.OfflineStatus.Colour;
+                            }
+                            else
+                            {
+                                command.On = false;
+                                await _client.SendCommandAsync(command, new List<string> { lightId });
+                                message = $"Turning Hue Light {lightId} Off";
+                                Helpers.AppendLogger(_logger, message);
+                                return;
+                            }
+                            break;
+                        case "Off":
+                            if (!_options.LightSettings.Hue.OffStatus.Disabled)
+                            {
+                                command.On = true;
+                                color = _options.LightSettings.Hue.OffStatus.Colour;
+                            }
+                            else
+                            {
+                                command.On = false;
+                                await _client.SendCommandAsync(command, new List<string> { lightId });
+                                message = $"Turning Hue Light {lightId} Off";
+                                Helpers.AppendLogger(_logger, message);
+                                return;
+                            }
+                            break;
+                        default:
+                            command.On = true;
+                            color = availability;
+                            break;
+                    }
 
-                    case var length when color.Length == 6:
-                        // Do Nothing
-                        break;
-                    case var length when color.Length > 6:
-                        // Get last 6 characters
-                        color = color.Substring(color.Length - 6);
-                        break;
-                    default:
-                        throw new ArgumentException("Supplied Color had an issue");
-                }
+                    color = color.Replace("#", "");
 
-                command.SetColor(new RGBColor(color));
+                    switch (color.Length)
+                    {
+
+                        case var length when color.Length == 6:
+                            // Do Nothing
+                            break;
+                        case var length when color.Length > 6:
+                            // Get last 6 characters
+                            color = color.Substring(color.Length - 6);
+                            break;
+                        default:
+                            throw new ArgumentException("Supplied Color had an issue");
+                    }
+
+                    command.SetColor(new RGBColor(color));
 
 
-                if (availability == "Off")
-                {
-                    command.On = false;
+                    if (availability == "Off")
+                    {
+                        command.On = false;
+                        await _client.SendCommandAsync(command, new List<string> { lightId });
+                        message = $"Turning Hue Light {lightId} Off";
+                        Helpers.AppendLogger(_logger, message);
+                        return;
+                    }
+
+                    if (_options.LightSettings.UseDefaultBrightness)
+                    {
+                        if (_options.LightSettings.DefaultBrightness == 0)
+                        {
+                            command.On = false;
+                        }
+                        else
+                        {
+                            command.On = true;
+                            command.Brightness = Convert.ToByte(((Convert.ToDouble(_options.LightSettings.DefaultBrightness) / 100) * 254));
+                            command.TransitionTime = new TimeSpan(0);
+                        }
+                    }
+                    else
+                    {
+                        if (_options.LightSettings.Hue.HueBrightness == 0)
+                        {
+                            command.On = false;
+                        }
+                        else
+                        {
+                            command.On = true;
+                            command.Brightness = Convert.ToByte(((Convert.ToDouble(_options.LightSettings.Hue.HueBrightness) / 100) * 254));
+                            command.TransitionTime = new TimeSpan(0);
+                        }
+                    }
+
                     await _client.SendCommandAsync(command, new List<string> { lightId });
-                    message = $"Turning Hue Light {lightId} Off";
+                    message = $"Setting Hue Light {lightId} to {color}";
                     Helpers.AppendLogger(_logger, message);
-                    return;
                 }
-
-                if (_options.LightSettings.UseDefaultBrightness)
-                {
-                    if (_options.LightSettings.DefaultBrightness == 0)
-                    {
-                        command.On = false;
-                    }
-                    else
-                    {
-                        command.On = true;
-                        command.Brightness = Convert.ToByte(((Convert.ToDouble(_options.LightSettings.DefaultBrightness) / 100) * 254));
-                        command.TransitionTime = new TimeSpan(0);
-                    }
-                }
-                else
-                {
-                    if (_options.LightSettings.Hue.HueBrightness == 0)
-                    {
-                        command.On = false;
-                    }
-                    else
-                    {
-                        command.On = true;
-                        command.Brightness = Convert.ToByte(((Convert.ToDouble(_options.LightSettings.Hue.HueBrightness) / 100) * 254));
-                        command.TransitionTime = new TimeSpan(0);
-                    }
-                }
-
-                await _client.SendCommandAsync(command, new List<string> { lightId });
-                message = $"Setting Hue Light {lightId} to {color}";
-                Helpers.AppendLogger(_logger, message);
             }
             catch (Exception e)
             {
