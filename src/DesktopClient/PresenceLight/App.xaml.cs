@@ -86,7 +86,8 @@ namespace PresenceLight
 
             IServiceCollection services = new ServiceCollection();
             services.AddOptions();
-            services.AddLogging(logging => {
+            services.AddLogging(logging =>
+            {
                 logging.AddNLog();
             });
             services.Configure<BaseConfig>(Configuration);
@@ -109,7 +110,11 @@ namespace PresenceLight
             //    });
         }
     });
-            services.AddApplicationInsightsTelemetryWorkerService();
+            services.AddApplicationInsightsTelemetryWorkerService(options =>
+            {
+                options.EnablePerformanceCounterCollectionModule = false;
+                options.EnableDependencyTrackingTelemetryModule = false;
+            });
 
             services.AddSingleton<IGraphService, GraphService>();
             services.AddSingleton<IHueService, HueService>();
@@ -134,9 +139,15 @@ namespace PresenceLight
 
             ServiceProvider = services.BuildServiceProvider();
 
-            var telemetryClient = ServiceProvider.GetRequiredService<TelemetryClient>();
+            var configuration = ServiceProvider.GetService<TelemetryConfiguration>();
 
-
+            if (configuration != null)
+            {
+                var b = configuration.DefaultTelemetrySink.TelemetryProcessorChainBuilder;
+                double fixedSamplingPercentage = 10;
+                b.UseSampling(fixedSamplingPercentage);
+                b.Build();
+            }
             var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
             mainWindow.Show();
         }
