@@ -36,7 +36,7 @@ namespace PresenceLight.Core
 
         public bool UseDefaultBrightness { get; set; }
         public int DefaultBrightness { get; set; }
-        public Custom Custom { get; set; }
+        public CustomApi CustomApi { get; set; }
 
         public LIFX LIFX { get; set; }
 
@@ -45,7 +45,7 @@ namespace PresenceLight.Core
         public Yeelight Yeelight { get; set; }
     }
 
-    public class Custom
+    public class CustomApi
     {
         public bool IsCustomApiEnabled { get; set; }
 
@@ -111,7 +111,6 @@ namespace PresenceLight.Core
 
     public class LIFX
     {
-
         public string? LIFXApiKey { get; set; }
 
         public string? LIFXClientId { get; set; }
@@ -124,19 +123,7 @@ namespace PresenceLight.Core
 
         public int LIFXBrightness { get; set; }
 
-        public AvailabilityStatus AvailableStatus { get; set; }
-
-        public AvailabilityStatus BusyStatus { get; set; }
-
-        public AvailabilityStatus AwayStatus { get; set; }
-
-        public AvailabilityStatus BeRightBackStatus { get; set; }
-
-        public AvailabilityStatus DoNotDisturbStatus { get; set; }
-
-        public AvailabilityStatus OfflineStatus { get; set; }
-
-        public AvailabilityStatus OffStatus { get; set; }
+        public Statuses Statuses { get; set; }
     }
 
     public class Hue
@@ -159,30 +146,10 @@ namespace PresenceLight.Core
 
         public bool IsPhillipsHueEnabled { get; set; }
 
-        public AvailabilityStatus AvailableStatus { get; set; }
-
-        public AvailabilityStatus BusyStatus { get; set; }
-
-        public AvailabilityStatus AwayStatus { get; set; }
-
-        public AvailabilityStatus BeRightBackStatus { get; set; }
-
-        public AvailabilityStatus DoNotDisturbStatus { get; set; }
-
-        public AvailabilityStatus OfflineStatus { get; set; }
-
-        public AvailabilityStatus OffStatus { get; set; }
+        public Statuses Statuses { get; set; }
         public bool UseRemoteApi { get; set; }
 
         public string RemoteBridgeId { get; set; }
-    }
-
-    public class AvailabilityStatus
-    {
-        public Boolean Disabled { get; set; }
-
-        public string? Colour { get; set; }
-
     }
 
     public class CustomApiSetting
@@ -199,19 +166,33 @@ namespace PresenceLight.Core
 
         public bool IsYeelightEnabled { get; set; }
 
-        public AvailabilityStatus AvailableStatus { get; set; }
+        public Statuses Statuses { get; set; }
+    }
 
-        public AvailabilityStatus BusyStatus { get; set; }
+    public class Statuses
+    {
+        public AvailabilityStatus AvailabilityAvailableStatus { get; set; }
 
-        public AvailabilityStatus AwayStatus { get; set; }
+        public AvailabilityStatus AvailabilityBusyStatus { get; set; }
 
-        public AvailabilityStatus BeRightBackStatus { get; set; }
+        public AvailabilityStatus AvailabilityAwayStatus { get; set; }
 
-        public AvailabilityStatus DoNotDisturbStatus { get; set; }
+        public AvailabilityStatus AvailabilityBeRightBackStatus { get; set; }
 
-        public AvailabilityStatus OfflineStatus { get; set; }
+        public AvailabilityStatus AvailabilityDoNotDisturbStatus { get; set; }
 
-        public AvailabilityStatus OffStatus { get; set; }
+        public AvailabilityStatus AvailabilityOfflineStatus { get; set; }
+
+        public AvailabilityStatus AvailabilityOffStatus { get; set; }
+
+    }
+
+    public class AvailabilityStatus
+    {
+        public Boolean Disabled { get; set; }
+
+        public string? Colour { get; set; }
+
     }
 
     public class AADSettings

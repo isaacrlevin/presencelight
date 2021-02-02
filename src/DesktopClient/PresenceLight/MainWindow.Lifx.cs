@@ -216,49 +216,49 @@ namespace PresenceLight
 
         private void cbIsLIFXAvailableStatusDisabledChanged(object sender, RoutedEventArgs e)
         {
-            lifxAvailableColour.IsEnabled = !Config.LightSettings.LIFX.AvailableStatus.Disabled;
+            lifxAvailableColour.IsEnabled = !Config.LightSettings.LIFX.Statuses.AvailabilityAvailableStatus.Disabled;
             SyncOptions();
             e.Handled = true;
         }
 
         private void cbIsLIFXBusyStatusDisabledChanged(object sender, RoutedEventArgs e)
         {
-            lifxBusyColour.IsEnabled = !Config.LightSettings.LIFX.BusyStatus.Disabled;
+            lifxBusyColour.IsEnabled = !Config.LightSettings.LIFX.Statuses.AvailabilityBusyStatus.Disabled;
             SyncOptions();
             e.Handled = true;
         }
 
         private void cbIsLIFXAwayStatusDisabledChanged(object sender, RoutedEventArgs e)
         {
-            lifxAwayColour.IsEnabled = !Config.LightSettings.LIFX.AwayStatus.Disabled;
+            lifxAwayColour.IsEnabled = !Config.LightSettings.LIFX.Statuses.AvailabilityAwayStatus.Disabled;
             SyncOptions();
             e.Handled = true;
         }
 
         private void cbIsLIFXDoNotDisturbStatusDisabledChanged(object sender, RoutedEventArgs e)
         {
-            lifxDoNotDisturbColour.IsEnabled = !Config.LightSettings.LIFX.DoNotDisturbStatus.Disabled;
+            lifxDoNotDisturbColour.IsEnabled = !Config.LightSettings.LIFX.Statuses.AvailabilityDoNotDisturbStatus.Disabled;
             SyncOptions();
             e.Handled = true;
         }
 
         private void cbIsLIFXBeRightBackStatusDisabledChanged(object sender, RoutedEventArgs e)
         {
-            lifxBeRightBackColour.IsEnabled = !Config.LightSettings.LIFX.BeRightBackStatus.Disabled;
+            lifxBeRightBackColour.IsEnabled = !Config.LightSettings.LIFX.Statuses.AvailabilityBeRightBackStatus.Disabled;
             SyncOptions();
             e.Handled = true;
         }
 
         private void cbIsLIFXOfflineStatusDisabledChanged(object sender, RoutedEventArgs e)
         {
-            lifxOfflineColour.IsEnabled = !Config.LightSettings.LIFX.OfflineStatus.Disabled;
+            lifxOfflineColour.IsEnabled = !Config.LightSettings.LIFX.Statuses.AvailabilityOfflineStatus.Disabled;
             SyncOptions();
             e.Handled = true;
         }
 
         private void cbIsLIFXOffStatusDisabledChanged(object sender, RoutedEventArgs e)
         {
-            lifxOffColour.IsEnabled = !Config.LightSettings.LIFX.OffStatus.Disabled;
+            lifxOffColour.IsEnabled = !Config.LightSettings.LIFX.Statuses.AvailabilityOffStatus.Disabled;
             SyncOptions();
             e.Handled = true;
         }

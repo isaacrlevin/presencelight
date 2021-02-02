@@ -95,9 +95,9 @@ namespace PresenceLight.Core
                     switch (availability)
                     {
                         case "Available":
-                            if (!_options.LightSettings.LIFX.AvailableStatus.Disabled)
+                            if (!_options.LightSettings.LIFX.Statuses.AvailabilityAvailableStatus.Disabled)
                             {
-                                color = $"{_options.LightSettings.LIFX.AvailableStatus.Colour.ToString()}";
+                                color = $"{_options.LightSettings.LIFX.Statuses.AvailabilityAvailableStatus.Colour.ToString()}";
                             }
                             else
                             {
@@ -110,9 +110,9 @@ namespace PresenceLight.Core
                             }
                             break;
                         case "Busy":
-                            if (!_options.LightSettings.LIFX.BusyStatus.Disabled)
+                            if (!_options.LightSettings.LIFX.Statuses.AvailabilityBusyStatus.Disabled)
                             {
-                                color = $"{_options.LightSettings.LIFX.BusyStatus.Colour.ToString()}";
+                                color = $"{_options.LightSettings.LIFX.Statuses.AvailabilityBusyStatus.Colour.ToString()}";
                             }
                             else
                             {
@@ -125,9 +125,9 @@ namespace PresenceLight.Core
                             }
                             break;
                         case "BeRightBack":
-                            if (!_options.LightSettings.LIFX.BeRightBackStatus.Disabled)
+                            if (!_options.LightSettings.LIFX.Statuses.AvailabilityBeRightBackStatus.Disabled)
                             {
-                                color = $"{_options.LightSettings.LIFX.BeRightBackStatus.Colour.ToString()}";
+                                color = $"{_options.LightSettings.LIFX.Statuses.AvailabilityBeRightBackStatus.Colour.ToString()}";
                             }
                             else
                             {
@@ -140,9 +140,9 @@ namespace PresenceLight.Core
                             }
                             break;
                         case "Away":
-                            if (!_options.LightSettings.LIFX.AwayStatus.Disabled)
+                            if (!_options.LightSettings.LIFX.Statuses.AvailabilityAwayStatus.Disabled)
                             {
-                                color = $"{_options.LightSettings.LIFX.AwayStatus.Colour.ToString()}";
+                                color = $"{_options.LightSettings.LIFX.Statuses.AvailabilityAwayStatus.Colour.ToString()}";
                             }
                             else
                             {
@@ -155,9 +155,9 @@ namespace PresenceLight.Core
                             }
                             break;
                         case "DoNotDisturb":
-                            if (!_options.LightSettings.LIFX.DoNotDisturbStatus.Disabled)
+                            if (!_options.LightSettings.LIFX.Statuses.AvailabilityDoNotDisturbStatus.Disabled)
                             {
-                                color = $"{_options.LightSettings.LIFX.DoNotDisturbStatus.Colour.ToString()}";
+                                color = $"{_options.LightSettings.LIFX.Statuses.AvailabilityDoNotDisturbStatus.Colour.ToString()}";
                             }
                             else
                             {
@@ -170,9 +170,9 @@ namespace PresenceLight.Core
                             }
                             break;
                         case "Offline":
-                            if (!_options.LightSettings.LIFX.OfflineStatus.Disabled)
+                            if (!_options.LightSettings.LIFX.Statuses.AvailabilityOfflineStatus.Disabled)
                             {
-                                color = $"{_options.LightSettings.LIFX.OfflineStatus.Colour.ToString()}";
+                                color = $"{_options.LightSettings.LIFX.Statuses.AvailabilityOfflineStatus.Colour.ToString()}";
                             }
                             else
                             {
@@ -185,9 +185,9 @@ namespace PresenceLight.Core
                             }
                             break;
                         case "Off":
-                            if (!_options.LightSettings.LIFX.OffStatus.Disabled)
+                            if (!_options.LightSettings.LIFX.Statuses.AvailabilityOffStatus.Disabled)
                             {
-                                color = $"{_options.LightSettings.LIFX.OffStatus.Colour.ToString()}";
+                                color = $"{_options.LightSettings.LIFX.Statuses.AvailabilityOffStatus.Colour.ToString()}";
                             }
                             else
                             {
@@ -200,7 +200,7 @@ namespace PresenceLight.Core
                             }
                             break;
                         default:
-                            color = $"{_options.LightSettings.LIFX.OffStatus.Colour.ToString()}";
+                            color = $"{_options.LightSettings.LIFX.Statuses.AvailabilityOffStatus.Colour.ToString()}";
                             break;
                     }
 

@@ -323,7 +323,7 @@ namespace PresenceLight
                     await _yeelightService.SetColor(color, Config.LightSettings.Yeelight.SelectedYeelightId).ConfigureAwait(true);
                 }
 
-                if (Config.LightSettings.Custom.IsCustomApiEnabled)
+                if (Config.LightSettings.CustomApi.IsCustomApiEnabled)
                 {
                     string response = await _customApiService.SetColor(color, activity).ConfigureAwait(true);
                     customApiLastResponse.Content = response;
@@ -711,7 +711,7 @@ namespace PresenceLight
                     await _lifxService.SetColor("Off", Config.LightSettings.LIFX.SelectedLIFXItemId).ConfigureAwait(true);
                 }
 
-                if (Config.LightSettings.Custom.IsCustomApiEnabled && !string.IsNullOrEmpty(Config.LightSettings.Custom.CustomApiOff.Method) && !string.IsNullOrEmpty(Config.LightSettings.Custom.CustomApiOff.Uri))
+                if (Config.LightSettings.CustomApi.IsCustomApiEnabled && !string.IsNullOrEmpty(Config.LightSettings.CustomApi.CustomApiOff.Method) && !string.IsNullOrEmpty(Config.LightSettings.CustomApi.CustomApiOff.Uri))
                 {
                     await _customApiService.SetColor("Off", "Off").ConfigureAwait(true);
                 }
