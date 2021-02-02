@@ -92,7 +92,15 @@ namespace PresenceLight.Worker
             services.AddSingleton<AppState, AppState>();
             services.AddBlazoredModal();
             services.AddHostedService<Worker>();
-            services.AddApplicationInsightsTelemetry(Configuration.GetValue<string>("ApplicationInsights:InstrumentationKey"));
+            services.AddApplicationInsightsTelemetry(options =>
+            {
+                options.InstrumentationKey = Configuration.GetValue<string>("ApplicationInsights:InstrumentationKey");
+                options.EnablePerformanceCounterCollectionModule = false;
+                options.EnableDependencyTrackingTelemetryModule = false;
+                options.EnableAdaptiveSampling = false;                
+            });
+
+
 
             // Configure SnapshotCollector from application settings
             services.Configure<SnapshotCollectorConfiguration>(Configuration.GetSection(nameof(SnapshotCollectorConfiguration)));
@@ -104,6 +112,14 @@ namespace PresenceLight.Worker
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            var configuration = app.ApplicationServices.GetService<TelemetryConfiguration>();
+
+            var builder = configuration.DefaultTelemetrySink.TelemetryProcessorChainBuilder;
+            double fixedSamplingPercentage = 10;
+            builder.UseSampling(fixedSamplingPercentage);
+
+            builder.Build();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
