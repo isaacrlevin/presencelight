@@ -101,6 +101,29 @@
     bool showHueMessage = false;
     string hueMessage;
 
+        bool showAvail = false;
+    bool showAct = false;
+
+        void ToggleAvail()
+    {
+        showAvail = !showAvail;
+
+        if (showAct)
+        {
+            showAct = !showAct;
+        }
+    }
+
+    void ToggleAct()
+    {
+        showAct = !showAct;
+
+         if (showAvail)
+        {
+            showAvail = !showAvail;
+        }
+    }
+
     async Task RegisterBridge()
     {
         var formModal = Modal.Show<Confirm>("Please press the sync button on your Phillips Hue Bridge");

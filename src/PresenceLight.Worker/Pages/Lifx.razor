@@ -88,6 +88,66 @@
                                         }
                                     </select>
                                 </div>
+
+                                <br />
+                                <br />
+
+                                <div class="row">
+                                    <div class="col-4">
+                                        <h5>Brightness</h5>
+                                    </div>
+                                    <div class="col-4">
+                                        <Slider TValue="int" @bind-Value="@Config.CurrentValue.LightSettings.Hue.HueBrightness" Step="1" Min="0" Max="100" />
+                                    </div>
+                                    <div class="col-1">
+                                        <input style="width:50px" @bind-value="@Config.CurrentValue.LightSettings.Hue.HueBrightness" type="text" />
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-4">
+                                        <button class="btn btn-primary" type="button" @onclick="ToggleAvail">
+                                            Configure Availability Colors
+                                        </button>
+                                    </div>
+                                    <div class="col-4">
+                                        <button class="btn btn-primary" type="button" @onclick="ToggleAct">
+                                            Configure Activity Colors
+                                        </button>
+                                    </div>
+                                </div>
+
+
+                                <br />
+                                <br />
+                                @if (showAvail)
+                                {
+                                    @foreach (var lightStatus in Config.CurrentValue.LightSettings.LIFX.Statuses.GetType().GetProperties())
+                                    {
+
+                                        <div class="row" style="margin-bottom: 10px">
+                                            <div class="col-4">
+                                                <h5>@Helpers.HumanifyText(lightStatus.Name.Replace("Status","").Replace("Availability","")) Color</h5>
+                                            </div>
+                                            <div class="col-4">
+                                                <ColorEdit Color="@Config.CurrentValue.LightSettings.Hue.Statuses.AvailabilityAvailableStatus.Colour" />
+                                            </div>
+                                        </div>
+                                    }
+
+                                }
+
+                                @if (showAct)
+                                {
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <h5>Available Color</h5>
+                                        </div>
+                                        <div class="col-4">
+                                            <ColorEdit Color="@Config.CurrentValue.LightSettings.LIFX.Statuses.AvailabilityAvailableStatus.Colour" />
+                                        </div>
+                                    </div>
+                                }
                             }
                             <br />
                             <br />
@@ -118,6 +178,9 @@
     string lifxMessage;
     string lastType = "";
     bool isLoadingLights = false;
+    bool showAvail = false;
+    bool showAct = false;
+
     private void Save()
     {
         try
@@ -130,6 +193,26 @@
         {
             Helpers.AppendLogger(_logger, "Error Occured Saving Lifx Settings", e);
             throw e;
+        }
+    }
+
+    void ToggleAvail()
+    {
+        showAvail = !showAvail;
+
+        if (showAct)
+        {
+            showAct = !showAct;
+        }
+    }
+
+    void ToggleAct()
+    {
+        showAct = !showAct;
+
+        if (showAvail)
+        {
+            showAvail = !showAvail;
         }
     }
 

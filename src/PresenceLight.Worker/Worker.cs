@@ -110,7 +110,7 @@ namespace PresenceLight.Worker
                             await _lifxService.SetColor(presence.Availability, Config.LightSettings.LIFX.SelectedLIFXItemId);
                             Helpers.AppendLogger(_logger, $"Setting LIFX Light: { Config.LightSettings.LIFX.SelectedLIFXItemId}, Graph Presence: {presence.Availability}");
                         }
-                        if (Config.LightSettings.Custom.IsCustomApiEnabled)
+                        if (Config.LightSettings.CustomApi.IsCustomApiEnabled)
                         {
                             // passing the data on only when it changed is handled within the custom api service
                             await _customApiService.SetColor(presence.Availability, presence.Activity);

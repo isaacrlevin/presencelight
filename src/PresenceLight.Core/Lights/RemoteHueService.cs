@@ -184,10 +184,10 @@ namespace PresenceLight.Core
                     switch (availability)
                     {
                         case "Available":
-                            if (!_options.LightSettings.Hue.AvailableStatus.Disabled)
+                            if (!_options.LightSettings.Hue.Statuses.AvailabilityAvailableStatus.Disabled)
                             {
                                 command.On = true;
-                                color = _options.LightSettings.Hue.AvailableStatus.Colour;
+                                color = _options.LightSettings.Hue.Statuses.AvailabilityAvailableStatus.Colour;
                             }
                             else
                             {
@@ -199,10 +199,10 @@ namespace PresenceLight.Core
                             }
                             break;
                         case "Busy":
-                            if (!_options.LightSettings.Hue.BusyStatus.Disabled)
+                            if (!_options.LightSettings.Hue.Statuses.AvailabilityBusyStatus.Disabled)
                             {
                                 command.On = true;
-                                color = _options.LightSettings.Hue.BusyStatus.Colour;
+                                color = _options.LightSettings.Hue.Statuses.AvailabilityBusyStatus.Colour;
                             }
                             else
                             {
@@ -214,10 +214,10 @@ namespace PresenceLight.Core
                             }
                             break;
                         case "BeRightBack":
-                            if (!_options.LightSettings.Hue.BeRightBackStatus.Disabled)
+                            if (!_options.LightSettings.Hue.Statuses.AvailabilityBeRightBackStatus.Disabled)
                             {
                                 command.On = true;
-                                color = _options.LightSettings.Hue.BeRightBackStatus.Colour;
+                                color = _options.LightSettings.Hue.Statuses.AvailabilityBeRightBackStatus.Colour;
                             }
                             else
                             {
@@ -229,10 +229,10 @@ namespace PresenceLight.Core
                             }
                             break;
                         case "Away":
-                            if (!_options.LightSettings.Hue.AwayStatus.Disabled)
+                            if (!_options.LightSettings.Hue.Statuses.AvailabilityAwayStatus.Disabled)
                             {
                                 command.On = true;
-                                color = _options.LightSettings.Hue.AwayStatus.Colour;
+                                color = _options.LightSettings.Hue.Statuses.AvailabilityAwayStatus.Colour;
                             }
                             else
                             {
@@ -244,10 +244,10 @@ namespace PresenceLight.Core
                             }
                             break;
                         case "DoNotDisturb":
-                            if (!_options.LightSettings.Hue.DoNotDisturbStatus.Disabled)
+                            if (!_options.LightSettings.Hue.Statuses.AvailabilityDoNotDisturbStatus.Disabled)
                             {
                                 command.On = true;
-                                color = _options.LightSettings.Hue.DoNotDisturbStatus.Colour;
+                                color = _options.LightSettings.Hue.Statuses.AvailabilityDoNotDisturbStatus.Colour;
                             }
                             else
                             {
@@ -259,10 +259,10 @@ namespace PresenceLight.Core
                             }
                             break;
                         case "Offline":
-                            if (!_options.LightSettings.Hue.OfflineStatus.Disabled)
+                            if (!_options.LightSettings.Hue.Statuses.AvailabilityOfflineStatus.Disabled)
                             {
                                 command.On = true;
-                                color = _options.LightSettings.Hue.OfflineStatus.Colour;
+                                color = _options.LightSettings.Hue.Statuses.AvailabilityOfflineStatus.Colour;
                             }
                             else
                             {
@@ -274,10 +274,10 @@ namespace PresenceLight.Core
                             }
                             break;
                         case "Off":
-                            if (!_options.LightSettings.Hue.OffStatus.Disabled)
+                            if (!_options.LightSettings.Hue.Statuses.AvailabilityOffStatus.Disabled)
                             {
                                 command.On = true;
-                                color = _options.LightSettings.Hue.OffStatus.Colour;
+                                color = _options.LightSettings.Hue.Statuses.AvailabilityOffStatus.Colour;
                             }
                             else
                             {

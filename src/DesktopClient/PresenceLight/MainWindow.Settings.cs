@@ -68,7 +68,7 @@ namespace PresenceLight
                     pnlLIFX.Visibility = Visibility.Collapsed;
                 }
 
-                if (Config.LightSettings.Custom.IsCustomApiEnabled)
+                if (Config.LightSettings.CustomApi.IsCustomApiEnabled)
                 {
                     pnlCustomApi.Visibility = Visibility.Visible;
 

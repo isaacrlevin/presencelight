@@ -76,10 +76,10 @@ namespace PresenceLight.Core
                     switch (availability)
                     {
                         case "Available":
-                            if (!_options.LightSettings.Yeelight.AvailableStatus.Disabled)
+                            if (!_options.LightSettings.Yeelight.Statuses.AvailabilityAvailableStatus.Disabled)
                             {
 
-                                color = _options.LightSettings.Yeelight.AvailableStatus.Colour;
+                                color = _options.LightSettings.Yeelight.Statuses.AvailabilityAvailableStatus.Colour;
                             }
                             else
                             {
@@ -90,9 +90,9 @@ namespace PresenceLight.Core
                             }
                             break;
                         case "Busy":
-                            if (!_options.LightSettings.Yeelight.BusyStatus.Disabled)
+                            if (!_options.LightSettings.Yeelight.Statuses.AvailabilityBusyStatus.Disabled)
                             {
-                                color = _options.LightSettings.Yeelight.BusyStatus.Colour;
+                                color = _options.LightSettings.Yeelight.Statuses.AvailabilityBusyStatus.Colour;
                             }
                             else
                             {
@@ -103,9 +103,9 @@ namespace PresenceLight.Core
                             }
                             break;
                         case "BeRightBack":
-                            if (!_options.LightSettings.Yeelight.BeRightBackStatus.Disabled)
+                            if (!_options.LightSettings.Yeelight.Statuses.AvailabilityBeRightBackStatus.Disabled)
                             {
-                                color = _options.LightSettings.Yeelight.BeRightBackStatus.Colour;
+                                color = _options.LightSettings.Yeelight.Statuses.AvailabilityBeRightBackStatus.Colour;
                             }
                             else
                             {
@@ -116,9 +116,9 @@ namespace PresenceLight.Core
                             }
                             break;
                         case "Away":
-                            if (!_options.LightSettings.Yeelight.AwayStatus.Disabled)
+                            if (!_options.LightSettings.Yeelight.Statuses.AvailabilityAwayStatus.Disabled)
                             {
-                                color = _options.LightSettings.Yeelight.AwayStatus.Colour;
+                                color = _options.LightSettings.Yeelight.Statuses.AvailabilityAwayStatus.Colour;
                             }
                             else
                             {
@@ -129,9 +129,9 @@ namespace PresenceLight.Core
                             }
                             break;
                         case "DoNotDisturb":
-                            if (!_options.LightSettings.Yeelight.DoNotDisturbStatus.Disabled)
+                            if (!_options.LightSettings.Yeelight.Statuses.AvailabilityDoNotDisturbStatus.Disabled)
                             {
-                                color = _options.LightSettings.Yeelight.DoNotDisturbStatus.Colour;
+                                color = _options.LightSettings.Yeelight.Statuses.AvailabilityDoNotDisturbStatus.Colour;
                             }
                             else
                             {
@@ -142,9 +142,9 @@ namespace PresenceLight.Core
                             }
                             break;
                         case "Offline":
-                            if (!_options.LightSettings.Yeelight.OfflineStatus.Disabled)
+                            if (!_options.LightSettings.Yeelight.Statuses.AvailabilityOfflineStatus.Disabled)
                             {
-                                color = _options.LightSettings.Yeelight.OfflineStatus.Colour;
+                                color = _options.LightSettings.Yeelight.Statuses.AvailabilityOfflineStatus.Colour;
                             }
                             else
                             {
@@ -155,9 +155,9 @@ namespace PresenceLight.Core
                             }
                             break;
                         case "Off":
-                            if (!_options.LightSettings.Yeelight.OffStatus.Disabled)
+                            if (!_options.LightSettings.Yeelight.Statuses.AvailabilityOffStatus.Disabled)
                             {
-                                color = _options.LightSettings.Yeelight.OffStatus.Colour;
+                                color = _options.LightSettings.Yeelight.Statuses.AvailabilityOffStatus.Colour;
                             }
                             else
                             {
