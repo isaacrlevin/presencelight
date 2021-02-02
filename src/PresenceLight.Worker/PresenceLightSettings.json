@@ -2,7 +2,7 @@
   "SendDiagnosticData": false,
   "IconType": "",
   "LightSettings": {
-    "HoursPassedStatus": "",
+    "HoursPassedStatus": "Keep",
     "SyncLights": true,
     "WorkingDays": "",
     "UseWorkingHours": false,
@@ -14,52 +14,90 @@
     "Custom": {
       "IsCustomApiEnabled": false,
       "SelectedCustomLightId": "",
-      "CustomApiAvailableMethod": "",
-      "CustomApiAvailableUri": "",
-      "CustomApiBusyMethod": "",
-      "CustomApiBusyUri": "",
-      "CustomApiBeRightBackMethod": "",
-      "CustomApiBeRightBackUri": "",
-      "CustomApiAwayMethod": "",
-      "CustomApiAwayUri": "",
-      "CustomApiDoNotDisturbMethod": "",
-      "CustomApiDoNotDisturbUri": "",
-      "CustomApiAvailableIdleMethod": "",
-      "CustomApiAvailableIdleUri": "",
-      "CustomApiOfflineMethod": "",
-      "CustomApiOfflineUri": "",
-      "CustomApiOffMethod": "",
-      "CustomApiOffUri": "",
-      "CustomApiActivityAvailableMethod": "",
-      "CustomApiActivityAvailableUri": "",
-      "CustomApiActivityInACallMethod": "",
-      "CustomApiActivityInACallUri": "",
-      "CustomApiActivityInAMeetingMethod": "",
-      "CustomApiActivityInAMeetingUri": "",
-      "CustomApiActivityPresentingMethod": "",
-      "CustomApiActivityPresentingUri": "",
-      "CustomApiActivityBusyMethod": "",
-      "CustomApiActivityBusyUri": "",
-      "CustomApiActivityAwayMethod": "",
-      "CustomApiActivityAwayUri": "",
-      "CustomApiActivityBeRightBackMethod": "",
-      "CustomApiActivityBeRightBackUri": "",
-      "CustomApiActivityDoNotDisturbMethod": "",
-      "CustomApiActivityDoNotDisturbUri": "",
-      "CustomApiActivityIdleMethod": "",
-      "CustomApiActivityIdleUri": "",
-      "CustomApiActivityOfflineMethod": "",
-      "CustomApiActivityOfflineUri": "",
-      "CustomApiActivityOffMethod": "",
-      "CustomApiActivityOffUri": "",
-      "CustomApiTimeout": 100.0
+      "CustomApiTimeout": 100.0,
+      "CustomApiAvailable": {
+        "Method": "",
+        "Uri": ""
+      },
+      "CustomApiBusy": {
+        "Method": "",
+        "Uri": ""
+      },
+      "CustomApiBeRightBack": {
+        "Method": "",
+        "Uri": ""
+      },
+      "CustomApiAway": {
+        "Method": "",
+        "Uri": ""
+      },
+      "CustomApiDoNotDisturb": {
+        "Method": "",
+        "Uri": ""
+      },
+      "CustomApiAvailableIdle": {
+        "Method": "",
+        "Uri": ""
+      },
+      "CustomApiOffline": {
+        "Method": "",
+        "Uri": ""
+      },
+      "CustomApiOff": {
+        "Method": "",
+        "Uri": ""
+      },
+      "CustomApiActivityAvailable": {
+        "Method": "",
+        "Uri": ""
+      },
+      "CustomApiActivityInACall": {
+        "Method": "",
+        "Uri": ""
+      },
+      "CustomApiActivityInAMeeting": {
+        "Method": "",
+        "Uri": ""
+      },
+      "CustomApiActivityPresenting": {
+        "Method": "",
+        "Uri": ""
+      },
+      "CustomApiActivityBusy": {
+        "Method": "",
+        "Uri": ""
+      },
+      "CustomApiActivityAway": {
+        "Method": "",
+        "Uri": ""
+      },
+      "CustomApiActivityBeRightBack": {
+        "Method": "",
+        "Uri": ""
+      },
+      "CustomApiActivityDoNotDisturb": {
+        "Method": "",
+        "Uri": ""
+      },
+      "CustomApiActivityIdle": {
+        "Method": "",
+        "Uri": ""
+      },
+      "CustomApiActivityOffline": {
+        "Method": "",
+        "Uri": ""
+      },
+      "CustomApiActivityOff": {
+        "Method": "",
+        "Uri": ""
+      }
     },
     "LIFX": {
       "LIFXApiKey": "",
       "LIFXClientId": "",
       "LIFXClientSecret": "",
       "IsLIFXEnabled": false,
-      "SelectedLIFXItemId": "group_id:",
+      "SelectedLIFXItemId": "",
       "LIFXBrightness": 100,
       "AvailableStatus": {
         "Disabled": false,
