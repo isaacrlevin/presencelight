@@ -175,8 +175,7 @@ namespace PresenceLight.Core
                     throw new ArgumentNullException("Remote Hue Client Not Configured");
                 }
 
-                if (this._workingHoursService.UseWorkingHours
-           && !this._workingHoursService.IsInWorkingHours)
+                if (!_workingHoursService.UseWorkingHours || (_workingHoursService.UseWorkingHours && _workingHoursService.IsInWorkingHours))
                 {
 
                     var command = new LightCommand();

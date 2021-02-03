@@ -45,8 +45,7 @@ namespace PresenceLight.Core
 
         public async Task<string> SetColor(string availability, string? activity)
         {
-            if (this._workingHoursService.UseWorkingHours
-                && !this._workingHoursService.IsInWorkingHours)
+            if (!_workingHoursService.UseWorkingHours || (_workingHoursService.UseWorkingHours && _workingHoursService.IsInWorkingHours))
             {
                 // If we are outside of working hours we should signal that we are off
                 availability = activity = "Off";

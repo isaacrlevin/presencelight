@@ -48,8 +48,7 @@ namespace PresenceLight.Core
 
             try
             {
-                if (this._workingHoursService.UseWorkingHours
-     && !this._workingHoursService.IsInWorkingHours)
+                if (!_workingHoursService.UseWorkingHours || (_workingHoursService.UseWorkingHours && _workingHoursService.IsInWorkingHours))
                 {
                     _client = new LocalHueClient(_options.LightSettings.Hue.HueIpAddress);
                     _client.Initialize(_options.LightSettings.Hue.HueApiKey);
