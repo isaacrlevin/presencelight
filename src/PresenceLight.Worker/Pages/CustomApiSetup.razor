@@ -17,6 +17,7 @@
                     <div class="centering text-center">
                     <input type="checkbox" checked="@Config.CurrentValue.LightSettings.CustomApi.IsCustomApiEnabled" @bind-value="@Config.CurrentValue.LightSettings.CustomApi.IsCustomApiEnabled" /> Connect to Custom HTTP API
                     </div>
+                    </div>
                     <br />
                     <br />
                     @if (Config.CurrentValue.LightSettings.CustomApi.IsCustomApiEnabled)
@@ -83,7 +84,7 @@
         try
         {
             SettingsService.SaveSettings(Config.CurrentValue);
-            _customApiService = new CustomApiService(Config.CurrentValue);
+            _customApiService.Initialize(Config.CurrentValue);
             message = "Settings Saved";
             settingsSaved = true;
         }

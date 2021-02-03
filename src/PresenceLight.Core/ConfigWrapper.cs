@@ -158,6 +158,12 @@ namespace PresenceLight.Core
         public string? Uri { get; set; }
     }
 
+    public class CustomApiSetting
+    {
+        public string? Method { get; set; }
+        public string? Uri { get; set; }
+    }
+
     public class Yeelight
     {
         public string? SelectedYeelightId { get; set; }

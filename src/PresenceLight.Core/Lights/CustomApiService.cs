@@ -13,6 +13,7 @@ namespace PresenceLight.Core
     public interface ICustomApiService
     {
         Task<string> SetColor(string availability, string? activity);
+        void Initialize(BaseConfig options);
     }
 
     public class CustomApiService : ICustomApiService
@@ -28,7 +29,7 @@ namespace PresenceLight.Core
         };
 
         private readonly ILogger<CustomApiService> _logger;
-        private readonly BaseConfig _options;
+        private BaseConfig _options;
 
         public CustomApiService(IOptionsMonitor<BaseConfig> optionsAccessor, ILogger<CustomApiService> logger, IWorkingHoursService workingHoursService)
         {
@@ -37,15 +38,14 @@ namespace PresenceLight.Core
             _workingHoursService = workingHoursService;
         }
 
-        public CustomApiService(BaseConfig options)
+        public void Initialize(BaseConfig options)
         {
             _options = options;
         }
 
         public async Task<string> SetColor(string availability, string? activity)
         {
-            if (this._workingHoursService.UseWorkingHours
-                && !this._workingHoursService.IsInWorkingHours)
+            if (!_workingHoursService.UseWorkingHours || (_workingHoursService.UseWorkingHours && _workingHoursService.IsInWorkingHours))
             {
                 // If we are outside of working hours we should signal that we are off
                 availability = activity = "Off";
