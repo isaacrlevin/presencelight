@@ -19,7 +19,7 @@ namespace PresenceLight.Core
     }
     public class YeelightService : IYeelightService
     {
-        private readonly BaseConfig _options;
+        private BaseConfig _options;
 
         private IWorkingHoursService _workingHoursService;
         private DeviceGroup deviceGroup;
@@ -32,7 +32,7 @@ namespace PresenceLight.Core
             _workingHoursService = workingHoursService;
         }
 
-        public YeelightService(BaseConfig options)
+        public void Initialize(BaseConfig options)
         {
             _options = options;
         }

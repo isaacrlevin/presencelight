@@ -83,7 +83,7 @@
         try
         {
             SettingsService.SaveSettings(Config.CurrentValue);
-            _customApiService = new CustomApiService(Config.CurrentValue);
+            _customApiService.Initialize(Config.CurrentValue);
             message = "Settings Saved";
             settingsSaved = true;
         }
