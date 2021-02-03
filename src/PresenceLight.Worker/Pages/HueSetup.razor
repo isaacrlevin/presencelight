@@ -83,7 +83,7 @@
         try
         {
             SettingsService.SaveSettings(Config.CurrentValue);
-            _hueService = new HueService(Config.CurrentValue);
+            _hueService.Initialize(Config.CurrentValue);
             message = "Settings Saved";
             settingsSaved = true;
         }

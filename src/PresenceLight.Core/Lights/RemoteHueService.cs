@@ -20,12 +20,13 @@ namespace PresenceLight.Core
         Task SetColor(string availability, string lightId, string bridgeId);
         Task<(string bridgeId, string apiKey, string bridgeIp)> RegisterBridge();
         Task<IEnumerable<Light>> GetLights();
+        void Initialize(BaseConfig options);
     }
     public class RemoteHueService : IRemoteHueService
     {
-        private readonly BaseConfig _options;
+        private BaseConfig _options;
         private RemoteHueClient _client;
-        private readonly IRemoteAuthenticationClient _authClient;
+        private IRemoteAuthenticationClient _authClient;
         private readonly ILogger<RemoteHueService> _logger;
         private IWorkingHoursService _workingHoursService;
 
@@ -37,7 +38,7 @@ namespace PresenceLight.Core
             _authClient = new RemoteAuthenticationClient(_options.LightSettings.Hue.RemoteHueClientId, _options.LightSettings.Hue.RemoteHueClientSecret, _options.LightSettings.Hue.RemoteHueClientAppName);
         }
 
-        public RemoteHueService(BaseConfig options)
+        public void Initialize(BaseConfig options)
         {
             _options = options;
             _authClient = new RemoteAuthenticationClient(_options.LightSettings.Hue.RemoteHueClientId, _options.LightSettings.Hue.RemoteHueClientSecret, _options.LightSettings.Hue.RemoteHueClientAppName);
@@ -174,8 +175,7 @@ namespace PresenceLight.Core
                     throw new ArgumentNullException("Remote Hue Client Not Configured");
                 }
 
-                if (this._workingHoursService.UseWorkingHours
-           && !this._workingHoursService.IsInWorkingHours)
+                (!_workingHoursService.UseWorkingHours || (_workingHoursService.UseWorkingHours && _workingHoursService.IsInWorkingHours))
                 {
 
                     var command = new LightCommand();

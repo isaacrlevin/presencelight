@@ -56,7 +56,7 @@ namespace PresenceLight.Core
             message = $"{message} - {fileName.Split("\\").LastOrDefault().Replace(".cs", "")}:{memberName} Line: {lineNumber}";
             if (e != null)
             {
-                _logger.LogError(message, e);
+                _logger.LogError(e.Message, e);
             }
             else
             {

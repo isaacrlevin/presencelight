@@ -24,11 +24,11 @@ namespace PresenceLight
 
                 if (Config.LightSettings.Hue.UseRemoteApi && _remoteHueService == null)
                 {
-                    _remoteHueService = new RemoteHueService(Config);
+                  _remoteHueService.Initialize(Config);
                 }
                 else
                 {
-                    _hueService = new HueService(Config);
+                    _hueService.Initialize(Config);
                 }
                 CheckHue(false);
                 lblHueSaved.Visibility = Visibility.Visible;
