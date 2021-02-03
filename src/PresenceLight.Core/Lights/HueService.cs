@@ -18,10 +18,11 @@ namespace PresenceLight.Core
         Task<string> RegisterBridge();
         Task<IEnumerable<Light>> GetLights();
         Task<string> FindBridge();
+        void Initialize(BaseConfig options);
     }
     public class HueService : IHueService
     {
-        private readonly BaseConfig _options;
+        private BaseConfig _options;
         private LocalHueClient _client;
         private readonly ILogger<HueService> _logger;
         private readonly IWorkingHoursService _workingHoursService;
@@ -33,7 +34,7 @@ namespace PresenceLight.Core
             _options = optionsAccessor.CurrentValue;
         }
 
-        public HueService(BaseConfig options)
+        public void Initialize(BaseConfig options)
         {
             _options = options;
         }

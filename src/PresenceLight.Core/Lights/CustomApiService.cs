@@ -13,6 +13,7 @@ namespace PresenceLight.Core
     public interface ICustomApiService
     {
         Task<string> SetColor(string availability, string? activity);
+        void Initialize(BaseConfig options);
     }
 
     public class CustomApiService : ICustomApiService
@@ -28,7 +29,7 @@ namespace PresenceLight.Core
         };
 
         private readonly ILogger<CustomApiService> _logger;
-        private readonly BaseConfig _options;
+        private BaseConfig _options;
 
         public CustomApiService(IOptionsMonitor<BaseConfig> optionsAccessor, ILogger<CustomApiService> logger, IWorkingHoursService workingHoursService)
         {
@@ -37,7 +38,7 @@ namespace PresenceLight.Core
             _workingHoursService = workingHoursService;
         }
 
-        public CustomApiService(BaseConfig options)
+        public void Initialize(BaseConfig options)
         {
             _options = options;
         }

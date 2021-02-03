@@ -9,7 +9,7 @@ namespace PresenceLight.Core
 {
     public class LIFXService
     {
-        private readonly BaseConfig _options;
+        private BaseConfig _options;
         private LifxCloudClient _client;
         private readonly ILogger<LIFXService> _logger;
         private readonly IWorkingHoursService _workingHoursService;
@@ -19,6 +19,11 @@ namespace PresenceLight.Core
             _workingHoursService = workingHoursService;
             _logger = logger;
             _options = optionsAccessor.CurrentValue;
+        }
+
+        public void Initialize(BaseConfig options)
+        {
+            _options = options;
         }
 
         public async Task<List<Light>> GetAllLights(string apiKey = null)
