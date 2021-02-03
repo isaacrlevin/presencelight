@@ -92,8 +92,7 @@ namespace PresenceLight.Core
 
             try
             {
-                if (this._workingHoursService.UseWorkingHours
-     && !this._workingHoursService.IsInWorkingHours)
+                if (!_workingHoursService.UseWorkingHours || (_workingHoursService.UseWorkingHours && _workingHoursService.IsInWorkingHours))
                 {
                     _client = await LifxCloudClient.CreateAsync(_options.LightSettings.LIFX.LIFXApiKey);
                     string color = "";
