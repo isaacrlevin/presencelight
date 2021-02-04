@@ -11,16 +11,15 @@
         <div class="container-fluid">
             <div class="row-fluid">
                 <div>
-                    <h1 class="centering text-center">Configure Custom API</h1>
+                    <h1>Configure Custom API</h1>
                     <br />
                     <br />
-                    <div class="centering text-center">
-                    <input type="checkbox" checked="@Config.CurrentValue.LightSettings.CustomApi.IsCustomApiEnabled" @bind-value="@Config.CurrentValue.LightSettings.CustomApi.IsCustomApiEnabled" /> Connect to Custom HTTP API
+                    <div>
+                        <input type="checkbox" checked="@Config.CurrentValue.LightSettings.CustomApi.IsEnabled" @bind-value="@Config.CurrentValue.LightSettings.CustomApi.IsEnabled" /> Connect to Custom HTTP API
                     </div>
-                    </div>
                     <br />
                     <br />
-                    @if (Config.CurrentValue.LightSettings.CustomApi.IsCustomApiEnabled)
+                    @if (Config.CurrentValue.LightSettings.CustomApi.IsEnabled)
                     {
                         @foreach (var customApiSetting in Config.CurrentValue.LightSettings.CustomApi.GetType().GetProperties())
                         {
@@ -65,11 +64,11 @@
 
                         <br />
                         <br />
-                        <div class="centering text-center">
-                        @if (settingsSaved)
-                        {
-                            <span class="text-success">@message</span>
-                        }
+                        <div>
+                            @if (settingsSaved)
+                            {
+                                <span class="text-success">@message</span>
+                            }
                         </div>
                     }
                 </div>

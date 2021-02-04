@@ -18,7 +18,7 @@ a,
 .bottom-right {
   position: relative;
   bottom: 120px;
-  left: 240px;
+  left: 55%;
 }
 
 .validation-message {
@@ -248,7 +248,7 @@ app {
   }
 
   .main .top-row {
-    position: sticky;
+    /*position: sticky;*/
     top: 0;
   }
 

@@ -16,7 +16,7 @@ namespace PresenceLight
 
         private void cbIsYeelightEnabledChanged(object sender, RoutedEventArgs e)
         {
-            if (Config.LightSettings.Yeelight.IsYeelightEnabled)
+            if (Config.LightSettings.Yeelight.IsEnabled)
             {
                 pnlYeelight.Visibility = Visibility.Visible;
             }
@@ -47,7 +47,7 @@ namespace PresenceLight
         {
             if (ddlYeelightLights.SelectedItem != null)
             {
-                Config.LightSettings.Yeelight.SelectedYeelightId = ((YeelightAPI.Device)ddlYeelightLights.SelectedItem).Id;
+                Config.LightSettings.Yeelight.SelectedItemId = ((YeelightAPI.Device)ddlYeelightLights.SelectedItem).Id;
                 SyncOptions();
             }
             e.Handled = true;
@@ -67,7 +67,7 @@ namespace PresenceLight
                     foreach (var item in ddlYeelightLights.Items)
                     {
                         var light = (YeelightAPI.Device)item;
-                        if (light?.Id == Config.LightSettings.Yeelight.SelectedYeelightId)
+                        if (light?.Id == Config.LightSettings.Yeelight.SelectedItemId)
                         {
                             ddlYeelightLights.SelectedItem = item;
                         }
