@@ -44,7 +44,9 @@ namespace PresenceLight
         private ICustomApiService _customApiService;
         private LIFXOAuthHelper _lIFXOAuthHelper;
         private LIFXService _lifxService;
-        private GraphServiceClient _graphServiceClient;
+
+        private GraphWrapper _graphServiceClient;
+
         private readonly IGraphService _graphservice;
         private DiagnosticsClient _diagClient;
         private ISettingsService _settingsService;
@@ -55,8 +57,8 @@ namespace PresenceLight
 
         #region Init
         public MainWindow(IGraphService graphService, IHueService hueService, LIFXService lifxService, IYeelightService yeelightService, IRemoteHueService remoteHueService, IWorkingHoursService workingHoursService,
-            ICustomApiService customApiService, IOptionsMonitor<BaseConfig> optionsAccessor, LIFXOAuthHelper lifxOAuthHelper, DiagnosticsClient diagClient, ILogger<MainWindow> logger,
-            ISettingsService settingsService)
+            ICustomApiService customApiService, IOptionsMonitor<BaseConfig> optionsAccessor, LIFXOAuthHelper lifxOAuthHelper, DiagnosticsClient diagClient, ILogger<MainWindow> logger, GraphWrapper graphServiceClient,
+        ISettingsService settingsService)
         {
             _logger = logger;
             InitializeComponent();
@@ -67,6 +69,7 @@ namespace PresenceLight
 
             _workingHoursService = workingHoursService;
             _graphservice = graphService;
+            _graphServiceClient = graphServiceClient;
             _yeelightService = yeelightService;
             _lifxService = lifxService;
             _hueService = hueService;
@@ -203,9 +206,9 @@ namespace PresenceLight
             syncTeamsButton.IsEnabled = false;
             syncThemeButton.IsEnabled = true;
 
-            if (_graphServiceClient == null)
+            if (!_graphServiceClient.IsInitialized)
             {
-                _graphServiceClient = _graphservice.GetAuthenticatedGraphClient();
+                _graphServiceClient.Initialize(_graphservice.GetAuthenticatedGraphClient());
             }
 
             signInPanel.Visibility = Visibility.Collapsed;
@@ -214,7 +217,7 @@ namespace PresenceLight
 
             try
             {
-                var (profile, presence) = await System.Threading.Tasks.Task.Run(() => GetBatchContent()).ConfigureAwait(true);
+                var (profile, presence) = await System.Threading.Tasks.Task.Run(() => _graphServiceClient.GetProfileAndPresence());
                 var photo = await System.Threading.Tasks.Task.Run(() => GetPhoto()).ConfigureAwait(true);
 
                 if (photo == null)
@@ -498,7 +501,7 @@ namespace PresenceLight
         {
             try
             {
-                return await _graphServiceClient.Me.Presence.Request().GetAsync().ConfigureAwait(true);
+                return await _graphServiceClient.GetPresence();
             }
             catch (Exception e)
             {
@@ -512,7 +515,7 @@ namespace PresenceLight
         {
             try
             {
-                var photo = await _graphServiceClient.Me.Photo.Content.Request().GetAsync().ConfigureAwait(true);
+                var photo = await _graphServiceClient.GetPhoto();
 
                 if (photo == null)
                 {
@@ -542,34 +545,6 @@ namespace PresenceLight
                     ms.Write(buffer, 0, read);
                 }
                 return ms.ToArray();
-            }
-        }
-
-        public async Task<(User User, Presence Presence)> GetBatchContent()
-        {
-            Helpers.AppendLogger(_logger, "Getting Graph Data: Profle, Image, Presence");
-            try
-            {
-                IUserRequest userRequest = _graphServiceClient.Me.Request();
-                IPresenceRequest presenceRequest = _graphServiceClient.Me.Presence.Request();
-
-                BatchRequestContent batchRequestContent = new BatchRequestContent();
-
-                var userRequestId = batchRequestContent.AddBatchRequestStep(userRequest);
-                var presenceRequestId = batchRequestContent.AddBatchRequestStep(presenceRequest);
-
-                BatchResponseContent returnedResponse = await _graphServiceClient.Batch.Request().PostAsync(batchRequestContent).ConfigureAwait(true);
-
-                User user = await returnedResponse.GetResponseByIdAsync<User>(userRequestId).ConfigureAwait(true);
-                Presence presence = await returnedResponse.GetResponseByIdAsync<Presence>(presenceRequestId).ConfigureAwait(true);
-
-                return (User: user, Presence: presence);
-            }
-            catch (Exception e)
-            {
-                Helpers.AppendLogger(_logger, "Error Occured", e);
-                _diagClient.TrackException(e);
-                throw;
             }
         }
 
@@ -730,9 +705,9 @@ namespace PresenceLight
 
         private async Task InteractWithLights()
         {
-            try
+            while (true)
             {
-                while (true)
+                try
                 {
                     await Task.Delay(Convert.ToInt32(Config.LightSettings.PollingInterval * 1000)).ConfigureAwait(true);
 
@@ -840,11 +815,11 @@ namespace PresenceLight
                         }
                     }
                 }
-            }
-            catch (Exception e)
-            {
-                Helpers.AppendLogger(_logger, "Error Occured", e);
-                _diagClient.TrackException(e);
+                catch (Exception e)
+                {
+                    Helpers.AppendLogger(_logger, "Error Occured", e);
+                    _diagClient.TrackException(e);
+                }
             }
         }
     }
