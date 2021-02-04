@@ -79,7 +79,17 @@ namespace PresenceLight.Core
             {
                 throw new ArgumentNullException("Selected LIFX Light Not Specified");
             }
-            Selector selector = new Selector.LightId(lightId);
+
+            Selector selector = null;
+
+            if (!lightId.Contains("group"))
+            {
+                selector = new Selector.LightId(lightId.Replace("id:", ""));
+            }
+            else
+            {
+                selector = new Selector.GroupId(lightId.Replace("group_id:", ""));
+            }
 
             if (!string.IsNullOrEmpty(apiKey))
             {

@@ -4,13 +4,9 @@ using System.Globalization;
 using System.Threading;
 using System.Windows;
 
-using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
-using Microsoft.ApplicationInsights.SnapshotCollector;
-using Microsoft.ApplicationInsights.WorkerService;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 using NLog;
 using NLog.Extensions.Logging;
@@ -27,18 +23,6 @@ namespace PresenceLight
     /// </summary>
     public partial class App : System.Windows.Application
     {
-        private class SnapshotCollectorTelemetryProcessorFactory : ITelemetryProcessorFactory
-        {
-            private readonly IServiceProvider _serviceProvider;
-            public SnapshotCollectorTelemetryProcessorFactory(IServiceProvider serviceProvider) =>
-                _serviceProvider = serviceProvider;
-            public ITelemetryProcessor Create(ITelemetryProcessor next)
-            {
-                var snapshotConfigurationOptions = _serviceProvider.GetService<IOptions<SnapshotCollectorConfiguration>>();
-                return new SnapshotCollectorTelemetryProcessor(next, configuration: snapshotConfigurationOptions == null ? new SnapshotCollectorConfiguration() : snapshotConfigurationOptions.Value);
-            }
-        }
-
         public IServiceProvider? ServiceProvider { get; private set; }
 
         public IConfiguration Configuration { get; private set; }
@@ -46,8 +30,7 @@ namespace PresenceLight
         public static IConfiguration StaticConfig { get; private set; }
 
         public App()
-        {
-        }
+        { }
 
         private void OnStartup(object sender, StartupEventArgs e)
         {
@@ -100,21 +83,12 @@ namespace PresenceLight
         o.TelemetryInitializers.Add(new AppVersionTelemetryInitializer());
         o.TelemetryInitializers.Add(new EnvironmentTelemetryInitializer());
 
-        if (Convert.ToBoolean(Configuration["SendDiagnosticData"], CultureInfo.InvariantCulture))
-        {
-            //   o.TelemetryProcessorChainBuilder.UseSnapshotCollector(new SnapshotCollectorConfiguration
-            //    {
-            //        IsEnabled = true,
-            //        IsEnabledInDeveloperMode = true,
-            //        DeoptimizeMethodCount = 4
-            //    });
-        }
     });
             services.AddApplicationInsightsTelemetryWorkerService(options =>
-            {
-                options.EnablePerformanceCounterCollectionModule = false;
-                options.EnableDependencyTrackingTelemetryModule = false;
-            });
+        {
+            options.EnablePerformanceCounterCollectionModule = false;
+            options.EnableDependencyTrackingTelemetryModule = false;
+        });
 
             services.AddSingleton<IGraphService, GraphService>();
             services.AddSingleton<IHueService, HueService>();
@@ -122,6 +96,7 @@ namespace PresenceLight
             services.AddSingleton<LIFXService, LIFXService>();
             services.AddSingleton<IYeelightService, YeelightService>();
             services.AddSingleton<ICustomApiService, CustomApiService>();
+            services.AddSingleton<GraphWrapper, GraphWrapper>();
             services.AddSingleton<IWorkingHoursService, WorkingHoursService>();
             services.AddSingleton<LIFXOAuthHelper, LIFXOAuthHelper>();
             services.AddSingleton<ThisAppInfo, ThisAppInfo>();
