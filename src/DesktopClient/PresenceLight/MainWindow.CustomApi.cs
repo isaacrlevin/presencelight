@@ -15,7 +15,7 @@ namespace PresenceLight
 
         private void cbIsCustomApiEnabledChanged(object sender, RoutedEventArgs e)
         {
-            if (Config.LightSettings.CustomApi.IsCustomApiEnabled)
+            if (Config.LightSettings.CustomApi.IsEnabled)
             {
                 pnlCustomApi.Visibility = Visibility.Visible;
             }

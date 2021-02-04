@@ -60,7 +60,7 @@ namespace PresenceLight
             SolidColorBrush fontBrush = new SolidColorBrush();
             try
             {
-                if (Config.LightSettings.LIFX.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey) && !string.IsNullOrEmpty(Config.LightSettings.LIFX.SelectedLIFXItemId))
+                if (Config.LightSettings.LIFX.IsEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey) && !string.IsNullOrEmpty(Config.LightSettings.LIFX.SelectedItemId))
                 {
                     ddlLIFXLights.ItemsSource = await _lifxService.GetAllLights().ConfigureAwait(true);
 
@@ -69,7 +69,7 @@ namespace PresenceLight
                         if (item != null)
                         {
                             var light = (Light)item;
-                            if ($"id:{light?.Id}" == Config.LightSettings.LIFX.SelectedLIFXItemId)
+                            if ($"id:{light?.Id}" == Config.LightSettings.LIFX.SelectedItemId)
                             {
                                 ddlLIFXLights.SelectedItem = item;
                             }
@@ -85,7 +85,7 @@ namespace PresenceLight
                             if (item != null)
                             {
                                 var group = (LifxCloud.NET.Models.Group)item;
-                                if ($"group_id:{group?.Id}" == Config.LightSettings.LIFX.SelectedLIFXItemId)
+                                if ($"group_id:{group?.Id}" == Config.LightSettings.LIFX.SelectedItemId)
                                 {
                                     ddlLIFXLights.SelectedItem = item;
                                 }
@@ -122,12 +122,12 @@ namespace PresenceLight
                 // Get whether item is group or light
                 if (ddlLIFXLights.SelectedItem.GetType() == typeof(LifxCloud.NET.Models.Group))
                 {
-                    Config.LightSettings.LIFX.SelectedLIFXItemId = $"group_id:{((LifxCloud.NET.Models.Group)ddlLIFXLights.SelectedItem).Id}";
+                    Config.LightSettings.LIFX.SelectedItemId = $"group_id:{((LifxCloud.NET.Models.Group)ddlLIFXLights.SelectedItem).Id}";
                 }
 
                 if (ddlLIFXLights.SelectedItem.GetType() == typeof(LifxCloud.NET.Models.Light))
                 {
-                    Config.LightSettings.LIFX.SelectedLIFXItemId = $"id:{((LifxCloud.NET.Models.Light)ddlLIFXLights.SelectedItem).Id}";
+                    Config.LightSettings.LIFX.SelectedItemId = $"id:{((LifxCloud.NET.Models.Light)ddlLIFXLights.SelectedItem).Id}";
                 }
 
                 SyncOptions();
@@ -199,7 +199,7 @@ namespace PresenceLight
 
         private void cbIsLIFXEnabledChanged(object sender, RoutedEventArgs e)
         {
-            if (Config.LightSettings.LIFX.IsLIFXEnabled)
+            if (Config.LightSettings.LIFX.IsEnabled)
             {
                 getTokenLink.Visibility = Visibility.Visible;
                 pnlLIFX.Visibility = Visibility.Visible;

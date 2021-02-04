@@ -175,7 +175,7 @@ namespace PresenceLight.Core
                     throw new ArgumentNullException("Remote Hue Client Not Configured");
                 }
 
-                (!_workingHoursService.UseWorkingHours || (_workingHoursService.UseWorkingHours && _workingHoursService.IsInWorkingHours))
+               if (!_workingHoursService.UseWorkingHours || (_workingHoursService.UseWorkingHours && _workingHoursService.IsInWorkingHours))
                 {
 
                     var command = new LightCommand();
@@ -337,14 +337,14 @@ namespace PresenceLight.Core
                     }
                     else
                     {
-                        if (_options.LightSettings.Hue.HueBrightness == 0)
+                        if (_options.LightSettings.Hue.Brightness == 0)
                         {
                             command.On = false;
                         }
                         else
                         {
                             command.On = true;
-                            command.Brightness = Convert.ToByte(((Convert.ToDouble(_options.LightSettings.Hue.HueBrightness) / 100) * 254));
+                            command.Brightness = Convert.ToByte(((Convert.ToDouble(_options.LightSettings.Hue.Brightness) / 100) * 254));
                             command.TransitionTime = new TimeSpan(0);
                         }
                     }

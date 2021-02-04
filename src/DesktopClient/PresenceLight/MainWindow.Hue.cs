@@ -81,7 +81,7 @@ namespace PresenceLight
         {
             if (ddlHueLights.SelectedItem != null)
             {
-                Config.LightSettings.Hue.SelectedHueLightId = ((Q42.HueApi.Light)ddlHueLights.SelectedItem).Id;
+                Config.LightSettings.Hue.SelectedItemId = ((Q42.HueApi.Light)ddlHueLights.SelectedItem).Id;
                 SyncOptions();
             }
             e.Handled = true;
@@ -158,7 +158,7 @@ namespace PresenceLight
                         foreach (var item in ddlHueLights.Items)
                         {
                             var light = (Q42.HueApi.Light)item;
-                            if (light?.Id == Config.LightSettings.Hue.SelectedHueLightId)
+                            if (light?.Id == Config.LightSettings.Hue.SelectedItemId)
                             {
                                 ddlHueLights.SelectedItem = item;
                             }
@@ -218,7 +218,7 @@ namespace PresenceLight
 
         private void cbIsPhillipsEnabledChanged(object sender, RoutedEventArgs e)
         {
-            if (Config.LightSettings.Hue.IsPhillipsHueEnabled)
+            if (Config.LightSettings.Hue.IsEnabled)
             {
                 pnlPhillips.Visibility = Visibility.Visible;
                 pnlHueApi.Visibility = Visibility.Visible;

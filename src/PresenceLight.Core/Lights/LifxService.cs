@@ -35,7 +35,7 @@ namespace PresenceLight.Core
                     _options.LightSettings.LIFX.LIFXApiKey = apiKey;
                 }
 
-                if (!_options.LightSettings.LIFX.IsLIFXEnabled || string.IsNullOrEmpty(_options.LightSettings.LIFX.LIFXApiKey))
+                if (!_options.LightSettings.LIFX.IsEnabled || string.IsNullOrEmpty(_options.LightSettings.LIFX.LIFXApiKey))
                 {
                     return new List<Light>();
                 }
@@ -58,7 +58,7 @@ namespace PresenceLight.Core
                 {
                     _options.LightSettings.LIFX.LIFXApiKey = apiKey;
                 }
-                if (!_options.LightSettings.LIFX.IsLIFXEnabled || string.IsNullOrEmpty(_options.LightSettings.LIFX.LIFXApiKey))
+                if (!_options.LightSettings.LIFX.IsEnabled || string.IsNullOrEmpty(_options.LightSettings.LIFX.LIFXApiKey))
                 {
                     return new List<Group>();
                 }
@@ -73,7 +73,7 @@ namespace PresenceLight.Core
             }
         }
 
-        public async Task SetColor(string availability, string lightId, string apiKey = null)
+        public async Task SetColor(string availability, string activity, string lightId, string apiKey = null)
         {
             if (string.IsNullOrEmpty(lightId))
             {
@@ -85,14 +85,14 @@ namespace PresenceLight.Core
             {
                 _options.LightSettings.LIFX.LIFXApiKey = apiKey;
             }
-            if (!_options.LightSettings.LIFX.IsLIFXEnabled || string.IsNullOrEmpty(_options.LightSettings.LIFX.LIFXApiKey))
+            if (!_options.LightSettings.LIFX.IsEnabled || string.IsNullOrEmpty(_options.LightSettings.LIFX.LIFXApiKey))
             {
                 return;
             }
 
             try
             {
-                (!_workingHoursService.UseWorkingHours || (_workingHoursService.UseWorkingHours && _workingHoursService.IsInWorkingHours))
+                if (!_workingHoursService.UseWorkingHours || (_workingHoursService.UseWorkingHours && _workingHoursService.IsInWorkingHours))
                 {
                     _client = await LifxCloudClient.CreateAsync(_options.LightSettings.LIFX.LIFXApiKey);
                     string color = "";
@@ -265,7 +265,7 @@ namespace PresenceLight.Core
                     }
                     else
                     {
-                        if (_options.LightSettings.LIFX.LIFXBrightness == 0)
+                        if (_options.LightSettings.LIFX.Brightness == 0)
                         {
                             _logger.LogInformation($"Turning LIFX Light {lightId} Off - LIFXService:SetColor");
                             var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
@@ -279,7 +279,7 @@ namespace PresenceLight.Core
                             Helpers.AppendLogger(_logger, message);
                             var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
                             {
-                                Brightness = Convert.ToDouble(_options.LightSettings.LIFX.LIFXBrightness) / 100,
+                                Brightness = Convert.ToDouble(_options.LightSettings.LIFX.Brightness) / 100,
                                 Color = color,
                                 Duration = 0
                             });

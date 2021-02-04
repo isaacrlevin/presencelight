@@ -118,7 +118,7 @@
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <Grid Grid.Column="1" Grid.ColumnSpan="1">
-                        <CheckBox x:Name="cbIsPhillipsEnabled" IsChecked="{Binding LightSettings.Hue.IsPhillipsHueEnabled}" Content="Connect to Phillips Hue" Grid.Column="1" Grid.ColumnSpan="4" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbIsPhillipsEnabledChanged" Checked="cbIsPhillipsEnabledChanged" />
+                        <CheckBox x:Name="cbIsPhillipsEnabled" IsChecked="{Binding LightSettings.Hue.IsEnabled}" Content="Connect to Phillips Hue" Grid.Column="1" Grid.ColumnSpan="4" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbIsPhillipsEnabledChanged" Checked="cbIsPhillipsEnabledChanged" />
                     </Grid>
                     <Grid x:Name="pnlHueApi" Grid.Column="2" Grid.ColumnSpan="2">
                         <CheckBox x:Name="cbUseRemoteHueApi" IsChecked="{Binding LightSettings.Hue.UseRemoteApi}" Content="Use Remote Api" Grid.Column="1" Grid.ColumnSpan="4" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbUseRemoteApiChanged" Checked="cbUseRemoteApiChanged" />
@@ -174,7 +174,7 @@
                             <ComboBox Grid.Row="0" Grid.Column="1" x:Name="ddlHueLights" DisplayMemberPath="Name" SelectionChanged="ddlHueLights_SelectionChanged"  HorizontalAlignment="Left" VerticalAlignment="Top" Width="150" Margin="0,11,0,0" Grid.RowSpan="2"/>
 
                             <Label Grid.Column="0" VerticalAlignment="Center" Content="Brightness"  Grid.ColumnSpan="3" Grid.Row="1" />
-                            <Slider Grid.Column="1" VerticalAlignment="Center" Width="180"  HorizontalAlignment="Left" x:Name = "hueBrightness" Value="{Binding LightSettings.Hue.HueBrightness}" IsSnapToTickEnabled="True"  Minimum = "0" Maximum = "100" TickFrequency = "10" TickPlacement = "BottomRight"  Grid.Row="1" />
+                            <Slider Grid.Column="1" VerticalAlignment="Center" Width="180"  HorizontalAlignment="Left" x:Name = "hueBrightness" Value="{Binding LightSettings.Hue.Brightness}" IsSnapToTickEnabled="True"  Minimum = "0" Maximum = "100" TickFrequency = "10" TickPlacement = "BottomRight"  Grid.Row="1" />
                             <TextBox Grid.Column="2" VerticalAlignment="Center" Text="{Binding ElementName=hueBrightness, Path=Value, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="20" TextAlignment="Center" Width="40" Grid.Row="1" />
                             <Label Grid.Column="0" VerticalAlignment="Center" Content="Available Colour"  Grid.Row="2" />
                             <Label Grid.Column="0" VerticalAlignment="Center" Content="Busy Colour" Grid.Row="3" />
@@ -222,7 +222,7 @@
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <Grid Grid.Column="1" Grid.ColumnSpan="4">
-                        <CheckBox x:Name="cbIsYeelightEnabled" IsChecked="{Binding LightSettings.Yeelight.IsYeelightEnabled}" Content="Connect to Yeelight" Grid.Column="1" Grid.ColumnSpan="4" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbIsYeelightEnabledChanged"  Checked="cbIsYeelightEnabledChanged" />
+                        <CheckBox x:Name="cbIsYeelightEnabled" IsChecked="{Binding LightSettings.Yeelight.IsEnabled}" Content="Connect to Yeelight" Grid.Column="1" Grid.ColumnSpan="4" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbIsYeelightEnabledChanged"  Checked="cbIsYeelightEnabledChanged" />
                     </Grid>
                     <Grid x:Name="pnlYeelight"  Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3">
                         <Grid.ColumnDefinitions>
@@ -250,7 +250,7 @@
                             </Grid.RowDefinitions>
 
                             <Label Grid.Column="0" VerticalAlignment="Center" Margin="0,20,0,0" Grid.Row="0" Content="Brightness"  Grid.ColumnSpan="3" />
-                            <Slider Grid.Column="1" VerticalAlignment="Center" Margin="0,40,10,0" Grid.Row="0" Width="180"  HorizontalAlignment="Left" x:Name = "yeelightBrightness" Value="{Binding LightSettings.Yeelight.YeelightBrightness}" IsSnapToTickEnabled="True"  Minimum = "0" Maximum = "100" TickFrequency = "10"  TickPlacement = "BottomRight" />
+                            <Slider Grid.Column="1" VerticalAlignment="Center" Margin="0,40,10,0" Grid.Row="0" Width="180"  HorizontalAlignment="Left" x:Name = "yeelightBrightness" Value="{Binding LightSettings.Yeelight.Brightness}" IsSnapToTickEnabled="True"  Minimum = "0" Maximum = "100" TickFrequency = "10"  TickPlacement = "BottomRight" />
                             <TextBox Grid.Column="1" VerticalAlignment="Center"  Grid.Row="0" Text="{Binding ElementName=yeelightBrightness, Path=Value, UpdateSourceTrigger=PropertyChanged}" Margin="0,30,-30,0" HorizontalAlignment="Right" Height="20" TextAlignment="Center" Width="40" />
                         </Grid>
 
@@ -289,7 +289,7 @@
                             <ColumnDefinition Width="141*"/>
                             <ColumnDefinition Width="553*"/>
                         </Grid.ColumnDefinitions>
-                        <CheckBox x:Name="cbIsLIFXEnabled" IsChecked="{Binding LightSettings.LIFX.IsLIFXEnabled}" Content="Connect to LIFX Light" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbIsLIFXEnabledChanged" Checked="cbIsLIFXEnabledChanged" />
+                        <CheckBox x:Name="cbIsLIFXEnabled" IsChecked="{Binding LightSettings.LIFX.IsEnabled}" Content="Connect to LIFX Light" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbIsLIFXEnabledChanged" Checked="cbIsLIFXEnabledChanged" />
                         <TextBlock x:Name="getTokenLink" Grid.Column="1"  Margin="59,20,0,0" >
                             <Hyperlink NavigateUri="https://cloud.lifx.com/settings"  RequestNavigate="LIFXToken_Get">
                             Get Token
@@ -342,7 +342,7 @@
                             <ComboBox Grid.Row="0" Grid.Column="1" x:Name="ddlLIFXLights" DisplayMemberPath="Label" SelectionChanged="ddlLIFXLights_SelectionChanged"  HorizontalAlignment="Center" VerticalAlignment="Top" Width="150" Margin="0,11,0,0" Grid.RowSpan="2"/>
 
                             <Label Grid.Column="0" VerticalAlignment="Center" Content="Brightness"  Grid.ColumnSpan="3" Grid.Row="1" />
-                            <Slider Grid.Column="1" VerticalAlignment="Center" Width="180"  HorizontalAlignment="Left" x:Name = "lifxBrightness" Value="{Binding LightSettings.LIFX.LIFXBrightness}" IsSnapToTickEnabled="True"  Minimum = "0" Maximum = "100" TickFrequency = "10" TickPlacement = "BottomRight"  Grid.Row="1" />
+                            <Slider Grid.Column="1" VerticalAlignment="Center" Width="180"  HorizontalAlignment="Left" x:Name = "lifxBrightness" Value="{Binding LightSettings.LIFX.Brightness}" IsSnapToTickEnabled="True"  Minimum = "0" Maximum = "100" TickFrequency = "10" TickPlacement = "BottomRight"  Grid.Row="1" />
                             <TextBox Grid.Column="2" VerticalAlignment="Center" Text="{Binding ElementName=lifxBrightness, Path=Value, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="20" TextAlignment="Center" Width="40" Grid.Row="1" />
                             <Label Grid.Column="0" VerticalAlignment="Center" Content="Available Colour"  Grid.Row="2" />
                             <Label Grid.Column="0" VerticalAlignment="Center" Content="Busy Colour" Grid.Row="3" />
@@ -389,7 +389,7 @@
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <Grid Grid.Column="1" Grid.ColumnSpan="4">
-                        <CheckBox x:Name="cbIsCustomApiEnabled" IsChecked="{Binding LightSettings.CustomApi.IsCustomApiEnabled}" Content="Enable Custom API calls" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbIsCustomApiEnabledChanged" Checked="cbIsCustomApiEnabledChanged" Grid.Column="1" Grid.ColumnSpan="4" />
+                        <CheckBox x:Name="cbIsCustomApiEnabled" IsChecked="{Binding LightSettings.CustomApi.IsEnabled}" Content="Enable Custom API calls" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbIsCustomApiEnabledChanged" Checked="cbIsCustomApiEnabledChanged" Grid.Column="1" Grid.ColumnSpan="4" />
                     </Grid>
                     <Grid x:Name="pnlCustomApi" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3">
                         <Grid.ColumnDefinitions>
