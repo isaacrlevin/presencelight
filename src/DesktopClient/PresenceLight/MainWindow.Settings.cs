@@ -195,9 +195,9 @@ namespace PresenceLight
                     signInPanel.Visibility = Visibility.Visible;
                 }
 
-                if (_graphServiceClient == null)
+                if (!_graphServiceClient.IsInitialized)
                 {
-                    _graphServiceClient = _graphservice.GetAuthenticatedGraphClient();
+                    _graphServiceClient.Initialize(_graphservice.GetAuthenticatedGraphClient());
                 }
             }
             catch (Exception e)
