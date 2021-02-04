@@ -7,11 +7,14 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
 
 namespace PresenceLight.Core
-{    public enum HoursPassedStatus
+{
+    public enum HoursPassedStatus
     {
         Off,
         Keep,
