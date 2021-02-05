@@ -48,7 +48,7 @@ namespace PresenceLight.Core
             if (!_workingHoursService.UseWorkingHours || (_workingHoursService.UseWorkingHours && _workingHoursService.IsInWorkingHours))
             {
                 // If we are outside of working hours we should signal that we are off
-                availability = activity = "Off";
+                availability = activity = availability;
             }
 
             string result = await SetAvailability(availability);
