@@ -48,10 +48,8 @@ namespace PresenceLight.Core
 
             try
             {
-                if (!_workingHoursService.UseWorkingHours || (_workingHoursService.UseWorkingHours && _workingHoursService.IsInWorkingHours))
-                {
-                    _client = new LocalHueClient(_options.LightSettings.Hue.HueIpAddress);
-                    _client.Initialize(_options.LightSettings.Hue.HueApiKey);
+                _client = new LocalHueClient(_options.LightSettings.Hue.HueIpAddress);
+                _client.Initialize(_options.LightSettings.Hue.HueApiKey);
 
                     var o = await Handle(_options.LightSettings.Hue.UseActivityStatus ? activity : availability, lightId);
 
@@ -76,17 +74,17 @@ namespace PresenceLight.Core
                             throw new ArgumentException("Supplied Color had an issue");
                     }
 
-                    command.SetColor(new RGBColor(color));
+                command.SetColor(new RGBColor(color));
 
 
-                    if (availability == "Off")
-                    {
-                        command.On = false;
-                        await _client.SendCommandAsync(command, new List<string> { lightId });
-                        message = $"Turning Hue Light {lightId} Off";
-                        Helpers.AppendLogger(_logger, message);
-                        return;
-                    }
+                if (availability == "Off")
+                {
+                    command.On = false;
+                    await _client.SendCommandAsync(command, new List<string> { lightId });
+                    message = $"Turning Hue Light {lightId} Off";
+                    Helpers.AppendLogger(_logger, message);
+                    return;
+                }
 
                     if (_options.LightSettings.UseDefaultBrightness)
                     {
@@ -115,10 +113,9 @@ namespace PresenceLight.Core
                         }
                     }
 
-                    await _client.SendCommandAsync(command, new List<string> { lightId });
-                    message = $"Setting Hue Light {lightId} to {color}";
-                    Helpers.AppendLogger(_logger, message);
-                }
+                await _client.SendCommandAsync(command, new List<string> { lightId });
+                message = $"Setting Hue Light {lightId} to {color}";
+                Helpers.AppendLogger(_logger, message);
             }
             catch (Exception e)
             {

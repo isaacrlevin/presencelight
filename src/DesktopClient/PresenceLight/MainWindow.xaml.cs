@@ -705,6 +705,7 @@ namespace PresenceLight
 
         private async Task InteractWithLights()
         {
+            bool previousWorkingHours = false;
             while (true)
             {
                 try
@@ -725,9 +726,9 @@ namespace PresenceLight
                         }
                         else
                         {
-                            bool previousWorkingHours = _workingHoursService.IsInWorkingHours;
                             if (_workingHoursService.IsInWorkingHours)
                             {
+                                previousWorkingHours = _workingHoursService.IsInWorkingHours;
                                 if (lightMode == "Graph")
                                 {
                                     touchLight = true;

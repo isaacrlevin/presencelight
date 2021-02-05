@@ -294,33 +294,33 @@ namespace PresenceLight.Core
                             break;
                     }
 
-                    color = color.Replace("#", "");
+                color = color.Replace("#", "");
 
-                    switch (color.Length)
-                    {
+                switch (color.Length)
+                {
 
-                        case var length when color.Length == 6:
-                            // Do Nothing
-                            break;
-                        case var length when color.Length > 6:
-                            // Get last 6 characters
-                            color = color.Substring(color.Length - 6);
-                            break;
-                        default:
-                            throw new ArgumentException("Supplied Color had an issue");
-                    }
+                    case var length when color.Length == 6:
+                        // Do Nothing
+                        break;
+                    case var length when color.Length > 6:
+                        // Get last 6 characters
+                        color = color.Substring(color.Length - 6);
+                        break;
+                    default:
+                        throw new ArgumentException("Supplied Color had an issue");
+                }
 
-                    command.SetColor(new RGBColor(color));
+                command.SetColor(new RGBColor(color));
 
 
-                    if (availability == "Off")
-                    {
-                        command.On = false;
-                        message = $"Turning Hue Light {lightId} Off";
-                        Helpers.AppendLogger(_logger, message);
-                        await _client.SendCommandAsync(command, new List<string> { lightId });
-                        return;
-                    }
+                if (availability == "Off")
+                {
+                    command.On = false;
+                    message = $"Turning Hue Light {lightId} Off";
+                    Helpers.AppendLogger(_logger, message);
+                    await _client.SendCommandAsync(command, new List<string> { lightId });
+                    return;
+                }
 
                     if (_options.LightSettings.UseDefaultBrightness)
                     {

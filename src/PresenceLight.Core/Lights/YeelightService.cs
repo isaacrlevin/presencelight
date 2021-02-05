@@ -47,30 +47,28 @@ namespace PresenceLight.Core
                 throw new ArgumentOutOfRangeException($"Yeelight Selected Light Id {lightId} Invalid");
             }
 
-            if (!_workingHoursService.UseWorkingHours || (_workingHoursService.UseWorkingHours && _workingHoursService.IsInWorkingHours))
+            var device = this.deviceGroup.FirstOrDefault(x => x.Id == lightId);
+
+            if (device == null)
             {
-                var device = this.deviceGroup.FirstOrDefault(x => x.Id == lightId);
+                message = $"Yeelight Device {lightId} Not Found";
+                Helpers.AppendLogger(_logger, message, new ArgumentOutOfRangeException());
+                throw new ArgumentOutOfRangeException(message);
+            }
 
-                if (device == null)
-                {
-                    message = $"Yeelight Device {lightId} Not Found";
-                    Helpers.AppendLogger(_logger, message, new ArgumentOutOfRangeException());
-                    throw new ArgumentOutOfRangeException(message);
-                }
+            device.OnNotificationReceived += Device_OnNotificationReceived;
+            device.OnError += Device_OnError;
 
-                device.OnNotificationReceived += Device_OnNotificationReceived;
-                device.OnError += Device_OnError;
+            if (!await device.Connect())
+            {
+                message = $"Unable to Connect to Yeelight Device {lightId}";
+                Helpers.AppendLogger(_logger, message, new ArgumentOutOfRangeException());
+                throw new ArgumentOutOfRangeException(message);
+            }
 
-                if (!await device.Connect())
-                {
-                    message = $"Unable to Connect to Yeelight Device {lightId}";
-                    Helpers.AppendLogger(_logger, message, new ArgumentOutOfRangeException());
-                    throw new ArgumentOutOfRangeException(message);
-                }
-
-                try
-                {
-                    string color = "";
+            try
+            {
+                string color = "";
 
                     if (_options.LightSettings.Yeelight.UseActivityStatus)
                     { }
@@ -179,19 +177,19 @@ namespace PresenceLight.Core
 
                     color = color.Replace("#", "");
 
-                    switch (color.Length)
-                    {
+                switch (color.Length)
+                {
 
-                        case var length when color.Length == 6:
-                            // Do Nothing
-                            break;
-                        case var length when color.Length > 6:
-                            // Get last 6 characters
-                            color = color.Substring(color.Length - 6);
-                            break;
-                        default:
-                            throw new ArgumentException("Supplied Color had an issue");
-                    }
+                    case var length when color.Length == 6:
+                        // Do Nothing
+                        break;
+                    case var length when color.Length > 6:
+                        // Get last 6 characters
+                        color = color.Substring(color.Length - 6);
+                        break;
+                    default:
+                        throw new ArgumentException("Supplied Color had an issue");
+                }
 
                     if (_options.LightSettings.UseDefaultBrightness)
                     {
@@ -218,15 +216,14 @@ namespace PresenceLight.Core
                         }
                     }
 
-                    var rgb = new RGBColor(availability);
-                    await device.SetRGBColor((int)rgb.R, (int)rgb.G, (int)rgb.B);
-                    return;
-                }
-                catch (Exception e)
-                {
-                    Helpers.AppendLogger(_logger, "Error Occured Finding Lights", e);
-                    throw;
-                }
+                var rgb = new RGBColor(availability);
+                await device.SetRGBColor((int)rgb.R, (int)rgb.G, (int)rgb.B);
+                return;
+            }
+            catch (Exception e)
+            {
+                Helpers.AppendLogger(_logger, "Error Occured Finding Lights", e);
+                throw;
             }
         }
 
