@@ -26,6 +26,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dockerfiles", "Dockerfiles"
 		DockerFiles\Dockerfile.debian-arm64 = DockerFiles\Dockerfile.debian-arm64
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Readmes", "Readmes", "{AEA7D3CB-0200-4256-BB51-D9A63E788C97}"
+	ProjectSection(SolutionItems) = preProject
+		..\desktop-README.md = ..\desktop-README.md
+		..\PrivacyPolicy.md = ..\PrivacyPolicy.md
+		..\README.md = ..\README.md
+		..\worker-README.md = ..\worker-README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -76,6 +84,7 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{C28F3920-8CF1-488B-A9FC-49BB2BA865D9} = {9BCEC868-73D3-4393-8099-D4DF2DC6DB74}
+		{AEA7D3CB-0200-4256-BB51-D9A63E788C97} = {9BCEC868-73D3-4393-8099-D4DF2DC6DB74}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8B89FF65-2B56-495E-8EA6-2B279DA440AE}
