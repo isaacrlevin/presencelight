@@ -37,7 +37,7 @@ namespace PresenceLight
             }
             catch (Exception ex)
             {
-                Helpers.AppendLogger(_logger, "Error occured Setting Theme Color", ex);
+                _logger.LogError(ex, "Error occured Setting Theme Color");
                 _diagClient.TrackException(ex);
             }
         }
@@ -63,7 +63,7 @@ namespace PresenceLight
             }
             catch (Exception ex)
             {
-                Helpers.AppendLogger(_logger, "Error occured Setting Custom Color", ex);
+                _logger.LogError(ex,"Error occured Setting Custom Color");
                 _diagClient.TrackException(ex);
             }
         }

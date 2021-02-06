@@ -35,7 +35,7 @@ namespace PresenceLight.Core
                       );
         }
 
-        
+
         public void Initialize(GraphServiceClient graphServiceClient)
         {
             _graphServiceClient = graphServiceClient;
@@ -64,7 +64,8 @@ namespace PresenceLight.Core
 
         private async Task<(User User, Presence Presence)> GetBatchContent()
         {
-            Helpers.AppendLogger(_logger, "Getting Graph Data: Profle, Image, Presence");
+
+            _logger.LogInformation("Getting Graph Data: Profle, Image, Presence");
             try
             {
                 IUserRequest userRequest = _graphServiceClient.Me.Request();
@@ -84,9 +85,10 @@ namespace PresenceLight.Core
             }
             catch (Exception e)
             {
-                Helpers.AppendLogger(_logger, "Error Occured Getting Batch Contnet", e);
+                _logger.LogError(e,"Error Occured Getting Batch Content");
                 throw;
             }
+
         }
 
     }

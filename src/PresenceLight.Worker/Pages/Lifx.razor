@@ -129,8 +129,8 @@
         }
         catch (Exception e)
         {
-            Helpers.AppendLogger(_logger, "Error Occured Saving Lifx Settings", e);
-            throw e;
+            _logger.LogError(e, "Error Occured Saving Lifx Settings");
+            throw;
         }
     }
 
@@ -177,7 +177,7 @@
             }
             catch (Exception e)
             {
-                Helpers.AppendLogger(_logger, "Error Occured Getting LIFX Lights", e);
+                _logger.LogError(e,"Error Occured Getting LIFX Lights");
                 showLifxMessage = true;
                 lifxMessage = "Error Occured Connecting to LIFX, please try again";
                 lifxMessageClass = "text-danger";
@@ -227,8 +227,8 @@
         }
         catch (Exception e)
         {
-            Helpers.AppendLogger(_logger, "Error Occured loading LIFX Setup", e);
-            throw e;
+            _logger.LogError(e, "Error Occured loading LIFX Setup");
+            throw;
         }
     }
 

@@ -68,7 +68,7 @@ namespace PresenceLight.Core
                             command.On = false;
                             await _client.SendCommandAsync(command, new List<string> { lightId });
                             message = $"Turning Hue Light {lightId} Off";
-                            Helpers.AppendLogger(_logger, message);
+                            _logger.LogInformation( message);
                             return;
                         }
                         break;
@@ -83,7 +83,7 @@ namespace PresenceLight.Core
                             command.On = false;
                             await _client.SendCommandAsync(command, new List<string> { lightId });
                             message = $"Turning Hue Light {lightId} Off";
-                            Helpers.AppendLogger(_logger, message);
+                           _logger.LogInformation(message);
                             return;
                         }
                         break;
@@ -98,7 +98,7 @@ namespace PresenceLight.Core
                             command.On = false;
                             await _client.SendCommandAsync(command, new List<string> { lightId });
                             message = $"Turning Hue Light {lightId} Off";
-                            Helpers.AppendLogger(_logger, message);
+                           _logger.LogInformation(message);
                             return;
                         }
                         break;
@@ -113,7 +113,7 @@ namespace PresenceLight.Core
                             command.On = false;
                             await _client.SendCommandAsync(command, new List<string> { lightId });
                             message = $"Turning Hue Light {lightId} Off";
-                            Helpers.AppendLogger(_logger, message);
+                           _logger.LogInformation(message);
                             return;
                         }
                         break;
@@ -128,7 +128,7 @@ namespace PresenceLight.Core
                             command.On = false;
                             await _client.SendCommandAsync(command, new List<string> { lightId });
                             message = $"Turning Hue Light {lightId} Off";
-                            Helpers.AppendLogger(_logger, message);
+                           _logger.LogInformation(message);
                             return;
                         }
                         break;
@@ -143,7 +143,7 @@ namespace PresenceLight.Core
                             command.On = false;
                             await _client.SendCommandAsync(command, new List<string> { lightId });
                             message = $"Turning Hue Light {lightId} Off";
-                            Helpers.AppendLogger(_logger, message);
+                           _logger.LogInformation(message);
                             return;
                         }
                         break;
@@ -158,7 +158,7 @@ namespace PresenceLight.Core
                             command.On = false;
                             await _client.SendCommandAsync(command, new List<string> { lightId });
                             message = $"Turning Hue Light {lightId} Off";
-                            Helpers.AppendLogger(_logger, message);
+                           _logger.LogInformation(message);
                             return;
                         }
                         break;
@@ -192,7 +192,7 @@ namespace PresenceLight.Core
                     command.On = false;
                     await _client.SendCommandAsync(command, new List<string> { lightId });
                     message = $"Turning Hue Light {lightId} Off";
-                    Helpers.AppendLogger(_logger, message);
+                   _logger.LogInformation(message);
                     return;
                 }
 
@@ -225,11 +225,11 @@ namespace PresenceLight.Core
 
                 await _client.SendCommandAsync(command, new List<string> { lightId });
                 message = $"Setting Hue Light {lightId} to {color}";
-                Helpers.AppendLogger(_logger, message);
+               _logger.LogInformation(message);
             }
             catch (Exception e)
             {
-                Helpers.AppendLogger(_logger, "Error Occurred Setting Color", e);
+                _logger.LogError(e, "Error Occurred Setting Color");
                 throw;
             }
         }
@@ -250,7 +250,7 @@ namespace PresenceLight.Core
                 }
                 catch (Exception e)
                 {
-                    Helpers.AppendLogger(_logger, "Error Occurred Registering Bridge", e);
+                    _logger.LogError(e, "Error Occurred Registering Bridge");
                     return String.Empty;
                 }
             }
@@ -270,7 +270,7 @@ namespace PresenceLight.Core
             }
             catch (Exception e)
             {
-                Helpers.AppendLogger(_logger, "Error Occurred Finding Bridge", e);
+                _logger.LogError(e, "Error Occurred Finding Bridge");
                 return String.Empty;
             }
             return String.Empty;
@@ -297,7 +297,7 @@ namespace PresenceLight.Core
             }
             catch (Exception e)
             {
-                Helpers.AppendLogger(_logger, "Error Occurred Getting Bridge", e);
+                _logger.LogError(e, "Error Occurred Getting Bridge");
                 throw;
             }
 

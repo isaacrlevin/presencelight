@@ -160,7 +160,7 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
-                Helpers.AppendLogger(_logger, "Error occured", e);
+                _logger.LogError(e, $"Error occured - {e.Message}");
                 _diagClient.TrackException(e);
             }
         }
@@ -292,7 +292,7 @@ namespace PresenceLight
 
             catch (Exception e)
             {
-                Helpers.AppendLogger(_logger, "Error occured", e);
+                _logger.LogError(e, "Error occured");
                 _diagClient.TrackException(e);
             }
         }
@@ -342,7 +342,8 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
-                Helpers.AppendLogger(_logger, "Error Occured", e);
+               
+                _logger.LogError(e, "Error Occurred");
                 _diagClient.TrackException(e);
                 throw;
             }
@@ -350,7 +351,8 @@ namespace PresenceLight
 
         private async void SignOutButton_Click(object sender, RoutedEventArgs e)
         {
-            Helpers.AppendLogger(_logger, "Signing out of Graph PresenceLight Sync");
+            _logger.LogInformation( "Signing out of Graph PresenceLight Sync");
+            
             lightMode = "Graph";
             var accounts = await WPFAuthorizationProvider.Application.GetAccountsAsync().ConfigureAwait(true);
             if (accounts.Any())
@@ -411,7 +413,7 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
-                Helpers.AppendLogger(_logger, "Error Occured in LoadImager", e);
+                _logger.LogError(e,"Error Occured in LoadImager");
                 _diagClient.TrackException(e);
                 throw;
             }
@@ -489,7 +491,7 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
-                Helpers.AppendLogger(_logger, "Error Occured", e);
+               _logger.LogError(e, "Error Occurred");
                 _diagClient.TrackException(e);
                 throw;
             }
@@ -505,7 +507,7 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
-                Helpers.AppendLogger(_logger, "Error Occured", e);
+               _logger.LogError(e, "Error Occurred");
                 _diagClient.TrackException(e);
                 throw;
             }
@@ -528,7 +530,7 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
-                Helpers.AppendLogger(_logger, "Error Occured", e);
+               _logger.LogError(e, "Error Occurred");
                 _diagClient.TrackException(e);
                 throw;
             }
@@ -589,7 +591,7 @@ namespace PresenceLight
             turnOnButton.Visibility = Visibility.Collapsed;
 
             this.WindowState = this.lastWindowState;
-            Helpers.AppendLogger(_logger, "Turning On PresenceLight Sync");
+            _logger.LogInformation( "Turning On PresenceLight Sync");
         }
 
         private async void OnTurnOffSyncClick(object sender, RoutedEventArgs e)
@@ -626,10 +628,10 @@ namespace PresenceLight
             }
             catch (Exception ex)
             {
-                Helpers.AppendLogger(_logger, "Error Occured", ex);
+                _logger.LogError(ex, "Error Occured");
                 _diagClient.TrackException(ex);
             }
-            Helpers.AppendLogger(_logger, "Turning Off PresenceLight Sync");
+            _logger.LogInformation("Turning Off PresenceLight Sync");
         }
 
         private async void OnExitClick(object sender, RoutedEventArgs e)
@@ -658,10 +660,10 @@ namespace PresenceLight
             }
             catch (Exception ex)
             {
-                Helpers.AppendLogger(_logger, "Error Occured", ex);
+                _logger.LogError(ex,"Error Occured");
                 _diagClient.TrackException(ex);
             }
-            Helpers.AppendLogger(_logger, "PresenceLight Exiting");
+            _logger.LogInformation("PresenceLight Exiting");
         }
 
         private async void Current_SessionEnding(object sender, SessionEndingCancelEventArgs e)
@@ -695,11 +697,11 @@ namespace PresenceLight
             }
             catch (Exception ex)
             {
-                Helpers.AppendLogger(_logger, "Error Occured", ex);
+                _logger.LogError(ex, "Error Occured");
                 _diagClient.TrackException(ex);
             }
 
-            Helpers.AppendLogger(_logger, "PresenceLight Session Ending");
+            _logger.LogInformation("PresenceLight Session Ending");
         }
         #endregion
 
@@ -763,7 +765,7 @@ namespace PresenceLight
                         switch (lightMode)
                         {
                             case "Graph":
-                                Helpers.AppendLogger(_logger, "PresenceLight Running in Teams Mode");
+                                _logger.LogInformation("PresenceLight Running in Teams Mode");
                                 presence = await System.Threading.Tasks.Task.Run(() => GetPresence()).ConfigureAwait(true);
 
                                 if (newColor == string.Empty)
@@ -785,7 +787,7 @@ namespace PresenceLight
                                 MapUI(presence, null, null);
                                 break;
                             case "Theme":
-                                Helpers.AppendLogger(_logger, "PresenceLight Running in Theme Mode");
+                                _logger.LogInformation("PresenceLight Running in Theme Mode");
                                 try
                                 {
                                     var theme = ((SolidColorBrush)SystemParameters.WindowGlassBrush).Color;
@@ -807,7 +809,7 @@ namespace PresenceLight
                                 }
                                 catch (Exception ex)
                                 {
-                                    Helpers.AppendLogger(_logger, "Error Occured", ex);
+                                   _logger.LogError(ex, "Error Occured");
                                     _diagClient.TrackException(ex);
                                 }
                                 break;
@@ -818,7 +820,7 @@ namespace PresenceLight
                 }
                 catch (Exception e)
                 {
-                    Helpers.AppendLogger(_logger, "Error Occured", e);
+                   _logger.LogError(e, "Error Occurred");
                     _diagClient.TrackException(e);
                 }
             }
