@@ -12,7 +12,7 @@ namespace PresenceLight.Core
 {
     public interface ICustomApiService
     {
-        Task<string> SetColor(string availability, string? activity);
+        Task<string> SetColor(string availability, string? activity, CancellationToken cancellationToken = default);
         void Initialize(BaseConfig options);
     }
 
@@ -43,7 +43,7 @@ namespace PresenceLight.Core
             _options = options;
         }
 
-        public async Task<string> SetColor(string availability, string? activity)
+        public async Task<string> SetColor(string availability, string? activity, CancellationToken cancellationToken = default)
         {
             if (!_workingHoursService.UseWorkingHours || (_workingHoursService.UseWorkingHours && _workingHoursService.IsInWorkingHours))
             {
@@ -51,12 +51,12 @@ namespace PresenceLight.Core
                 availability = activity = availability;
             }
 
-            string result = await SetAvailability(availability);
-            result += await SetActivity(activity);
+            string result = await SetAvailability(availability, cancellationToken);
+            result += await SetActivity(activity, cancellationToken);
             return result;
         }
 
-        private async Task<string> CallCustomApiForActivityChanged(object sender, string newActivity)
+        private async Task<string> CallCustomApiForActivityChanged(object sender, string newActivity, CancellationToken cancellationToken)
         {
             string method = string.Empty;
             string uri = string.Empty;
@@ -112,10 +112,10 @@ namespace PresenceLight.Core
                     break;
             }
 
-            return await PerformWebRequest(method, uri, result);
+            return await PerformWebRequest(method, uri, result, cancellationToken);
         }
 
-        private async Task<string> CallCustomApiForAvailabilityChanged(object sender, string newAvailability)
+        private async Task<string> CallCustomApiForAvailabilityChanged(object sender, string newAvailability, CancellationToken cancellationToken)
         {
             string method = string.Empty;
             string uri = string.Empty;
@@ -159,32 +159,32 @@ namespace PresenceLight.Core
                     break;
             }
 
-            return await PerformWebRequest(method, uri, result);
+            return await PerformWebRequest(method, uri, result, cancellationToken);
         }
 
-        private async Task<string> SetAvailability(string availability)
+        private async Task<string> SetAvailability(string availability, CancellationToken cancellationToken)
         {
             string result = string.Empty;
             if (!string.IsNullOrEmpty(availability) && availability != _currentAvailability)
             {
                 _currentAvailability = availability;
-                result = await CallCustomApiForAvailabilityChanged(this, availability);
+                result = await CallCustomApiForAvailabilityChanged(this, availability, cancellationToken);
             }
             return result;
         }
 
-        private async Task<string> SetActivity(string activity)
+        private async Task<string> SetActivity(string activity, CancellationToken cancellationToken)
         {
             string result = string.Empty;
             if (!string.IsNullOrEmpty(activity) && activity != _currentActivity)
             {
                 _currentActivity = activity;
-                result = await CallCustomApiForActivityChanged(this, activity);
+                result = await CallCustomApiForActivityChanged(this, activity, cancellationToken);
             }
             return result;
         }
 
-        private async Task<string> PerformWebRequest(string method, string uri, string result)
+        private async Task<string> PerformWebRequest(string method, string uri, string result, CancellationToken cancellationToken)
         {
             using (Serilog.Context.LogContext.PushProperty("method", method))
             using (Serilog.Context.LogContext.PushProperty("uri", uri))
@@ -197,10 +197,10 @@ namespace PresenceLight.Core
                         switch (method)
                         {
                             case "GET":
-                                response = await client.GetAsync(uri);
+                                response = await client.GetAsync(uri, cancellationToken);
                                 break;
                             case "POST":
-                                response = await client.PostAsync(uri, null);
+                                response = await client.PostAsync(uri, null, cancellationToken);
                                 break;
                         }
 
