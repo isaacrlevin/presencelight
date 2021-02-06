@@ -20,6 +20,7 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.ApplicationInsights.AspNetCore;
 using Microsoft.Extensions.Options;
 using Microsoft.ApplicationInsights.SnapshotCollector;
+using PresenceLight.Worker.Services;
 
 namespace PresenceLight.Worker
 {
@@ -84,7 +85,7 @@ namespace PresenceLight.Worker
             services.AddHttpContextAccessor();
 
             services.Configure<BaseConfig>(Configuration);
-
+            services.AddSingleton<SettingsService>();
             services.AddOptions();
             services.AddSingleton<LIFXService, LIFXService>();
             services.AddSingleton<IHueService, HueService>();

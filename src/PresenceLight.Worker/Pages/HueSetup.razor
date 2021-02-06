@@ -1,10 +1,11 @@
 ﻿@page "/hue"
 
+@inject PresenceLight.Worker.Services.SettingsService SettingsService
 @inject IHueService _hueService
 @inject AppState appState
 @inject IModalService Modal
 @inject IOptionsMonitor<BaseConfig> Config
-@inject ILogger<HueSetup    > _logger;
+@inject ILogger<HueSetup> _logger;
 
 <div class="container text-body" style="overflow:hidden">
     <div class="row">

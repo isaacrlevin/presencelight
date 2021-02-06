@@ -1,5 +1,6 @@
 ﻿@page "/customapi"
 
+@inject PresenceLight.Worker.Services.SettingsService SettingsService
 @inject ICustomApiService _customApiService
 @inject AppState appState
 @inject IModalService Modal
@@ -15,7 +16,7 @@
                     <br />
                     <br />
                     <div class="centering text-center">
-                    <input type="checkbox" checked="@Config.CurrentValue.LightSettings.Custom.IsCustomApiEnabled" @bind-value="@Config.CurrentValue.LightSettings.Custom.IsCustomApiEnabled" /> Connect to Custom HTTP API
+                        <input type="checkbox" checked="@Config.CurrentValue.LightSettings.Custom.IsCustomApiEnabled" @bind-value="@Config.CurrentValue.LightSettings.Custom.IsCustomApiEnabled" /> Connect to Custom HTTP API
                     </div>
                     <br />
                     <br />
@@ -30,7 +31,7 @@
 
                                 <div class="form-group row">
 
-                                    <label class="col-sm-3 col-form-label" for="@lab">@Helpers.HumanifyText(customApiSetting.Name.Replace("CustomApi","")):</label>
+                                    <label class="col-sm-3 col-form-label" for="@lab">@Helpers.HumanifyText(customApiSetting.Name.Replace("CustomApi", "")):</label>
 
                                     @foreach (var setting in customApiSettingValue.GetType().GetProperties())
                                     {
@@ -60,15 +61,15 @@
                         <br />
                         <br />
 
-                        <button class="btn btn-primary" @onclick="Save">Save LIFX Settings</button>
+                        <button class="btn btn-primary" @onclick="Save">Save Custom Settings</button>
 
                         <br />
                         <br />
                         <div class="centering text-center">
-                        @if (settingsSaved)
-                        {
-                            <span class="text-success">@message</span>
-                        }
+                            @if (settingsSaved)
+                            {
+                                <span class="text-success">@message</span>
+                            }
                         </div>
                     }
                 </div>
@@ -115,6 +116,7 @@
             Helpers.AppendLogger(_logger, "Error Occured loading Hue Setup", e);
             throw e;
         }
+        await Task.CompletedTask;
     }
 
     public void Dispose()
