@@ -29,7 +29,7 @@ volumes.
 volumes:
     /somedirectory:/app/config
 ```
-When running under a container, logs will save to  /app/config/logs, and so will the dynamic PresencesLight.json file.
+When running under a container, logs will save to  /app/config/logs, and so will the dynamic PresenceLightSettings.json file.
 
 If you need to customize your configuration.  Add/edit one or more of the necessary configuration files in this attached directory.
 
