@@ -63,8 +63,8 @@
         }
         catch (Exception e)
         {
-            Helpers.AppendLogger(_logger, "Error Occured Setting Custom Color", e);
-            throw e;
+            _logger.LogError(e, "Error Occured Setting Custom Color");
+            throw;
         }
     }
 

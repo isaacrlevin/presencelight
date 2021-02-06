@@ -38,7 +38,7 @@ namespace PresenceLight
             }
             catch (Exception ex)
             {
-                Helpers.AppendLogger(_logger, "Error occured Finding YeeLights", ex);
+                _logger.LogError(ex, "Error occured Finding YeeLights" );
                 _diagClient.TrackException(ex);
             }
         }
@@ -78,7 +78,7 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
-                Helpers.AppendLogger(_logger, "Error occured Checking YeeLight", e);
+                _logger.LogError(e, "Error occured Checking YeeLight");
                 _diagClient.TrackException(e);
             }
         }

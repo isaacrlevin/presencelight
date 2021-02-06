@@ -7,7 +7,7 @@ using System.Windows;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
- 
+
 using PresenceLight.Core;
 using PresenceLight.Graph;
 using PresenceLight.Services;
@@ -36,7 +36,7 @@ namespace PresenceLight
             if (SingleInstanceAppMutex.TakeExclusivity())
             {
                 Exit += (_, __) => SingleInstanceAppMutex.ReleaseExclusivity();
-              
+
                 try
                 {
                     ContinueStartup();
@@ -61,12 +61,16 @@ namespace PresenceLight
                  .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                  .AddJsonFile($"appsettings.Development.json", optional: true, reloadOnChange: true);
 
-    
+
             Configuration = builder.Build();
             StaticConfig = builder.Build();
+            var telemetryConfiguration = TelemetryConfiguration.CreateDefault();
+            telemetryConfiguration.InstrumentationKey = Configuration["ApplicationInsights:InstrumentationKey"];
 
             Log.Logger = new LoggerConfiguration()
                           .ReadFrom.Configuration(Configuration)
+                          .WriteTo.ApplicationInsights(telemetryConfiguration, TelemetryConverter.Traces, Serilog.Events.LogEventLevel.Error)
+                          .Enrich.FromLogContext()
                           .CreateLogger();
 
             Log.Debug("Starting PresenceLight");

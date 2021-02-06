@@ -37,10 +37,10 @@
                 </div>
             </div>
         </div>
-       </ContentTemplate>
+    </ContentTemplate>
 </SpinLoader>
 
-        @code {
+@code {
             protected override async Task OnInitializedAsync()
             {
                 appState.OnChange += RaiseStateHasChanged;
@@ -58,7 +58,8 @@
                 }
                 catch (Exception ex)
                 {
-                    Helpers.AppendLogger(_logger, "Error Occured loading Index", ex);
+
+                    _logger.LogError(ex,"Error Occured loading Index");
                     appState.SetLightMode("");
                     appState.SetUserAuthentication(false);
                     ConsentHandler.HandleException(ex);
@@ -74,4 +75,4 @@
             {
                 InvokeAsync(StateHasChanged);
             }
-        }
+}

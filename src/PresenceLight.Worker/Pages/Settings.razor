@@ -1,5 +1,4 @@
 ﻿@page "/settings"
-
 @inject PresenceLight.Worker.Services.SettingsService SettingsService
 @inject IOptionsMonitor<BaseConfig> Config
 @inject ILogger<Settings> _logger;
@@ -182,8 +181,8 @@
         }
         catch (Exception e)
         {
-            Helpers.AppendLogger(_logger, "Error Occured Saving Settings", e);
-            throw e;
+            _logger.LogError(e, "Error Occured Saving Settings");
+            throw;
         }
     }
 

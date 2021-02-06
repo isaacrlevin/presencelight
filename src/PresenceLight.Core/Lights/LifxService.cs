@@ -45,7 +45,7 @@ namespace PresenceLight.Core
             }
             catch (Exception e)
             {
-                Helpers.AppendLogger(_logger, "Error Getting Lights", e);
+                _logger.LogError(e, "Error Getting Lights");
                 throw;
             }
         }
@@ -68,7 +68,7 @@ namespace PresenceLight.Core
             }
             catch (Exception e)
             {
-                Helpers.AppendLogger(_logger, "Error Getting Groups", e);
+                _logger.LogError(e, "Error Getting Groups");
                 throw;
             }
         }
@@ -262,7 +262,7 @@ namespace PresenceLight.Core
                     else
                     {
                         string message = $"Setting LIFX Light {lightId} to {color}";
-                        Helpers.AppendLogger(_logger, message);
+                        _logger.LogInformation(message);
                         var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
                         {
                             Brightness = Convert.ToDouble(_options.LightSettings.DefaultBrightness) / 100,
@@ -284,7 +284,7 @@ namespace PresenceLight.Core
                     else
                     {
                         string message = $"Setting LIFX Light {lightId} to {color}";
-                        Helpers.AppendLogger(_logger, message);
+                        _logger.LogInformation(message);
                         var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
                         {
                             Brightness = Convert.ToDouble(_options.LightSettings.LIFX.LIFXBrightness) / 100,
@@ -296,7 +296,7 @@ namespace PresenceLight.Core
             }
             catch (Exception e)
             {
-                Helpers.AppendLogger(_logger, "Error Occured Setting Color", e);
+                _logger.LogError(e, "Error Occured Setting Color");
                 throw;
             }
         }

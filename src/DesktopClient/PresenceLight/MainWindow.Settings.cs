@@ -89,7 +89,7 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
-                Helpers.AppendLogger(_logger, "Error occured Loading Settings", e);
+                _logger.LogError(e, "Error occured Loading Settings");
                 _diagClient.TrackException(e);
             }
         }
@@ -135,7 +135,7 @@ namespace PresenceLight
             }
             catch (Exception ex)
             {
-                Helpers.AppendLogger(_logger, "Error occured Saving Settings", ex);
+                _logger.LogError(ex, "Error occured Saving Settings");
                 _diagClient.TrackException(ex);
             }
         }
@@ -202,7 +202,7 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
-                Helpers.AppendLogger(_logger, "Error occured Checking Azure Active Directory", e);
+                _logger.LogError(e, "Error occured Checking Azure Active Directory");
                 _diagClient.TrackException(e);
             }
         }

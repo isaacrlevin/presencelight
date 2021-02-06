@@ -186,35 +186,43 @@ namespace PresenceLight.Core
 
         private async Task<string> PerformWebRequest(string method, string uri, string result)
         {
-            if (!string.IsNullOrEmpty(method) && !string.IsNullOrEmpty(uri))
+            using (Serilog.Context.LogContext.PushProperty("method", method))
+            using (Serilog.Context.LogContext.PushProperty("uri", uri))
             {
-                try
+                if (!string.IsNullOrEmpty(method) && !string.IsNullOrEmpty(uri))
                 {
-                    HttpResponseMessage response = new HttpResponseMessage();
-                    switch (method)
+                    try
                     {
-                        case "GET":
-                            response = await client.GetAsync(uri);
-                            break;
-                        case "POST":
-                            response = await client.PostAsync(uri, null);
-                            break;
+                        HttpResponseMessage response = new HttpResponseMessage();
+                        switch (method)
+                        {
+                            case "GET":
+                                response = await client.GetAsync(uri);
+                                break;
+                            case "POST":
+                                response = await client.PostAsync(uri, null);
+                                break;
+                        }
+
+
+                        string responseBody = await response.Content.ReadAsStringAsync();
+                        result = $"{(int)response.StatusCode} {response.StatusCode}: {responseBody}";
+                        string message = $"Sending {method} method to {uri}";
+
+                        _logger.LogInformation(message);
+
+                        using (Serilog.Context.LogContext.PushProperty("result", result))
+                            _logger.LogDebug(message + " Results");
                     }
-
-
-                    string responseBody = await response.Content.ReadAsStringAsync();
-                    result = $"{(int)response.StatusCode} {response.StatusCode}: {responseBody}";
-                    string message = $"Sending {method} methd to {uri}";
-                    Helpers.AppendLogger(_logger, message);
+                    catch (Exception e)
+                    {
+                        _logger.LogError(e, "Error Performing Web Request");
+                        result = $"Error: {e.Message}";
+                    }
                 }
-                catch (Exception e)
-                {
-                    Helpers.AppendLogger(_logger, "Error Performing Web Request", e);
-                    result = $"Error: {e.Message}";
-                }
+
+                return result;
             }
-
-            return result;
         }
     }
 }

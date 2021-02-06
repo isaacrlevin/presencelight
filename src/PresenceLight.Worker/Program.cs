@@ -4,6 +4,7 @@ using System.Net;
 using System.Security.Authentication;
 using System.Threading.Tasks;
 
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
@@ -58,9 +59,16 @@ namespace PresenceLight.Worker
         {
             IConfigurationBuilder configBuilderForMain = new ConfigurationBuilder();
             ConfigureConfiguration(configBuilderForMain);
+     
             IConfiguration configForMain = configBuilderForMain.Build();
+
+            var telemetryConfiguration = TelemetryConfiguration.CreateDefault();
+            telemetryConfiguration.InstrumentationKey = configForMain["ApplicationInsights:InstrumentationKey"];
+
             Log.Logger = new LoggerConfiguration()
                  .ReadFrom.Configuration(configForMain)
+                  .WriteTo.ApplicationInsights(telemetryConfiguration, TelemetryConverter.Traces, Serilog.Events.LogEventLevel.Error)
+                  .Enrich.FromLogContext()
                  .CreateLogger();
 
           

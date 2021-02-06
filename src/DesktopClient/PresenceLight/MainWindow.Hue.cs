@@ -36,7 +36,7 @@ namespace PresenceLight
             }
             catch (Exception ex)
             {
-                Helpers.AppendLogger(_logger, "Error Occured Saving Hue Settings", ex);
+                _logger.LogError(ex, "Error Occured Saving Hue Settings" );
                 _diagClient.TrackException(ex);
             }
         }
@@ -72,7 +72,7 @@ namespace PresenceLight
             }
             catch (Exception ex)
             {
-                Helpers.AppendLogger(_logger, "Error Occured Getting Hue Api Key", ex);
+                _logger.LogError(ex, "Error Occured Getting Hue Api Key" );
                 _diagClient.TrackException(ex);
             }
         }
@@ -184,7 +184,7 @@ namespace PresenceLight
             }
             catch (Exception ex)
             {
-                Helpers.AppendLogger(_logger, "Error Occured Checking Hue Lights", ex);
+                _logger.LogError(ex, "Error Occured Checking Hue Lights" );
                 _diagClient.TrackException(ex);
             }
         }
@@ -211,7 +211,7 @@ namespace PresenceLight
             }
             catch (Exception ex)
             {
-                Helpers.AppendLogger(_logger, "Error Occured Finding Hue Bridge", ex);
+                _logger.LogError(ex, "Error Occured Finding Hue Bridge" );
                 _diagClient.TrackException(ex);
             }
         }
@@ -346,7 +346,7 @@ namespace PresenceLight
             catch (Exception ex)
             {
                 _diagClient.TrackException(ex);
-                Helpers.AppendLogger(_logger, "Error Occurred Registering Hue Bridge", ex);
+                _logger.LogError(ex, "Error Occurred Registering Hue Bridge" );
                 lblHueMessage.Text = "Error Occured registering bridge, please try again";
                 fontBrush.Color = MapColor("#ff3300");
                 lblHueMessage.Foreground = fontBrush;

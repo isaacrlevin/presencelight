@@ -43,17 +43,19 @@ namespace PresenceLight.Core
 
             if (string.IsNullOrEmpty(lightId))
             {
-                Helpers.AppendLogger(_logger, $"Yeelight Selected Light Id {lightId} Invalid", new ArgumentOutOfRangeException());
-                throw new ArgumentOutOfRangeException($"Yeelight Selected Light Id {lightId} Invalid");
+                var ex = new ArgumentOutOfRangeException($"Yeelight Selected Light Id {lightId} Invalid");
+                _logger.LogError(ex, $"Yeelight Selected Light Id {lightId} Invalid");
+                throw ex;
             }
 
             var device = this.deviceGroup.FirstOrDefault(x => x.Id == lightId);
 
             if (device == null)
             {
+                var ex = new ArgumentOutOfRangeException(message);
                 message = $"Yeelight Device {lightId} Not Found";
-                Helpers.AppendLogger(_logger, message, new ArgumentOutOfRangeException());
-                throw new ArgumentOutOfRangeException(message);
+                _logger.LogError(ex, message);
+                throw ex;
             }
 
             device.OnNotificationReceived += Device_OnNotificationReceived;
@@ -61,9 +63,12 @@ namespace PresenceLight.Core
 
             if (!await device.Connect())
             {
+
                 message = $"Unable to Connect to Yeelight Device {lightId}";
-                Helpers.AppendLogger(_logger, message, new ArgumentOutOfRangeException());
-                throw new ArgumentOutOfRangeException(message);
+                var ex = new ArgumentOutOfRangeException(message);
+
+                _logger.LogError(ex, message);
+                throw ex;
             }
 
             try
@@ -81,7 +86,7 @@ namespace PresenceLight.Core
                         else
                         {
                             message = $"Turning Yeelight Light {lightId} Off";
-                            Helpers.AppendLogger(_logger, message);
+                            _logger.LogInformation(message);
                             await device.SetPower(false);
                             return;
                         }
@@ -94,7 +99,7 @@ namespace PresenceLight.Core
                         else
                         {
                             message = $"Turning Yeelight Light {lightId} Off";
-                            Helpers.AppendLogger(_logger, message);
+                            _logger.LogInformation(message);
                             await device.SetPower(false);
                             return;
                         }
@@ -107,7 +112,7 @@ namespace PresenceLight.Core
                         else
                         {
                             message = $"Turning Yeelight Light {lightId} Off";
-                            Helpers.AppendLogger(_logger, message);
+                            _logger.LogInformation(message);
                             await device.SetPower(false);
                             return;
                         }
@@ -120,7 +125,7 @@ namespace PresenceLight.Core
                         else
                         {
                             message = $"Turning Yeelight Light {lightId} Off";
-                            Helpers.AppendLogger(_logger, message);
+                            _logger.LogInformation(message);
                             await device.SetPower(false);
                             return;
                         }
@@ -133,7 +138,7 @@ namespace PresenceLight.Core
                         else
                         {
                             message = $"Turning Yeelight Light {lightId} Off";
-                            Helpers.AppendLogger(_logger, message);
+                            _logger.LogInformation(message);
                             await device.SetPower(false);
                             return;
                         }
@@ -146,7 +151,7 @@ namespace PresenceLight.Core
                         else
                         {
                             message = $"Turning Yeelight Light {lightId} Off";
-                            Helpers.AppendLogger(_logger, message);
+                            _logger.LogInformation(message);
                             await device.SetPower(false);
                             return;
                         }
@@ -159,7 +164,7 @@ namespace PresenceLight.Core
                         else
                         {
                             message = $"Turning Yeelight Light {lightId} Off";
-                            Helpers.AppendLogger(_logger, message);
+                            _logger.LogInformation(message);
                             await device.SetPower(false);
                             return;
                         }
@@ -216,7 +221,7 @@ namespace PresenceLight.Core
             }
             catch (Exception e)
             {
-                Helpers.AppendLogger(_logger, "Error Occured Finding Lights", e);
+                _logger.LogError(e, "Error Occured Finding Lights");
                 throw;
             }
         }
@@ -241,7 +246,7 @@ namespace PresenceLight.Core
             }
             catch (Exception e)
             {
-                Helpers.AppendLogger(_logger, "Error Occured Finding Lights", e);
+                _logger.LogError(e, "Error Occured Finding Lights");
                 throw;
             }
         }

@@ -90,8 +90,8 @@
         }
         catch (Exception e)
         {
-            Helpers.AppendLogger(_logger, "Error Occured Saving Hue Settings", e);
-            throw e;
+            _logger.LogError(e, "Error Occured Saving Hue Settings");
+            throw;
         }
     }
 
@@ -119,7 +119,7 @@
             }
             catch (Exception ex)
             {
-                Helpers.AppendLogger(_logger, "Error Occured Registering Hue Bridge", ex);
+                _logger.LogError(ex, "Error Occured Registering Hue Bridge");
                 hueMessage = "Error Occured registering bridge, please try again";
                 showHueMessage = true;
                 hueMessageClass = "text-danger";
@@ -142,8 +142,8 @@
                 }
                 catch (Exception e)
                 {
-                    Helpers.AppendLogger(_logger, "Error Occured Getting Hue Lights", e);
-                    throw e;
+                    _logger.LogError(e, "Error Occured Getting Hue Lights");
+                    throw;
                 }
                 Config.CurrentValue.LightSettings.Hue.HueIpAddress = tempConfig.LightSettings.Hue.HueIpAddress;
                 Config.CurrentValue.LightSettings.Hue.HueApiKey = tempConfig.LightSettings.Hue.HueApiKey;
@@ -154,7 +154,7 @@
 
             else
             {
-                Helpers.AppendLogger(_logger, "Hue Api Key not configured");
+                _logger.LogError("Hue Api Key not configured");
                 hueMessage = "Api Key Not Created, please try again and ensure you press the sync button on your bridge";
                 showHueMessage = true;
                 hueMessageClass = "text-danger";
@@ -185,8 +185,8 @@
         }
         catch (Exception e)
         {
-            Helpers.AppendLogger(_logger, "Error Occured loading Hue Setup", e);
-            throw e;
+            _logger.LogError(e, "Error Occured loading Hue Setup");
+            throw;
         }
     }
 
