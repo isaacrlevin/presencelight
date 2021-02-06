@@ -19,16 +19,19 @@ Here you will the Url for the Kestrel hosted Web Application. Going to that Url 
  To make the process even cleaner, you can configure a startup task to run the exe at startup, and PresenceLight will be available at the url listed the first time you ran it.
 
 ## Advanced Configuring
-
 If you want to configure PresenceLight to use your own settings (maybe your own AAD, your own smart light registered app), you can do that by editing the appsettings.json
 
 To do this in docker, just run the container once, and than stop and rerun by mounting the appsettings via a local volume.**
 
+Log data and Configuration file will need to be written to a directory that has read/write enabled.   This is accomplished using 
+volumes.
 ```dotnetcli
 volumes:
-    /somedirectory/appsettings.json:/app/appsettings.json
-    /somedirectory/PresenceLightSettings.json:/app/PresenceLightSettings.json
+    /somedirectory:/app/config
 ```
+When running under a container, logs will save to  /app/config/logs, and so will the dynamic PresencesLight.json file.
+
+If you need to customize your configuration.  Add/edit one or more of the necessary configuration files in this attached directory.
 
 This will get you host access to the appsettings.json and PresenceLightSettings.json
 
