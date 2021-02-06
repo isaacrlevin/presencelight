@@ -13,7 +13,10 @@ using LifxCloud.NET.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+
+using Newtonsoft.Json;
 
 using PresenceLight.Core;
 
@@ -27,9 +30,11 @@ namespace PresenceLight.Worker.Controllers
         private readonly BaseConfig Config;
         private readonly IHueService _hueService;
         private LIFXService _lifxService;
+        private ILogger _logger;
         private readonly AppState _appState;
         public AlexaController(IHueService hueService,
                       IOptionsMonitor<BaseConfig> optionsAccessor,
+                      ILogger<AlexaController> logger,
                       AppState appState,
                       LIFXService lifxService)
         {
@@ -37,6 +42,7 @@ namespace PresenceLight.Worker.Controllers
             _hueService = hueService;
             _lifxService = lifxService;
             _appState = appState;
+            _logger = logger;
         }
 
 
@@ -44,46 +50,51 @@ namespace PresenceLight.Worker.Controllers
         [HttpPost]
         public async Task<ActionResult> ProcessAlexaRequest([FromBody] SkillRequest request)
         {
-            var requestType = request.GetRequestType();
-
-            SkillResponse response = null;
-
-            if (requestType == typeof(LaunchRequest))
+            using (Serilog.Context.LogContext.PushProperty("Request", JsonConvert.SerializeObject(request)))
             {
-                response = ResponseBuilder.Tell("Welcome to Presence Light!");
-                response.Response.ShouldEndSession = false;
-            }
-            else if (requestType == typeof(IntentRequest))
-            {
-                var intentRequest = request.Request as IntentRequest;
+                var requestType = request.GetRequestType();
 
-                if (intentRequest.Intent.Name == "Teams")
-                {
-                    _appState.SetLightMode("Graph");
-                    response = ResponseBuilder.Tell("Presence Light set to Teams!");
-                }
-                else if (intentRequest.Intent.Name == "Custom")
-                {
-                    _appState.SetLightMode("Custom");
-                    _appState.SetCustomColor("#FFFFFF");
-                    response = ResponseBuilder.Tell("Presence Light set to custom!");
-                }
+                _logger.LogDebug($"Beginning Alexa Request: {requestType.Name}");
 
-                if (_appState.LightMode == "Custom")
+                SkillResponse response = null;
+
+                if (requestType == typeof(LaunchRequest))
                 {
-                    if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedHueLightId))
+                    response = ResponseBuilder.Tell("Welcome to Presence Light!");
+                    response.Response.ShouldEndSession = false;
+                }
+                else if (requestType == typeof(IntentRequest))
+                {
+                    var intentRequest = request.Request as IntentRequest;
+
+                    if (intentRequest.Intent.Name == "Teams")
                     {
-                        await _hueService.SetColor(_appState.CustomColor, Config.LightSettings.Hue.SelectedHueLightId);
+                        _appState.SetLightMode("Graph");
+                        response = ResponseBuilder.Tell("Presence Light set to Teams!");
+                    }
+                    else if (intentRequest.Intent.Name == "Custom")
+                    {
+                        _appState.SetLightMode("Custom");
+                        _appState.SetCustomColor("#FFFFFF");
+                        response = ResponseBuilder.Tell("Presence Light set to custom!");
                     }
 
-                    if (Config.LightSettings.LIFX.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
+                    if (_appState.LightMode == "Custom")
                     {
-                        await _lifxService.SetColor(_appState.CustomColor, Config.LightSettings.LIFX.SelectedLIFXItemId);
+                        if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedHueLightId))
+                        {
+                            await _hueService.SetColor(_appState.CustomColor, Config.LightSettings.Hue.SelectedHueLightId);
+                        }
+
+                        if (Config.LightSettings.LIFX.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
+                        {
+                            await _lifxService.SetColor(_appState.CustomColor, Config.LightSettings.LIFX.SelectedLIFXItemId);
+                        }
                     }
                 }
-            }
 
-            return new OkObjectResult(response);
+                return new OkObjectResult(response);
+            }
         }
 
     }
