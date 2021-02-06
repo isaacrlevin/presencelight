@@ -42,9 +42,10 @@ namespace PresenceLight.Worker
             _logger = logger;
             _appState = appState;
         }
-
+        
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            
             while (!stoppingToken.IsCancellationRequested)
             {
                 if (_appState.IsUserAuthenticated)
@@ -53,7 +54,7 @@ namespace PresenceLight.Worker
                     _logger.LogInformation("User is Authenticated, starting worker");
                     try
                     {
-                        await GetData();
+                        await GetData(stoppingToken);
                     }
                     catch (Exception e)
                     {
@@ -69,17 +70,17 @@ namespace PresenceLight.Worker
         }
 
 
-        private async Task GetData()
+        private async Task GetData(CancellationToken cancellationToken)
         {
 
             try
             {
 
-                var user = await GetUserInformation();
+                var user = await GetUserInformation(cancellationToken);
 
-                var photo = await GetPhotoAsBase64Async();
+                var photo = await GetPhotoAsBase64Async(cancellationToken);
 
-                var presence = await GetPresence();
+                var presence = await GetPresence(cancellationToken);
 
                 //Attach properties to all logging within this context..
                 using (Serilog.Context.LogContext.PushProperty("Availability", presence.Availability))
@@ -104,7 +105,7 @@ namespace PresenceLight.Worker
                     {
                         if (_appState.LightMode == "Graph")
                         {
-                            presence = await GetPresence();
+                            presence = await GetPresence(cancellationToken);
 
                             _appState.SetPresence(presence);
 
@@ -123,7 +124,7 @@ namespace PresenceLight.Worker
                             if (Config.LightSettings.Custom.IsCustomApiEnabled)
                             {
                                 // passing the data on only when it changed is handled within the custom api service
-                                await _customApiService.SetColor(presence.Availability, presence.Activity);
+                                await _customApiService.SetColor(presence.Availability, presence.Activity, cancellationToken);
                             }
                         }
                         Thread.Sleep(Convert.ToInt32(Config.LightSettings.PollingInterval * 1000));
@@ -140,11 +141,11 @@ namespace PresenceLight.Worker
 
         }
 
-        public async Task<User> GetUserInformation()
+        public async Task<User> GetUserInformation(CancellationToken cancellationToken)
         {
             try
             {
-                var me = await c.Me.Request().GetAsync();
+                var me = await c.Me.Request().GetAsync(cancellationToken);
                 _logger.LogInformation($"User is {me.DisplayName}");
                 return me;
             }
@@ -155,11 +156,11 @@ namespace PresenceLight.Worker
             }
         }
 
-        public async Task<string> GetPhotoAsBase64Async()
+        public async Task<string> GetPhotoAsBase64Async(CancellationToken cancellationToken)
         {
             try
             {
-                var photoStream = await c.Me.Photo.Content.Request().GetAsync();
+                var photoStream = await c.Me.Photo.Content.Request().GetAsync(cancellationToken);
                 var memoryStream = new MemoryStream();
                 photoStream.CopyTo(memoryStream);
 
@@ -175,11 +176,11 @@ namespace PresenceLight.Worker
             }
         }
 
-        public async Task<Presence> GetPresence()
+        public async Task<Presence> GetPresence(CancellationToken cancellationToken)
         {
             try
             {
-                var presence = await c.Me.Presence.Request().GetAsync();
+                var presence = await c.Me.Presence.Request().GetAsync(cancellationToken);
 
                 var r = new Regex(@"
                 (?<=[A-Z])(?=[A-Z][a-z]) |
