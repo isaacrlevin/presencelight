@@ -7,14 +7,13 @@ using System.Windows;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-
-using NLog;
-using NLog.Extensions.Logging;
-
+ 
 using PresenceLight.Core;
 using PresenceLight.Graph;
 using PresenceLight.Services;
 using PresenceLight.Telemetry;
+
+using Serilog;
 
 namespace PresenceLight
 {
@@ -37,8 +36,7 @@ namespace PresenceLight
             if (SingleInstanceAppMutex.TakeExclusivity())
             {
                 Exit += (_, __) => SingleInstanceAppMutex.ReleaseExclusivity();
-                var logger = LogManager.GetCurrentClassLogger();
-                logger.Debug("Starting PresenceLight");
+              
                 try
                 {
                     ContinueStartup();
@@ -46,13 +44,13 @@ namespace PresenceLight
                 catch (Exception ex) when (IsCriticalFontLoadFailure(ex))
                 {
                     Trace.WriteLine($"## Warning Notify ##: {ex}");
-                    logger.Error(ex, "Stopped program because of exception");
+                    Log.Error(ex, "Stopped program because of exception");
                     OnCriticalFontLoadFailure();
                 }
             }
             else
             {
-                LogManager.Shutdown();
+                Log.CloseAndFlush();
                 Shutdown();
             }
         }
@@ -63,15 +61,21 @@ namespace PresenceLight
                  .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                  .AddJsonFile($"appsettings.Development.json", optional: true, reloadOnChange: true);
 
-
+    
             Configuration = builder.Build();
             StaticConfig = builder.Build();
+
+            Log.Logger = new LoggerConfiguration()
+                          .ReadFrom.Configuration(Configuration)
+                          .CreateLogger();
+
+            Log.Debug("Starting PresenceLight");
 
             IServiceCollection services = new ServiceCollection();
             services.AddOptions();
             services.AddLogging(logging =>
             {
-                logging.AddNLog();
+                logging.AddSerilog();
             });
             services.Configure<BaseConfig>(Configuration);
             services.Configure<AADSettings>(Configuration.GetSection("AADSettings"));
