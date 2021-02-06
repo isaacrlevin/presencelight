@@ -64,4 +64,8 @@
     </Content>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="config\logs\" />
+  </ItemGroup>
+
 </Project>
