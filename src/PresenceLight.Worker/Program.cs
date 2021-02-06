@@ -40,8 +40,11 @@ namespace PresenceLight.Worker
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("PresenceLightSettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
-                .AddJsonFile($"appsettings.Development.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"PresenceLightSettings.Development.json", optional: true, reloadOnChange: false);
+                .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true)
+                .AddJsonFile(System.IO.Path.Combine("config","appsettings.json"), optional: true, reloadOnChange: true)
+                .AddJsonFile(System.IO.Path.Combine("config", "PresenceLightSettings.json"), optional: true, reloadOnChange: true)
+                .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true)
+                .AddJsonFile("PresenceLightSettings.Development.json", optional: true, reloadOnChange: false);
 
             config.Build();
         }
@@ -105,7 +108,7 @@ namespace PresenceLight.Worker
                              options.ListenLocalhost(5001, listenOptions =>
                              {
                                  var envCertPath = Environment.GetEnvironmentVariable("ASPNETCORE_Kestrel__Certificates__Default__Path");
-                                 if (string.IsNullOrEmpty(envCertPath))
+                                 if (string.IsNullOrEmpty(envCertPath) && !string.IsNullOrWhiteSpace(configForMain["Certificate:Name"]) && !string.IsNullOrWhiteSpace(configForMain["Certificate:Password"]))
                                  {
                                      // Cert Env Not provided, use appsettings
                                      //assumes cert is at same level as exe
