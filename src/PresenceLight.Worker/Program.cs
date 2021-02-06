@@ -2,38 +2,43 @@
 using System.IO;
 using System.Net;
 using System.Security.Authentication;
+using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-
-using NLog.Web;
+using Serilog;
+ 
 
 namespace PresenceLight.Worker
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
-            var logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
-            logger.Debug("Starting PresenceLight");
+            
+         
             try
             {
-                CreateHostBuilder(args).Build().Run();
+                var builder = CreateHostBuilder(args).Build();
+                Log.Debug("Starting PresenceLight");
+                await builder.RunAsync();
             }
             catch (Exception ex)
             {
-                //NLog: catch setup errors
-                logger.Error(ex, "Stopped program because of exception");
+                //Log: catch setup errors
+                Log.Error(ex, "Stopped program because of exception");
                 throw;
             }
             finally
             {
                 // Ensure to flush and stop internal timers/threads before application-exit (Avoid segmentation fault on Linux)
-                NLog.LogManager.Shutdown();
+
+                Log.CloseAndFlush();
             }
         }
+
         private static void ConfigureConfiguration(IConfigurationBuilder config)
         {
             config
@@ -54,6 +59,11 @@ namespace PresenceLight.Worker
             IConfigurationBuilder configBuilderForMain = new ConfigurationBuilder();
             ConfigureConfiguration(configBuilderForMain);
             IConfiguration configForMain = configBuilderForMain.Build();
+            Log.Logger = new LoggerConfiguration()
+                 .ReadFrom.Configuration(configForMain)
+                 .CreateLogger();
+
+          
 
             return Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
@@ -125,10 +135,13 @@ namespace PresenceLight.Worker
                              });
                          }
                      })
-                     .UseContentRoot(Directory.GetCurrentDirectory());
-                    webBuilder.UseStartup<Startup>()
-                    .UseNLog();
-                });
+                    .UseContentRoot(Directory.GetCurrentDirectory())
+                    .ConfigureLogging(setup => {
+                        setup.AddSerilog(Log.Logger);
+                    })
+                    .UseStartup<Startup>();
+                  
+                }).UseSerilog();
         }
     }
 }
