@@ -1,8 +1,12 @@
 ﻿using System;
+
 using LifxCloud.NET.Models;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+
 using PresenceLight.Core;
 
 namespace PresenceLight.Worker.Controllers
@@ -15,15 +19,18 @@ namespace PresenceLight.Worker.Controllers
         private readonly IHueService _hueService;
         private LIFXService _lifxService;
         private readonly AppState _appState;
+        private ILogger _logger;
         public LightController(IHueService hueService,
                       IOptionsMonitor<BaseConfig> optionsAccessor,
                       AppState appState,
+                      ILogger<LightController> logger,
                       LIFXService lifxService)
         {
             Config = optionsAccessor.CurrentValue;
             _hueService = hueService;
             _lifxService = lifxService;
             _appState = appState;
+            _logger = logger;
         }
 
 
@@ -35,18 +42,25 @@ namespace PresenceLight.Worker.Controllers
         {
             return _appState.Presence.Availability;
         }
+
         [AllowAnonymous]
         [HttpGet]
         public async void UpdateLight(string command)
         {
-            if (command == "Teams")
+            using (Serilog.Context.LogContext.PushProperty("Command", command))
             {
-                _appState.SetLightMode("Graph");
-            }
-            else
-            {
-                _appState.SetLightMode("Custom");
-                _appState.SetCustomColor("Offline");
+                if (command == "Teams")
+                {
+                    _logger.LogDebug("Set Light Mode: Graph");
+                    _appState.SetLightMode("Graph");
+                }
+                else
+                {
+                    _logger.LogDebug("Set Light Mode: Custom");
+                    _logger.LogDebug("Set Custom Color: Offline");
+                    _appState.SetLightMode("Custom");
+                    _appState.SetCustomColor("Offline");
+                }
             }
 
             if (_appState.LightMode == "Custom")
@@ -62,5 +76,6 @@ namespace PresenceLight.Worker.Controllers
                 }
             }
         }
+
     }
 }
