@@ -36,15 +36,15 @@ namespace PresenceLight.Worker
         }
         private static void ConfigureConfiguration(IConfigurationBuilder config)
         {
-            config.AddEnvironmentVariables()
+            config
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("PresenceLightSettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
-                .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true)
-                .AddJsonFile(System.IO.Path.Combine("config","appsettings.json"), optional: true, reloadOnChange: true)
-                .AddJsonFile(System.IO.Path.Combine("config", "PresenceLightSettings.json"), optional: true, reloadOnChange: true)
-                .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true)
-                .AddJsonFile("PresenceLightSettings.Development.json", optional: true, reloadOnChange: false);
+                .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: false)
+                .AddJsonFile("PresenceLightSettings.json", optional: false, reloadOnChange: false)
+                .AddJsonFile("PresenceLightSettings.Development.json", optional: true, reloadOnChange: false)
+                .AddJsonFile(System.IO.Path.Combine("config", "appsettings.json"), optional: true, reloadOnChange: false)
+                .AddJsonFile(System.IO.Path.Combine("config", "PresenceLightSettings.json"), optional: true, reloadOnChange: false)
+                .AddEnvironmentVariables();
 
             config.Build();
         }
@@ -65,13 +65,8 @@ namespace PresenceLight.Worker
 
                          var env = hostingContext.HostingEnvironment;
 
-                         config.SetBasePath(Directory.GetCurrentDirectory());
-                         config.AddJsonFile("PresenceLightSettings.json", optional: false, reloadOnChange: true);
-                         config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
-                         config.AddJsonFile($"appsettings.Development.json", optional: true, reloadOnChange: true);
-                         config.AddJsonFile($"PresenceLightSettings.Development.json", optional: true, reloadOnChange: false);
-                         config.AddEnvironmentVariables();
-
+                         ConfigureConfiguration(config);
+                  
                          if (args != null)
                          {
                              config.AddCommandLine(args);

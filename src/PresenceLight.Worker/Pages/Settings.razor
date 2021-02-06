@@ -1,6 +1,6 @@
 ﻿@page "/settings"
 
-
+@inject PresenceLight.Worker.Services.SettingsService SettingsService
 @inject IOptionsMonitor<BaseConfig> Config
 @inject ILogger<Settings> _logger;
 
@@ -210,6 +210,7 @@
 
 
         PopulateWorkingDays();
+        await Task.CompletedTask;
     }
 
     void OnStatusChanged(ChangeEventArgs e)
