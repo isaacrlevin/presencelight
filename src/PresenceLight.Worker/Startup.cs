@@ -90,6 +90,7 @@ namespace PresenceLight.Worker
             services.AddOptions();
             services.AddSingleton<LIFXService, LIFXService>();
             services.AddSingleton<IHueService, HueService>();
+            services.AddSingleton<IYeelightService, YeelightService>();
             services.AddSingleton<ICustomApiService, CustomApiService>();
             services.AddSingleton<AppState, AppState>();
             services.AddSingleton<IWorkingHoursService, WorkingHoursService>();
