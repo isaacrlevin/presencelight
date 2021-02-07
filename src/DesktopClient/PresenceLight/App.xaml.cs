@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Threading;
@@ -14,6 +15,8 @@ using PresenceLight.Services;
 using PresenceLight.Telemetry;
 
 using Serilog;
+
+using Windows.Storage;
 
 namespace PresenceLight
 {
@@ -55,6 +58,8 @@ namespace PresenceLight
             }
         }
 
+        Dictionary<string, string> InMemorySettings = new();
+
         private void ContinueStartup()
         {
             var builder = new Microsoft.Extensions.Configuration.ConfigurationBuilder()
@@ -64,16 +69,34 @@ namespace PresenceLight
 
             Configuration = builder.Build();
             StaticConfig = builder.Build();
+
+            //Override the save file location for logs if this is a packaged app... 
+            if (Convert.ToBoolean(Configuration["IsAppPackaged"], CultureInfo.InvariantCulture))
+            {
+                var _logFilePath = System.IO.Path.Combine(ApplicationData.Current.LocalFolder.Path, "PresenceLight\\logs\\DesktopClient\\log-.json");
+
+                InMemorySettings.Add("Serilog:WriteTo:1:Args:Path", _logFilePath);
+                builder = new Microsoft.Extensions.Configuration.ConfigurationBuilder()
+                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                 .AddJsonFile($"appsettings.Development.json", optional: true, reloadOnChange: true)
+                 .AddInMemoryCollection(InMemorySettings);
+
+                Configuration = builder.Build();
+                StaticConfig = builder.Build();
+
+            }
+
             var telemetryConfiguration = TelemetryConfiguration.CreateDefault();
             telemetryConfiguration.InstrumentationKey = Configuration["ApplicationInsights:InstrumentationKey"];
-
-            Log.Logger = new LoggerConfiguration()
+            var loggerConfig =
+            new LoggerConfiguration()
                           .ReadFrom.Configuration(Configuration)
                           .WriteTo.PresenceEventsLogSink()
                           .WriteTo.ApplicationInsights(telemetryConfiguration, TelemetryConverter.Traces, Serilog.Events.LogEventLevel.Error)
-                          .Enrich.FromLogContext()
-                          .CreateLogger();
+                          .Enrich.FromLogContext();
 
+
+            Log.Logger = loggerConfig.CreateLogger();
             Log.Debug("Starting PresenceLight");
 
             IServiceCollection services = new ServiceCollection();

@@ -392,7 +392,5 @@ Build/StorePublish/.env.local
 Build/StorePublish/node_modules
 Build/StorePublish/temp.zip
 /src/DesktopClient/PresenceLight/Properties/launchSettings.json
-/src/PresenceLight.Worker/config/PresenceLightSettings.Docker.json
-/src/PresenceLight.Worker/config/PresenceLightSettings.json
-/src/PresenceLight.Worker/config/appsettings.json
-/src/PresenceLight.Worker/logs
+/src/PresenceLight.Worker/config/
+logs/
