@@ -391,3 +391,5 @@ src/local-action-test-wpf.ps1
 Build/StorePublish/.env.local
 Build/StorePublish/node_modules
 Build/StorePublish/temp.zip
+/src/PresenceLight.Worker/config
+/src/DesktopClient/PresenceLight/Properties
