@@ -86,6 +86,7 @@ namespace PresenceLight.Worker
 
             services.Configure<BaseConfig>(Configuration);
             services.AddSingleton<SettingsService>();
+            
             services.AddOptions();
             services.AddSingleton<LIFXService, LIFXService>();
             services.AddSingleton<IHueService, HueService>();
@@ -93,7 +94,9 @@ namespace PresenceLight.Worker
             services.AddSingleton<AppState, AppState>();
             services.AddSingleton<IWorkingHoursService, WorkingHoursService>();
             services.AddBlazoredModal();
-            services.AddHostedService<Worker>();
+
+            services.AddHostedService<Worker>();  
+
             services.AddApplicationInsightsTelemetry(options =>
             {
                 options.InstrumentationKey = Configuration.GetValue<string>("ApplicationInsights:InstrumentationKey");

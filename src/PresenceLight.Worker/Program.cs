@@ -9,6 +9,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+
+using PresenceLight.Core;
+
 using Serilog;
  
 
@@ -16,6 +19,11 @@ namespace PresenceLight.Worker
 {
     public class Program
     {
+        private void Watcher_Changed(object sender, FileSystemEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
         public static async Task Main(string[] args)
         {
             
@@ -67,8 +75,9 @@ namespace PresenceLight.Worker
 
             Log.Logger = new LoggerConfiguration()
                  .ReadFrom.Configuration(configForMain)
-                  .WriteTo.ApplicationInsights(telemetryConfiguration, TelemetryConverter.Traces, Serilog.Events.LogEventLevel.Error)
-                  .Enrich.FromLogContext()
+                 .WriteTo.PresenceEventsLogSink( )
+                 .WriteTo.ApplicationInsights(telemetryConfiguration, TelemetryConverter.Traces, Serilog.Events.LogEventLevel.Error)
+                 .Enrich.FromLogContext()
                  .CreateLogger();
 
           
