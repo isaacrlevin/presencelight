@@ -69,6 +69,7 @@ namespace PresenceLight
 
             Log.Logger = new LoggerConfiguration()
                           .ReadFrom.Configuration(Configuration)
+                          .WriteTo.PresenceEventsLogSink()
                           .WriteTo.ApplicationInsights(telemetryConfiguration, TelemetryConverter.Traces, Serilog.Events.LogEventLevel.Error)
                           .Enrich.FromLogContext()
                           .CreateLogger();
