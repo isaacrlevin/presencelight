@@ -164,23 +164,13 @@ namespace PresenceLight.Core
 
         private async Task<string> SetAvailability(string availability)
         {
-            string result = string.Empty;
-            if (!string.IsNullOrEmpty(availability) && availability != _currentAvailability)
-            {
-                _currentAvailability = availability;
-                result = await CallCustomApiForAvailabilityChanged(this, availability);
-            }
+            string result = await CallCustomApiForAvailabilityChanged(this, availability);
             return result;
         }
 
         private async Task<string> SetActivity(string activity)
         {
-            string result = string.Empty;
-            if (!string.IsNullOrEmpty(activity) && activity != _currentActivity)
-            {
-                _currentActivity = activity;
-                result = await CallCustomApiForActivityChanged(this, activity);
-            }
+            string result = await CallCustomApiForActivityChanged(this, activity);
             return result;
         }
 
