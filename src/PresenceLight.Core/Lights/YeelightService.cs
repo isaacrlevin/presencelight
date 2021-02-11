@@ -210,7 +210,7 @@ namespace PresenceLight.Core
                     }
                 }
 
-                var rgb = new RGBColor(availability);
+                var rgb = new RGBColor(color);
                 await device.SetRGBColor((int)rgb.R, (int)rgb.G, (int)rgb.B);
                 return;
             }
