@@ -11,10 +11,9 @@
     "PollingInterval": 5.0,
     "UseDefaultBrightness": true,
     "DefaultBrightness": 100,
-    "CustomApi": {
-      "IsEnabled": true,
-      "SelectedItemId": "",
-      "Brightness": 100,
+    "Custom": {
+      "IsCustomApiEnabled": false,
+      "SelectedCustomLightId": "",
       "CustomApiTimeout": 100.0,
       "CustomApiAvailable": {
         "Method": "",
@@ -136,11 +135,10 @@
       "HueApiKey": "",
       "RemoteHueApiKey": "",
       "SelectedHueLightId": "",
-      "Brightness": 100,
+      "HueBrightness": 100,
       "HueIpAddress": "",
       "IsPhillipsHueEnabled": false,
       "UseRemoteApi": false,
-      "UseActivityStatus": false,
       "RemoteBridgeId": "",
       "AvailableStatus": {
         "Disabled": false,
@@ -175,7 +173,6 @@
       "SelectedYeelightId": "",
       "YeelightBrightness": 100,
       "IsYeelightEnabled": false,
-      "UseActivityStatus": false,
       "AvailableStatus": {
         "Disabled": false,
         "Colour": "#009933"

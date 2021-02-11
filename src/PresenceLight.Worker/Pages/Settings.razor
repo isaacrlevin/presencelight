@@ -4,10 +4,10 @@
 @inject ILogger<Settings> _logger;
 
 <div class="container text-body" style="overflow:hidden">
-    <h1>Settings</h1>
+    <h1 class="centering text-center">Settings</h1>
     <br />
     <br />
-    <div class="row">
+    <div class="row centering text-center">
         <div class="col-5">
             <input type="checkbox" checked="@Config.CurrentValue.LightSettings.SyncLights" @bind-value="@Config.CurrentValue.LightSettings.SyncLights" /> <strong>Light Sync Enabled</strong>
         </div><div class="col-5">
@@ -21,7 +21,7 @@
         {
             <h5><strong>Working Days</strong></h5>
             <br />
-            <div class="row">
+            <div class="row centering text-center">
                 <div class="col-1_5 ">
                     <input @bind-value="Sunday" checked="@Sunday" type="checkbox" /> Sunday
                 </div>
@@ -126,7 +126,7 @@
 
     <br />
     <br />
-    <div>
+    <div class="centering text-center">
         <button @onclick="SaveSettings" class="btn btn-primary">Save Settings</button>
         <br />
         <br />

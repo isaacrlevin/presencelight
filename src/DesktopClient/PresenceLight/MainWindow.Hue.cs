@@ -81,7 +81,7 @@ namespace PresenceLight
         {
             if (ddlHueLights.SelectedItem != null)
             {
-                Config.LightSettings.Hue.SelectedItemId = ((Q42.HueApi.Light)ddlHueLights.SelectedItem).Id;
+                Config.LightSettings.Hue.SelectedHueLightId = ((Q42.HueApi.Light)ddlHueLights.SelectedItem).Id;
                 SyncOptions();
             }
             e.Handled = true;
@@ -158,7 +158,7 @@ namespace PresenceLight
                         foreach (var item in ddlHueLights.Items)
                         {
                             var light = (Q42.HueApi.Light)item;
-                            if (light?.Id == Config.LightSettings.Hue.SelectedItemId)
+                            if (light?.Id == Config.LightSettings.Hue.SelectedHueLightId)
                             {
                                 ddlHueLights.SelectedItem = item;
                             }
@@ -218,7 +218,7 @@ namespace PresenceLight
 
         private void cbIsPhillipsEnabledChanged(object sender, RoutedEventArgs e)
         {
-            if (Config.LightSettings.Hue.IsEnabled)
+            if (Config.LightSettings.Hue.IsPhillipsHueEnabled)
             {
                 pnlPhillips.Visibility = Visibility.Visible;
                 pnlHueApi.Visibility = Visibility.Visible;
@@ -277,49 +277,49 @@ namespace PresenceLight
 
         private void cbIsPhillipsAvailableStatusDisabledChanged(object sender, RoutedEventArgs e)
         {
-            hueAvailableColour.IsEnabled = !Config.LightSettings.Hue.Statuses.AvailabilityAvailableStatus.Disabled;
+            hueAvailableColour.IsEnabled = !Config.LightSettings.Hue.AvailableStatus.Disabled;
             SyncOptions();
             e.Handled = true;
         }
 
         private void cbIsPhillipsBusyStatusDisabledChanged(object sender, RoutedEventArgs e)
         {
-            hueBusyColour.IsEnabled = !Config.LightSettings.Hue.Statuses.AvailabilityBusyStatus.Disabled;
+            hueBusyColour.IsEnabled = !Config.LightSettings.Hue.BusyStatus.Disabled;
             SyncOptions();
             e.Handled = true;
         }
 
         private void cbIsPhillipsAwayStatusDisabledChanged(object sender, RoutedEventArgs e)
         {
-            hueAwayColour.IsEnabled = !Config.LightSettings.Hue.Statuses.AvailabilityAwayStatus.Disabled;
+            hueAwayColour.IsEnabled = !Config.LightSettings.Hue.AwayStatus.Disabled;
             SyncOptions();
             e.Handled = true;
         }
 
         private void cbIsPhillipsDoNotDisturbStatusDisabledChanged(object sender, RoutedEventArgs e)
         {
-            hueDoNotDisturbColour.IsEnabled = !Config.LightSettings.Hue.Statuses.AvailabilityDoNotDisturbStatus.Disabled;
+            hueDoNotDisturbColour.IsEnabled = !Config.LightSettings.Hue.DoNotDisturbStatus.Disabled;
             SyncOptions();
             e.Handled = true;
         }
 
         private void cbIsPhillipsBeRightBackStatusDisabledChanged(object sender, RoutedEventArgs e)
         {
-            hueBeRightBackColour.IsEnabled = !Config.LightSettings.Hue.Statuses.AvailabilityBeRightBackStatus.Disabled;
+            hueBeRightBackColour.IsEnabled = !Config.LightSettings.Hue.BeRightBackStatus.Disabled;
             SyncOptions();
             e.Handled = true;
         }
 
         private void cbIsPhillipsOfflineStatusDisabledChanged(object sender, RoutedEventArgs e)
         {
-            hueOfflineColour.IsEnabled = !Config.LightSettings.Hue.Statuses.AvailabilityOfflineStatus.Disabled;
+            hueOfflineColour.IsEnabled = !Config.LightSettings.Hue.OfflineStatus.Disabled;
             SyncOptions();
             e.Handled = true;
         }
 
         private void cbIsPhillipsOffStatusDisabledChanged(object sender, RoutedEventArgs e)
         {
-            hueOffColour.IsEnabled = !Config.LightSettings.Hue.Statuses.AvailabilityOffStatus.Disabled;
+            hueOffColour.IsEnabled = !Config.LightSettings.Hue.OffStatus.Disabled;
             SyncOptions();
             e.Handled = true;
         }

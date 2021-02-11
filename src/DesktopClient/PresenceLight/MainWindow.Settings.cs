@@ -33,7 +33,7 @@ namespace PresenceLight
                     SyncOptions();
                 }
 
-                if (Config.LightSettings.Hue.IsEnabled)
+                if (Config.LightSettings.Hue.IsPhillipsHueEnabled)
                 {
                     pnlPhillips.Visibility = Visibility.Visible;
                     pnlHueApi.Visibility = Visibility.Visible;
@@ -45,7 +45,7 @@ namespace PresenceLight
                     pnlHueApi.Visibility = Visibility.Collapsed;
                 }
 
-                if (Config.LightSettings.Yeelight.IsEnabled)
+                if (Config.LightSettings.Yeelight.IsYeelightEnabled)
                 {
                     pnlYeelight.Visibility = Visibility.Visible;
                     SyncOptions();
@@ -55,7 +55,7 @@ namespace PresenceLight
                     pnlYeelight.Visibility = Visibility.Collapsed;
                 }
 
-                if (Config.LightSettings.LIFX.IsEnabled)
+                if (Config.LightSettings.LIFX.IsLIFXEnabled)
                 {
                     getTokenLink.Visibility = Visibility.Visible;
                     pnlLIFX.Visibility = Visibility.Visible;
@@ -68,7 +68,7 @@ namespace PresenceLight
                     pnlLIFX.Visibility = Visibility.Collapsed;
                 }
 
-                if (Config.LightSettings.CustomApi.IsEnabled)
+                if (Config.LightSettings.Custom.IsCustomApiEnabled)
                 {
                     pnlCustomApi.Visibility = Visibility.Visible;
 

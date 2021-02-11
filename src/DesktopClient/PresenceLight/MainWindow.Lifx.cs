@@ -60,7 +60,7 @@ namespace PresenceLight
             SolidColorBrush fontBrush = new SolidColorBrush();
             try
             {
-                if (Config.LightSettings.LIFX.IsEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey) && !string.IsNullOrEmpty(Config.LightSettings.LIFX.SelectedItemId))
+                if (Config.LightSettings.LIFX.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey) && !string.IsNullOrEmpty(Config.LightSettings.LIFX.SelectedLIFXItemId))
                 {
                     ddlLIFXLights.ItemsSource = await _lifxService.GetAllLights().ConfigureAwait(true);
 
@@ -69,7 +69,7 @@ namespace PresenceLight
                         if (item != null)
                         {
                             var light = (Light)item;
-                            if ($"id:{light?.Id}" == Config.LightSettings.LIFX.SelectedItemId)
+                            if ($"id:{light?.Id}" == Config.LightSettings.LIFX.SelectedLIFXItemId)
                             {
                                 ddlLIFXLights.SelectedItem = item;
                             }
@@ -85,7 +85,7 @@ namespace PresenceLight
                             if (item != null)
                             {
                                 var group = (LifxCloud.NET.Models.Group)item;
-                                if ($"group_id:{group?.Id}" == Config.LightSettings.LIFX.SelectedItemId)
+                                if ($"group_id:{group?.Id}" == Config.LightSettings.LIFX.SelectedLIFXItemId)
                                 {
                                     ddlLIFXLights.SelectedItem = item;
                                 }
@@ -122,12 +122,12 @@ namespace PresenceLight
                 // Get whether item is group or light
                 if (ddlLIFXLights.SelectedItem.GetType() == typeof(LifxCloud.NET.Models.Group))
                 {
-                    Config.LightSettings.LIFX.SelectedItemId = $"group_id:{((LifxCloud.NET.Models.Group)ddlLIFXLights.SelectedItem).Id}";
+                    Config.LightSettings.LIFX.SelectedLIFXItemId = $"group_id:{((LifxCloud.NET.Models.Group)ddlLIFXLights.SelectedItem).Id}";
                 }
 
                 if (ddlLIFXLights.SelectedItem.GetType() == typeof(LifxCloud.NET.Models.Light))
                 {
-                    Config.LightSettings.LIFX.SelectedItemId = $"id:{((LifxCloud.NET.Models.Light)ddlLIFXLights.SelectedItem).Id}";
+                    Config.LightSettings.LIFX.SelectedLIFXItemId = $"id:{((LifxCloud.NET.Models.Light)ddlLIFXLights.SelectedItem).Id}";
                 }
 
                 SyncOptions();
@@ -199,7 +199,7 @@ namespace PresenceLight
 
         private void cbIsLIFXEnabledChanged(object sender, RoutedEventArgs e)
         {
-            if (Config.LightSettings.LIFX.IsEnabled)
+            if (Config.LightSettings.LIFX.IsLIFXEnabled)
             {
                 getTokenLink.Visibility = Visibility.Visible;
                 pnlLIFX.Visibility = Visibility.Visible;
@@ -216,49 +216,49 @@ namespace PresenceLight
 
         private void cbIsLIFXAvailableStatusDisabledChanged(object sender, RoutedEventArgs e)
         {
-            lifxAvailableColour.IsEnabled = !Config.LightSettings.LIFX.Statuses.AvailabilityAvailableStatus.Disabled;
+            lifxAvailableColour.IsEnabled = !Config.LightSettings.LIFX.AvailableStatus.Disabled;
             SyncOptions();
             e.Handled = true;
         }
 
         private void cbIsLIFXBusyStatusDisabledChanged(object sender, RoutedEventArgs e)
         {
-            lifxBusyColour.IsEnabled = !Config.LightSettings.LIFX.Statuses.AvailabilityBusyStatus.Disabled;
+            lifxBusyColour.IsEnabled = !Config.LightSettings.LIFX.BusyStatus.Disabled;
             SyncOptions();
             e.Handled = true;
         }
 
         private void cbIsLIFXAwayStatusDisabledChanged(object sender, RoutedEventArgs e)
         {
-            lifxAwayColour.IsEnabled = !Config.LightSettings.LIFX.Statuses.AvailabilityAwayStatus.Disabled;
+            lifxAwayColour.IsEnabled = !Config.LightSettings.LIFX.AwayStatus.Disabled;
             SyncOptions();
             e.Handled = true;
         }
 
         private void cbIsLIFXDoNotDisturbStatusDisabledChanged(object sender, RoutedEventArgs e)
         {
-            lifxDoNotDisturbColour.IsEnabled = !Config.LightSettings.LIFX.Statuses.AvailabilityDoNotDisturbStatus.Disabled;
+            lifxDoNotDisturbColour.IsEnabled = !Config.LightSettings.LIFX.DoNotDisturbStatus.Disabled;
             SyncOptions();
             e.Handled = true;
         }
 
         private void cbIsLIFXBeRightBackStatusDisabledChanged(object sender, RoutedEventArgs e)
         {
-            lifxBeRightBackColour.IsEnabled = !Config.LightSettings.LIFX.Statuses.AvailabilityBeRightBackStatus.Disabled;
+            lifxBeRightBackColour.IsEnabled = !Config.LightSettings.LIFX.BeRightBackStatus.Disabled;
             SyncOptions();
             e.Handled = true;
         }
 
         private void cbIsLIFXOfflineStatusDisabledChanged(object sender, RoutedEventArgs e)
         {
-            lifxOfflineColour.IsEnabled = !Config.LightSettings.LIFX.Statuses.AvailabilityOfflineStatus.Disabled;
+            lifxOfflineColour.IsEnabled = !Config.LightSettings.LIFX.OfflineStatus.Disabled;
             SyncOptions();
             e.Handled = true;
         }
 
         private void cbIsLIFXOffStatusDisabledChanged(object sender, RoutedEventArgs e)
         {
-            lifxOffColour.IsEnabled = !Config.LightSettings.LIFX.Statuses.AvailabilityOffStatus.Disabled;
+            lifxOffColour.IsEnabled = !Config.LightSettings.LIFX.OffStatus.Disabled;
             SyncOptions();
             e.Handled = true;
         }

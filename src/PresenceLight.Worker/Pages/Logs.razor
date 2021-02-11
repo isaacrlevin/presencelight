@@ -20,33 +20,30 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @lock (logsLockObject)
+                    @foreach (var eEvent in InformationLogs.OrderByDescending(a => a.Timestamp))
                     {
-                        foreach (var eEvent in InformationLogs.OrderByDescending(a => a.Timestamp))
+                        string style = null;
+                        switch (eEvent.Level)
                         {
-                            string style = null;
-                            switch (eEvent.Level)
-                            {
-                                case Serilog.Events.LogEventLevel.Warning:
-                                    style = "background-color:yellow; color:red";
-                                    break;
-                                case Serilog.Events.LogEventLevel.Error:
-                                    style = "background-color:red; color:yellow";
-                                    break;
-                                case Serilog.Events.LogEventLevel.Fatal:
-                                    style = "background-color:red; color:white";
-                                    break;
-                                default:
+                            case Serilog.Events.LogEventLevel.Warning:
+                                style = "background-color:yellow; color:red";
+                                break;
+                            case Serilog.Events.LogEventLevel.Error:
+                                style = "background-color:red; color:yellow";
+                                break;
+                            case Serilog.Events.LogEventLevel.Fatal:
+                                style = "background-color:red; color:white";
+                                break;
+                            default:
 
-                                    break;
-                            }
-                            <tr style="@style">
-                                <th scope="row">@eEvent.Timestamp</th>
-                                <td>@eEvent.Level</td>
-                                <td>@eEvent.RenderMessage()</td>
-                            </tr>
-
+                                break;
                         }
+                        <tr style="@style">
+                            <th scope="row">@eEvent.Timestamp</th>
+                            <td>@eEvent.Level</td>
+                            <td>@eEvent.RenderMessage()</td>
+                        </tr>
+
                     }
                 </tbody>
             </table>
@@ -62,10 +59,8 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @lock (logFilesLockObject)
+                    @foreach (var logFile in LogFiles.OrderByDescending(a => a.CreationTime))
                     {
-                        foreach (var logFile in LogFiles.OrderByDescending(a => a.CreationTime))
-                        {
                         <tr>
                             <th scope="row">
                                 <a @onclick="@((ev) => DownloadLogs(logFile.Name))" title="Click to Download @logFile.Name">@logFile.Name</a>
@@ -75,7 +70,6 @@
                             <td>@logFile.LastAccessTime</td>
                         </tr>
 
-                        }
                     }
                 </tbody>
             </table>
@@ -85,9 +79,6 @@
 </Tabs>
 @code {
     string selectedTab = "logfiles";
-    static object logsLockObject = new();
-    static object logFilesLockObject = new();
-
     private Queue<Serilog.Events.LogEvent> InformationLogs = new(25);
     List<System.IO.FileInfo> LogFiles = new();
     private string _logFilePath;
@@ -140,27 +131,18 @@
         switch (e.ChangeType)
         {
             case System.IO.WatcherChangeTypes.Created:
-                lock (logFilesLockObject)
-                {
-                    LogFiles.Add(new System.IO.FileInfo(e.FullPath));
-                }
+                LogFiles.Add(new System.IO.FileInfo(e.FullPath));
                 InvokeAsync(() => StateHasChanged());
                 break;
 
             case System.IO.WatcherChangeTypes.Changed:
-                lock (logFilesLockObject)
-                {
-                    LogFiles.RemoveAll(A => A.Name.Equals(e.Name, StringComparison.CurrentCultureIgnoreCase));
-                    LogFiles.Add(new System.IO.FileInfo(e.FullPath));
-                }
+                LogFiles.RemoveAll(A => A.Name.Equals(e.Name, StringComparison.CurrentCultureIgnoreCase));
+                LogFiles.Add(new System.IO.FileInfo(e.FullPath));
                 InvokeAsync(() => StateHasChanged());
                 break;
 
             case System.IO.WatcherChangeTypes.Deleted:
-                lock (logFilesLockObject)
-                {
-                    LogFiles.RemoveAll(A => A.Name.Equals(e.Name, StringComparison.CurrentCultureIgnoreCase));
-                }
+                LogFiles.RemoveAll(A => A.Name.Equals(e.Name, StringComparison.CurrentCultureIgnoreCase));
                 InvokeAsync(() => StateHasChanged());
                 break;
         }
@@ -169,10 +151,8 @@
 
     private void Handler(object? sender, Serilog.Events.LogEvent e)
     {
-        lock (logsLockObject)
-        {
-            InformationLogs.Enqueue(e);
-        }
+
+        InformationLogs.Enqueue(e);
         InvokeAsync(() => StateHasChanged());
     }
 

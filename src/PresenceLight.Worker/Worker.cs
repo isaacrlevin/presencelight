@@ -22,18 +22,15 @@ namespace PresenceLight.Worker
         private readonly AppState _appState;
         private readonly ILogger<Worker> _logger;
         private LIFXService _lifxService;
-        private IYeelightService _yeelightService;
         private ICustomApiService _customApiService;
         private GraphServiceClient c;
         private IWorkingHoursService _workingHoursService;
-
 
         public Worker(IHueService hueService,
                       ILogger<Worker> logger,
                       IOptionsMonitor<BaseConfig> optionsAccessor,
                       AppState appState,
                       LIFXService lifxService,
-                      IYeelightService yeelightService,
                       IWorkingHoursService workingHoursService,
                       ICustomApiService customApiService)
         {
@@ -41,7 +38,6 @@ namespace PresenceLight.Worker
             _workingHoursService = workingHoursService;
             _hueService = hueService;
             _lifxService = lifxService;
-            _yeelightService = yeelightService;
             _customApiService = customApiService;
             _logger = logger;
             _appState = appState;
@@ -91,78 +87,58 @@ namespace PresenceLight.Worker
                 {
                     _appState.SetUserInfo(user, photo, presence);
 
-                    if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedItemId))
+                    if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedHueLightId))
                     {
-                        await _hueService.SetColor(presence.Availability, presence.Activity, Config.LightSettings.Hue.SelectedItemId);
+                        await _hueService.SetColor(presence.Availability, Config.LightSettings.Hue.SelectedHueLightId);
                     }
 
-                    if (Config.LightSettings.LIFX.IsEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
+                    if (Config.LightSettings.LIFX.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
                     {
-                        await _lifxService.SetColor(presence.Availability, presence.Activity, Config.LightSettings.LIFX.SelectedItemId);
-                        _logger.LogInformation($"Setting LIFX Light: { Config.LightSettings.Hue.SelectedItemId  }, Graph Presence: {presence.Availability}");
-                    }
+                        await _lifxService.SetColor(presence.Availability, Config.LightSettings.LIFX.SelectedLIFXItemId);
 
-                    if (Config.LightSettings.CustomApi.IsEnabled)
-                    {
-                        // passing the data on only when it changed is handled within the custom api service
-                        await _customApiService.SetColor(presence.Availability, presence.Activity);
-                        _logger.LogInformation($"Setting Custom Api Light: { Config.LightSettings.CustomApi.SelectedItemId}, Graph Presence: {presence.Availability}, {presence.Activity}");
-                    }
 
-                    if (Config.LightSettings.Yeelight.IsEnabled)
-                    {
-                        // passing the data on only when it changed is handled within the custom api service
-                        await _yeelightService.SetColor(presence.Availability, presence.Activity, Config.LightSettings.Yeelight.SelectedItemId);
-                        _logger.LogInformation($"Setting Yeelight Light: { Config.LightSettings.CustomApi.SelectedItemId}, Graph Presence: {presence.Availability}, {presence.Activity} ");
+                        _logger.LogInformation($"Setting LIFX Light: { Config.LightSettings.Hue.SelectedHueLightId}, Graph Presence: {presence.Availability}");
                     }
 
                     while (_appState.IsUserAuthenticated)
                     {
-                        presence = await GetPresence();
-
-                        _appState.SetPresence(presence);
-
-                        _logger.LogInformation($"Presence is {presence.Availability}");
-
-                        if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedItemId))
+                        if (_appState.LightMode == "Graph")
                         {
-                            await _hueService.SetColor(presence.Availability, presence.Activity, Config.LightSettings.Hue.SelectedItemId);
-                            _logger.LogInformation($"Setting Hue Light: { Config.LightSettings.LIFX.SelectedItemId}, Graph Presence: {presence.Availability}, {presence.Activity}");
-                        }
+                            presence = await GetPresence();
 
-                        if (Config.LightSettings.LIFX.IsEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
-                        {
-                            await _lifxService.SetColor(presence.Availability, presence.Activity, Config.LightSettings.LIFX.SelectedItemId);
-                            _logger.LogInformation($"Setting LIFX Light: { Config.LightSettings.LIFX.SelectedItemId}, Graph Presence: {presence.Availability}, {presence.Activity}");
-                        }
-                        if (Config.LightSettings.CustomApi.IsEnabled)
-                        {
-                            // passing the data on only when it changed is handled within the custom api service
-                            await _customApiService.SetColor(presence.Availability, presence.Activity);
-                            _logger.LogInformation($"Setting Custom Api Light: { Config.LightSettings.CustomApi.SelectedItemId}, Graph Presence: {presence.Availability}, {presence.Activity}");
-                        }
-                        if (Config.LightSettings.Yeelight.IsEnabled)
-                        {
-                            // passing the data on only when it changed is handled within the custom api service
-                            await _yeelightService.SetColor(presence.Availability, presence.Activity, Config.LightSettings.Yeelight.SelectedItemId);
-                            _logger.LogInformation($"Setting Yeelight Light: { Config.LightSettings.CustomApi.SelectedItemId}, Graph Presence: {presence.Availability}, {presence.Activity} ");
+                            _appState.SetPresence(presence);
+
+                            _logger.LogInformation($"Presence is {presence.Availability}");
+
+                            if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedHueLightId))
+                            {
+                                await _hueService.SetColor(presence.Availability, Config.LightSettings.Hue.SelectedHueLightId);
+                            }
+
+                            if (Config.LightSettings.LIFX.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
+                            {
+                                await _lifxService.SetColor(presence.Availability, Config.LightSettings.LIFX.SelectedLIFXItemId);
+                                _logger.LogInformation($"Setting LIFX Light: { Config.LightSettings.LIFX.SelectedLIFXItemId}, Graph Presence: {presence.Availability}");
+                            }
+                            if (Config.LightSettings.Custom.IsCustomApiEnabled)
+                            {
+                                // passing the data on only when it changed is handled within the custom api service
+                                await _customApiService.SetColor(presence.Availability, presence.Activity);
+                            }
                         }
                         Thread.Sleep(Convert.ToInt32(Config.LightSettings.PollingInterval * 1000));
                     }
+
+                    _logger.LogInformation("User logged out, no longer polling for presence.");
                 }
-
-
-                _logger.LogInformation("User logged out, no longer polling for presence.");
-
             }
-
             catch (Exception e)
             {
                 _logger.LogError(e, "Exception occured in running worker");
                 throw;
             }
-        }
 
+        }
 
         public async Task<User> GetUserInformation()
         {
@@ -215,7 +191,7 @@ namespace PresenceLight.Worker
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Exception getting presence");
+                _logger.LogError(ex,"Exception getting presence");
                 throw;
             }
         }
