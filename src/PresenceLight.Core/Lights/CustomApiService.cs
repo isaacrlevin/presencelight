@@ -65,48 +65,48 @@ namespace PresenceLight.Core
             switch (newActivity)
             {
                 case "Available":
-                    method = _options.LightSettings.CustomApi.CustomApiActivityAvailable.Method;
-                    uri = _options.LightSettings.CustomApi.CustomApiActivityAvailable.Uri;
+                    method = _options.LightSettings.Custom.CustomApiActivityAvailable.Method;
+                    uri = _options.LightSettings.Custom.CustomApiActivityAvailable.Uri;
                     break;
                 case "Presenting":
-                    method = _options.LightSettings.CustomApi.CustomApiActivityPresenting.Method;
-                    uri = _options.LightSettings.CustomApi.CustomApiActivityPresenting.Uri;
+                    method = _options.LightSettings.Custom.CustomApiActivityPresenting.Method;
+                    uri = _options.LightSettings.Custom.CustomApiActivityPresenting.Uri;
                     break;
                 case "InACall":
-                    method = _options.LightSettings.CustomApi.CustomApiActivityInACall.Method;
-                    uri = _options.LightSettings.CustomApi.CustomApiActivityInACall.Uri;
+                    method = _options.LightSettings.Custom.CustomApiActivityInACall.Method;
+                    uri = _options.LightSettings.Custom.CustomApiActivityInACall.Uri;
                     break;
                 case "InAMeeting":
-                    method = _options.LightSettings.CustomApi.CustomApiActivityInAMeeting.Method;
-                    uri = _options.LightSettings.CustomApi.CustomApiActivityInAMeeting.Uri;
+                    method = _options.LightSettings.Custom.CustomApiActivityInAMeeting.Method;
+                    uri = _options.LightSettings.Custom.CustomApiActivityInAMeeting.Uri;
                     break;
                 case "Busy":
-                    method = _options.LightSettings.CustomApi.CustomApiActivityBusy.Method;
-                    uri = _options.LightSettings.CustomApi.CustomApiActivityBusy.Uri;
+                    method = _options.LightSettings.Custom.CustomApiActivityBusy.Method;
+                    uri = _options.LightSettings.Custom.CustomApiActivityBusy.Uri;
                     break;
                 case "Away":
-                    method = _options.LightSettings.CustomApi.CustomApiActivityAway.Method;
-                    uri = _options.LightSettings.CustomApi.CustomApiActivityAway.Uri;
+                    method = _options.LightSettings.Custom.CustomApiActivityAway.Method;
+                    uri = _options.LightSettings.Custom.CustomApiActivityAway.Uri;
                     break;
                 case "BeRightBack":
-                    method = _options.LightSettings.CustomApi.CustomApiActivityBeRightBack.Method;
-                    uri = _options.LightSettings.CustomApi.CustomApiActivityBeRightBack.Uri;
+                    method = _options.LightSettings.Custom.CustomApiActivityBeRightBack.Method;
+                    uri = _options.LightSettings.Custom.CustomApiActivityBeRightBack.Uri;
                     break;
                 case "DoNotDisturb":
-                    method = _options.LightSettings.CustomApi.CustomApiActivityDoNotDisturb.Method;
-                    uri = _options.LightSettings.CustomApi.CustomApiActivityDoNotDisturb.Uri;
+                    method = _options.LightSettings.Custom.CustomApiActivityDoNotDisturb.Method;
+                    uri = _options.LightSettings.Custom.CustomApiActivityDoNotDisturb.Uri;
                     break;
                 case "Idle":
-                    method = _options.LightSettings.CustomApi.CustomApiActivityIdle.Method;
-                    uri = _options.LightSettings.CustomApi.CustomApiActivityIdle.Uri;
+                    method = _options.LightSettings.Custom.CustomApiActivityIdle.Method;
+                    uri = _options.LightSettings.Custom.CustomApiActivityIdle.Uri;
                     break;
                 case "Offline":
-                    method = _options.LightSettings.CustomApi.CustomApiActivityOffline.Method;
-                    uri = _options.LightSettings.CustomApi.CustomApiActivityOffline.Uri;
+                    method = _options.LightSettings.Custom.CustomApiActivityOffline.Method;
+                    uri = _options.LightSettings.Custom.CustomApiActivityOffline.Uri;
                     break;
                 case "Off":
-                    method = _options.LightSettings.CustomApi.CustomApiActivityOff.Method;
-                    uri = _options.LightSettings.CustomApi.CustomApiActivityOff.Uri;
+                    method = _options.LightSettings.Custom.CustomApiActivityOff.Method;
+                    uri = _options.LightSettings.Custom.CustomApiActivityOff.Uri;
                     break;
                 default:
                     break;
@@ -124,36 +124,36 @@ namespace PresenceLight.Core
             switch (newAvailability)
             {
                 case "Available":
-                    method = _options.LightSettings.CustomApi.CustomApiAvailable.Method;
-                    uri = _options.LightSettings.CustomApi.CustomApiAvailable.Uri;
+                    method = _options.LightSettings.Custom.CustomApiAvailable.Method;
+                    uri = _options.LightSettings.Custom.CustomApiAvailable.Uri;
                     break;
                 case "Busy":
-                    method = _options.LightSettings.CustomApi.CustomApiBusy.Method;
-                    uri = _options.LightSettings.CustomApi.CustomApiBusy.Uri;
+                    method = _options.LightSettings.Custom.CustomApiBusy.Method;
+                    uri = _options.LightSettings.Custom.CustomApiBusy.Uri;
                     break;
                 case "BeRightBack":
-                    method = _options.LightSettings.CustomApi.CustomApiBeRightBack.Method;
-                    uri = _options.LightSettings.CustomApi.CustomApiBeRightBack.Uri;
+                    method = _options.LightSettings.Custom.CustomApiBeRightBack.Method;
+                    uri = _options.LightSettings.Custom.CustomApiBeRightBack.Uri;
                     break;
                 case "Away":
-                    method = _options.LightSettings.CustomApi.CustomApiAway.Method;
-                    uri = _options.LightSettings.CustomApi.CustomApiAway.Uri;
+                    method = _options.LightSettings.Custom.CustomApiAway.Method;
+                    uri = _options.LightSettings.Custom.CustomApiAway.Uri;
                     break;
                 case "DoNotDisturb":
-                    method = _options.LightSettings.CustomApi.CustomApiDoNotDisturb.Method;
-                    uri = _options.LightSettings.CustomApi.CustomApiDoNotDisturb.Uri;
+                    method = _options.LightSettings.Custom.CustomApiDoNotDisturb.Method;
+                    uri = _options.LightSettings.Custom.CustomApiDoNotDisturb.Uri;
                     break;
                 case "AvailableIdle":
-                    method = _options.LightSettings.CustomApi.CustomApiAvailableIdle.Method;
-                    uri = _options.LightSettings.CustomApi.CustomApiAvailableIdle.Uri;
+                    method = _options.LightSettings.Custom.CustomApiAvailableIdle.Method;
+                    uri = _options.LightSettings.Custom.CustomApiAvailableIdle.Uri;
                     break;
                 case "Offline":
-                    method = _options.LightSettings.CustomApi.CustomApiOffline.Method;
-                    uri = _options.LightSettings.CustomApi.CustomApiOffline.Uri;
+                    method = _options.LightSettings.Custom.CustomApiOffline.Method;
+                    uri = _options.LightSettings.Custom.CustomApiOffline.Uri;
                     break;
                 case "Off":
-                    method = _options.LightSettings.CustomApi.CustomApiOff.Method;
-                    uri = _options.LightSettings.CustomApi.CustomApiOff.Uri;
+                    method = _options.LightSettings.Custom.CustomApiOff.Method;
+                    uri = _options.LightSettings.Custom.CustomApiOff.Uri;
                     break;
                 default:
                     break;

@@ -79,19 +79,19 @@ namespace PresenceLight.Worker.Controllers
                         response = ResponseBuilder.Tell("Presence Light set to custom!");
                     }
 
-                if (_appState.LightMode == "Custom")
-                {
-                    if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedItemId))
+                    if (_appState.LightMode == "Custom")
                     {
-                        await _hueService.SetColor(_appState.CustomColor, "", Config.LightSettings.Hue.SelectedItemId);
-                    }
+                        if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedHueLightId))
+                        {
+                            await _hueService.SetColor(_appState.CustomColor, Config.LightSettings.Hue.SelectedHueLightId);
+                        }
 
-                    if (Config.LightSettings.LIFX.IsEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
-                    {
-                        await _lifxService.SetColor(_appState.CustomColor, "", Config.LightSettings.LIFX.SelectedItemId);
+                        if (Config.LightSettings.LIFX.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
+                        {
+                            await _lifxService.SetColor(_appState.CustomColor, Config.LightSettings.LIFX.SelectedLIFXItemId);
+                        }
                     }
                 }
-            }
 
                 return new OkObjectResult(response);
             }

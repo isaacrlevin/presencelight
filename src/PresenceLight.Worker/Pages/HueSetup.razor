@@ -11,14 +11,14 @@
     <div class="row">
         <div class="container-fluid">
             <div class="row-fluid">
-                <div>
-                    <h1>Configure Phillips Hue</h1>
+                <div class="centering text-center">
+                    <h1 class="centering text-center">Configure Phillips Hue</h1>
                     <br />
                     <br />
-                    <input type="checkbox" checked="@Config.CurrentValue.LightSettings.Hue.IsEnabled" @bind-value="@Config.CurrentValue.LightSettings.Hue.IsEnabled" /> Connect to Phillips Hue
+                    <input type="checkbox" checked="@Config.CurrentValue.LightSettings.Hue.IsPhillipsHueEnabled" @bind-value="@Config.CurrentValue.LightSettings.Hue.IsPhillipsHueEnabled" /> Connect to Phillips Hue
                     <br />
                     <br />
-                    @if (Config.CurrentValue.LightSettings.Hue.IsEnabled)
+                    @if (Config.CurrentValue.LightSettings.Hue.IsPhillipsHueEnabled)
                     {
                         <EditForm Model="@tempConfig" OnValidSubmit="RegisterBridge">
                             <InputText id="name" @bind-Value="@tempConfig.LightSettings.Hue.HueIpAddress" />
@@ -40,12 +40,12 @@
                         <br />
                         @if (appState.HueLights != null)
                         {
-                            <div class="form-group col-3  centering text-center">
+                            <div class="form-group col-3 centering text-center">
                                 <select class="form-control" @onchange="OnChange">
                                     <option disabled="disabled">Select</option>
                                     @foreach (var light in appState.HueLights)
                                     {
-                                        @if (tempConfig.LightSettings.Hue.SelectedItemId == light.Id)
+                                        @if (tempConfig.LightSettings.Hue.SelectedHueLightId == light.Id)
                                         {
                                             <option selected="selected" value=@light.Id>@light.Name</option>
                                         }
@@ -58,12 +58,6 @@
                             </div>
                         }
 
-                        <br />
-                        <br />
-
-                        <Statuses Light="@Config.CurrentValue.LightSettings.Hue"></Statuses>
-
-                        <br />
                         <br />
                         @if (!string.IsNullOrEmpty(tempConfig.LightSettings.Hue.HueApiKey))
                         {
@@ -108,29 +102,6 @@
     bool showHueMessage = false;
     string hueMessage;
 
-    bool showAvail = false;
-    bool showAct = false;
-
-    void ToggleAvail()
-    {
-        showAvail = !showAvail;
-
-        if (showAct)
-        {
-            showAct = !showAct;
-        }
-    }
-
-    void ToggleAct()
-    {
-        showAct = !showAct;
-
-        if (showAvail)
-        {
-            showAvail = !showAvail;
-        }
-    }
-
     async Task RegisterBridge()
     {
         var formModal = Modal.Show<Confirm>("Please press the sync button on your Phillips Hue Bridge");
@@ -164,9 +135,9 @@
 
                     appState.SetHueLights(await _hueService.GetLights());
 
-                    if (string.IsNullOrEmpty(Config.CurrentValue.LightSettings.Hue.SelectedItemId) && appState.HueLights.Count() > 0)
+                    if (string.IsNullOrEmpty(Config.CurrentValue.LightSettings.Hue.SelectedHueLightId) && appState.HueLights.Count() > 0)
                     {
-                        tempConfig.LightSettings.Hue.SelectedItemId = appState.HueLights.FirstOrDefault().Id;
+                        tempConfig.LightSettings.Hue.SelectedHueLightId = appState.HueLights.FirstOrDefault().Id;
                     }
                 }
                 catch (Exception e)
@@ -176,7 +147,7 @@
                 }
                 Config.CurrentValue.LightSettings.Hue.HueIpAddress = tempConfig.LightSettings.Hue.HueIpAddress;
                 Config.CurrentValue.LightSettings.Hue.HueApiKey = tempConfig.LightSettings.Hue.HueApiKey;
-                Config.CurrentValue.LightSettings.Hue.SelectedItemId = tempConfig.LightSettings.Hue.SelectedItemId;
+                Config.CurrentValue.LightSettings.Hue.SelectedHueLightId = tempConfig.LightSettings.Hue.SelectedHueLightId;
 
                 Save();
             }
@@ -194,8 +165,8 @@
     private void OnChange(ChangeEventArgs e)
     {
         var light = e.Value.ToString();
-        tempConfig.LightSettings.Hue.SelectedItemId = light;
-        Config.CurrentValue.LightSettings.Hue.SelectedItemId = light;
+        tempConfig.LightSettings.Hue.SelectedHueLightId = light;
+        Config.CurrentValue.LightSettings.Hue.SelectedHueLightId = light;
         appState.SetHueLight(light);
     }
 
