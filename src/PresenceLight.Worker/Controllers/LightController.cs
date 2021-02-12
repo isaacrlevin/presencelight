@@ -1,8 +1,11 @@
 ﻿using System;
+
 using LifxCloud.NET.Models;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+
 using PresenceLight.Core;
 
 namespace PresenceLight.Worker.Controllers
@@ -51,14 +54,14 @@ namespace PresenceLight.Worker.Controllers
 
             if (_appState.LightMode == "Custom")
             {
-                if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedHueLightId))
+                if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedItemId))
                 {
-                    await _hueService.SetColor(_appState.CustomColor, Config.LightSettings.Hue.SelectedHueLightId);
+                    await _hueService.SetColor(_appState.CustomColor, "", Config.LightSettings.Hue.SelectedItemId);
                 }
 
-                if (Config.LightSettings.LIFX.IsLIFXEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
+                if (Config.LightSettings.LIFX.IsEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
                 {
-                    await _lifxService.SetColor(_appState.CustomColor, Config.LightSettings.LIFX.SelectedLIFXItemId);
+                    await _lifxService.SetColor(_appState.CustomColor, "", Config.LightSettings.LIFX.SelectedItemId);
                 }
             }
         }
