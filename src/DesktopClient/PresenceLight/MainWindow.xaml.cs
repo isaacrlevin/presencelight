@@ -552,8 +552,10 @@ namespace PresenceLight
 
         private void TabControl_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
+            lblYeelightSaved.Visibility = Visibility.Collapsed;
             lblHueSaved.Visibility = Visibility.Collapsed;
             lblLIFXSaved.Visibility = Visibility.Collapsed;
+            lblCustomApiSaved.Visibility = Visibility.Collapsed;
             lblSettingSaved.Visibility = Visibility.Collapsed;
         }
 

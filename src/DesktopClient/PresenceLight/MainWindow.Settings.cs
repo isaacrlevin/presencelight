@@ -57,9 +57,11 @@ namespace PresenceLight
 
                 if (Config.LightSettings.LIFX.IsEnabled)
                 {
-                    getTokenLink.Visibility = Visibility.Visible;
-                    pnlLIFX.Visibility = Visibility.Visible;
-
+                    if (!string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXClientId) && !(string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXClientSecret)))
+                    {
+                        getTokenLink.Visibility = Visibility.Visible;
+                        pnlLIFX.Visibility = Visibility.Visible;
+                    }
                     SyncOptions();
                 }
                 else
@@ -77,14 +79,6 @@ namespace PresenceLight
                 else
                 {
                     pnlCustomApi.Visibility = Visibility.Collapsed;
-                }
-                if (!string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXClientId) && !(string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXClientSecret)))
-                {
-                    getTokenLink.Visibility = Visibility.Visible;
-                }
-                else
-                {
-                    getTokenLink.Visibility = Visibility.Collapsed;
                 }
             }
             catch (Exception e)

@@ -1,6 +1,7 @@
 ﻿@page "/hue"
 
 @inject IHueService _hueService
+@inject IRemoteHueService _remoteHueService
 @inject AppState appState
 @inject IModalService Modal
 @inject IOptionsMonitor<BaseConfig> Config
@@ -14,7 +15,20 @@
                     <h1>Configure Phillips Hue</h1>
                     <br />
                     <br />
-                    <input type="checkbox" checked="@Config.CurrentValue.LightSettings.Hue.IsEnabled" @bind-value="@Config.CurrentValue.LightSettings.Hue.IsEnabled" /> Connect to Phillips Hue
+                    <div class="row">
+                        <div class="col-4">
+                            <input type="checkbox" checked="@Config.CurrentValue.LightSettings.Hue.IsEnabled" @bind-value="@Config.CurrentValue.LightSettings.Hue.IsEnabled" /> Connect to Phillips Hue
+                        </div>
+                        @if (Config.CurrentValue.LightSettings.Hue.IsEnabled)
+                        {
+                            <div class="col-4">
+                                <input type="checkbox" checked="@Config.CurrentValue.LightSettings.Hue.UseRemoteApi" @bind-value="@Config.CurrentValue.LightSettings.Hue.UseRemoteApi" /> Use Remote Api
+                            </div>
+                            <div class="col-4">
+                                <button class="btn btn-primary" disabled="@(!Config.CurrentValue.LightSettings.Hue.UseRemoteApi)" @onclick="LoginRemoteApi">Login to Hue Cloud</button>
+                            </div>
+                        }
+                    </div>
                     <br />
                     <br />
                     @if (Config.CurrentValue.LightSettings.Hue.IsEnabled)
@@ -99,6 +113,27 @@
             throw e;
         }
     }
+
+    private async void LoginRemoteApi()
+    {
+        try
+        {
+            var (bridgeId, apiKey, bridgeIp) = await _remoteHueService.RegisterBridge();
+            if (!string.IsNullOrEmpty(apiKey) && !string.IsNullOrEmpty(bridgeId) && !string.IsNullOrEmpty(bridgeIp))
+            {
+                Config.CurrentValue.LightSettings.Hue.HueApiKey = apiKey;
+                Config.CurrentValue.LightSettings.Hue.RemoteBridgeId = bridgeId;
+                Config.CurrentValue.LightSettings.Hue.HueIpAddress = bridgeIp;
+
+                SettingsService.SaveSettings(Config.CurrentValue);
+            }
+        }
+        catch (Exception ex)
+        {
+            Helpers.AppendLogger(_logger, "Error Occured Getting Hue Api Key", ex);
+        }
+    }
+
 
     bool settingsSaved = false;
     string message;
