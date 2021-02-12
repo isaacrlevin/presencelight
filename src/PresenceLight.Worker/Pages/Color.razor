@@ -12,8 +12,8 @@
     <div class="row">
         <div class="container-fluid">
             <div class="row-fluid">
-                <div class="centering text-center">
-                    <h1 class="centering text-center">Set Light Colors</h1>
+                <div>
+                    <h1>Set Light Colors</h1>
                     <br />
                     <br />
                     <div style="width: 85%">
@@ -50,14 +50,14 @@
 
             if (appState.LightMode == "Custom")
             {
-                if (!string.IsNullOrEmpty(Config.CurrentValue.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.CurrentValue.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.CurrentValue.LightSettings.Hue.SelectedHueLightId))
+                if (!string.IsNullOrEmpty(Config.CurrentValue.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.CurrentValue.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.CurrentValue.LightSettings.Hue.SelectedItemId))
                 {
-                    await _hueService.SetColor(appState.CustomColor, Config.CurrentValue.LightSettings.Hue.SelectedHueLightId);
+                    await _hueService.SetColor(appState.CustomColor, "", Config.CurrentValue.LightSettings.Hue.SelectedItemId);
                 }
 
-                if (Config.CurrentValue.LightSettings.LIFX.IsLIFXEnabled && !string.IsNullOrEmpty(Config.CurrentValue.LightSettings.LIFX.LIFXApiKey))
+                if (Config.CurrentValue.LightSettings.LIFX.IsEnabled && !string.IsNullOrEmpty(Config.CurrentValue.LightSettings.LIFX.LIFXApiKey))
                 {
-                    await _lifxService.SetColor(appState.CustomColor, Config.CurrentValue.LightSettings.LIFX.SelectedLIFXItemId);
+                    await _lifxService.SetColor(appState.CustomColor, "", Config.CurrentValue.LightSettings.LIFX.SelectedItemId);
                 }
             }
         }

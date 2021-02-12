@@ -33,7 +33,7 @@ namespace PresenceLight
                     SyncOptions();
                 }
 
-                if (Config.LightSettings.Hue.IsPhillipsHueEnabled)
+                if (Config.LightSettings.Hue.IsEnabled)
                 {
                     pnlPhillips.Visibility = Visibility.Visible;
                     pnlHueApi.Visibility = Visibility.Visible;
@@ -45,7 +45,7 @@ namespace PresenceLight
                     pnlHueApi.Visibility = Visibility.Collapsed;
                 }
 
-                if (Config.LightSettings.Yeelight.IsYeelightEnabled)
+                if (Config.LightSettings.Yeelight.IsEnabled)
                 {
                     pnlYeelight.Visibility = Visibility.Visible;
                     SyncOptions();
@@ -55,11 +55,13 @@ namespace PresenceLight
                     pnlYeelight.Visibility = Visibility.Collapsed;
                 }
 
-                if (Config.LightSettings.LIFX.IsLIFXEnabled)
+                if (Config.LightSettings.LIFX.IsEnabled)
                 {
-                    getTokenLink.Visibility = Visibility.Visible;
-                    pnlLIFX.Visibility = Visibility.Visible;
-
+                    if (!string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXClientId) && !(string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXClientSecret)))
+                    {
+                        getTokenLink.Visibility = Visibility.Visible;
+                        pnlLIFX.Visibility = Visibility.Visible;
+                    }
                     SyncOptions();
                 }
                 else
@@ -68,7 +70,7 @@ namespace PresenceLight
                     pnlLIFX.Visibility = Visibility.Collapsed;
                 }
 
-                if (Config.LightSettings.Custom.IsCustomApiEnabled)
+                if (Config.LightSettings.CustomApi.IsEnabled)
                 {
                     pnlCustomApi.Visibility = Visibility.Visible;
 
@@ -77,14 +79,6 @@ namespace PresenceLight
                 else
                 {
                     pnlCustomApi.Visibility = Visibility.Collapsed;
-                }
-                if (!string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXClientId) && !(string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXClientSecret)))
-                {
-                    getTokenLink.Visibility = Visibility.Visible;
-                }
-                else
-                {
-                    getTokenLink.Visibility = Visibility.Collapsed;
                 }
             }
             catch (Exception e)
