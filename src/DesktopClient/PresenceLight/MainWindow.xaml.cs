@@ -509,7 +509,7 @@ namespace PresenceLight
                     landingPage.userName.Content = profile.DisplayName;
                 }
 
-                landingPage.activity.Content= "Activity: " + presence.Activity;
+                landingPage.activity.Content = "Activity: " + presence.Activity;
                 landingPage.availability.Content = "Availability: " + presence.Availability;
             }
             catch (Exception e)
@@ -578,7 +578,7 @@ namespace PresenceLight
         private void TabControl_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             lblYeelightSaved.Visibility = Visibility.Collapsed;
-            lblHueSaved.Visibility = Visibility.Collapsed;
+            phillipsHue.lblHueSaved.Visibility = Visibility.Collapsed;
             lblLIFXSaved.Visibility = Visibility.Collapsed;
             lblCustomApiSaved.Visibility = Visibility.Collapsed;
             lblSettingSaved.Visibility = Visibility.Collapsed;
