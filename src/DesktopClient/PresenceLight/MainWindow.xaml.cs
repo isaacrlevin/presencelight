@@ -37,10 +37,10 @@ namespace PresenceLight
 
         private Presence presence { get; set; }
         private DateTime settingsLastSaved = DateTime.MinValue;
-         
+
         private MediatR.IMediator _mediator;
         private LIFXOAuthHelper _lIFXOAuthHelper;
-       
+
 
         private GraphWrapper _graphServiceClient;
 
@@ -54,7 +54,7 @@ namespace PresenceLight
 
         #region Init
         public MainWindow(IGraphService graphService,
-                            
+
                           IWorkingHoursService workingHoursService,
                           MediatR.IMediator mediator,
                           IOptionsMonitor<BaseConfig> optionsAccessor,
@@ -74,7 +74,7 @@ namespace PresenceLight
             _workingHoursService = workingHoursService;
             _graphservice = graphService;
             _graphServiceClient = graphServiceClient;
-         
+
 
             _mediator = mediator;
             _options = optionsAccessor != null ? optionsAccessor.CurrentValue : throw new NullReferenceException("Options Accessor is null");
@@ -92,9 +92,9 @@ namespace PresenceLight
             {
                 LoadApp();
 
-                var tbContext = notificationIcon.DataContext;
+                var tbContext = landingPage.notificationIcon.DataContext;
                 DataContext = Config;
-                notificationIcon.DataContext = tbContext;
+                landingPage.notificationIcon.DataContext = tbContext;
             });
         }, TaskScheduler.Current);
         }
@@ -148,11 +148,11 @@ namespace PresenceLight
 
                 PopulateWorkingDays();
 
-                notificationIcon.Text = PresenceConstants.Inactive;
-                notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(String.Empty, IconConstants.Inactive)));
+                landingPage.notificationIcon.Text = PresenceConstants.Inactive;
+                landingPage.notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(String.Empty, IconConstants.Inactive)));
 
-                turnOffButton.Visibility = Visibility.Collapsed;
-                turnOnButton.Visibility = Visibility.Collapsed;
+                landingPage.turnOffButton.Visibility = Visibility.Collapsed;
+                landingPage.turnOnButton.Visibility = Visibility.Collapsed;
 
                 Config.LightSettings.WorkingHoursStartTimeAsDate = string.IsNullOrEmpty(Config.LightSettings.WorkingHoursStartTime) ? null : DateTime.Parse(Config.LightSettings.WorkingHoursStartTime, null);
                 Config.LightSettings.WorkingHoursEndTimeAsDate = string.IsNullOrEmpty(Config.LightSettings.WorkingHoursEndTime) ? null : DateTime.Parse(Config.LightSettings.WorkingHoursEndTime, null);
@@ -213,9 +213,9 @@ namespace PresenceLight
                 _graphServiceClient.Initialize(_graphservice.GetAuthenticatedGraphClient());
             }
 
-            signInPanel.Visibility = Visibility.Collapsed;
+            landingPage.signInPanel.Visibility = Visibility.Collapsed;
             lblTheme.Visibility = Visibility.Collapsed;
-            loadingPanel.Visibility = Visibility.Visible;
+            landingPage.loadingPanel.Visibility = Visibility.Visible;
 
             try
             {
@@ -279,15 +279,15 @@ namespace PresenceLight
                     }
                 }
 
-                loadingPanel.Visibility = Visibility.Collapsed;
-                this.signInPanel.Visibility = Visibility.Collapsed;
+                landingPage.loadingPanel.Visibility = Visibility.Collapsed;
+                landingPage.signInPanel.Visibility = Visibility.Collapsed;
 
 
-                dataPanel.Visibility = Visibility.Visible;
+                landingPage.dataPanel.Visibility = Visibility.Visible;
                 await _settingsService.SaveSettings(Config).ConfigureAwait(true);
 
-                turnOffButton.Visibility = Visibility.Visible;
-                turnOnButton.Visibility = Visibility.Collapsed;
+                landingPage.turnOffButton.Visibility = Visibility.Visible;
+                landingPage.turnOnButton.Visibility = Visibility.Collapsed;
 
                 await InteractWithLights().ConfigureAwait(true);
             }
@@ -332,13 +332,13 @@ namespace PresenceLight
                 if (Config.LightSettings.LIFX.IsEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
                 {
                     await _mediator.Send(new PresenceLight.Core.LifxServices.SetColorCommand { Activity = activity, Availability = color, LightId = Config.LightSettings.LIFX.SelectedItemId }).ConfigureAwait(true);
-                    
+
                 }
 
                 if (Config.LightSettings.Yeelight.IsEnabled && !string.IsNullOrEmpty(Config.LightSettings.Yeelight.SelectedItemId))
                 {
                     await _mediator.Send(new PresenceLight.Core.YeelightServices.SetColorCommand { Activity = activity, Availability = color, LightId = Config.LightSettings.Yeelight.SelectedItemId }).ConfigureAwait(true);
-                    
+
                 }
 
                 if (Config.LightSettings.CustomApi.IsEnabled)
@@ -376,11 +376,12 @@ namespace PresenceLight
                 try
                 {
                     await WPFAuthorizationProvider.Application.RemoveAsync(accounts.FirstOrDefault()).ConfigureAwait(true);
-                    this.signInPanel.Visibility = Visibility.Visible;
-                    dataPanel.Visibility = Visibility.Collapsed;
 
-                    notificationIcon.Text = PresenceConstants.Inactive;
-                    notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(string.Empty, IconConstants.Inactive)));
+                    landingPage.signInPanel.Visibility = Visibility.Visible;
+                    landingPage.dataPanel.Visibility = Visibility.Collapsed;
+
+                    landingPage.notificationIcon.Text = PresenceConstants.Inactive;
+                    landingPage.notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(string.Empty, IconConstants.Inactive)));
 
                     if (Config.LightSettings.Hue.IsEnabled && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedItemId))
                     {
@@ -458,58 +459,58 @@ namespace PresenceLight
                     case "Available":
                         image = new BitmapImage(new Uri(IconConstants.GetIcon(Config.IconType, IconConstants.Available)));
                         color = MapColor("#009933");
-                        notificationIcon.Text = PresenceConstants.Available;
+                        landingPage.notificationIcon.Text = PresenceConstants.Available;
                         break;
                     case "Busy":
                         image = new BitmapImage(new Uri(IconConstants.GetIcon(Config.IconType, IconConstants.Busy)));
                         color = MapColor("#ff3300");
-                        notificationIcon.Text = PresenceConstants.Busy;
+                        landingPage.notificationIcon.Text = PresenceConstants.Busy;
                         break;
                     case "BeRightBack":
                         image = new BitmapImage(new Uri(IconConstants.GetIcon(Config.IconType, IconConstants.BeRightBack)));
                         color = MapColor("#ffff00");
-                        notificationIcon.Text = PresenceConstants.BeRightBack;
+                        landingPage.notificationIcon.Text = PresenceConstants.BeRightBack;
                         break;
                     case "Away":
                         image = new BitmapImage(new Uri(IconConstants.GetIcon(Config.IconType, IconConstants.Away)));
                         color = MapColor("#ffff00");
-                        notificationIcon.Text = PresenceConstants.Away;
+                        landingPage.notificationIcon.Text = PresenceConstants.Away;
                         break;
                     case "DoNotDisturb":
                         image = new BitmapImage(new Uri(IconConstants.GetIcon(Config.IconType, IconConstants.DoNotDisturb)));
                         color = MapColor("#B03CDE");
-                        notificationIcon.Text = PresenceConstants.DoNotDisturb;
+                        landingPage.notificationIcon.Text = PresenceConstants.DoNotDisturb;
                         break;
                     case "OutOfOffice":
                         image = new BitmapImage(new Uri(IconConstants.GetIcon(Config.IconType, IconConstants.OutOfOffice)));
                         color = MapColor("#800080");
-                        notificationIcon.Text = PresenceConstants.OutOfOffice;
+                        landingPage.notificationIcon.Text = PresenceConstants.OutOfOffice;
                         break;
                     default:
                         image = new BitmapImage(new Uri(IconConstants.GetIcon(string.Empty, IconConstants.Inactive)));
                         color = MapColor("#FFFFFF");
-                        notificationIcon.Text = PresenceConstants.Inactive;
+                        landingPage.notificationIcon.Text = PresenceConstants.Inactive;
                         break;
                 }
 
                 if (profileImageBit != null)
                 {
-                    profileImage.Source = profileImageBit;
+                    landingPage.profileImage.Source = profileImageBit;
                 }
 
-                notificationIcon.Icon = image;
+                landingPage.notificationIcon.Icon = image;
                 mySolidColorBrush.Color = color;
-                status.Fill = mySolidColorBrush;
-                status.StrokeThickness = 1;
-                status.Stroke = System.Windows.Media.Brushes.Black;
+                landingPage.status.Fill = mySolidColorBrush;
+                landingPage.status.StrokeThickness = 1;
+                landingPage.status.Stroke = System.Windows.Media.Brushes.Black;
 
                 if (profile != null)
                 {
-                    userName.Content = profile.DisplayName;
+                    landingPage.userName.Content = profile.DisplayName;
                 }
 
-                activity.Content = "Activity: " + presence.Activity;
-                availability.Content = "Availability: " + presence.Availability;
+                landingPage.activity.Content= "Activity: " + presence.Activity;
+                landingPage.availability.Content = "Availability: " + presence.Availability;
             }
             catch (Exception e)
             {
@@ -611,8 +612,8 @@ namespace PresenceLight
         {
             lightMode = "Graph";
 
-            turnOffButton.Visibility = Visibility.Visible;
-            turnOnButton.Visibility = Visibility.Collapsed;
+            landingPage.turnOffButton.Visibility = Visibility.Visible;
+            landingPage.turnOnButton.Visibility = Visibility.Collapsed;
 
             this.WindowState = this.lastWindowState;
             _logger.LogInformation("Turning On PresenceLight Sync");
@@ -646,14 +647,14 @@ namespace PresenceLight
                 if (Config.LightSettings.LIFX.IsEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
                 {
                     await _mediator.Send(new PresenceLight.Core.LifxServices.SetColorCommand { Activity = "", Availability = "Off", LightId = Config.LightSettings.LIFX.SelectedItemId }).ConfigureAwait(true);
-                     
+
                 }
 
-                turnOffButton.Visibility = Visibility.Collapsed;
-                turnOnButton.Visibility = Visibility.Visible;
+                landingPage.turnOffButton.Visibility = Visibility.Collapsed;
+                landingPage.turnOnButton.Visibility = Visibility.Visible;
 
-                notificationIcon.Text = PresenceConstants.Inactive;
-                notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(string.Empty, IconConstants.Inactive)));
+                landingPage.notificationIcon.Text = PresenceConstants.Inactive;
+                landingPage.notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(string.Empty, IconConstants.Inactive)));
 
                 this.WindowState = this.lastWindowState;
             }
@@ -731,7 +732,7 @@ namespace PresenceLight
                 {
                     await _mediator.Send(new PresenceLight.Core.LifxServices.SetColorCommand { Activity = "", Availability = "Off", LightId = Config.LightSettings.LIFX.SelectedItemId }).ConfigureAwait(true);
 
-                    
+
                 }
 
                 if (Config.LightSettings.CustomApi.IsEnabled && !string.IsNullOrEmpty(Config.LightSettings.CustomApi.CustomApiOff.Method) && !string.IsNullOrEmpty(Config.LightSettings.CustomApi.CustomApiOff.Uri))
