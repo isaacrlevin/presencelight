@@ -82,7 +82,7 @@ namespace PresenceLight.Core
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error Occured Processing Access Token for Remote Bridge" );
+                _logger.LogError(e, "Error Occured Processing Access Token for Remote Bridge");
                 throw;
             }
         }
@@ -166,16 +166,16 @@ namespace PresenceLight.Core
             {
                 if (string.IsNullOrEmpty(lightId))
                 {
-                    throw new ArgumentNullException(nameof(lightId),"Remote Hue Selected Light Id Invalid");
+                    throw new ArgumentNullException("Remote Hue Selected Light Id Invalid");
                 }
 
 
                 if (_client == null)
                 {
-                    throw new ArgumentNullException(nameof(_client),"Remote Hue Client Not Configured");
+                    throw new ArgumentNullException("Remote Hue Client Not Configured");
                 }
 
-               if (!_workingHoursService.UseWorkingHours || (_workingHoursService.UseWorkingHours && _workingHoursService.IsInWorkingHours))
+                if (!_workingHoursService.UseWorkingHours || (_workingHoursService.UseWorkingHours && _workingHoursService.IsInWorkingHours))
                 {
 
                     var command = new LightCommand();
@@ -207,7 +207,7 @@ namespace PresenceLight.Core
                             else
                             {
                                 message = $"Turning Hue Light {lightId} Off";
-                                _logger.LogInformation(message);
+                                _logger.LogInformation(message); 
                                 command.On = false;
                                 await _client.SendCommandAsync(command, new List<string> { lightId });
                                 return;
@@ -355,7 +355,7 @@ namespace PresenceLight.Core
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error Occured Setting Color" );
+               _logger.LogError(e,"Error Occured Setting Color");
                 throw;
             }
         }
@@ -372,7 +372,7 @@ namespace PresenceLight.Core
 
                 var lights = await _client.GetLightsAsync();
                 // if there are no lights, get some
-                if (!lights.Any()  )
+                if (lights.Count() == 0)
                 {
                     await _client.SearchNewLightsAsync();
                     Thread.Sleep(40000);
@@ -382,7 +382,7 @@ namespace PresenceLight.Core
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error Getting Lights" );
+                _logger.LogError(e, "Error Getting Lights", e);
                 throw;
             }
         }

@@ -50,7 +50,9 @@ namespace PresenceLight.Core
 
         public AvailabilityStatus ActivityOfflineStatus { get; set; }
 
-        public AvailabilityStatus ActivityOffworkStatus { get; set; }
+        public AvailabilityStatus ActivityOffStatus { get; set; }
+
+        public AvailabilityStatus ActivityOffWorkStatus { get; set; }
 
         public AvailabilityStatus ActivityOutOfOfficeStatus { get; set; }
 
