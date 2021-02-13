@@ -101,13 +101,13 @@ namespace PresenceLight
 
         private void LoadAboutMe()
         {
-            packageName.Text = ThisAppInfo.GetDisplayName();
-            packageVersion.Text = ThisAppInfo.GetPackageVersion();
-            installedFrom.Text = ThisAppInfo.GetAppInstallerUri();
-            installLocation.Text = ThisAppInfo.GetInstallLocation();
-            settingsLocation.Text = ThisAppInfo.GetSettingsLocation();
-            installedDate.Text = ThisAppInfo.GetInstallationDate();
-            RuntimeVersionInfo.Text = ThisAppInfo.GetDotNetRuntimeInfo();
+            about.packageName.Text = ThisAppInfo.GetDisplayName();
+            about.packageVersion.Text = ThisAppInfo.GetPackageVersion();
+            about.installedFrom.Text = ThisAppInfo.GetAppInstallerUri();
+            about.installLocation.Text = ThisAppInfo.GetInstallLocation();
+            about.settingsLocation.Text = ThisAppInfo.GetSettingsLocation();
+            about.installedDate.Text = ThisAppInfo.GetInstallationDate();
+            about.RuntimeVersionInfo.Text = ThisAppInfo.GetDotNetRuntimeInfo();
         }
 
         private void LoadApp()
