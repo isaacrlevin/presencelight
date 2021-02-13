@@ -18,11 +18,11 @@ namespace PresenceLight
         {
             if (Config.LightSettings.Yeelight.IsEnabled)
             {
-                pnlYeelight.Visibility = Visibility.Visible;
+                yeelight.pnlYeelight.Visibility = Visibility.Visible;
             }
             else
             {
-                pnlYeelight.Visibility = Visibility.Collapsed;
+                yeelight.pnlYeelight.Visibility = Visibility.Collapsed;
             }
             SyncOptions();
             e.Handled = true;
@@ -32,22 +32,22 @@ namespace PresenceLight
         {
             try
             {
-                pnlYeelightData.Visibility = Visibility.Collapsed;
+                yeelight.pnlYeelightData.Visibility = Visibility.Collapsed;
                 
                 var deviceGroup = await _mediator.Send(new Core.YeelightServices.FindLightsCommand()).ConfigureAwait(true);
 
-                ddlYeelightLights.ItemsSource = deviceGroup.ToList();
-                pnlYeelightData.Visibility = Visibility.Visible;
+                yeelight.ddlYeelightLights.ItemsSource = deviceGroup.ToList();
+                yeelight.pnlYeelightData.Visibility = Visibility.Visible;
 
                 if (Config.LightSettings.Yeelight.UseActivityStatus)
                 {
-                    pnlYeelightActivityStatuses.Visibility = Visibility.Visible;
-                    pnlYeelightAvailableStatuses.Visibility = Visibility.Collapsed;
+                    yeelight.pnlYeelightActivityStatuses.Visibility = Visibility.Visible;
+                    yeelight.pnlYeelightAvailableStatuses.Visibility = Visibility.Collapsed;
                 }
                 else
                 {
-                    pnlYeelightAvailableStatuses.Visibility = Visibility.Visible;
-                    pnlYeelightActivityStatuses.Visibility = Visibility.Collapsed;
+                    yeelight.pnlYeelightAvailableStatuses.Visibility = Visibility.Visible;
+                    yeelight.pnlYeelightActivityStatuses.Visibility = Visibility.Collapsed;
                 }
             }
             catch (Exception ex)
@@ -59,9 +59,9 @@ namespace PresenceLight
 
         private void ddlYeelightLights_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            if (ddlYeelightLights.SelectedItem != null)
+            if (yeelight.ddlYeelightLights.SelectedItem != null)
             {
-                Config.LightSettings.Yeelight.SelectedItemId = ((YeelightAPI.Device)ddlYeelightLights.SelectedItem).Id;
+                Config.LightSettings.Yeelight.SelectedItemId = ((YeelightAPI.Device)yeelight.ddlYeelightLights.SelectedItem).Id;
                 SyncOptions();
             }
             e.Handled = true;
@@ -71,33 +71,33 @@ namespace PresenceLight
         {
             try
             {
-                pnlYeelightData.Visibility = Visibility.Collapsed;
+                yeelight.pnlYeelightData.Visibility = Visibility.Collapsed;
                 if (Config != null)
                 {
                     SyncOptions();
 
-                     ddlYeelightLights.ItemsSource = await _mediator.Send(new Core.YeelightServices.FindLightsCommand()).ConfigureAwait(true);
+                    yeelight.ddlYeelightLights.ItemsSource = await _mediator.Send(new Core.YeelightServices.FindLightsCommand()).ConfigureAwait(true);
 
-                    foreach (var item in ddlYeelightLights.Items)
+                    foreach (var item in yeelight.ddlYeelightLights.Items)
                     {
                         var light = (YeelightAPI.Device)item;
                         if (light?.Id == Config.LightSettings.Yeelight.SelectedItemId)
                         {
-                            ddlYeelightLights.SelectedItem = item;
+                            yeelight.ddlYeelightLights.SelectedItem = item;
                         }
                     }
-                    ddlYeelightLights.Visibility = Visibility.Visible;
-                    pnlYeelightData.Visibility = Visibility.Visible;
+                    yeelight.ddlYeelightLights.Visibility = Visibility.Visible;
+                    yeelight.pnlYeelightData.Visibility = Visibility.Visible;
 
                     if (Config.LightSettings.Yeelight.UseActivityStatus)
                     {
-                        pnlYeelightActivityStatuses.Visibility = Visibility.Visible;
-                        pnlYeelightAvailableStatuses.Visibility = Visibility.Collapsed;
+                        yeelight.pnlYeelightActivityStatuses.Visibility = Visibility.Visible;
+                        yeelight.pnlYeelightAvailableStatuses.Visibility = Visibility.Collapsed;
                     }
                     else
                     {
-                        pnlYeelightAvailableStatuses.Visibility = Visibility.Visible;
-                        pnlYeelightActivityStatuses.Visibility = Visibility.Collapsed;
+                        yeelight.pnlYeelightAvailableStatuses.Visibility = Visibility.Visible;
+                        yeelight.pnlYeelightActivityStatuses.Visibility = Visibility.Collapsed;
                     }
                 }
             }
@@ -112,13 +112,13 @@ namespace PresenceLight
         {
             if (Config.LightSettings.Yeelight.UseActivityStatus)
             {
-                pnlYeelightAvailableStatuses.Visibility = Visibility.Collapsed;
-                pnlYeelightActivityStatuses.Visibility = Visibility.Visible;
+                yeelight.pnlYeelightAvailableStatuses.Visibility = Visibility.Collapsed;
+                yeelight.pnlYeelightActivityStatuses.Visibility = Visibility.Visible;
             }
             else
             {
-                pnlYeelightAvailableStatuses.Visibility = Visibility.Visible;
-                pnlYeelightActivityStatuses.Visibility = Visibility.Collapsed;
+                yeelight.pnlYeelightAvailableStatuses.Visibility = Visibility.Visible;
+                yeelight.pnlYeelightActivityStatuses.Visibility = Visibility.Collapsed;
             }
             SyncOptions();
             e.Handled = true;
@@ -138,13 +138,13 @@ namespace PresenceLight
         {
             try
             {
-                btnYeelight.IsEnabled = false;
+                yeelight.btnYeelight.IsEnabled = false;
                 Config = Helpers.CleanColors(Config);
                 await _settingsService.SaveSettings(Config).ConfigureAwait(true);
 
                 CheckYeelight();
-                lblYeelightSaved.Visibility = Visibility.Visible;
-                btnYeelight.IsEnabled = true;
+                yeelight.lblYeelightSaved.Visibility = Visibility.Visible;
+                yeelight.btnYeelight.IsEnabled = true;
             }
             catch (Exception ex)
             {
