@@ -59,6 +59,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="config\PresenceLightSettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Update="PresenceLightSettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
