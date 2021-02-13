@@ -1,8 +1,7 @@
 ﻿@page "/hue"
 
 @inject PresenceLight.Worker.Services.SettingsService SettingsService
-@inject IHueService _hueService
-@inject IRemoteHueService _remoteHueService
+ 
 @inject AppState appState
 @inject IModalService Modal
 @inject IOptionsMonitor<BaseConfig> Config
@@ -104,7 +103,9 @@
         try
         {
             SettingsService.SaveSettings(Config.CurrentValue);
-            _hueService.Initialize(Config.CurrentValue);
+
+            _mediator.Send(new Core.HueServices.InitializeCommand() { Request = Config.CurrentValue }).Wait();
+
             message = "Settings Saved";
             settingsSaved = true;
         }
@@ -119,7 +120,7 @@
     {
         try
         {
-            var (bridgeId, apiKey, bridgeIp) = await _remoteHueService.RegisterBridge();
+            var (bridgeId, apiKey, bridgeIp) = await _mediator.Send(new PresenceLight.Core.RemoteHueServices.RegisterBridgeCommand());
             if (!string.IsNullOrEmpty(apiKey) && !string.IsNullOrEmpty(bridgeId) && !string.IsNullOrEmpty(bridgeIp))
             {
                 Config.CurrentValue.LightSettings.Hue.HueApiKey = apiKey;
@@ -179,7 +180,9 @@
         {
             try
             {
-                tempConfig.LightSettings.Hue.HueApiKey = await _hueService.RegisterBridge();
+
+                tempConfig.LightSettings.Hue.HueApiKey = await _mediator.Send(new Core.HueServices.RegisterBridgeCommand());
+
             }
             catch (Exception ex)
             {
@@ -197,7 +200,8 @@
                     hueMessage = "App Registered with Bridge";
                     hueMessageClass = "text-success";
 
-                    appState.SetHueLights(await _hueService.GetLights());
+
+                    appState.SetHueLights(await _mediator.Send(new PresenceLight.Core.HueServices.GetLightsCommand()));
 
                     if (string.IsNullOrEmpty(Config.CurrentValue.LightSettings.Hue.SelectedItemId) && appState.HueLights.Count() > 0)
                     {
@@ -242,7 +246,9 @@
 
             if (!string.IsNullOrEmpty(tempConfig.LightSettings.Hue.HueApiKey))
             {
-                appState.SetHueLights(await _hueService.GetLights());
+     
+                appState.SetHueLights(await _mediator.Send(new PresenceLight.Core.HueServices.GetLightsCommand()));
+
             }
 
             appState.OnChange += RaiseStateHasChanged;

@@ -1,7 +1,8 @@
 ﻿@page "/customapi"
-
+@using PresenceLight.Core.Initialize;
+ 
 @inject PresenceLight.Worker.Services.SettingsService SettingsService
-@inject ICustomApiService _customApiService
+ 
 @inject AppState appState
 @inject IModalService Modal
 @inject IOptionsMonitor<BaseConfig> Config
@@ -84,7 +85,8 @@
         try
         {
             SettingsService.SaveSettings(Config.CurrentValue);
-            _customApiService.Initialize(Config.CurrentValue);
+            _mediator.Send(new InitializeCommand { Request = Config.CurrentValue});
+            
             message = "Settings Saved";
             settingsSaved = true;
         }
