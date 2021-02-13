@@ -123,26 +123,26 @@ namespace PresenceLight
 
                 if (Config.IconType == "Transparent")
                 {
-                    Transparent.IsChecked = true;
+                    settings.Transparent.IsChecked = true;
                 }
                 else
                 {
-                    White.IsChecked = true;
+                    settings.White.IsChecked = true;
                 }
 
                 switch (Config.LightSettings.HoursPassedStatus)
                 {
                     case "Keep":
-                        HourStatusKeep.IsChecked = true;
+                        settings.HourStatusKeep.IsChecked = true;
                         break;
                     case "White":
-                        HourStatusWhite.IsChecked = true;
+                        settings.HourStatusWhite.IsChecked = true;
                         break;
                     case "Off":
-                        HourStatusOff.IsChecked = true;
+                        settings.HourStatusOff.IsChecked = true;
                         break;
                     default:
-                        HourStatusKeep.IsChecked = true;
+                        settings.HourStatusKeep.IsChecked = true;
                         break;
                 }
 
@@ -581,7 +581,7 @@ namespace PresenceLight
             phillipsHue.lblHueSaved.Visibility = Visibility.Collapsed;
             lifx.lblLIFXSaved.Visibility = Visibility.Collapsed;
             customapi.lblCustomApiSaved.Visibility = Visibility.Collapsed;
-            lblSettingSaved.Visibility = Visibility.Collapsed;
+            settings.lblSettingSaved.Visibility = Visibility.Collapsed;
         }
 
         #region Tray Methods

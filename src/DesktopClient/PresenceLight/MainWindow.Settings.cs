@@ -24,12 +24,12 @@ namespace PresenceLight
 
                 if (_workingHoursService.UseWorkingHours)
                 {
-                    pnlWorkingHours.Visibility = Visibility.Visible;
+                    settings.pnlWorkingHours.Visibility = Visibility.Visible;
                     SyncOptions();
                 }
                 else
                 {
-                    pnlWorkingHours.Visibility = Visibility.Collapsed;
+                    settings.pnlWorkingHours.Visibility = Visibility.Collapsed;
                     SyncOptions();
                 }
 
@@ -92,8 +92,8 @@ namespace PresenceLight
         {
             try
             {
-                btnSettings.IsEnabled = false;
-                if (Transparent.IsChecked == true)
+                settings.btnSettings.IsEnabled = false;
+                if (settings.Transparent.IsChecked == true)
                 {
                     Config.IconType = "Transparent";
                 }
@@ -102,30 +102,30 @@ namespace PresenceLight
                     Config.IconType = "White";
                 }
 
-                if (HourStatusKeep.IsChecked == true)
+                if (settings.HourStatusKeep.IsChecked == true)
                 {
                     Config.LightSettings.HoursPassedStatus = "Keep";
                 }
 
-                if (HourStatusOff.IsChecked == true)
+                if (settings.HourStatusOff.IsChecked == true)
                 {
                     Config.LightSettings.HoursPassedStatus = "Off";
                 }
 
-                if (HourStatusWhite.IsChecked == true)
+                if (settings.HourStatusWhite.IsChecked == true)
                 {
                     Config.LightSettings.HoursPassedStatus = "White";
                 }
 
                 CheckAAD();
-                Config.LightSettings.DefaultBrightness = Convert.ToInt32(brightness.Value);
+                Config.LightSettings.DefaultBrightness = Convert.ToInt32(settings.brightness.Value);
 
                 SetWorkingDays();
 
                 SyncOptions();
                 await _settingsService.SaveSettings(Config).ConfigureAwait(true);
-                lblSettingSaved.Visibility = Visibility.Visible;
-                btnSettings.IsEnabled = true;
+                settings.lblSettingSaved.Visibility = Visibility.Visible;
+                settings.btnSettings.IsEnabled = true;
             }
             catch (Exception ex)
             {
@@ -138,37 +138,37 @@ namespace PresenceLight
         {
             List<string> days = new List<string>();
 
-            if (Monday.IsChecked != null && Monday.IsChecked.Value)
+            if (settings.Monday.IsChecked != null && settings.Monday.IsChecked.Value)
             {
                 days.Add("Monday");
             }
 
-            if (Tuesday.IsChecked != null && Tuesday.IsChecked.Value)
+            if (settings.Tuesday.IsChecked != null && settings.Tuesday.IsChecked.Value)
             {
                 days.Add("Tuesday");
             }
 
-            if (Wednesday.IsChecked != null && Wednesday.IsChecked.Value)
+            if (settings.Wednesday.IsChecked != null && settings.Wednesday.IsChecked.Value)
             {
                 days.Add("Wednesday");
             }
 
-            if (Thursday.IsChecked != null && Thursday.IsChecked.Value)
+            if (settings.Thursday.IsChecked != null && settings.Thursday.IsChecked.Value)
             {
                 days.Add("Thursday");
             }
 
-            if (Friday.IsChecked != null && Friday.IsChecked.Value)
+            if (settings.Friday.IsChecked != null && settings.Friday.IsChecked.Value)
             {
                 days.Add("Friday");
             }
 
-            if (Saturday.IsChecked != null && Saturday.IsChecked.Value)
+            if (settings.Saturday.IsChecked != null && settings.Saturday.IsChecked.Value)
             {
                 days.Add("Saturday");
             }
 
-            if (Sunday.IsChecked != null && Sunday.IsChecked.Value)
+            if (settings.Sunday.IsChecked != null && settings.Sunday.IsChecked.Value)
             {
                 days.Add("Sunday");
             }
@@ -207,37 +207,37 @@ namespace PresenceLight
             {
                 if (Config.LightSettings.WorkingDays.Contains("Monday", StringComparison.OrdinalIgnoreCase))
                 {
-                    Monday.IsChecked = true;
+                    settings.Monday.IsChecked = true;
                 }
 
                 if (Config.LightSettings.WorkingDays.Contains("Tuesday", StringComparison.OrdinalIgnoreCase))
                 {
-                    Tuesday.IsChecked = true;
+                    settings.Tuesday.IsChecked = true;
                 }
 
                 if (Config.LightSettings.WorkingDays.Contains("Wednesday", StringComparison.OrdinalIgnoreCase))
                 {
-                    Wednesday.IsChecked = true;
+                    settings.Wednesday.IsChecked = true;
                 }
 
                 if (Config.LightSettings.WorkingDays.Contains("Thursday", StringComparison.OrdinalIgnoreCase))
                 {
-                    Thursday.IsChecked = true;
+                    settings.Thursday.IsChecked = true;
                 }
 
                 if (Config.LightSettings.WorkingDays.Contains("Friday", StringComparison.OrdinalIgnoreCase))
                 {
-                    Friday.IsChecked = true;
+                    settings.Friday.IsChecked = true;
                 }
 
                 if (Config.LightSettings.WorkingDays.Contains("Saturday", StringComparison.OrdinalIgnoreCase))
                 {
-                    Saturday.IsChecked = true;
+                    settings.Saturday.IsChecked = true;
                 }
 
                 if (Config.LightSettings.WorkingDays.Contains("Sunday", StringComparison.OrdinalIgnoreCase))
                 {
-                    Sunday.IsChecked = true;
+                    settings.Sunday.IsChecked = true;
                 }
             }
         }
@@ -260,11 +260,11 @@ namespace PresenceLight
         {
             if (Config.LightSettings.UseDefaultBrightness)
             {
-                pnlDefaultBrightness.Visibility = Visibility.Visible;
+                settings.pnlDefaultBrightness.Visibility = Visibility.Visible;
             }
             else
             {
-                pnlDefaultBrightness.Visibility = Visibility.Collapsed;
+                settings.pnlDefaultBrightness.Visibility = Visibility.Collapsed;
             }
 
             SyncOptions();
@@ -286,11 +286,11 @@ namespace PresenceLight
 
             if (_workingHoursService.UseWorkingHours)
             {
-                pnlWorkingHours.Visibility = Visibility.Visible;
+                settings.pnlWorkingHours.Visibility = Visibility.Visible;
             }
             else
             {
-                pnlWorkingHours.Visibility = Visibility.Collapsed;
+                settings.pnlWorkingHours.Visibility = Visibility.Collapsed;
             }
 
             SyncOptions();
