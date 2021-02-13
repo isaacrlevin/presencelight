@@ -11,6 +11,7 @@ using System.Windows.Navigation;
 
 using LifxCloud.NET.Models;
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Graph;
@@ -51,10 +52,9 @@ namespace PresenceLight
         private WindowState lastWindowState;
         private bool previousRemoteFlag;
         private readonly ILogger<MainWindow> _logger;
-
+      
         #region Init
         public MainWindow(IGraphService graphService,
-
                           IWorkingHoursService workingHoursService,
                           MediatR.IMediator mediator,
                           IOptionsMonitor<BaseConfig> optionsAccessor,
@@ -65,8 +65,7 @@ namespace PresenceLight
                           ISettingsService settingsService)
         {
             _logger = logger;
-            InitializeComponent();
-
+            InitializeComponent(); 
             System.Windows.Application.Current.SessionEnding += new SessionEndingCancelEventHandler(Current_SessionEnding);
 
             LoadAboutMe();
@@ -75,6 +74,7 @@ namespace PresenceLight
             _graphservice = graphService;
             _graphServiceClient = graphServiceClient;
 
+            logs.LogFilePath = App.StaticConfig["Serilog:WriteTo:1:Args:Path"];
 
             _mediator = mediator;
             _options = optionsAccessor != null ? optionsAccessor.CurrentValue : throw new NullReferenceException("Options Accessor is null");
