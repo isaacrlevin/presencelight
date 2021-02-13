@@ -45,6 +45,8 @@ namespace PresenceLight.Core
 
         public string WorkingHoursEndTime { get; set; }
 
+   
+
         public double PollingInterval { get; set; }
 
         public bool UseDefaultBrightness { get; set; }

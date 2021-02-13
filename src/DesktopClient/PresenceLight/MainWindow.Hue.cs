@@ -103,7 +103,7 @@ namespace PresenceLight
         {
             try
             {
-                var (bridgeId, apiKey, bridgeIp) = await _remoteHueService.RegisterBridge();
+                var (bridgeId, apiKey, bridgeIp) = await _mediator.Send(new Core.RemoteHueServices.RegisterBridgeCommand());
                 if (!string.IsNullOrEmpty(apiKey) && !string.IsNullOrEmpty(bridgeId) && !string.IsNullOrEmpty(bridgeIp))
                 {
                     hueIpAddress.Text = bridgeIp;
@@ -113,7 +113,7 @@ namespace PresenceLight
 
                     await _settingsService.SaveSettings(Config);
 
-                    ddlHueLights.ItemsSource = await _remoteHueService.GetLights();
+                    ddlHueLights.ItemsSource = await _mediator.Send(new Core.RemoteHueServices.GetLightsCommand());
                     SyncOptions();
 
                     SolidColorBrush fontBrush = new SolidColorBrush();
@@ -141,7 +141,7 @@ namespace PresenceLight
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error Occured Getting Hue Api Key" );
+                _logger.LogError(ex, "Error Occured Getting Hue Api Key");
                 _diagClient.TrackException(ex);
             }
         }
@@ -150,7 +150,9 @@ namespace PresenceLight
         {
             try
             {
-                Config.LightSettings.Hue.HueIpAddress = await _hueService.FindBridge().ConfigureAwait(true);
+
+                Config.LightSettings.Hue.HueIpAddress = await _mediator.Send(new Core.HueServices.FindBridgeCommand()).ConfigureAwait(true);
+
                 hueIpAddress.Text = Config.LightSettings.Hue.HueIpAddress;
 
                 if (!string.IsNullOrEmpty(hueIpAddress.Text))
@@ -195,8 +197,8 @@ namespace PresenceLight
                 imgHueLoading.Visibility = Visibility.Visible;
                 lblHueMessage.Visibility = Visibility.Collapsed;
                 pnlHueData.Visibility = Visibility.Collapsed;
-                Config.LightSettings.Hue.HueApiKey = await _hueService.RegisterBridge().ConfigureAwait(true);
-                ddlHueLights.ItemsSource = await _hueService.GetLights().ConfigureAwait(true);
+                Config.LightSettings.Hue.HueApiKey = await _mediator.Send(new Core.HueServices.RegisterBridgeCommand()).ConfigureAwait(true);
+                ddlHueLights.ItemsSource = await _mediator.Send(new Core.HueServices.GetLightsCommand()).ConfigureAwait(true);
                 SyncOptions();
                 pnlHueData.Visibility = Visibility.Visible;
                 imgHueLoading.Visibility = Visibility.Collapsed;
@@ -212,7 +214,7 @@ namespace PresenceLight
             catch (Exception ex)
             {
                 _diagClient.TrackException(ex);
-                _logger.LogError(ex, "Error Occurred Registering Hue Bridge" );
+                _logger.LogError(ex, "Error Occurred Registering Hue Bridge");
                 lblHueMessage.Text = "Error Occured registering bridge, please try again";
                 fontBrush.Color = MapColor("#ff3300");
                 lblHueMessage.Foreground = fontBrush;
@@ -246,21 +248,22 @@ namespace PresenceLight
                 Config = Helpers.CleanColors(Config);
                 await _settingsService.SaveSettings(Config).ConfigureAwait(true);
 
-                if (Config.LightSettings.Hue.UseRemoteApi && _remoteHueService == null)
+                if (Config.LightSettings.Hue.UseRemoteApi)
                 {
-                    _remoteHueService.Initialize(Config);
+                    await _mediator.Send(new Core.RemoteHueServices.InitializeCommand { Options = Config });
                 }
                 else
                 {
-                    _hueService.Initialize(Config);
+                    await _mediator.Send(new Core.HueServices.InitializeCommand { Request = Config });
                 }
+
                 CheckHue(false);
                 lblHueSaved.Visibility = Visibility.Visible;
                 btnHue.IsEnabled = true;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error Occured Saving Hue Settings" );
+                _logger.LogError(ex, "Error Occured Saving Hue Settings");
                 _diagClient.TrackException(ex);
             }
         }
@@ -325,12 +328,14 @@ namespace PresenceLight
                     {
                         if (Config.LightSettings.Hue.UseRemoteApi)
                         {
-                            await _remoteHueService.RegisterBridge();
-                            ddlHueLights.ItemsSource = await _remoteHueService.GetLights();
+
+                            await _mediator.Send(new PresenceLight.Core.RemoteHueServices.RegisterBridgeCommand());
+                            ddlHueLights.ItemsSource = await _mediator.Send(new Core.RemoteHueServices.GetLightsCommand());
+
                         }
                         else
                         {
-                            ddlHueLights.ItemsSource = await _hueService.GetLights();
+                            ddlHueLights.ItemsSource = await _mediator.Send(new Core.HueServices.GetLightsCommand());
                         }
 
                         foreach (var item in ddlHueLights.Items)
@@ -376,7 +381,7 @@ namespace PresenceLight
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error Occured Checking Hue Lights");
-                
+
                 _diagClient.TrackException(ex);
             }
         }

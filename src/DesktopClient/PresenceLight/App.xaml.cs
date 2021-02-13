@@ -5,6 +5,8 @@ using System.Globalization;
 using System.Threading;
 using System.Windows;
 
+using MediatR;
+
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -105,6 +107,7 @@ namespace PresenceLight
             {
                 logging.AddSerilog();
             });
+            services.AddMediatR(typeof(App));
             services.Configure<BaseConfig>(Configuration);
             services.Configure<AADSettings>(Configuration.GetSection("AADSettings"));
             services.Configure<TelemetryConfiguration>(
@@ -123,13 +126,9 @@ namespace PresenceLight
         });
 
             services.AddSingleton<IGraphService, GraphService>();
-            services.AddSingleton<IHueService, HueService>();
-            services.AddSingleton<IRemoteHueService, RemoteHueService>();
-            services.AddSingleton<LIFXService, LIFXService>();
-            services.AddSingleton<IYeelightService, YeelightService>();
-            services.AddSingleton<ICustomApiService, CustomApiService>();
-            services.AddSingleton<GraphWrapper, GraphWrapper>();
-            services.AddSingleton<IWorkingHoursService, WorkingHoursService>();
+
+            services.AddPresenceServices();
+
             services.AddSingleton<LIFXOAuthHelper, LIFXOAuthHelper>();
             services.AddSingleton<ThisAppInfo, ThisAppInfo>();
             services.AddSingleton<MainWindow>();

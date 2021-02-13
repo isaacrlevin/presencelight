@@ -11,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using PresenceLight.Core;
 using System.Threading.Tasks;
+using MediatR;
 using Blazorise;
 using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
@@ -51,6 +52,8 @@ namespace PresenceLight.Worker
         {
             var initialScopes = Configuration.GetValue<string>("DownstreamApi:Scopes")?.Split(' ');
 
+            services.AddMediatR(typeof(Startup));
+
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
                     .EnableTokenAcquisitionToCallDownstreamApi(initialScopes)
@@ -86,25 +89,20 @@ namespace PresenceLight.Worker
 
             services.Configure<BaseConfig>(Configuration);
             services.AddSingleton<SettingsService>();
-            
+
             services.AddOptions();
-            services.AddSingleton<LIFXService, LIFXService>();
-            services.AddSingleton<IHueService, HueService>();
-            services.AddSingleton<IRemoteHueService, RemoteHueService>();
-            services.AddSingleton<IYeelightService, YeelightService>();
-            services.AddSingleton<ICustomApiService, CustomApiService>();
-            services.AddSingleton<AppState, AppState>();
-            services.AddSingleton<IWorkingHoursService, WorkingHoursService>();
+            services.AddSingleton<AppState>();
+            services.AddPresenceServices();
             services.AddBlazoredModal();
 
-            services.AddHostedService<Worker>();  
+            services.AddHostedService<Worker>();
 
             services.AddApplicationInsightsTelemetry(options =>
             {
                 options.InstrumentationKey = Configuration.GetValue<string>("ApplicationInsights:InstrumentationKey");
                 options.EnablePerformanceCounterCollectionModule = false;
                 options.EnableDependencyTrackingTelemetryModule = false;
-                options.EnableAdaptiveSampling = false;                
+                options.EnableAdaptiveSampling = false;
             });
 
 
