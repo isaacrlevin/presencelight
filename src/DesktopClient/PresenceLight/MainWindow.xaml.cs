@@ -577,9 +577,9 @@ namespace PresenceLight
 
         private void TabControl_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-          yeelight.  lblYeelightSaved.Visibility = Visibility.Collapsed;
+            yeelight.lblYeelightSaved.Visibility = Visibility.Collapsed;
             phillipsHue.lblHueSaved.Visibility = Visibility.Collapsed;
-            lblLIFXSaved.Visibility = Visibility.Collapsed;
+            lifx.lblLIFXSaved.Visibility = Visibility.Collapsed;
             lblCustomApiSaved.Visibility = Visibility.Collapsed;
             lblSettingSaved.Visibility = Visibility.Collapsed;
         }

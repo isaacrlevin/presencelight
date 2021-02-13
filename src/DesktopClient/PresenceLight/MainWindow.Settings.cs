@@ -59,15 +59,15 @@ namespace PresenceLight
                 {
                     if (!string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXClientId) && !(string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXClientSecret)))
                     {
-                        getTokenLink.Visibility = Visibility.Visible;
-                        pnlLIFX.Visibility = Visibility.Visible;
+                        lifx.getTokenLink.Visibility = Visibility.Visible;
+                        lifx.pnlLIFX.Visibility = Visibility.Visible;
                     }
                     SyncOptions();
                 }
                 else
                 {
-                    getTokenLink.Visibility = Visibility.Collapsed;
-                    pnlLIFX.Visibility = Visibility.Collapsed;
+                    lifx.getTokenLink.Visibility = Visibility.Collapsed;
+                    lifx.pnlLIFX.Visibility = Visibility.Collapsed;
                 }
 
                 if (Config.LightSettings.CustomApi.IsEnabled)
