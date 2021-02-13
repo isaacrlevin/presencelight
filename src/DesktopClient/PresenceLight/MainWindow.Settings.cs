@@ -47,12 +47,12 @@ namespace PresenceLight
 
                 if (Config.LightSettings.Yeelight.IsEnabled)
                 {
-                    pnlYeelight.Visibility = Visibility.Visible;
+                    yeelight.pnlYeelight.Visibility = Visibility.Visible;
                     SyncOptions();
                 }
                 else
                 {
-                    pnlYeelight.Visibility = Visibility.Collapsed;
+                    yeelight.pnlYeelight.Visibility = Visibility.Collapsed;
                 }
 
                 if (Config.LightSettings.LIFX.IsEnabled)
