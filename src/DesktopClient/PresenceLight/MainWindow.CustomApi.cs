@@ -17,11 +17,11 @@ namespace PresenceLight
         {
             if (Config.LightSettings.CustomApi.IsEnabled)
             {
-                pnlCustomApi.Visibility = Visibility.Visible;
+                customapi.pnlCustomApi.Visibility = Visibility.Visible;
             }
             else
             {
-                pnlCustomApi.Visibility = Visibility.Collapsed;
+                customapi.pnlCustomApi.Visibility = Visibility.Collapsed;
             }
 
             SyncOptions();
@@ -106,7 +106,7 @@ namespace PresenceLight
             {
                 Config = Helpers.CleanColors(Config);
                 await _settingsService.SaveSettings(Config).ConfigureAwait(true);
-                lblCustomApiSaved.Visibility = Visibility.Visible;
+                customapi.lblCustomApiSaved.Visibility = Visibility.Visible;
                 SyncOptions();
             }
             catch (Exception ex)

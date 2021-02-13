@@ -345,14 +345,14 @@ namespace PresenceLight
                 {
                     string response = await _mediator.Send(new Core.CustomApiServices.SetColorCommand() { Activity = activity, Availability = color });
 
-                    customApiLastResponse.Content = response;
+                    customapi.customApiLastResponse.Content = response;
                     if (response.Contains("Error:", StringComparison.OrdinalIgnoreCase))
                     {
-                        customApiLastResponse.Foreground = new SolidColorBrush(Colors.Red);
+                        customapi.customApiLastResponse.Foreground = new SolidColorBrush(Colors.Red);
                     }
                     else
                     {
-                        customApiLastResponse.Foreground = new SolidColorBrush(Colors.Green);
+                        customapi.customApiLastResponse.Foreground = new SolidColorBrush(Colors.Green);
                     }
                 }
             }
@@ -580,7 +580,7 @@ namespace PresenceLight
             yeelight.lblYeelightSaved.Visibility = Visibility.Collapsed;
             phillipsHue.lblHueSaved.Visibility = Visibility.Collapsed;
             lifx.lblLIFXSaved.Visibility = Visibility.Collapsed;
-            lblCustomApiSaved.Visibility = Visibility.Collapsed;
+            customapi.lblCustomApiSaved.Visibility = Visibility.Collapsed;
             lblSettingSaved.Visibility = Visibility.Collapsed;
         }
 
