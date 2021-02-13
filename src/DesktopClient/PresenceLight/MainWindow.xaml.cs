@@ -205,8 +205,8 @@ namespace PresenceLight
         {
 
             lightMode = "Graph";
-            syncTeamsButton.IsEnabled = false;
-            syncThemeButton.IsEnabled = true;
+            lightColors.syncTeamsButton.IsEnabled = false;
+            lightColors.syncThemeButton.IsEnabled = true;
 
             if (!_graphServiceClient.IsInitialized)
             {
@@ -214,7 +214,7 @@ namespace PresenceLight
             }
 
             landingPage.signInPanel.Visibility = Visibility.Collapsed;
-            lblTheme.Visibility = Visibility.Collapsed;
+            lightColors.lblTheme.Visibility = Visibility.Collapsed;
             landingPage.loadingPanel.Visibility = Visibility.Visible;
 
             try
@@ -841,9 +841,9 @@ namespace PresenceLight
                                     var theme = ((SolidColorBrush)SystemParameters.WindowGlassBrush).Color;
                                     var color = $"#{theme.ToString().Substring(3)}";
 
-                                    lblTheme.Content = $"Theme Color is {color}";
-                                    lblTheme.Foreground = (SolidColorBrush)SystemParameters.WindowGlassBrush;
-                                    lblTheme.Visibility = Visibility.Visible;
+                                    lightColors.lblTheme.Content = $"Theme Color is {color}";
+                                    lightColors.lblTheme.Foreground = (SolidColorBrush)SystemParameters.WindowGlassBrush;
+                                    lightColors.lblTheme.Visibility = Visibility.Visible;
 
                                     if (lightMode == "Theme")
                                     {
