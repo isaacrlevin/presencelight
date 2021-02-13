@@ -10,6 +10,7 @@ using MediatR;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 using PresenceLight.Core;
 using PresenceLight.Graph;
@@ -33,8 +34,12 @@ namespace PresenceLight
 
         public static IConfiguration StaticConfig { get; private set; }
 
+        private IHost _host;
         public App()
-        { }
+        {
+            
+
+        }
 
         private void OnStartup(object sender, StartupEventArgs e)
         {
@@ -107,7 +112,11 @@ namespace PresenceLight
             {
                 logging.AddSerilog();
             });
-            services.AddMediatR(typeof(App));
+
+            //Need to tell MediatR what Assemblies to look in for Command Event Handlers
+            services.AddMediatR(typeof(App),
+                                typeof(PresenceLight.Core.BaseConfig));
+
             services.Configure<BaseConfig>(Configuration);
             services.Configure<AADSettings>(Configuration.GetSection("AADSettings"));
             services.Configure<TelemetryConfiguration>(
