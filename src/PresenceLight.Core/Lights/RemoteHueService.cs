@@ -35,7 +35,13 @@ namespace PresenceLight.Core
             _workingHoursService = workingHoursService;
             _logger = logger;
             _options = optionsAccessor.CurrentValue;
-            _authClient = new RemoteAuthenticationClient(_options.LightSettings.Hue.RemoteHueClientId, _options.LightSettings.Hue.RemoteHueClientSecret, _options.LightSettings.Hue.RemoteHueClientAppName);
+            if (!string.IsNullOrWhiteSpace(_options.LightSettings.Hue.RemoteHueClientId))
+            {
+                _authClient = new RemoteAuthenticationClient(_options.LightSettings.Hue.RemoteHueClientId, _options.LightSettings.Hue.RemoteHueClientSecret, _options.LightSettings.Hue.RemoteHueClientAppName);
+            }
+            else {
+                _logger.LogWarning("Remote Hue Client Id is empty");
+            } 
         }
 
         public void Initialize(BaseConfig options)
