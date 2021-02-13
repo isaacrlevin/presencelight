@@ -1,7 +1,7 @@
 ﻿@page "/lifx"
 
 @inject PresenceLight.Worker.Services.SettingsService SettingsService
-@inject LIFXService _lifxService
+
 @inject AppState appState
 @inject IModalService Modal
 @inject IOptionsMonitor<BaseConfig> Config
@@ -177,9 +177,12 @@
             try
             {
                 Save();
+
+
                 if (type == "Groups")
                 {
-                    appState.SetLIFXLights(await _lifxService.GetAllGroups(Config.CurrentValue.LightSettings.LIFX.LIFXApiKey));
+
+                    appState.SetLIFXLights(await _mediator.Send(new Core.LifxServices.GetAllGroupsCommand() { ApiKey = Config.CurrentValue.LightSettings.LIFX.LIFXApiKey }));
 
                     if (string.IsNullOrEmpty(Config.CurrentValue.LightSettings.LIFX.SelectedItemId) && appState.LIFXLights.Count() > 0)
                     {
@@ -189,7 +192,7 @@
                 }
                 else
                 {
-                    appState.SetLIFXLights(await _lifxService.GetAllLights(Config.CurrentValue.LightSettings.LIFX.LIFXApiKey));
+                    appState.SetLIFXLights(await _mediator.Send(new Core.LifxServices.GetAllLightsCommand() { ApiKey = Config.CurrentValue.LightSettings.LIFX.LIFXApiKey }));
 
                     if (string.IsNullOrEmpty(Config.CurrentValue.LightSettings.LIFX.SelectedItemId) && appState.LIFXLights.Count() > 0)
                     {
@@ -240,14 +243,18 @@
                 isLoadingLights = true;
                 if (Config.CurrentValue.LightSettings.LIFX.SelectedItemId.Contains("group"))
                 {
-                    appState.SetLIFXLights(await _lifxService.GetAllGroups(Config.CurrentValue.LightSettings.LIFX.LIFXApiKey));
+
+                    appState.SetLIFXLights(await _mediator.Send(new Core.LifxServices.GetAllGroupsCommand() { ApiKey = Config.CurrentValue.LightSettings.LIFX.LIFXApiKey }));
+
                     lastType = "Groups";
                 }
                 else
                 {
-                    appState.SetLIFXLights(await _lifxService.GetAllLights(Config.CurrentValue.LightSettings.LIFX.LIFXApiKey));
+                    appState.SetLIFXLights(await _mediator.Send(new Core.LifxServices.GetAllLightsCommand() { ApiKey = Config.CurrentValue.LightSettings.LIFX.LIFXApiKey }));
+                     
                     lastType = "Lights";
                 }
+
                 showLifxMessage = true;
                 lifxMessage = "Connected to LIFX Cloud";
                 lifxMessageClass = "text-success";

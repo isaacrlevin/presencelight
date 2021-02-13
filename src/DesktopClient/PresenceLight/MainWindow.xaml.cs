@@ -37,13 +37,10 @@ namespace PresenceLight
 
         private Presence presence { get; set; }
         private DateTime settingsLastSaved = DateTime.MinValue;
-
-        private IYeelightService _yeelightService;
-        private IHueService _hueService;
-        private IRemoteHueService _remoteHueService;
-        private ICustomApiService _customApiService;
+         
+        private MediatR.IMediator _mediator;
         private LIFXOAuthHelper _lIFXOAuthHelper;
-        private LIFXService _lifxService;
+       
 
         private GraphWrapper _graphServiceClient;
 
@@ -56,9 +53,16 @@ namespace PresenceLight
         private readonly ILogger<MainWindow> _logger;
 
         #region Init
-        public MainWindow(IGraphService graphService, IHueService hueService, LIFXService lifxService, IYeelightService yeelightService, IRemoteHueService remoteHueService, IWorkingHoursService workingHoursService,
-            ICustomApiService customApiService, IOptionsMonitor<BaseConfig> optionsAccessor, LIFXOAuthHelper lifxOAuthHelper, DiagnosticsClient diagClient, ILogger<MainWindow> logger, GraphWrapper graphServiceClient,
-        ISettingsService settingsService)
+        public MainWindow(IGraphService graphService,
+                            
+                          IWorkingHoursService workingHoursService,
+                          MediatR.IMediator mediator,
+                          IOptionsMonitor<BaseConfig> optionsAccessor,
+                          LIFXOAuthHelper lifxOAuthHelper,
+                          DiagnosticsClient diagClient,
+                          ILogger<MainWindow> logger,
+                          GraphWrapper graphServiceClient,
+                          ISettingsService settingsService)
         {
             _logger = logger;
             InitializeComponent();
@@ -70,11 +74,9 @@ namespace PresenceLight
             _workingHoursService = workingHoursService;
             _graphservice = graphService;
             _graphServiceClient = graphServiceClient;
-            _yeelightService = yeelightService;
-            _lifxService = lifxService;
-            _hueService = hueService;
-            _remoteHueService = remoteHueService;
-            _customApiService = customApiService;
+         
+
+            _mediator = mediator;
             _options = optionsAccessor != null ? optionsAccessor.CurrentValue : throw new NullReferenceException("Options Accessor is null");
             _lIFXOAuthHelper = lifxOAuthHelper;
             _diagClient = diagClient;
@@ -307,28 +309,42 @@ namespace PresenceLight
                     {
                         if (!string.IsNullOrEmpty(Config.LightSettings.Hue.RemoteBridgeId))
                         {
-                            await _remoteHueService.SetColor(color, Config.LightSettings.Hue.SelectedItemId, Config.LightSettings.Hue.RemoteBridgeId).ConfigureAwait(true);
+                            await _mediator.Send(new Core.RemoteHueServices.SetColorCommand
+                            {
+                                Availability = color,
+                                LightId = Config.LightSettings.Hue.SelectedItemId,
+                                BridgeId = Config.LightSettings.Hue.RemoteBridgeId
+                            }).ConfigureAwait(true);
                         }
                     }
                     else
                     {
-                        await _hueService.SetColor(color, activity, Config.LightSettings.Hue.SelectedItemId).ConfigureAwait(true);
+                        await _mediator.Send(new Core.HueServices.SetColorCommand()
+                        {
+                            Activity = activity,
+                            Availability = color,
+                            LightID = Config.LightSettings.Hue.SelectedItemId
+                        }).ConfigureAwait(false);
+
                     }
                 }
 
                 if (Config.LightSettings.LIFX.IsEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
                 {
-                    await _lifxService.SetColor(color, activity, Config.LightSettings.LIFX.SelectedItemId).ConfigureAwait(true);
+                    await _mediator.Send(new PresenceLight.Core.LifxServices.SetColorCommand { Activity = activity, Availability = color, LightId = Config.LightSettings.LIFX.SelectedItemId }).ConfigureAwait(true);
+                    
                 }
 
                 if (Config.LightSettings.Yeelight.IsEnabled && !string.IsNullOrEmpty(Config.LightSettings.Yeelight.SelectedItemId))
                 {
-                    await _yeelightService.SetColor(color, activity, Config.LightSettings.Yeelight.SelectedItemId).ConfigureAwait(true);
+                    await _mediator.Send(new PresenceLight.Core.YeelightServices.SetColorCommand { Activity = activity, Availability = color, LightId = Config.LightSettings.Yeelight.SelectedItemId }).ConfigureAwait(true);
+                    
                 }
 
                 if (Config.LightSettings.CustomApi.IsEnabled)
                 {
-                    string response = await _customApiService.SetColor(color, activity).ConfigureAwait(true);
+                    string response = await _mediator.Send(new Core.CustomApiServices.SetColorCommand() { Activity = activity, Availability = color });
+
                     customApiLastResponse.Content = response;
                     if (response.Contains("Error:", StringComparison.OrdinalIgnoreCase))
                     {
@@ -342,7 +358,7 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
-               
+
                 _logger.LogError(e, "Error Occurred");
                 _diagClient.TrackException(e);
                 //throw;
@@ -351,8 +367,8 @@ namespace PresenceLight
 
         private async void SignOutButton_Click(object sender, RoutedEventArgs e)
         {
-            _logger.LogInformation( "Signing out of Graph PresenceLight Sync");
-            
+            _logger.LogInformation("Signing out of Graph PresenceLight Sync");
+
             lightMode = "Graph";
             var accounts = await WPFAuthorizationProvider.Application.GetAccountsAsync().ConfigureAwait(true);
             if (accounts.Any())
@@ -370,11 +386,17 @@ namespace PresenceLight
                     {
                         if (Config.LightSettings.Hue.UseRemoteApi)
                         {
-                            await _remoteHueService.SetColor("Off", Config.LightSettings.Hue.SelectedItemId, Config.LightSettings.Hue.RemoteBridgeId).ConfigureAwait(true);
+                            await _mediator.Send(new Core.RemoteHueServices.SetColorCommand
+                            {
+                                Availability = "Off",
+                                LightId = Config.LightSettings.Hue.SelectedItemId,
+                                BridgeId = Config.LightSettings.Hue.RemoteBridgeId
+                            }).ConfigureAwait(true);
                         }
                         else
                         {
-                            await _hueService.SetColor("Off", "", Config.LightSettings.Hue.SelectedItemId).ConfigureAwait(true);
+                            await _mediator.Send(new Core.HueServices.SetColorCommand() { Availability = "Off", LightID = Config.LightSettings.Hue.SelectedItemId, Activity = "" }).ConfigureAwait(true);
+
                         }
                     }
 
@@ -413,7 +435,7 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
-                _logger.LogError(e,"Error Occured in LoadImager");
+                _logger.LogError(e, "Error Occured in LoadImager");
                 _diagClient.TrackException(e);
                 throw;
             }
@@ -491,7 +513,7 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
-               _logger.LogError(e, "Error Occurred");
+                _logger.LogError(e, "Error Occurred");
                 _diagClient.TrackException(e);
                 throw;
             }
@@ -507,7 +529,7 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
-               _logger.LogError(e, "Error Occurred");
+                _logger.LogError(e, "Error Occurred");
                 _diagClient.TrackException(e);
                 throw;
             }
@@ -530,7 +552,7 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
-               _logger.LogError(e, "Error Occurred");
+                _logger.LogError(e, "Error Occurred");
                 _diagClient.TrackException(e);
                 throw;
             }
@@ -593,7 +615,7 @@ namespace PresenceLight
             turnOnButton.Visibility = Visibility.Collapsed;
 
             this.WindowState = this.lastWindowState;
-            _logger.LogInformation( "Turning On PresenceLight Sync");
+            _logger.LogInformation("Turning On PresenceLight Sync");
         }
 
         private async void OnTurnOffSyncClick(object sender, RoutedEventArgs e)
@@ -606,18 +628,25 @@ namespace PresenceLight
                 {
                     if (Config.LightSettings.Hue.UseRemoteApi)
                     {
-                        await _remoteHueService.SetColor("Off", Config.LightSettings.Hue.SelectedItemId, Config.LightSettings.Hue.RemoteBridgeId).ConfigureAwait(true);
+                        await _mediator.Send(new Core.RemoteHueServices.SetColorCommand
+                        {
+                            Availability = "Off",
+                            LightId = Config.LightSettings.Hue.SelectedItemId,
+                            BridgeId = Config.LightSettings.Hue.RemoteBridgeId
+                        }).ConfigureAwait(true);
+
                     }
                     else
                     {
-                        await _hueService.SetColor("Off", "",Config.LightSettings.Hue.SelectedItemId).ConfigureAwait(true);
+                        await _mediator.Send(new Core.HueServices.SetColorCommand() { Availability = "Off", LightID = Config.LightSettings.Hue.SelectedItemId, Activity = "" }).ConfigureAwait(true);
+
                     }
                 }
 
                 if (Config.LightSettings.LIFX.IsEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
                 {
-
-                    await _lifxService.SetColor("Off","", Config.LightSettings.LIFX.SelectedItemId).ConfigureAwait(true);
+                    await _mediator.Send(new PresenceLight.Core.LifxServices.SetColorCommand { Activity = "", Availability = "Off", LightId = Config.LightSettings.LIFX.SelectedItemId }).ConfigureAwait(true);
+                     
                 }
 
                 turnOffButton.Visibility = Visibility.Collapsed;
@@ -644,25 +673,32 @@ namespace PresenceLight
                 {
                     if (Config.LightSettings.Hue.UseRemoteApi)
                     {
-                        await _remoteHueService.SetColor("Off", Config.LightSettings.Hue.SelectedItemId, Config.LightSettings.Hue.RemoteBridgeId).ConfigureAwait(true);
+                        await _mediator.Send(new Core.RemoteHueServices.SetColorCommand
+                        {
+                            Availability = "Off",
+                            LightId = Config.LightSettings.Hue.SelectedItemId,
+                            BridgeId = Config.LightSettings.Hue.RemoteBridgeId
+                        }).ConfigureAwait(true);
+
                     }
                     else
                     {
-                        await _hueService.SetColor("Off","", Config.LightSettings.Hue.SelectedItemId).ConfigureAwait(true);
+                        await _mediator.Send(new Core.HueServices.SetColorCommand() { Availability = "Off", LightID = Config.LightSettings.Hue.SelectedItemId, Activity = "" }).ConfigureAwait(true);
+
                     }
                 }
 
                 if (Config.LightSettings.LIFX.IsEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
                 {
+                    await _mediator.Send(new PresenceLight.Core.LifxServices.SetColorCommand { Activity = "", Availability = "Off", LightId = Config.LightSettings.LIFX.SelectedItemId }).ConfigureAwait(true);
 
-                    await _lifxService.SetColor("Off", "",Config.LightSettings.LIFX.SelectedItemId).ConfigureAwait(true);
                 }
                 await _settingsService.SaveSettings(Config).ConfigureAwait(true);
                 System.Windows.Application.Current.Shutdown();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex,"Error Occured");
+                _logger.LogError(ex, "Error Occured");
                 _diagClient.TrackException(ex);
             }
             _logger.LogInformation("PresenceLight Exiting");
@@ -676,23 +712,32 @@ namespace PresenceLight
                 {
                     if (Config.LightSettings.Hue.UseRemoteApi)
                     {
-                        await _remoteHueService.SetColor("Off", Config.LightSettings.Hue.SelectedItemId, Config.LightSettings.Hue.RemoteBridgeId).ConfigureAwait(true);
+                        await _mediator.Send(new Core.RemoteHueServices.SetColorCommand
+                        {
+                            Availability = "Off",
+                            LightId = Config.LightSettings.Hue.SelectedItemId,
+                            BridgeId = Config.LightSettings.Hue.RemoteBridgeId
+                        }).ConfigureAwait(true);
+
                     }
                     else
                     {
-                        await _hueService.SetColor("Off","", Config.LightSettings.Hue.SelectedItemId).ConfigureAwait(true);
+                        await _mediator.Send(new Core.HueServices.SetColorCommand() { Availability = "Off", LightID = Config.LightSettings.Hue.SelectedItemId, Activity = "" }).ConfigureAwait(true);
+
                     }
                 }
 
                 if (Config.LightSettings.LIFX.IsEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
                 {
+                    await _mediator.Send(new PresenceLight.Core.LifxServices.SetColorCommand { Activity = "", Availability = "Off", LightId = Config.LightSettings.LIFX.SelectedItemId }).ConfigureAwait(true);
 
-                    await _lifxService.SetColor("Off","", Config.LightSettings.LIFX.SelectedItemId).ConfigureAwait(true);
+                    
                 }
 
                 if (Config.LightSettings.CustomApi.IsEnabled && !string.IsNullOrEmpty(Config.LightSettings.CustomApi.CustomApiOff.Method) && !string.IsNullOrEmpty(Config.LightSettings.CustomApi.CustomApiOff.Uri))
                 {
-                    await _customApiService.SetColor("Off", "Off").ConfigureAwait(true);
+                    await _mediator.Send(new Core.CustomApiServices.SetColorCommand() { Activity = "Off", Availability = "Off" });
+
                 }
 
                 await _settingsService.SaveSettings(Config).ConfigureAwait(true);
@@ -811,7 +856,7 @@ namespace PresenceLight
                                 }
                                 catch (Exception ex)
                                 {
-                                   _logger.LogError(ex, "Error Occured");
+                                    _logger.LogError(ex, "Error Occured");
                                     _diagClient.TrackException(ex);
                                 }
                                 break;
@@ -822,7 +867,7 @@ namespace PresenceLight
                 }
                 catch (Exception e)
                 {
-                   _logger.LogError(e, "Error Occurred");
+                    _logger.LogError(e, "Error Occurred");
                     _diagClient.TrackException(e);
                 }
             }

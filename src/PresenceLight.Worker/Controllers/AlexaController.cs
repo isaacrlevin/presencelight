@@ -28,20 +28,20 @@ namespace PresenceLight.Worker.Controllers
     public class AlexaController : ControllerBase
     {
         private readonly BaseConfig Config;
-        private readonly IHueService _hueService;
-        private LIFXService _lifxService;
+  
         private ILogger _logger;
+        private MediatR.IMediator _mediator;
         private readonly AppState _appState;
-        public AlexaController(IHueService hueService,
-                      IOptionsMonitor<BaseConfig> optionsAccessor,
+
+        public AlexaController(IOptionsMonitor<BaseConfig> optionsAccessor,
                       ILogger<AlexaController> logger,
                       AppState appState,
-                      LIFXService lifxService)
+                      MediatR.IMediator mediator )
         {
             Config = optionsAccessor.CurrentValue;
-            _hueService = hueService;
-            _lifxService = lifxService;
+           
             _appState = appState;
+            _mediator = mediator;
             _logger = logger;
         }
 
@@ -79,19 +79,24 @@ namespace PresenceLight.Worker.Controllers
                         response = ResponseBuilder.Tell("Presence Light set to custom!");
                     }
 
-                if (_appState.LightMode == "Custom")
-                {
-                    if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedItemId))
+                    if (_appState.LightMode == "Custom")
                     {
-                        await _hueService.SetColor(_appState.CustomColor, "", Config.LightSettings.Hue.SelectedItemId);
-                    }
+                        if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedItemId))
+                        {
+                            await _mediator.Send(new Core.HueServices.SetColorCommand()
+                            {
+                                Availability = _appState.CustomColor,
+                                Activity = "",
+                                LightID = Config.LightSettings.Hue.SelectedItemId
+                            });
+                        }
 
-                    if (Config.LightSettings.LIFX.IsEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
-                    {
-                        await _lifxService.SetColor(_appState.CustomColor, "", Config.LightSettings.LIFX.SelectedItemId);
+                        if (Config.LightSettings.LIFX.IsEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
+                        {
+                            await _mediator.Send(new Core.LifxServices.SetColorCommand() { Availability = _appState.CustomColor, Activity = "", LightId = Config.LightSettings.LIFX.SelectedItemId });
+                        }
                     }
                 }
-            }
 
                 return new OkObjectResult(response);
             }
