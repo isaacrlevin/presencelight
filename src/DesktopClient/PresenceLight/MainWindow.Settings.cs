@@ -35,14 +35,14 @@ namespace PresenceLight
 
                 if (Config.LightSettings.Hue.IsEnabled)
                 {
-                    pnlPhillips.Visibility = Visibility.Visible;
-                    pnlHueApi.Visibility = Visibility.Visible;
+                    phillipsHue.pnlPhillips.Visibility = Visibility.Visible;
+                    phillipsHue.pnlHueApi.Visibility = Visibility.Visible;
                     SyncOptions();
                 }
                 else
                 {
-                    pnlPhillips.Visibility = Visibility.Collapsed;
-                    pnlHueApi.Visibility = Visibility.Collapsed;
+                    phillipsHue.pnlPhillips.Visibility = Visibility.Collapsed;
+                    phillipsHue.pnlHueApi.Visibility = Visibility.Collapsed;
                 }
 
                 if (Config.LightSettings.Yeelight.IsEnabled)
