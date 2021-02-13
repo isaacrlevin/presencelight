@@ -72,13 +72,13 @@ namespace PresenceLight
 
                 if (Config.LightSettings.CustomApi.IsEnabled)
                 {
-                    pnlCustomApi.Visibility = Visibility.Visible;
+                    customapi.pnlCustomApi.Visibility = Visibility.Visible;
 
                     SyncOptions();
                 }
                 else
                 {
-                    pnlCustomApi.Visibility = Visibility.Collapsed;
+                    customapi.pnlCustomApi.Visibility = Visibility.Collapsed;
                 }
             }
             catch (Exception e)
