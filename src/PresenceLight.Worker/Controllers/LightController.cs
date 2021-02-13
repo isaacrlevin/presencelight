@@ -16,19 +16,18 @@ namespace PresenceLight.Worker.Controllers
     public class LightController : ControllerBase
     {
         private readonly BaseConfig Config;
-        private readonly IHueService _hueService;
-        private LIFXService _lifxService;
+        private MediatR.IMediator _mediator;
+   
         private readonly AppState _appState;
         private ILogger _logger;
-        public LightController(IHueService hueService,
+        public LightController(MediatR.IMediator mediator,
                       IOptionsMonitor<BaseConfig> optionsAccessor,
                       AppState appState,
-                      ILogger<LightController> logger,
-                      LIFXService lifxService)
+                      ILogger<LightController> logger )
         {
             Config = optionsAccessor.CurrentValue;
-            _hueService = hueService;
-            _lifxService = lifxService;
+            _mediator = mediator;
+         
             _appState = appState;
             _logger = logger;
         }
@@ -67,12 +66,20 @@ namespace PresenceLight.Worker.Controllers
             {
                 if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedItemId))
                 {
-                    await _hueService.SetColor(_appState.CustomColor, "", Config.LightSettings.Hue.SelectedItemId);
+                    await _mediator.Send(new Core.HueServices.SetColorCommand()
+                    {
+                        Availability = _appState.CustomColor,
+                        Activity = "",
+                        LightID = Config.LightSettings.Hue.SelectedItemId
+                    });
+                    
                 }
 
                 if (Config.LightSettings.LIFX.IsEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
                 {
-                    await _lifxService.SetColor(_appState.CustomColor, "", Config.LightSettings.LIFX.SelectedItemId);
+                
+                    await _mediator.Send(new Core.LifxServices.SetColorCommand() { Availability = _appState.CustomColor, Activity = "", LightId = Config.LightSettings.LIFX.SelectedItemId });
+
                 }
             }
         }

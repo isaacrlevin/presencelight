@@ -3,8 +3,6 @@
 @using LifxCloud.NET.Models
 @inject AppState appState
 @inject IOptionsMonitor<BaseConfig> Config
-@inject IHueService _hueService;
-@inject LIFXService _lifxService;
 @inject IJSRuntime jsRuntime;
 @inject ILogger<Color> _logger;
 
@@ -52,12 +50,17 @@
             {
                 if (!string.IsNullOrEmpty(Config.CurrentValue.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.CurrentValue.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.CurrentValue.LightSettings.Hue.SelectedItemId))
                 {
-                    await _hueService.SetColor(appState.CustomColor, "", Config.CurrentValue.LightSettings.Hue.SelectedItemId);
+
+
+                    await _mediator.Send(new Core.HueServices.SetColorCommand() { Availability = appState.CustomColor,  LightID = Config.CurrentValue.LightSettings.Hue.SelectedItemId, Activity = "" }).ConfigureAwait(true);
+
                 }
 
                 if (Config.CurrentValue.LightSettings.LIFX.IsEnabled && !string.IsNullOrEmpty(Config.CurrentValue.LightSettings.LIFX.LIFXApiKey))
                 {
-                    await _lifxService.SetColor(appState.CustomColor, "", Config.CurrentValue.LightSettings.LIFX.SelectedItemId);
+                    
+                    await _mediator.Send(new Core.LifxServices.SetColorCommand() { Availability = appState.CustomColor, Activity = "", LightId = Config.CurrentValue.LightSettings.LIFX.SelectedItemId });
+
                 }
             }
         }

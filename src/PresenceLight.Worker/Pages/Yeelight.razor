@@ -1,7 +1,7 @@
 ﻿@page "/yeelight"
 
 @inject PresenceLight.Worker.Services.SettingsService SettingsService
-@inject IYeelightService _yeelightService
+
 @inject AppState appState
 @inject IOptionsMonitor<BaseConfig> Config
 @inject ILogger<CustomApiSetup> _logger;
@@ -130,7 +130,7 @@
     {
         try
         {
-            appState.SetYeelightLights(await _yeelightService.FindLights());
+            appState.SetYeelightLights(await _mediator.Send(new Core.YeelightServices.FindLightsCommand()));
 
             if (string.IsNullOrEmpty(Config.CurrentValue.LightSettings.Yeelight.SelectedItemId) && appState.YeelightLights.Count() > 0)
             {

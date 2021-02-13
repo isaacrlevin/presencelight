@@ -18,34 +18,25 @@ namespace PresenceLight.Worker
     public class Worker : BackgroundService
     {
         private readonly BaseConfig Config;
-        private readonly IHueService _hueService;
-        private readonly IRemoteHueService _remoteHueService;
         private readonly AppState _appState;
         private readonly ILogger<Worker> _logger;
-        private LIFXService _lifxService;
-        private IYeelightService _yeelightService;
-        private ICustomApiService _customApiService;
+
+      
+        private MediatR.IMediator _mediator;
         private GraphServiceClient c;
         private IWorkingHoursService _workingHoursService;
 
 
-        public Worker(IHueService hueService,
-                      ILogger<Worker> logger,
+        public Worker(ILogger<Worker> logger,
                       IOptionsMonitor<BaseConfig> optionsAccessor,
                       AppState appState,
-                      LIFXService lifxService,
-                      IYeelightService yeelightService,
-                      IWorkingHoursService workingHoursService,
-                      IRemoteHueService remoteHueService,
-                      ICustomApiService customApiService)
+                     
+                      IWorkingHoursService workingHoursService)
         {
             Config = optionsAccessor.CurrentValue;
             _workingHoursService = workingHoursService;
-            _hueService = hueService;
-            _remoteHueService = remoteHueService;
-            _lifxService = lifxService;
-            _yeelightService = yeelightService;
-            _customApiService = customApiService;
+
+             
             _logger = logger;
             _appState = appState;
         }
@@ -164,7 +155,7 @@ namespace PresenceLight.Worker
                         switch (_appState.LightMode)
                         {
                             case "Graph":
-                                _logger.LogInformation( "PresenceLight Running in Teams Mode");
+                                _logger.LogInformation("PresenceLight Running in Teams Mode");
                                 _appState.Presence = await System.Threading.Tasks.Task.Run(() => GetPresence()).ConfigureAwait(true);
 
                                 if (newColor == string.Empty)
@@ -183,7 +174,7 @@ namespace PresenceLight.Worker
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e,"Error Occured");
+                    _logger.LogError(e, "Error Occured");
                 }
             }
         }
@@ -254,33 +245,47 @@ namespace PresenceLight.Worker
                     {
                         if (!string.IsNullOrEmpty(Config.LightSettings.Hue.RemoteBridgeId))
                         {
-                            await _remoteHueService.SetColor(color, Config.LightSettings.Hue.SelectedItemId, Config.LightSettings.Hue.RemoteBridgeId).ConfigureAwait(true);
+                            await _mediator.Send(new Core.RemoteHueServices.SetColorCommand
+                            {
+                                Availability = color,
+                                LightId = Config.LightSettings.Hue.SelectedItemId,
+                                BridgeId = Config.LightSettings.Hue.RemoteBridgeId
+                            }).ConfigureAwait(true);
+
                         }
                     }
                     else
                     {
-                        await _hueService.SetColor(color, activity, Config.LightSettings.Hue.SelectedItemId).ConfigureAwait(true);
+                        await _mediator.Send(new Core.HueServices.SetColorCommand() { Activity = activity, Availability = color, LightID = Config.LightSettings.Hue.SelectedItemId }).ConfigureAwait(true);
+
                     }
                 }
 
                 if (Config.LightSettings.LIFX.IsEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
                 {
-                    await _lifxService.SetColor(color, activity, Config.LightSettings.LIFX.SelectedItemId).ConfigureAwait(true);
+                    await _mediator.Send(new Core.LifxServices.SetColorCommand() { Availability = color, Activity = activity, LightId = Config.LightSettings.LIFX.SelectedItemId }).ConfigureAwait(true);
                 }
 
                 if (Config.LightSettings.Yeelight.IsEnabled && !string.IsNullOrEmpty(Config.LightSettings.Yeelight.SelectedItemId))
                 {
-                    await _yeelightService.SetColor(color, activity, Config.LightSettings.Yeelight.SelectedItemId).ConfigureAwait(true);
+                   
+                    await _mediator.Send(new PresenceLight.Core.YeelightServices.SetColorCommand { Activity = activity, Availability = color, LightId = Config.LightSettings.Yeelight.SelectedItemId }).ConfigureAwait(true);
+
                 }
 
                 if (Config.LightSettings.CustomApi.IsEnabled)
                 {
-                    string response = await _customApiService.SetColor(color, activity).ConfigureAwait(true);
+                    string response = await _mediator.Send(new Core.CustomApiServices.SetColorCommand
+                    {
+                        Activity = activity,
+                        Availability = color
+                    });
+
                 }
             }
             catch (Exception e)
             {
-                _logger.LogError(e,"Error Occured");
+                _logger.LogError(e, "Error Occured");
             }
         }
     }
