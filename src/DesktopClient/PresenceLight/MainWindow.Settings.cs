@@ -182,11 +182,11 @@ namespace PresenceLight
             {
                 SyncOptions();
 
-                configErrorPanel.Visibility = Visibility.Hidden;
+                landingPage.configErrorPanel.Visibility = Visibility.Hidden;
 
-                if (dataPanel.Visibility != Visibility.Visible)
+                if (landingPage.dataPanel.Visibility != Visibility.Visible)
                 {
-                    signInPanel.Visibility = Visibility.Visible;
+                    landingPage.signInPanel.Visibility = Visibility.Visible;
                 }
 
                 if (!_graphServiceClient.IsInitialized)
@@ -247,8 +247,8 @@ namespace PresenceLight
             if (!Config.LightSettings.SyncLights)
             {
                 await SetColor("Off").ConfigureAwait(true);
-                turnOffButton.Visibility = Visibility.Collapsed;
-                turnOnButton.Visibility = Visibility.Visible;
+                landingPage.turnOffButton.Visibility = Visibility.Collapsed;
+                landingPage.turnOnButton.Visibility = Visibility.Visible;
             }
 
             SyncOptions();

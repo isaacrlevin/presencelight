@@ -7,6 +7,7 @@ using LifxCloud.NET.Models;
 using PresenceLight.Telemetry;
 using System.Windows.Navigation;
 using PresenceLight.Core;
+using PresenceLight.Core.LifxServices;
 
 namespace PresenceLight
 {
@@ -37,7 +38,7 @@ namespace PresenceLight
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occured Getting LIFX Token" );
+                _logger.LogError(ex, "Error occured Getting LIFX Token");
                 _diagClient.TrackException(ex);
             }
         }
@@ -54,7 +55,7 @@ namespace PresenceLight
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occured Saving LIFX Settings" );
+                _logger.LogError(ex, "Error occured Saving LIFX Settings");
                 _diagClient.TrackException(ex);
             }
         }
@@ -70,7 +71,7 @@ namespace PresenceLight
             {
                 if (Config.LightSettings.LIFX.IsEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey) && !string.IsNullOrEmpty(Config.LightSettings.LIFX.SelectedItemId))
                 {
-                    ddlLIFXLights.ItemsSource = await _lifxService.GetAllLights().ConfigureAwait(true);
+                    ddlLIFXLights.ItemsSource = await _mediator.Send(new Core.LifxServices.GetAllLightsCommand()).ConfigureAwait(true);
 
                     foreach (var item in ddlLIFXLights.Items)
                     {
@@ -86,7 +87,7 @@ namespace PresenceLight
 
                     if (ddlLIFXLights.SelectedItem == null)
                     {
-                        ddlLIFXLights.ItemsSource = await _lifxService.GetAllGroups().ConfigureAwait(true);
+                        ddlLIFXLights.ItemsSource = await _mediator.Send(new GetAllGroupsCommand()).ConfigureAwait(true);
 
                         foreach (var item in ddlLIFXLights.Items)
                         {
@@ -132,7 +133,7 @@ namespace PresenceLight
             catch (Exception ex)
             {
                 _diagClient.TrackException(ex);
-                _logger.LogError(ex, "Error occured Checking LIFX" );
+                _logger.LogError(ex, "Error occured Checking LIFX");
                 lblLIFXMessage.Text = "Error Occured Connecting to LIFX, please try again";
                 fontBrush.Color = MapColor("#ff3300");
                 lblLIFXMessage.Foreground = fontBrush;
@@ -177,12 +178,14 @@ namespace PresenceLight
                     SyncOptions();
                     if (((System.Windows.Controls.Button)sender).Name == "btnGetLIFXGroups")
                     {
-                        ddlLIFXLights.ItemsSource = await _lifxService.GetAllGroups().ConfigureAwait(true);
+                        ddlLIFXLights.ItemsSource = await _mediator.Send(new GetAllGroupsCommand()).ConfigureAwait(true);
                     }
                     else
                     {
-                        ddlLIFXLights.ItemsSource = await _lifxService.GetAllLights().ConfigureAwait(true);
+                        ddlLIFXLights.ItemsSource = await _mediator.Send(new GetAllLightsCommand()).ConfigureAwait(true);
+                        
                     }
+
                     lblLIFXMessage.Visibility = Visibility.Visible;
                     pnlLIFXData.Visibility = Visibility.Visible;
                     lblLIFXMessage.Text = "Connected to LIFX Cloud";
@@ -205,7 +208,7 @@ namespace PresenceLight
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Error Getting LIFX Lights" );
+                    _logger.LogError(ex, "Error Getting LIFX Lights");
                     _diagClient.TrackException(ex);
                     lblLIFXMessage.Visibility = Visibility.Visible;
                     pnlLIFXData.Visibility = Visibility.Collapsed;
