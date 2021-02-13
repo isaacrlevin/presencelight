@@ -43,7 +43,7 @@ namespace PresenceLight.Core
 
             if (string.IsNullOrEmpty(lightId))
             {
-                _logger.LogError(  $"Yeelight Selected Light Id {lightId} Invalid" );
+                _logger.LogError($"Yeelight Selected Light Id {lightId} Invalid");
                 throw new ArgumentOutOfRangeException(nameof(lightId), $"Yeelight Selected Light Id {lightId} Invalid");
             }
 
@@ -54,7 +54,7 @@ namespace PresenceLight.Core
                 if (device == null)
                 {
                     message = $"Yeelight Device {lightId} Not Found";
-                    _logger.LogError( message);
+                    _logger.LogError(message);
                     throw new ArgumentOutOfRangeException(nameof(lightId), message);
                 }
 
@@ -64,8 +64,8 @@ namespace PresenceLight.Core
                 if (!await device.Connect())
                 {
                     message = $"Unable to Connect to Yeelight Device {lightId}";
-                    _logger.LogError( message);
-                    throw new ArgumentOutOfRangeException(nameof(lightId),message);
+                    _logger.LogError(message);
+                    throw new ArgumentOutOfRangeException(nameof(lightId), message);
                 }
 
                 try
@@ -218,7 +218,7 @@ namespace PresenceLight.Core
                         }
                     }
 
-                    var rgb = new RGBColor(availability);
+                    var rgb = new RGBColor(color);
                     await device.SetRGBColor((int)rgb.R, (int)rgb.G, (int)rgb.B);
                     return;
                 }
@@ -229,7 +229,6 @@ namespace PresenceLight.Core
                 }
             }
         }
-
         private void Device_OnError(object sender, UnhandledExceptionEventArgs e)
         {
             //throw new NotImplementedException();
@@ -256,4 +255,5 @@ namespace PresenceLight.Core
         }
     }
 }
+
 

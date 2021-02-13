@@ -19,6 +19,7 @@ namespace PresenceLight.Worker
     {
         private readonly BaseConfig Config;
         private readonly IHueService _hueService;
+        private readonly IRemoteHueService _remoteHueService;
         private readonly AppState _appState;
         private readonly ILogger<Worker> _logger;
         private LIFXService _lifxService;
@@ -35,11 +36,13 @@ namespace PresenceLight.Worker
                       LIFXService lifxService,
                       IYeelightService yeelightService,
                       IWorkingHoursService workingHoursService,
+                      IRemoteHueService remoteHueService,
                       ICustomApiService customApiService)
         {
             Config = optionsAccessor.CurrentValue;
             _workingHoursService = workingHoursService;
             _hueService = hueService;
+            _remoteHueService = remoteHueService;
             _lifxService = lifxService;
             _yeelightService = yeelightService;
             _customApiService = customApiService;
@@ -57,7 +60,7 @@ namespace PresenceLight.Worker
                     _logger.LogInformation("User is Authenticated, starting worker");
                     try
                     {
-                        await GetData();
+                        await Run();
                     }
                     catch (Exception e)
                     {
@@ -73,16 +76,14 @@ namespace PresenceLight.Worker
         }
 
 
-        private async Task GetData()
+        private async Task Run()
         {
 
             try
             {
 
                 var user = await GetUserInformation();
-
                 var photo = await GetPhotoAsBase64Async();
-
                 var presence = await GetPresence();
 
                 //Attach properties to all logging within this context..
@@ -90,72 +91,12 @@ namespace PresenceLight.Worker
                 using (Serilog.Context.LogContext.PushProperty("Activity", presence.Activity))
                 {
                     _appState.SetUserInfo(user, photo, presence);
+                    _appState.SetUserInfo(user, photo, presence);
 
-                    if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedItemId))
-                    {
-                        await _hueService.SetColor(presence.Availability, presence.Activity, Config.LightSettings.Hue.SelectedItemId);
-                    }
-
-                    if (Config.LightSettings.LIFX.IsEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
-                    {
-                        await _lifxService.SetColor(presence.Availability, presence.Activity, Config.LightSettings.LIFX.SelectedItemId);
-                        _logger.LogInformation($"Setting LIFX Light: { Config.LightSettings.Hue.SelectedItemId  }, Graph Presence: {presence.Availability}");
-                    }
-
-                    if (Config.LightSettings.CustomApi.IsEnabled)
-                    {
-                        // passing the data on only when it changed is handled within the custom api service
-                        await _customApiService.SetColor(presence.Availability, presence.Activity);
-                        _logger.LogInformation($"Setting Custom Api Light: { Config.LightSettings.CustomApi.SelectedItemId}, Graph Presence: {presence.Availability}, {presence.Activity}");
-                    }
-
-                    if (Config.LightSettings.Yeelight.IsEnabled)
-                    {
-                        // passing the data on only when it changed is handled within the custom api service
-                        await _yeelightService.SetColor(presence.Availability, presence.Activity, Config.LightSettings.Yeelight.SelectedItemId);
-                        _logger.LogInformation($"Setting Yeelight Light: { Config.LightSettings.CustomApi.SelectedItemId}, Graph Presence: {presence.Availability}, {presence.Activity} ");
-                    }
-
-                    while (_appState.IsUserAuthenticated)
-                    {
-                        presence = await GetPresence();
-
-                        _appState.SetPresence(presence);
-
-                        _logger.LogInformation($"Presence is {presence.Availability}");
-
-                        if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedItemId))
-                        {
-                            await _hueService.SetColor(presence.Availability, presence.Activity, Config.LightSettings.Hue.SelectedItemId);
-                            _logger.LogInformation($"Setting Hue Light: { Config.LightSettings.LIFX.SelectedItemId}, Graph Presence: {presence.Availability}, {presence.Activity}");
-                        }
-
-                        if (Config.LightSettings.LIFX.IsEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
-                        {
-                            await _lifxService.SetColor(presence.Availability, presence.Activity, Config.LightSettings.LIFX.SelectedItemId);
-                            _logger.LogInformation($"Setting LIFX Light: { Config.LightSettings.LIFX.SelectedItemId}, Graph Presence: {presence.Availability}, {presence.Activity}");
-                        }
-                        if (Config.LightSettings.CustomApi.IsEnabled)
-                        {
-                            // passing the data on only when it changed is handled within the custom api service
-                            await _customApiService.SetColor(presence.Availability, presence.Activity);
-                            _logger.LogInformation($"Setting Custom Api Light: { Config.LightSettings.CustomApi.SelectedItemId}, Graph Presence: {presence.Availability}, {presence.Activity}");
-                        }
-                        if (Config.LightSettings.Yeelight.IsEnabled)
-                        {
-                            // passing the data on only when it changed is handled within the custom api service
-                            await _yeelightService.SetColor(presence.Availability, presence.Activity, Config.LightSettings.Yeelight.SelectedItemId);
-                            _logger.LogInformation($"Setting Yeelight Light: { Config.LightSettings.CustomApi.SelectedItemId}, Graph Presence: {presence.Availability}, {presence.Activity} ");
-                        }
-                        Thread.Sleep(Convert.ToInt32(Config.LightSettings.PollingInterval * 1000));
-                    }
+                    await SetColor(_appState.Presence.Availability, _appState.Presence.Activity);
+                    await InteractWithLights();
                 }
-
-
-                _logger.LogInformation("User logged out, no longer polling for presence.");
-
             }
-
             catch (Exception e)
             {
                 _logger.LogError(e, "Exception occured in running worker");
@@ -163,8 +104,91 @@ namespace PresenceLight.Worker
             }
         }
 
+        private async Task InteractWithLights()
+        {
+            bool previousWorkingHours = false;
+            while (_appState.IsUserAuthenticated)
+            {
+                try
+                {
+                    await Task.Delay(Convert.ToInt32(Config.LightSettings.PollingInterval * 1000)).ConfigureAwait(true);
 
-        public async Task<User> GetUserInformation()
+                    bool touchLight = false;
+                    string newColor = "";
+
+                    if (Config.LightSettings.SyncLights)
+                    {
+                        if (!_workingHoursService.UseWorkingHours)
+                        {
+                            if (_appState.LightMode == "Graph")
+                            {
+                                touchLight = true;
+                            }
+                        }
+                        else
+                        {
+                            if (_workingHoursService.IsInWorkingHours)
+                            {
+                                previousWorkingHours = _workingHoursService.IsInWorkingHours;
+                                if (_appState.LightMode == "Graph")
+                                {
+                                    touchLight = true;
+                                }
+                            }
+                            else
+                            {
+                                // check to see if working hours have passed
+                                if (previousWorkingHours)
+                                {
+                                    switch (Config.LightSettings.HoursPassedStatus)
+                                    {
+                                        case "Keep":
+                                            break;
+                                        case "White":
+                                            newColor = "Offline";
+                                            break;
+                                        case "Off":
+                                            newColor = "Off";
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                    touchLight = true;
+                                }
+                            }
+                        }
+                    }
+
+                    if (touchLight)
+                    {
+                        switch (_appState.LightMode)
+                        {
+                            case "Graph":
+                                _logger.LogInformation( "PresenceLight Running in Teams Mode");
+                                _appState.Presence = await System.Threading.Tasks.Task.Run(() => GetPresence()).ConfigureAwait(true);
+
+                                if (newColor == string.Empty)
+                                {
+                                    await SetColor(_appState.Presence.Availability, _appState.Presence.Activity).ConfigureAwait(true);
+                                }
+                                else
+                                {
+                                    await SetColor(newColor, newColor).ConfigureAwait(true);
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e,"Error Occured");
+                }
+            }
+        }
+
+        private async Task<User> GetUserInformation()
         {
             try
             {
@@ -179,7 +203,7 @@ namespace PresenceLight.Worker
             }
         }
 
-        public async Task<string> GetPhotoAsBase64Async()
+        private async Task<string> GetPhotoAsBase64Async()
         {
             try
             {
@@ -199,7 +223,7 @@ namespace PresenceLight.Worker
             }
         }
 
-        public async Task<Presence> GetPresence()
+        private async Task<Presence> GetPresence()
         {
             try
             {
@@ -217,6 +241,46 @@ namespace PresenceLight.Worker
             {
                 _logger.LogError(ex, "Exception getting presence");
                 throw;
+            }
+        }
+
+        private async Task SetColor(string color, string activity = null)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedItemId))
+                {
+                    if (Config.LightSettings.Hue.UseRemoteApi)
+                    {
+                        if (!string.IsNullOrEmpty(Config.LightSettings.Hue.RemoteBridgeId))
+                        {
+                            await _remoteHueService.SetColor(color, Config.LightSettings.Hue.SelectedItemId, Config.LightSettings.Hue.RemoteBridgeId).ConfigureAwait(true);
+                        }
+                    }
+                    else
+                    {
+                        await _hueService.SetColor(color, activity, Config.LightSettings.Hue.SelectedItemId).ConfigureAwait(true);
+                    }
+                }
+
+                if (Config.LightSettings.LIFX.IsEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
+                {
+                    await _lifxService.SetColor(color, activity, Config.LightSettings.LIFX.SelectedItemId).ConfigureAwait(true);
+                }
+
+                if (Config.LightSettings.Yeelight.IsEnabled && !string.IsNullOrEmpty(Config.LightSettings.Yeelight.SelectedItemId))
+                {
+                    await _yeelightService.SetColor(color, activity, Config.LightSettings.Yeelight.SelectedItemId).ConfigureAwait(true);
+                }
+
+                if (Config.LightSettings.CustomApi.IsEnabled)
+                {
+                    string response = await _customApiService.SetColor(color, activity).ConfigureAwait(true);
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e,"Error Occured");
             }
         }
     }

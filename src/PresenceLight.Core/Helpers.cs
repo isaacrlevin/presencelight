@@ -71,52 +71,55 @@ namespace PresenceLight.Core
 
         public static object ReadPropertiesRecursive(object obj)
         {
-            foreach (var property in obj.GetType().GetProperties())
+            if (obj != null)
             {
-                //for value types
-                if (property.PropertyType.IsPrimitive || property.PropertyType.IsValueType || property.PropertyType == typeof(string))
+                foreach (var property in obj.GetType().GetProperties())
                 {
-                    if (property.Name == "Colour")
+                    //for value types
+                    if (property.PropertyType.IsPrimitive || property.PropertyType.IsValueType || property.PropertyType == typeof(string))
                     {
-                        var uncleanColor = property.GetValue(obj).ToString();
-                        uncleanColor = uncleanColor.Replace("#", "");
-
-                        string cleanColor = "";
-                        switch (uncleanColor.Length)
+                        if (property.Name == "Colour")
                         {
-                            case var length when uncleanColor.Length == 6:
-                                cleanColor = uncleanColor;
-                                // Do Nothing
-                                break;
-                            case var length when uncleanColor.Length > 6:
-                                // Get last 6 characters
-                                cleanColor = uncleanColor.Substring(uncleanColor.Length - 6);
-                                break;
-                            default:
-                                throw new ArgumentException("Supplied Color had an issue");
+                            var uncleanColor = property.GetValue(obj).ToString();
+                            uncleanColor = uncleanColor.Replace("#", "");
+
+                            string cleanColor = "";
+                            switch (uncleanColor.Length)
+                            {
+                                case var length when uncleanColor.Length == 6:
+                                    cleanColor = uncleanColor;
+                                    // Do Nothing
+                                    break;
+                                case var length when uncleanColor.Length > 6:
+                                    // Get last 6 characters
+                                    cleanColor = uncleanColor.Substring(uncleanColor.Length - 6);
+                                    break;
+                                default:
+                                    throw new ArgumentException("Supplied Color had an issue");
+                            }
+                            property.SetValue(obj, $"#{cleanColor}");
                         }
-                        property.SetValue(obj, $"#{cleanColor}");
+
                     }
-
-                }
-                //for complex types
-                else if (property.PropertyType.IsClass && !typeof(IEnumerable).IsAssignableFrom(property.PropertyType))
-                {
-                    ReadPropertiesRecursive(property.GetValue(obj));
-                }
-                //for Enumerables
-                else
-                {
-                    var enumerablePropObj1 = property.GetValue(obj) as IEnumerable;
-
-                    if (enumerablePropObj1 == null) continue;
-
-                    var objList = enumerablePropObj1.GetEnumerator();
-
-                    while (objList.MoveNext())
+                    //for complex types
+                    else if (property.PropertyType.IsClass && !typeof(IEnumerable).IsAssignableFrom(property.PropertyType))
                     {
-                        objList.MoveNext();
-                        ReadPropertiesRecursive(objList.Current);
+                        ReadPropertiesRecursive(property.GetValue(obj));
+                    }
+                    //for Enumerables
+                    else
+                    {
+                        var enumerablePropObj1 = property.GetValue(obj) as IEnumerable;
+
+                        if (enumerablePropObj1 == null) continue;
+
+                        var objList = enumerablePropObj1.GetEnumerator();
+
+                        while (objList.MoveNext())
+                        {
+                            objList.MoveNext();
+                            ReadPropertiesRecursive(objList.Current);
+                        }
                     }
                 }
             }
