@@ -8,18 +8,6 @@ using Newtonsoft.Json;
 
 namespace PresenceLight.Core
 {
-    public class BaseLight
-    {
-        public bool IsEnabled { get; set; }
-
-        public string? SelectedItemId { get; set; }
-
-        public int Brightness { get; set; }
-
-        public Statuses Statuses { get; set; }
-
-        public bool UseActivityStatus { get; set; }
-    }
 
     public class LightSettings
     {
@@ -58,11 +46,5 @@ namespace PresenceLight.Core
         public Hue Hue { get; set; }
 
         public Yeelight Yeelight { get; set; }
-    }
-
-    public class CustomApiSetting
-    {
-        public string? Method { get; set; }
-        public string? Uri { get; set; }
     }
 }
