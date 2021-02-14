@@ -36,6 +36,7 @@ namespace PresenceLight.Controls
             {
                 handler(this, e);
             }
+            await Task.CompletedTask;
         }
 
         private async void cbIsCustomApiEnabledChanged(object sender, RoutedEventArgs e)
@@ -45,6 +46,7 @@ namespace PresenceLight.Controls
             {
                 handler(this, e);
             }
+            await Task.CompletedTask;
         }
         private async void customApiMethod_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -53,6 +55,7 @@ namespace PresenceLight.Controls
             {
                 handler(this, e);
             }
+            await Task.CompletedTask;
         }
     }
 }

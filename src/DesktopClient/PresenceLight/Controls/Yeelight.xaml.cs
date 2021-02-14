@@ -39,6 +39,7 @@ namespace PresenceLight.Controls
             {
                 handler(this, e);
             }
+            await Task.CompletedTask;
         }
         private async void cbYeelightIsDisabledChange(object sender, RoutedEventArgs e)
         {
@@ -47,6 +48,7 @@ namespace PresenceLight.Controls
             {
                 handler(this, e);
             }
+            await Task.CompletedTask;
         }
         private async void cbIsYeelightEnabledChanged(object sender, RoutedEventArgs e)
         {
@@ -55,6 +57,7 @@ namespace PresenceLight.Controls
             {
                 handler(this, e);
             }
+            await Task.CompletedTask;
         }
         private async void FindYeelights_Click(object sender, RoutedEventArgs e)
         {
@@ -63,6 +66,7 @@ namespace PresenceLight.Controls
             {
                 handler(this, e);
             }
+            await Task.CompletedTask;
         }
         private async void SaveYeelight_Click(object sender, RoutedEventArgs e)
         {
@@ -71,6 +75,7 @@ namespace PresenceLight.Controls
             {
                 handler(this, e);
             }
+            await Task.CompletedTask;
         }
 
         private void ddlYeelightLights_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)

@@ -68,7 +68,7 @@ namespace PresenceLight.Controls
             if (handler != null)
             {
                 handler(this, e);
-            }
+            } 
         }
         private async void FindBridge_Click(object sender, RoutedEventArgs e)
         {
@@ -77,6 +77,7 @@ namespace PresenceLight.Controls
             {
                 handler(this, e);
             }
+            await Task.CompletedTask;
         }
         private async void SaveHue_Click(object sender, RoutedEventArgs e)
         {
@@ -85,6 +86,7 @@ namespace PresenceLight.Controls
             {
                 handler(this, e);
             }
+            await Task.CompletedTask;
         }
         private async void RegisterBridge_Click(object sender, RoutedEventArgs e)
         {
@@ -93,6 +95,7 @@ namespace PresenceLight.Controls
             {
                 handler(this, e);
             }
+            await Task.CompletedTask;
         }
         private async void HueIpAddress_TextChanged(object sender, TextChangedEventArgs e)
         {
@@ -101,6 +104,7 @@ namespace PresenceLight.Controls
             {
                 handler(this, e);
             }
+            await Task.CompletedTask;
         }
         
 
@@ -111,6 +115,7 @@ namespace PresenceLight.Controls
             {
                 handler(this, e);
             }
+           
         }
 
         private async void HueApiKey_Get(object sender, RoutedEventArgs e)
@@ -120,6 +125,7 @@ namespace PresenceLight.Controls
             {
                 handler(this, e);
             }
+            await Task.CompletedTask;
         }
     }
 }

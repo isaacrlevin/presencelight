@@ -46,7 +46,7 @@ namespace PresenceLight.Controls
             {
                 handler(this, e);
             }
-
+            await Task.CompletedTask;
         }
         private async void OnExitClick(object sender, RoutedEventArgs e)
         {
@@ -55,7 +55,7 @@ namespace PresenceLight.Controls
             {
                 handler(this, e);
             }
-
+            await Task.CompletedTask;
         }
         private async void OnOpenClick(object sender, RoutedEventArgs e)
         {
@@ -64,7 +64,7 @@ namespace PresenceLight.Controls
             {
                 handler(this, e);
             }
-
+            await Task.CompletedTask;
         }
         private async void OnTurnOffSyncClick(object sender, RoutedEventArgs e)
         {
@@ -73,7 +73,7 @@ namespace PresenceLight.Controls
             {
                 handler(this, e);
             }
-
+            await Task.CompletedTask;
         }
 
         private async void OnNotifyIconDoubleClick(object sender, MouseButtonEventArgs e)
@@ -83,7 +83,7 @@ namespace PresenceLight.Controls
             {
                 handler(this, e);
             }
-
+            await Task.CompletedTask;
         }
         private async void OnTurnOnSyncClick(object sender, RoutedEventArgs e)
         {
@@ -92,7 +92,7 @@ namespace PresenceLight.Controls
             {
                 handler(this, e);
             }
-
+            await Task.CompletedTask;
         }
         private async void SignOutButton_Click(object sender, RoutedEventArgs e)
         {
@@ -101,7 +101,7 @@ namespace PresenceLight.Controls
             {
                 handler(this, e);
             }
-
+            await Task.CompletedTask;
         }
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
@@ -109,8 +109,7 @@ namespace PresenceLight.Controls
             if (handler != null)
             {
                 handler(this, e);
-            }
-
+            } 
         }
     }
 }

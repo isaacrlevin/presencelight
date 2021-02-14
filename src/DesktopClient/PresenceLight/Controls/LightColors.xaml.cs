@@ -37,6 +37,7 @@ namespace PresenceLight.Controls
             {
                 handler(this, e);
             }
+            await Task.CompletedTask;
         }
         private async void SetTeamsPresence_Click(object sender, RoutedEventArgs e)
         {
@@ -45,6 +46,7 @@ namespace PresenceLight.Controls
             {
                 handler(this, e);
             }
+            await Task.CompletedTask;
         }
         private async void SyncTheme_Click(object sender, RoutedEventArgs e)
         {
@@ -53,6 +55,7 @@ namespace PresenceLight.Controls
             {
                 handler(this, e);
             }
+            await Task.CompletedTask;
         }
     }
 }
