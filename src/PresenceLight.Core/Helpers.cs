@@ -53,20 +53,6 @@ namespace PresenceLight.Core
             }
         }
 
-        public static void AppendLogger(ILogger _logger, string message, Exception e = null,
-                                        [CallerMemberName] string memberName = "", [CallerFilePath] string fileName = "", [CallerLineNumber] int lineNumber = 0)
-        {
-            message = $"{message} - {fileName.Split("\\").LastOrDefault().Replace(".cs", "")}:{memberName} Line: {lineNumber}";
-            if (e != null)
-            {
-                _logger.LogError(e.Message, e);
-            }
-            else
-            {
-                _logger.LogInformation(message);
-            }
-        }
-
         public static string HumanifyText(string text)
         {
             var r = new Regex(@"

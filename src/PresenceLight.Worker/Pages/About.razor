@@ -1,4 +1,5 @@
 ﻿@page "/about"
+@inject PresenceLight.Worker.Services.SettingsService SettingsService
 
 <div class="container text-body" style="overflow:hidden">
     <div class="row">
@@ -53,6 +54,14 @@
             @RuntimeVersionInfo
         </div>
     </div>
+    <div class="row">
+        <div class="w-25">
+            <h4>Configuration Path</h4>
+        </div>
+        <div class="w-75">
+            @localConfigurationPath
+        </div>
+    </div>
     <br />
     <br />
     <div class="row">
@@ -67,11 +76,14 @@
     string installedDate;
     string RuntimeVersionInfo;
     string assemblyVersion;
+    string localConfigurationPath;
     protected override void OnInitialized()
     {
         installLocation = ThisAppInfo.GetInstallLocation();
         installedDate = ThisAppInfo.GetInstallationDate();
         RuntimeVersionInfo = ThisAppInfo.GetDotNetRuntimeInfo();
         assemblyVersion = ThisAppInfo.GetApplicationVersion();
+        localConfigurationPath = new System.IO.FileInfo(SettingsService.SettingsFileLocation).FullName;
+
     }
 }

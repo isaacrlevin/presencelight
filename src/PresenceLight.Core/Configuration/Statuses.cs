@@ -62,11 +62,4 @@ namespace PresenceLight.Core
 
         public AvailabilityStatus ActivityUrgentInterruptionsOnlyStatus { get; set; }
     }
-
-    public class AvailabilityStatus
-    {
-        public bool Disabled { get; set; }
-
-        public string? Colour { get; set; }
-    }
 }

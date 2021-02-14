@@ -18,33 +18,25 @@ namespace PresenceLight.Worker
     public class Worker : BackgroundService
     {
         private readonly BaseConfig Config;
-        private readonly IHueService _hueService;
-        private readonly IRemoteHueService _remoteHueService;
         private readonly AppState _appState;
         private readonly ILogger<Worker> _logger;
-        private LIFXService _lifxService;
-        private IYeelightService _yeelightService;
-        private ICustomApiService _customApiService;
+
+      
+        private MediatR.IMediator _mediator;
         private GraphServiceClient c;
         private IWorkingHoursService _workingHoursService;
 
-        public Worker(IHueService hueService,
-                      ILogger<Worker> logger,
+
+        public Worker(ILogger<Worker> logger,
                       IOptionsMonitor<BaseConfig> optionsAccessor,
                       AppState appState,
-                      LIFXService lifxService,
-                      IYeelightService yeelightService,
-                      IWorkingHoursService workingHoursService,
-                      IRemoteHueService remoteHueService,
-                      ICustomApiService customApiService)
+                     
+                      IWorkingHoursService workingHoursService)
         {
             Config = optionsAccessor.CurrentValue;
             _workingHoursService = workingHoursService;
-            _hueService = hueService;
-            _remoteHueService = remoteHueService;
-            _lifxService = lifxService;
-            _yeelightService = yeelightService;
-            _customApiService = customApiService;
+
+             
             _logger = logger;
             _appState = appState;
         }
@@ -56,19 +48,19 @@ namespace PresenceLight.Worker
                 if (_appState.IsUserAuthenticated)
                 {
                     c = _appState.GraphServiceClient;
-                    Helpers.AppendLogger(_logger, "User is Authenticated, starting worker");
+                    _logger.LogInformation("User is Authenticated, starting worker");
                     try
                     {
                         await Run();
                     }
                     catch (Exception e)
                     {
-                        Helpers.AppendLogger(_logger, "Exception occured restarting worker", e);
+                        _logger.LogError(e, "Exception occured restarting worker");
                     }
                 }
                 else
                 {
-                    Helpers.AppendLogger(_logger, "User is Not Authenticated, restarting worker");
+                    _logger.LogInformation("User is Not Authenticated, restarting worker");
                 }
                 await Task.Delay(1000, stoppingToken);
             }
@@ -77,19 +69,28 @@ namespace PresenceLight.Worker
 
         private async Task Run()
         {
+
             try
             {
+
                 var user = await GetUserInformation();
                 var photo = await GetPhotoAsBase64Async();
                 var presence = await GetPresence();
-                _appState.SetUserInfo(user, photo, presence);
 
-                await SetColor(_appState.Presence.Availability, _appState.Presence.Activity);
-                await InteractWithLights();
+                //Attach properties to all logging within this context..
+                using (Serilog.Context.LogContext.PushProperty("Availability", presence.Availability))
+                using (Serilog.Context.LogContext.PushProperty("Activity", presence.Activity))
+                {
+                    _appState.SetUserInfo(user, photo, presence);
+                    _appState.SetUserInfo(user, photo, presence);
+
+                    await SetColor(_appState.Presence.Availability, _appState.Presence.Activity);
+                    await InteractWithLights();
+                }
             }
             catch (Exception e)
             {
-                Helpers.AppendLogger(_logger, "Exception occured in running worker", e);
+                _logger.LogError(e, "Exception occured in running worker");
                 throw;
             }
         }
@@ -99,6 +100,10 @@ namespace PresenceLight.Worker
             bool previousWorkingHours = false;
             while (_appState.IsUserAuthenticated)
             {
+
+                bool useWorkingHours = await _mediator.Send(new Core.WorkingHoursServices.UseWorkingHoursCommand());
+                bool IsInWorkingHours = await _mediator.Send(new Core.WorkingHoursServices.IsInWorkingHoursCommand());
+
                 try
                 {
                     await Task.Delay(Convert.ToInt32(Config.LightSettings.PollingInterval * 1000)).ConfigureAwait(true);
@@ -108,7 +113,7 @@ namespace PresenceLight.Worker
 
                     if (Config.LightSettings.SyncLights)
                     {
-                        if (!_workingHoursService.UseWorkingHours)
+                        if (!useWorkingHours)
                         {
                             if (_appState.LightMode == "Graph")
                             {
@@ -117,9 +122,9 @@ namespace PresenceLight.Worker
                         }
                         else
                         {
-                            if (_workingHoursService.IsInWorkingHours)
+                            if (IsInWorkingHours)
                             {
-                                previousWorkingHours = _workingHoursService.IsInWorkingHours;
+                                previousWorkingHours = IsInWorkingHours;
                                 if (_appState.LightMode == "Graph")
                                 {
                                     touchLight = true;
@@ -154,7 +159,7 @@ namespace PresenceLight.Worker
                         switch (_appState.LightMode)
                         {
                             case "Graph":
-                                Helpers.AppendLogger(_logger, "PresenceLight Running in Teams Mode");
+                                _logger.LogInformation("PresenceLight Running in Teams Mode");
                                 _appState.Presence = await System.Threading.Tasks.Task.Run(() => GetPresence()).ConfigureAwait(true);
 
                                 if (newColor == string.Empty)
@@ -173,7 +178,7 @@ namespace PresenceLight.Worker
                 }
                 catch (Exception e)
                 {
-                    Helpers.AppendLogger(_logger, "Error Occured", e);
+                    _logger.LogError(e, "Error Occured");
                 }
             }
         }
@@ -183,12 +188,12 @@ namespace PresenceLight.Worker
             try
             {
                 var me = await c.Me.Request().GetAsync();
-                Helpers.AppendLogger(_logger, $"User is {me.DisplayName}");
+                _logger.LogInformation($"User is {me.DisplayName}");
                 return me;
             }
             catch (Exception ex)
             {
-                Helpers.AppendLogger(_logger, "Exception getting me", ex);
+                _logger.LogError(ex, "Exception getting me");
                 throw;
             }
         }
@@ -208,7 +213,7 @@ namespace PresenceLight.Worker
             }
             catch (Exception ex)
             {
-                Helpers.AppendLogger(_logger, "Exception getting photo", ex);
+                _logger.LogError(ex, "Exception getting photo");
                 throw;
             }
         }
@@ -224,12 +229,12 @@ namespace PresenceLight.Worker
                  (?<=[^A-Z])(?=[A-Z]) |
                  (?<=[A-Za-z])(?=[^A-Za-z])", RegexOptions.IgnorePatternWhitespace);
 
-                Helpers.AppendLogger(_logger, $"Presence is {presence.Availability}");
+                _logger.LogInformation($"Presence is {presence.Availability}");
                 return presence;
             }
             catch (Exception ex)
             {
-                Helpers.AppendLogger(_logger, "Exception getting presence", ex);
+                _logger.LogError(ex, "Exception getting presence");
                 throw;
             }
         }
@@ -244,33 +249,47 @@ namespace PresenceLight.Worker
                     {
                         if (!string.IsNullOrEmpty(Config.LightSettings.Hue.RemoteBridgeId))
                         {
-                            await _remoteHueService.SetColor(color, Config.LightSettings.Hue.SelectedItemId, Config.LightSettings.Hue.RemoteBridgeId).ConfigureAwait(true);
+                            await _mediator.Send(new Core.RemoteHueServices.SetColorCommand
+                            {
+                                Availability = color,
+                                LightId = Config.LightSettings.Hue.SelectedItemId,
+                                BridgeId = Config.LightSettings.Hue.RemoteBridgeId
+                            }).ConfigureAwait(true);
+
                         }
                     }
                     else
                     {
-                        await _hueService.SetColor(color, activity, Config.LightSettings.Hue.SelectedItemId).ConfigureAwait(true);
+                        await _mediator.Send(new Core.HueServices.SetColorCommand() { Activity = activity, Availability = color, LightID = Config.LightSettings.Hue.SelectedItemId }).ConfigureAwait(true);
+
                     }
                 }
 
                 if (Config.LightSettings.LIFX.IsEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
                 {
-                    await _lifxService.SetColor(color, activity, Config.LightSettings.LIFX.SelectedItemId).ConfigureAwait(true);
+                    await _mediator.Send(new Core.LifxServices.SetColorCommand() { Availability = color, Activity = activity, LightId = Config.LightSettings.LIFX.SelectedItemId }).ConfigureAwait(true);
                 }
 
                 if (Config.LightSettings.Yeelight.IsEnabled && !string.IsNullOrEmpty(Config.LightSettings.Yeelight.SelectedItemId))
                 {
-                    await _yeelightService.SetColor(color, activity, Config.LightSettings.Yeelight.SelectedItemId).ConfigureAwait(true);
+                   
+                    await _mediator.Send(new PresenceLight.Core.YeelightServices.SetColorCommand { Activity = activity, Availability = color, LightId = Config.LightSettings.Yeelight.SelectedItemId }).ConfigureAwait(true);
+
                 }
 
                 if (Config.LightSettings.CustomApi.IsEnabled)
                 {
-                    string response = await _customApiService.SetColor(color, activity).ConfigureAwait(true);
+                    string response = await _mediator.Send(new Core.CustomApiServices.SetColorCommand
+                    {
+                        Activity = activity,
+                        Availability = color
+                    });
+
                 }
             }
             catch (Exception e)
             {
-                Helpers.AppendLogger(_logger, "Error Occured", e);
+                _logger.LogError(e, "Error Occured");
             }
         }
     }

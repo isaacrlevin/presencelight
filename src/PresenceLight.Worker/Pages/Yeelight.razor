@@ -1,6 +1,7 @@
 ﻿@page "/yeelight"
 
-@inject IYeelightService _yeelightService
+@inject PresenceLight.Worker.Services.SettingsService SettingsService
+
 @inject AppState appState
 @inject IOptionsMonitor<BaseConfig> Config
 @inject ILogger<CustomApiSetup> _logger;
@@ -96,8 +97,8 @@
         }
         catch (Exception e)
         {
-            Helpers.AppendLogger(_logger, "Error Occured Saving Yeelight Settings", e);
-            throw e;
+            _logger.LogError(e, "Error Occured Saving Yeelight Settings");
+            throw;
         }
     }
 
@@ -112,9 +113,10 @@
         }
         catch (Exception e)
         {
-            Helpers.AppendLogger(_logger, "Error Occured loading Yeelight", e);
-            throw e;
+            _logger.LogError(e, "Error Occured loading Yeelight");
+            throw;
         }
+        await Task.CompletedTask;
     }
 
     private void OnChange(ChangeEventArgs e)
@@ -128,7 +130,7 @@
     {
         try
         {
-            appState.SetYeelightLights(await _yeelightService.FindLights());
+            appState.SetYeelightLights(await _mediator.Send(new Core.YeelightServices.FindLightsCommand()));
 
             if (string.IsNullOrEmpty(Config.CurrentValue.LightSettings.Yeelight.SelectedItemId) && appState.YeelightLights.Count() > 0)
             {
@@ -138,8 +140,8 @@
         }
         catch (Exception ex)
         {
-            Helpers.AppendLogger(_logger, "Error occured Finding YeeLights", ex);
-            throw ex;
+            _logger.LogError(ex, "Error occured Finding YeeLights");
+            throw;
         }
     }
 
