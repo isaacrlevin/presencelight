@@ -30,11 +30,11 @@ namespace PresenceLight
     {
         public IServiceProvider? ServiceProvider { get; private set; }
 
-        public IConfiguration Configuration { get; private set; }
+        public IConfiguration? Configuration { get; private set; }
 
-        public static IConfiguration StaticConfig { get; private set; }
+        public static IConfiguration? StaticConfig { get; private set; }
 
-        private IHost _host;
+     
         public App()
         {
             
