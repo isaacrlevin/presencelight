@@ -2,46 +2,63 @@
 using System.IO;
 using System.Net;
 using System.Security.Authentication;
+using System.Threading.Tasks;
 
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
-using NLog.Web;
+using PresenceLight.Core;
+
+using Serilog;
+ 
 
 namespace PresenceLight.Worker
 {
     public class Program
     {
-        public static void Main(string[] args)
+        private void Watcher_Changed(object sender, FileSystemEventArgs e)
         {
-            var logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
-            logger.Debug("Starting PresenceLight");
+            throw new NotImplementedException();
+        }
+
+        public static async Task Main(string[] args)
+        {
+            
+         
             try
             {
-                CreateHostBuilder(args).Build().Run();
+                var builder = CreateHostBuilder(args).Build();
+                Log.Debug("Starting PresenceLight");
+                await builder.RunAsync();
             }
             catch (Exception ex)
             {
-                //NLog: catch setup errors
-                logger.Error(ex, "Stopped program because of exception");
+                //Log: catch setup errors
+                Log.Error(ex, "Stopped program because of exception");
                 throw;
             }
             finally
             {
                 // Ensure to flush and stop internal timers/threads before application-exit (Avoid segmentation fault on Linux)
-                NLog.LogManager.Shutdown();
+
+                Log.CloseAndFlush();
             }
         }
+
         private static void ConfigureConfiguration(IConfigurationBuilder config)
         {
-            config.AddEnvironmentVariables()
+            config
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("PresenceLightSettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
-                .AddJsonFile($"appsettings.Development.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"PresenceLightSettings.Development.json", optional: true, reloadOnChange: false);
+                .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: false)
+                .AddJsonFile("PresenceLightSettings.json", optional: false, reloadOnChange: false)
+                .AddJsonFile("PresenceLightSettings.Development.json", optional: true, reloadOnChange: false)
+                .AddJsonFile(System.IO.Path.Combine("config", "appsettings.json"), optional: true, reloadOnChange: false)
+                .AddJsonFile(System.IO.Path.Combine("config", "PresenceLightSettings.json"), optional: true, reloadOnChange: false)
+                .AddEnvironmentVariables();
 
             config.Build();
         }
@@ -50,7 +67,20 @@ namespace PresenceLight.Worker
         {
             IConfigurationBuilder configBuilderForMain = new ConfigurationBuilder();
             ConfigureConfiguration(configBuilderForMain);
+     
             IConfiguration configForMain = configBuilderForMain.Build();
+
+            var telemetryConfiguration = TelemetryConfiguration.CreateDefault();
+            telemetryConfiguration.InstrumentationKey = configForMain["ApplicationInsights:InstrumentationKey"];
+
+            Log.Logger = new LoggerConfiguration()
+                 .ReadFrom.Configuration(configForMain)
+                 .WriteTo.PresenceEventsLogSink( )
+                 .WriteTo.ApplicationInsights(telemetryConfiguration, TelemetryConverter.Traces, Serilog.Events.LogEventLevel.Error)
+                 .Enrich.FromLogContext()
+                 .CreateLogger();
+
+          
 
             return Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
@@ -62,13 +92,8 @@ namespace PresenceLight.Worker
 
                          var env = hostingContext.HostingEnvironment;
 
-                         config.SetBasePath(Directory.GetCurrentDirectory());
-                         config.AddJsonFile("PresenceLightSettings.json", optional: false, reloadOnChange: true);
-                         config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
-                         config.AddJsonFile($"appsettings.Development.json", optional: true, reloadOnChange: true);
-                         config.AddJsonFile($"PresenceLightSettings.Development.json", optional: true, reloadOnChange: false);
-                         config.AddEnvironmentVariables();
-
+                         ConfigureConfiguration(config);
+                  
                          if (args != null)
                          {
                              config.AddCommandLine(args);
@@ -105,7 +130,7 @@ namespace PresenceLight.Worker
                              options.ListenLocalhost(5001, listenOptions =>
                              {
                                  var envCertPath = Environment.GetEnvironmentVariable("ASPNETCORE_Kestrel__Certificates__Default__Path");
-                                 if (string.IsNullOrEmpty(envCertPath))
+                                 if (string.IsNullOrEmpty(envCertPath) && !string.IsNullOrWhiteSpace(configForMain["Certificate:Name"]) && !string.IsNullOrWhiteSpace(configForMain["Certificate:Password"]))
                                  {
                                      // Cert Env Not provided, use appsettings
                                      //assumes cert is at same level as exe
@@ -127,10 +152,13 @@ namespace PresenceLight.Worker
                              });
                          }
                      })
-                     .UseContentRoot(Directory.GetCurrentDirectory());
-                    webBuilder.UseStartup<Startup>()
-                    .UseNLog();
-                });
+                    .UseContentRoot(Directory.GetCurrentDirectory())
+                    .ConfigureLogging(setup => {
+                        setup.AddSerilog(Log.Logger);
+                    })
+                    .UseStartup<Startup>();
+                  
+                }).UseSerilog();
         }
     }
 }

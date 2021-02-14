@@ -1,11 +1,11 @@
 ﻿@page "/hue"
 
-@inject IHueService _hueService
-@inject IRemoteHueService _remoteHueService
+@inject PresenceLight.Worker.Services.SettingsService SettingsService
+ 
 @inject AppState appState
 @inject IModalService Modal
 @inject IOptionsMonitor<BaseConfig> Config
-@inject ILogger<HueSetup    > _logger;
+@inject ILogger<HueSetup> _logger;
 
 <div class="container text-body" style="overflow:hidden">
     <div class="row">
@@ -103,14 +103,16 @@
         try
         {
             SettingsService.SaveSettings(Config.CurrentValue);
-            _hueService.Initialize(Config.CurrentValue);
+
+            _mediator.Send(new Core.HueServices.InitializeCommand() { Request = Config.CurrentValue }).Wait();
+
             message = "Settings Saved";
             settingsSaved = true;
         }
         catch (Exception e)
         {
-            Helpers.AppendLogger(_logger, "Error Occured Saving Hue Settings", e);
-            throw e;
+            _logger.LogError(e, "Error Occured Saving Hue Settings");
+            throw;
         }
     }
 
@@ -118,7 +120,7 @@
     {
         try
         {
-            var (bridgeId, apiKey, bridgeIp) = await _remoteHueService.RegisterBridge();
+            var (bridgeId, apiKey, bridgeIp) = await _mediator.Send(new PresenceLight.Core.RemoteHueServices.RegisterBridgeCommand());
             if (!string.IsNullOrEmpty(apiKey) && !string.IsNullOrEmpty(bridgeId) && !string.IsNullOrEmpty(bridgeIp))
             {
                 Config.CurrentValue.LightSettings.Hue.HueApiKey = apiKey;
@@ -130,7 +132,7 @@
         }
         catch (Exception ex)
         {
-            Helpers.AppendLogger(_logger, "Error Occured Getting Hue Api Key", ex);
+            _logger.LogError(ex, "Error Occured Getting Hue Api Key");
         }
     }
 
@@ -178,11 +180,13 @@
         {
             try
             {
-                tempConfig.LightSettings.Hue.HueApiKey = await _hueService.RegisterBridge();
+
+                tempConfig.LightSettings.Hue.HueApiKey = await _mediator.Send(new Core.HueServices.RegisterBridgeCommand());
+
             }
             catch (Exception ex)
             {
-                Helpers.AppendLogger(_logger, "Error Occured Registering Hue Bridge", ex);
+                _logger.LogError(ex, "Error Occured Registering Hue Bridge");
                 hueMessage = "Error Occured registering bridge, please try again";
                 showHueMessage = true;
                 hueMessageClass = "text-danger";
@@ -196,7 +200,8 @@
                     hueMessage = "App Registered with Bridge";
                     hueMessageClass = "text-success";
 
-                    appState.SetHueLights(await _hueService.GetLights());
+
+                    appState.SetHueLights(await _mediator.Send(new PresenceLight.Core.HueServices.GetLightsCommand()));
 
                     if (string.IsNullOrEmpty(Config.CurrentValue.LightSettings.Hue.SelectedItemId) && appState.HueLights.Count() > 0)
                     {
@@ -205,8 +210,8 @@
                 }
                 catch (Exception e)
                 {
-                    Helpers.AppendLogger(_logger, "Error Occured Getting Hue Lights", e);
-                    throw e;
+                    _logger.LogError(e, "Error Occured Getting Hue Lights");
+                    throw;
                 }
                 Config.CurrentValue.LightSettings.Hue.HueIpAddress = tempConfig.LightSettings.Hue.HueIpAddress;
                 Config.CurrentValue.LightSettings.Hue.HueApiKey = tempConfig.LightSettings.Hue.HueApiKey;
@@ -217,7 +222,7 @@
 
             else
             {
-                Helpers.AppendLogger(_logger, "Hue Api Key not configured");
+                _logger.LogError("Hue Api Key not configured");
                 hueMessage = "Api Key Not Created, please try again and ensure you press the sync button on your bridge";
                 showHueMessage = true;
                 hueMessageClass = "text-danger";
@@ -241,15 +246,17 @@
 
             if (!string.IsNullOrEmpty(tempConfig.LightSettings.Hue.HueApiKey))
             {
-                appState.SetHueLights(await _hueService.GetLights());
+     
+                appState.SetHueLights(await _mediator.Send(new PresenceLight.Core.HueServices.GetLightsCommand()));
+
             }
 
             appState.OnChange += RaiseStateHasChanged;
         }
         catch (Exception e)
         {
-            Helpers.AppendLogger(_logger, "Error Occured loading Hue Setup", e);
-            throw e;
+            _logger.LogError(e, "Error Occured loading Hue Setup");
+            throw;
         }
     }
 

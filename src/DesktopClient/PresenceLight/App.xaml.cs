@@ -1,20 +1,25 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Threading;
 using System.Windows;
 
+using MediatR;
+
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-
-using NLog;
-using NLog.Extensions.Logging;
+using Microsoft.Extensions.Hosting;
 
 using PresenceLight.Core;
 using PresenceLight.Graph;
 using PresenceLight.Services;
 using PresenceLight.Telemetry;
+
+using Serilog;
+
+using Windows.Storage;
 
 namespace PresenceLight
 {
@@ -25,20 +30,23 @@ namespace PresenceLight
     {
         public IServiceProvider? ServiceProvider { get; private set; }
 
-        public IConfiguration Configuration { get; private set; }
+        public IConfiguration? Configuration { get; private set; }
 
-        public static IConfiguration StaticConfig { get; private set; }
+        public static IConfiguration? StaticConfig { get; private set; }
 
+     
         public App()
-        { }
+        {
+            
+
+        }
 
         private void OnStartup(object sender, StartupEventArgs e)
         {
             if (SingleInstanceAppMutex.TakeExclusivity())
             {
                 Exit += (_, __) => SingleInstanceAppMutex.ReleaseExclusivity();
-                var logger = LogManager.GetCurrentClassLogger();
-                logger.Debug("Starting PresenceLight");
+
                 try
                 {
                     ContinueStartup();
@@ -46,16 +54,18 @@ namespace PresenceLight
                 catch (Exception ex) when (IsCriticalFontLoadFailure(ex))
                 {
                     Trace.WriteLine($"## Warning Notify ##: {ex}");
-                    logger.Error(ex, "Stopped program because of exception");
+                    Log.Error(ex, "Stopped program because of exception");
                     OnCriticalFontLoadFailure();
                 }
             }
             else
             {
-                LogManager.Shutdown();
+                Log.CloseAndFlush();
                 Shutdown();
             }
         }
+
+        Dictionary<string, string> InMemorySettings = new();
 
         private void ContinueStartup()
         {
@@ -67,12 +77,46 @@ namespace PresenceLight
             Configuration = builder.Build();
             StaticConfig = builder.Build();
 
+            //Override the save file location for logs if this is a packaged app... 
+            if (Convert.ToBoolean(Configuration["IsAppPackaged"], CultureInfo.InvariantCulture))
+            {
+                var _logFilePath = System.IO.Path.Combine(ApplicationData.Current.LocalFolder.Path, "PresenceLight\\logs\\DesktopClient\\log-.json");
+
+                InMemorySettings.Add("Serilog:WriteTo:1:Args:Path", _logFilePath);
+                builder = new Microsoft.Extensions.Configuration.ConfigurationBuilder()
+                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                 .AddJsonFile($"appsettings.Development.json", optional: true, reloadOnChange: true)
+                 .AddInMemoryCollection(InMemorySettings);
+
+                Configuration = builder.Build();
+                StaticConfig = builder.Build();
+
+            }
+
+            var telemetryConfiguration = TelemetryConfiguration.CreateDefault();
+            telemetryConfiguration.InstrumentationKey = Configuration["ApplicationInsights:InstrumentationKey"];
+            var loggerConfig =
+            new LoggerConfiguration()
+                          .ReadFrom.Configuration(Configuration)
+                          .WriteTo.PresenceEventsLogSink()
+                          .WriteTo.ApplicationInsights(telemetryConfiguration, TelemetryConverter.Traces, Serilog.Events.LogEventLevel.Error)
+                          .Enrich.FromLogContext();
+
+
+            Log.Logger = loggerConfig.CreateLogger();
+            Log.Debug("Starting PresenceLight");
+
             IServiceCollection services = new ServiceCollection();
             services.AddOptions();
             services.AddLogging(logging =>
             {
-                logging.AddNLog();
+                logging.AddSerilog();
             });
+
+            //Need to tell MediatR what Assemblies to look in for Command Event Handlers
+            services.AddMediatR(typeof(App),
+                                typeof(PresenceLight.Core.BaseConfig));
+
             services.Configure<BaseConfig>(Configuration);
             services.Configure<AADSettings>(Configuration.GetSection("AADSettings"));
             services.Configure<TelemetryConfiguration>(
@@ -91,13 +135,9 @@ namespace PresenceLight
         });
 
             services.AddSingleton<IGraphService, GraphService>();
-            services.AddSingleton<IHueService, HueService>();
-            services.AddSingleton<IRemoteHueService, RemoteHueService>();
-            services.AddSingleton<LIFXService, LIFXService>();
-            services.AddSingleton<IYeelightService, YeelightService>();
-            services.AddSingleton<ICustomApiService, CustomApiService>();
-            services.AddSingleton<GraphWrapper, GraphWrapper>();
-            services.AddSingleton<IWorkingHoursService, WorkingHoursService>();
+
+            services.AddPresenceServices();
+
             services.AddSingleton<LIFXOAuthHelper, LIFXOAuthHelper>();
             services.AddSingleton<ThisAppInfo, ThisAppInfo>();
             services.AddSingleton<MainWindow>();

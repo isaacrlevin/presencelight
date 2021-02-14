@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
+
+using Microsoft.Extensions.Configuration;
 
 using Newtonsoft.Json;
 
@@ -10,17 +8,34 @@ using PresenceLight.Core;
 
 namespace PresenceLight.Worker.Services
 {
-    public static class SettingsService
+    public class SettingsService
     {
-        public static void SaveSettings(BaseConfig Config)
+        readonly IConfiguration _configuration;
+        public SettingsService(IConfiguration configuration)
         {
-            if (Debugger.IsAttached)
+            _configuration = configuration;
+        }
+        public void SaveSettings(BaseConfig Config)
+        {
+
+            System.IO.File.WriteAllText(SettingsFileLocation, JsonConvert.SerializeObject(Config, Formatting.Indented));
+        }
+
+        public string SettingsFileLocation
+        {
+            get
             {
-                System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/PresenceLightSettings.Development.json", JsonConvert.SerializeObject(Config, Formatting.Indented));
-            }
-            else
-            {
-                System.IO.File.WriteAllText($"{System.IO.Directory.GetCurrentDirectory()}/PresenceLightSettings.json", JsonConvert.SerializeObject(Config, Formatting.Indented));
+                if (_configuration?["DOTNET_RUNNING_IN_CONTAINER"] == "true")
+                {
+                    return System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "config", "PresenceLightSettings.json");
+                }
+                else if (Debugger.IsAttached)
+                {
+                    return System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "PresenceLightSettings.Development.json");
+                }
+                else
+                    return System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "PresenceLightSettings.json");
+
             }
         }
     }

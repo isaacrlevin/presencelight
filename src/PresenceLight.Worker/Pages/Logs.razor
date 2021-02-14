@@ -1,0 +1,200 @@
+﻿@page "/logs"
+@inject ILogger<Logs> _logger
+@inject IJSRuntime js
+@inject Microsoft.Extensions.Configuration.IConfiguration _configuration
+
+<Tabs SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
+    <Items>
+        <Tab Name="logfiles">Log Files</Tab>
+        <Tab Name="livelogs">Live Logs</Tab>
+    </Items>
+    <Content>
+        <TabPanel Name="livelogs">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>Level</th>
+                        <th>Message</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @lock (logsLockObject)
+                    {
+                        foreach (var eEvent in InformationLogs.OrderByDescending(a => a.Timestamp))
+                        {
+                            string style = null;
+                            switch (eEvent.Level)
+                            {
+                                case Serilog.Events.LogEventLevel.Warning:
+                                    style = "background-color:yellow; color:red";
+                                    break;
+                                case Serilog.Events.LogEventLevel.Error:
+                                    style = "background-color:red; color:yellow";
+                                    break;
+                                case Serilog.Events.LogEventLevel.Fatal:
+                                    style = "background-color:red; color:white";
+                                    break;
+                                default:
+
+                                    break;
+                            }
+                            <tr style="@style">
+                                <th scope="row">@eEvent.Timestamp</th>
+                                <td>@eEvent.Level</td>
+                                <td>@eEvent.RenderMessage()</td>
+                            </tr>
+
+                        }
+                    }
+                </tbody>
+            </table>
+        </TabPanel>
+        <TabPanel Name="logfiles">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>FileName</th>
+                        <th>Size</th>
+                        <th>Creation Time</th>
+                        <th>Last Access</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @lock (logFilesLockObject)
+                    {
+                        foreach (var logFile in LogFiles.OrderByDescending(a => a.CreationTime))
+                        {
+                        <tr>
+                            <th scope="row">
+                                <a @onclick="@((ev) => DownloadLogs(logFile.Name))" title="Click to Download @logFile.Name">@logFile.Name</a>
+                            </th>
+                            <td>@logFile.Length</td>
+                            <td>@logFile.CreationTime</td>
+                            <td>@logFile.LastAccessTime</td>
+                        </tr>
+
+                        }
+                    }
+                </tbody>
+            </table>
+
+        </TabPanel>
+    </Content>
+</Tabs>
+@code {
+    string selectedTab = "logfiles";
+    static object logsLockObject = new();
+    static object logFilesLockObject = new();
+
+    private Queue<Serilog.Events.LogEvent> InformationLogs = new(25);
+    List<System.IO.FileInfo> LogFiles = new();
+    private string _logFilePath;
+    private System.IO.FileSystemWatcher _watcher;
+
+    protected override Task OnInitializedAsync()
+    {
+        PresenceEventsLogSink.PresenceEventsLogHandler += Handler;
+
+        InitializeFileWatcher();
+
+        return base.OnInitializedAsync();
+    }
+    private void OnSelectedTabChanged(string name)
+    {
+        selectedTab = name;
+    }
+
+    private void InitializeFileWatcher()
+    {
+        //TODO:  May consider making this a bit mode robust in the future.. Assumes this config
+        //       IS always the second item in the config file.
+        _logFilePath = _configuration["Serilog:WriteTo:1:Args:Path"];
+
+
+        if (string.IsNullOrWhiteSpace(_logFilePath))
+            return;
+
+
+        var fileParts = _logFilePath.Split('/');
+        _logFilePath = System.IO.Path.Combine(fileParts.Take(fileParts.Length - 1).ToArray());
+        _logFilePath = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), _logFilePath);
+
+        var di = new System.IO.DirectoryInfo(_logFilePath);
+
+        if (di.Exists)
+            di.GetFiles().ToList().ForEach(d => LogFiles.Add(d));
+
+        _watcher = new System.IO.FileSystemWatcher(_logFilePath);
+
+        _watcher.Deleted += Watcher_Changed;
+        _watcher.Created += Watcher_Changed;
+        _watcher.Changed += Watcher_Changed;
+
+        _watcher.EnableRaisingEvents = true;
+
+    }
+
+    private void Watcher_Changed(object sender, System.IO.FileSystemEventArgs e)
+    {
+        switch (e.ChangeType)
+        {
+            case System.IO.WatcherChangeTypes.Created:
+                lock (logFilesLockObject)
+                {
+                    LogFiles.Add(new System.IO.FileInfo(e.FullPath));
+                }
+                InvokeAsync(() => StateHasChanged());
+                break;
+
+            case System.IO.WatcherChangeTypes.Changed:
+                lock (logFilesLockObject)
+                {
+                    LogFiles.RemoveAll(A => A.Name.Equals(e.Name, StringComparison.CurrentCultureIgnoreCase));
+                    LogFiles.Add(new System.IO.FileInfo(e.FullPath));
+                }
+                InvokeAsync(() => StateHasChanged());
+                break;
+
+            case System.IO.WatcherChangeTypes.Deleted:
+                lock (logFilesLockObject)
+                {
+                    LogFiles.RemoveAll(A => A.Name.Equals(e.Name, StringComparison.CurrentCultureIgnoreCase));
+                }
+                InvokeAsync(() => StateHasChanged());
+                break;
+        }
+
+    }
+
+    private void Handler(object? sender, Serilog.Events.LogEvent e)
+    {
+        lock (logsLockObject)
+        {
+            InformationLogs.Enqueue(e);
+        }
+        InvokeAsync(() => StateHasChanged());
+    }
+
+    async Task DownloadLogs(string filename)
+    {
+        string fileContents;
+        using (var fs = new System.IO.FileStream(
+                System.IO.Path.Combine(_logFilePath, filename),
+                System.IO.FileMode.Open,
+                System.IO.FileAccess.Read,
+                System.IO.FileShare.ReadWrite))
+        {
+            var b = new byte[fs.Length];
+
+            fs.Read(b, 0, b.Length);
+            fileContents = Convert.ToBase64String(b);
+        }
+
+        await js.InvokeAsync<object>(
+                   "saveAsFile",
+                   filename,
+                   fileContents);
+    }
+}
