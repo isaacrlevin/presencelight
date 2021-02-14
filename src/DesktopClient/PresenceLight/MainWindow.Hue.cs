@@ -94,7 +94,9 @@ namespace PresenceLight
             CheckBox cb = e.Source as CheckBox ?? throw new ArgumentException("Check Box Not Found");
             var cbName = cb.Name.Replace("Disabled", "Colour");
             var colorpicker = (Xceed.Wpf.Toolkit.ColorPicker)this.FindName(cbName);
+ 
             colorpicker.IsEnabled = !cb.IsChecked.Value;
+ 
             SyncOptions();
             e.Handled = true;
         }

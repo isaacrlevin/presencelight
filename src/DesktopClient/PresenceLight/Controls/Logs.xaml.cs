@@ -55,7 +55,8 @@ namespace PresenceLight.Controls
             ExploreFile(filename.FullName);
 
         }
-        bool ExploreFile(string filePath)
+
+       static bool ExploreFile(string filePath)
         {
             if (!System.IO.File.Exists(filePath))
             {
