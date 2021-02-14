@@ -19,7 +19,7 @@ namespace PresenceLight.Core
 
     public class CustomApiService : ICustomApiService
     {
-        private IWorkingHoursService _workingHoursService;
+        private MediatR.IMediator _mediator;
         private string _currentAvailability = string.Empty;
         private string _currentActivity = string.Empty;
 
@@ -28,11 +28,12 @@ namespace PresenceLight.Core
         private readonly ILogger<CustomApiService> _logger;
         private BaseConfig _options;
 
-        public CustomApiService(IOptionsMonitor<BaseConfig> optionsAccessor, ILogger<CustomApiService> logger, IWorkingHoursService workingHoursService)
+        public CustomApiService(IOptionsMonitor<BaseConfig> optionsAccessor, ILogger<CustomApiService> logger, MediatR.IMediator mediator)
         {
             _logger = logger;
             _options = optionsAccessor.CurrentValue;
-            _workingHoursService = workingHoursService;
+            _mediator = mediator;
+
             _client = new HttpClient
             {
                 Timeout = TimeSpan.FromSeconds(optionsAccessor.CurrentValue.LightSettings.CustomApi.CustomApiTimeout > 0 ?
@@ -48,7 +49,10 @@ namespace PresenceLight.Core
 
         public async Task<string> SetColor(string availability, string? activity, CancellationToken cancellationToken = default)
         {
-            if (!_workingHoursService.UseWorkingHours || (_workingHoursService.UseWorkingHours && _workingHoursService.IsInWorkingHours))
+            bool useWorkingHours = await _mediator.Send(new WorkingHoursServices.UseWorkingHoursCommand());
+            bool IsInWorkingHours = await _mediator.Send(new WorkingHoursServices.IsInWorkingHoursCommand());
+
+            if (!useWorkingHours || (useWorkingHours && IsInWorkingHours))
             {
                 // If we are outside of working hours we should signal that we are off
                 availability = activity = availability;

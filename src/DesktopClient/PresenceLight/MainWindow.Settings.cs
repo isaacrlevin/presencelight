@@ -22,7 +22,10 @@ namespace PresenceLight
 
                 Config = await _settingsService.LoadSettings().ConfigureAwait(true) ?? throw new NullReferenceException("Settings Load Service Returned null");
 
-                if (_workingHoursService.UseWorkingHours)
+                bool useWorkingHours = await _mediator.Send(new Core.WorkingHoursServices.UseWorkingHoursCommand());
+                bool IsInWorkingHours = await _mediator.Send(new Core.WorkingHoursServices.IsInWorkingHoursCommand());
+
+                if (useWorkingHours)
                 {
                     settings.pnlWorkingHours.Visibility = Visibility.Visible;
                     SyncOptions();
@@ -272,7 +275,7 @@ namespace PresenceLight
             e.Handled = true;
         }
 
-        private void cbUseWorkingHoursChanged(object sender, RoutedEventArgs e)
+        private async void cbUseWorkingHoursChanged(object sender, RoutedEventArgs e)
         {
             if (!string.IsNullOrEmpty(Config.LightSettings.WorkingHoursStartTime))
             {
@@ -283,8 +286,9 @@ namespace PresenceLight
             {
                 Config.LightSettings.WorkingHoursEndTime = Config.LightSettings.WorkingHoursEndTimeAsDate.HasValue ? Config.LightSettings.WorkingHoursEndTimeAsDate.Value.TimeOfDay.ToString() : string.Empty;
             }
-
-            if (_workingHoursService.UseWorkingHours)
+            bool useWorkingHours = await _mediator.Send(new Core.WorkingHoursServices.UseWorkingHoursCommand());
+            
+            if (useWorkingHours)
             {
                 settings.pnlWorkingHours.Visibility = Visibility.Visible;
             }

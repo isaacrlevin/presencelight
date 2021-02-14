@@ -100,6 +100,10 @@ namespace PresenceLight.Worker
             bool previousWorkingHours = false;
             while (_appState.IsUserAuthenticated)
             {
+
+                bool useWorkingHours = await _mediator.Send(new Core.WorkingHoursServices.UseWorkingHoursCommand());
+                bool IsInWorkingHours = await _mediator.Send(new Core.WorkingHoursServices.IsInWorkingHoursCommand());
+
                 try
                 {
                     await Task.Delay(Convert.ToInt32(Config.LightSettings.PollingInterval * 1000)).ConfigureAwait(true);
@@ -109,7 +113,7 @@ namespace PresenceLight.Worker
 
                     if (Config.LightSettings.SyncLights)
                     {
-                        if (!_workingHoursService.UseWorkingHours)
+                        if (!useWorkingHours)
                         {
                             if (_appState.LightMode == "Graph")
                             {
@@ -118,9 +122,9 @@ namespace PresenceLight.Worker
                         }
                         else
                         {
-                            if (_workingHoursService.IsInWorkingHours)
+                            if (IsInWorkingHours)
                             {
-                                previousWorkingHours = _workingHoursService.IsInWorkingHours;
+                                previousWorkingHours = IsInWorkingHours;
                                 if (_appState.LightMode == "Graph")
                                 {
                                     touchLight = true;

@@ -234,7 +234,7 @@ namespace PresenceLight
 
                 if (Config.LightSettings.SyncLights)
                 {
-                    if (!_workingHoursService.UseWorkingHours)
+                    if (!await _mediator.Send(new Core.WorkingHoursServices.UseWorkingHoursCommand()))
                     {
                         if (lightMode == "Graph")
                         {
@@ -243,8 +243,8 @@ namespace PresenceLight
                     }
                     else
                     {
-                        bool previousWorkingHours = _workingHoursService.IsInWorkingHours;
-                        if (_workingHoursService.IsInWorkingHours)
+                        bool previousWorkingHours = await _mediator.Send(new Core.WorkingHoursServices.IsInWorkingHoursCommand());
+                        if (previousWorkingHours)
                         {
                             if (lightMode == "Graph")
                             {
@@ -767,7 +767,7 @@ namespace PresenceLight
 
                     if (Config.LightSettings.SyncLights)
                     {
-                        if (!_workingHoursService.UseWorkingHours)
+                        if (!await _mediator.Send(new Core.WorkingHoursServices.UseWorkingHoursCommand()))
                         {
                             if (lightMode == "Graph")
                             {
@@ -776,9 +776,10 @@ namespace PresenceLight
                         }
                         else
                         {
-                            if (_workingHoursService.IsInWorkingHours)
+                            var isInWorkingHours = await _mediator.Send(new Core.WorkingHoursServices.IsInWorkingHoursCommand());
+                            if (isInWorkingHours)
                             {
-                                previousWorkingHours = _workingHoursService.IsInWorkingHours;
+                                previousWorkingHours = isInWorkingHours;
                                 if (lightMode == "Graph")
                                 {
                                     touchLight = true;
