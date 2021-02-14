@@ -41,6 +41,7 @@ namespace PresenceLight.Controls
             {
                 handler(this, e);
             }
+            await Task.CompletedTask;
         }
 
         private async void cbLIFXIsDisabledChange(object sender, RoutedEventArgs e)
@@ -50,6 +51,7 @@ namespace PresenceLight.Controls
             {
                 handler(this, e);
             }
+            await Task.CompletedTask;
         }
         private async void cbUseLIFXActivityStatus(object sender, RoutedEventArgs e)
         {
@@ -58,6 +60,7 @@ namespace PresenceLight.Controls
             {
                 handler(this, e);
             }
+            await Task.CompletedTask;
         }
         private async void CheckLIFX_Click(object sender, RoutedEventArgs e)
         {
@@ -66,6 +69,7 @@ namespace PresenceLight.Controls
             {
                 handler(this, e);
             }
+            await Task.CompletedTask;
         }
         private async void LIFXToken_Get(object sender, RequestNavigateEventArgs e)
         {
@@ -74,6 +78,7 @@ namespace PresenceLight.Controls
             {
                 handler(this, e);
             }
+            await Task.CompletedTask;
         }
         private async void SaveLIFX_Click(object sender, RoutedEventArgs e)
         {
@@ -82,6 +87,7 @@ namespace PresenceLight.Controls
             {
                 handler(this, e);
             }
+            await Task.CompletedTask;
         }
         private async void ddlLIFXLights_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -90,6 +96,7 @@ namespace PresenceLight.Controls
             {
                 handler(this, e);
             }
+            await Task.CompletedTask;
         }
     }
 }

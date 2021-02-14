@@ -305,9 +305,10 @@ public static class ILoggerExtensions
             logger.LogDebug(eventId, message, args);
         }
     }
-
+    ///<summary>
     /// Formats and writes a debug log message
-    /// Enhanced for PresenceLight with extended Context Logging</summary>
+    /// Enhanced for PresenceLight with extended Context Logging
+    /// </summary>
     /// <param name="logger">The Microsoft.Extensions.Logging.ILogger to write to.</param>
     /// <param name="exception">The exception to log.</param>
     /// <param name="message">Format string of the log message.</param>

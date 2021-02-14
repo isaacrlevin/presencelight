@@ -48,7 +48,7 @@ namespace PresenceLight
         private DiagnosticsClient _diagClient;
         private ISettingsService _settingsService;
         private IWorkingHoursService _workingHoursService;
-        private WindowState lastWindowState;
+        private WindowState lastWindowState ;
         private bool previousRemoteFlag;
         private readonly ILogger<MainWindow> _logger;
 
@@ -451,7 +451,7 @@ namespace PresenceLight
             return (Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(hexColor);
         }
 
-        public void MapUI(Presence presence, User profile, BitmapImage profileImageBit)
+        public void MapUI(Presence presence, User? profile, BitmapImage? profileImageBit)
         {
             try
             {

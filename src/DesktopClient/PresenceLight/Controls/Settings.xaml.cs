@@ -41,6 +41,7 @@ namespace PresenceLight.Controls
             {
                 handler(this, e);
             }
+            await Task.CompletedTask;
         }
         private async void SaveSettings_Click(object sender, RoutedEventArgs e)
         {
@@ -49,6 +50,7 @@ namespace PresenceLight.Controls
             {
                 handler(this, e);
             }
+            await Task.CompletedTask;
         }
         private async void cbSyncLights(object sender, RoutedEventArgs e)
         {
@@ -57,6 +59,7 @@ namespace PresenceLight.Controls
             {
                 handler(this, e);
             }
+            await Task.CompletedTask;
         }
         private async void cbUseDefaultBrightnessChanged(object sender, RoutedEventArgs e)
         {
@@ -65,6 +68,7 @@ namespace PresenceLight.Controls
             {
                 handler(this, e);
             }
+            await Task.CompletedTask;
         }
         private async void cbUseWorkingHoursChanged(object sender, RoutedEventArgs e)
         {
@@ -73,6 +77,7 @@ namespace PresenceLight.Controls
             {
                 handler(this, e);
             }
+            await Task.CompletedTask;
         }
 
     }
