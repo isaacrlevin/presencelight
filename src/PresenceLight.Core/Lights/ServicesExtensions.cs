@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 using Microsoft.Extensions.DependencyInjection;
 
+using Polly;
+using Polly.Retry;
+
 namespace PresenceLight.Core
 {
     public static class ServicesExtensions
@@ -19,6 +22,8 @@ namespace PresenceLight.Core
             services.AddSingleton<LIFXService>();
             services.AddSingleton<IYeelightService, YeelightService>();
             services.AddSingleton<ICustomApiService, CustomApiService>();
-        }
+         
+        
+    }
     }
 }
