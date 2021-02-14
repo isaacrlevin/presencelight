@@ -25,11 +25,10 @@ namespace PresenceLight.Core
         private BaseConfig _options;
         private LocalHueClient _client;
         private readonly ILogger<HueService> _logger;
-        private readonly IWorkingHoursService _workingHoursService;
-
-        public HueService(IOptionsMonitor<BaseConfig> optionsAccessor, ILogger<HueService> logger, IWorkingHoursService workingHoursService)
+        MediatR.IMediator _mediator;
+        public HueService(IOptionsMonitor<BaseConfig> optionsAccessor, MediatR.IMediator mediator, ILogger<HueService> logger)
         {
-            _workingHoursService = workingHoursService;
+            _mediator = mediator;
             _logger = logger;
             _options = optionsAccessor.CurrentValue;
         }
@@ -48,7 +47,10 @@ namespace PresenceLight.Core
 
             try
             {
-                if (!_workingHoursService.UseWorkingHours || (_workingHoursService.UseWorkingHours && _workingHoursService.IsInWorkingHours))
+                bool useWorkingHours = await _mediator.Send(new WorkingHoursServices.UseWorkingHoursCommand());
+                bool IsInWorkingHours = await _mediator.Send(new WorkingHoursServices.IsInWorkingHoursCommand());
+
+                if (!useWorkingHours || (useWorkingHours && IsInWorkingHours))
                 {
                     _client = new LocalHueClient(_options.LightSettings.Hue.HueIpAddress);
                     _client.Initialize(_options.LightSettings.Hue.HueApiKey);
@@ -143,7 +145,7 @@ namespace PresenceLight.Core
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e, "Error Occurred Registering Bridge" );
+                    _logger.LogError(e, "Error Occurred Registering Bridge");
                     return String.Empty;
                 }
             }

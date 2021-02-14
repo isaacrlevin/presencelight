@@ -21,15 +21,15 @@ namespace PresenceLight.Core
     {
         private BaseConfig _options;
 
-        private IWorkingHoursService _workingHoursService;
+        private MediatR.IMediator _mediator;
         private DeviceGroup deviceGroup;
         private readonly ILogger<YeelightService> _logger;
 
-        public YeelightService(IOptionsMonitor<BaseConfig> optionsAccessor, ILogger<YeelightService> logger, IWorkingHoursService workingHoursService)
+        public YeelightService(IOptionsMonitor<BaseConfig> optionsAccessor, ILogger<YeelightService> logger, MediatR.IMediator mediator)
         {
             _logger = logger;
             _options = optionsAccessor.CurrentValue;
-            _workingHoursService = workingHoursService;
+            _mediator = mediator;
         }
 
         public void Initialize(BaseConfig options)
@@ -47,7 +47,10 @@ namespace PresenceLight.Core
                 throw new ArgumentOutOfRangeException(nameof(lightId), $"Yeelight Selected Light Id {lightId} Invalid");
             }
 
-            if (!_workingHoursService.UseWorkingHours || (_workingHoursService.UseWorkingHours && _workingHoursService.IsInWorkingHours))
+            bool useWorkingHours = await _mediator.Send(new WorkingHoursServices.UseWorkingHoursCommand());
+            bool IsInWorkingHours = await _mediator.Send(new WorkingHoursServices.IsInWorkingHoursCommand());
+
+            if (!useWorkingHours || (useWorkingHours && IsInWorkingHours))
             {
                 var device = this.deviceGroup.FirstOrDefault(x => x.Id == lightId);
 

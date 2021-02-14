@@ -28,11 +28,11 @@ namespace PresenceLight.Core
         private RemoteHueClient _client;
         private IRemoteAuthenticationClient _authClient;
         private readonly ILogger<RemoteHueService> _logger;
-        private IWorkingHoursService _workingHoursService;
+        private MediatR.IMediator _mediator;
 
-        public RemoteHueService(IOptionsMonitor<BaseConfig> optionsAccessor, ILogger<RemoteHueService> logger, IWorkingHoursService workingHoursService)
+        public RemoteHueService(IOptionsMonitor<BaseConfig> optionsAccessor, ILogger<RemoteHueService> logger, MediatR.IMediator mediator)
         {
-            _workingHoursService = workingHoursService;
+            _mediator = mediator;
             _logger = logger;
             _options = optionsAccessor.CurrentValue;
             if (!string.IsNullOrWhiteSpace(_options.LightSettings.Hue.RemoteHueClientId))
@@ -180,8 +180,10 @@ namespace PresenceLight.Core
                 {
                     throw new ArgumentNullException("Remote Hue Client Not Configured");
                 }
+                bool useWorkingHours = await _mediator.Send(new WorkingHoursServices.UseWorkingHoursCommand());
+                bool IsInWorkingHours = await _mediator.Send(new WorkingHoursServices.IsInWorkingHoursCommand());
 
-                if (!_workingHoursService.UseWorkingHours || (_workingHoursService.UseWorkingHours && _workingHoursService.IsInWorkingHours))
+                if (!useWorkingHours || (useWorkingHours && IsInWorkingHours))
                 {
 
                     var command = new LightCommand();
