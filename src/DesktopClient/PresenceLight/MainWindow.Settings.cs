@@ -179,7 +179,7 @@ namespace PresenceLight
             Config.LightSettings.WorkingDays = string.Join("|", days);
         }
 
-        private void CheckAAD()
+        private async void CheckAAD()
         {
             try
             {
@@ -192,9 +192,13 @@ namespace PresenceLight
                     landingPage.signInPanel.Visibility = Visibility.Visible;
                 }
 
-                if (!_graphServiceClient.IsInitialized)
+                if (!await _mediator.Send(new Core.GraphServices.GetIsInitializedCommand()))
                 {
-                    _graphServiceClient.Initialize(_graphservice.GetAuthenticatedGraphClient());
+                    await _mediator.Send(new Core.GraphServices.InitializeCommand()
+                    {
+                        Client = _graphservice.GetAuthenticatedGraphClient()
+                    });
+
                 }
             }
             catch (Exception e)
@@ -287,7 +291,7 @@ namespace PresenceLight
                 Config.LightSettings.WorkingHoursEndTime = Config.LightSettings.WorkingHoursEndTimeAsDate.HasValue ? Config.LightSettings.WorkingHoursEndTimeAsDate.Value.TimeOfDay.ToString() : string.Empty;
             }
             bool useWorkingHours = await _mediator.Send(new Core.WorkingHoursServices.UseWorkingHoursCommand());
-            
+
             if (useWorkingHours)
             {
                 settings.pnlWorkingHours.Visibility = Visibility.Visible;

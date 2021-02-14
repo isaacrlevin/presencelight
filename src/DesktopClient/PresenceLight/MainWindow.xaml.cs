@@ -43,8 +43,7 @@ namespace PresenceLight
         private LIFXOAuthHelper _lIFXOAuthHelper;
 
 
-        private GraphWrapper _graphServiceClient;
-
+         
         private readonly IGraphService _graphservice;
         private DiagnosticsClient _diagClient;
         private ISettingsService _settingsService;
@@ -52,7 +51,7 @@ namespace PresenceLight
         private WindowState lastWindowState;
         private bool previousRemoteFlag;
         private readonly ILogger<MainWindow> _logger;
-      
+
         #region Init
         public MainWindow(IGraphService graphService,
                           IWorkingHoursService workingHoursService,
@@ -60,19 +59,18 @@ namespace PresenceLight
                           IOptionsMonitor<BaseConfig> optionsAccessor,
                           LIFXOAuthHelper lifxOAuthHelper,
                           DiagnosticsClient diagClient,
-                          ILogger<MainWindow> logger,
-                          GraphWrapper graphServiceClient,
+                          ILogger<MainWindow> logger, 
                           ISettingsService settingsService)
         {
             _logger = logger;
-            InitializeComponent(); 
+            InitializeComponent();
             System.Windows.Application.Current.SessionEnding += new SessionEndingCancelEventHandler(Current_SessionEnding);
 
             LoadAboutMe();
 
             _workingHoursService = workingHoursService;
             _graphservice = graphService;
-            _graphServiceClient = graphServiceClient;
+           
 
             logs.LogFilePath = App.StaticConfig["Serilog:WriteTo:1:Args:Path"];
 
@@ -208,10 +206,15 @@ namespace PresenceLight
             lightColors.syncTeamsButton.IsEnabled = false;
             lightColors.syncThemeButton.IsEnabled = true;
 
-            if (!_graphServiceClient.IsInitialized)
+            if (!await _mediator.Send(new Core.GraphServices.GetIsInitializedCommand()))
             {
-                _graphServiceClient.Initialize(_graphservice.GetAuthenticatedGraphClient());
+                await _mediator.Send(new Core.GraphServices.InitializeCommand()
+                {
+                    Client = _graphservice.GetAuthenticatedGraphClient()
+                });
+
             }
+            
 
             landingPage.signInPanel.Visibility = Visibility.Collapsed;
             lightColors.lblTheme.Visibility = Visibility.Collapsed;
@@ -219,8 +222,9 @@ namespace PresenceLight
 
             try
             {
-                var (profile, presence) = await System.Threading.Tasks.Task.Run(() => _graphServiceClient.GetProfileAndPresence());
-                var photo = await System.Threading.Tasks.Task.Run(() => GetPhoto()).ConfigureAwait(true);
+                var (profile, presence) = await _mediator.Send(new Core.GraphServices.GetProfileAndPresenceCommand());
+
+                var photo = await GetPhoto().ConfigureAwait(true);
 
                 if (photo == null)
                 {
@@ -526,7 +530,7 @@ namespace PresenceLight
         {
             try
             {
-                return await _graphServiceClient.GetPresence();
+                return await _mediator.Send(new Core.GraphServices.GetPresenceCommand());
             }
             catch (Exception e)
             {
@@ -540,7 +544,7 @@ namespace PresenceLight
         {
             try
             {
-                var photo = await _graphServiceClient.GetPhoto();
+                var photo = await _mediator.Send(new Core.GraphServices.GetPhotoCommand());
 
                 if (photo == null)
                 {
