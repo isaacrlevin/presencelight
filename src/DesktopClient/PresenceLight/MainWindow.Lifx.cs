@@ -176,7 +176,7 @@ namespace PresenceLight
                     Config.LightSettings.LIFX.LIFXApiKey = lifx.lifxApiKey.Text;
 
                     SyncOptions();
-                    if (((System.Windows.Controls.Button)sender).Name == "btnGetLIFXGroups")
+                    if (((System.Windows.Controls.Button)e.Source).Name == "btnGetLIFXGroups")
                     {
                         lifx.ddlLIFXLights.ItemsSource = await _mediator.Send(new GetAllGroupsCommand()).ConfigureAwait(true);
                     }
