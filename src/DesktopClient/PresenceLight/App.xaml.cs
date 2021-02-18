@@ -118,7 +118,7 @@ namespace PresenceLight
                                 typeof(PresenceLight.Core.BaseConfig));
 
             services.Configure<BaseConfig>(Configuration);
-            services.Configure<AADSettings>(Configuration.GetSection("AzureAd"));
+            services.Configure<AADSettings>(Configuration.GetSection("AADSettings"));
             services.Configure<TelemetryConfiguration>(
     (o) =>
     {
