@@ -1,14 +1,17 @@
 ﻿using System;
-using Microsoft.Extensions.Options;
-using Q42.HueApi;
-using Q42.HueApi.ColorConverters;
-using Q42.HueApi.ColorConverters.HSB;
-using Q42.HueApi.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+
+using Q42.HueApi;
+using Q42.HueApi.ColorConverters;
+using Q42.HueApi.ColorConverters.HSB;
+using Q42.HueApi.Interfaces;
+using Q42.HueApi.Models.Groups;
 
 namespace PresenceLight.Core
 {
@@ -17,6 +20,8 @@ namespace PresenceLight.Core
         Task SetColor(string availability, string activity, string lightId);
         Task<string> RegisterBridge();
         Task<IEnumerable<Light>> GetLights();
+
+        Task<IEnumerable<Group>> GetGroups();
         Task<string> FindBridge();
         void Initialize(BaseConfig options);
     }
@@ -84,7 +89,16 @@ namespace PresenceLight.Core
                     if (availability == "Off")
                     {
                         command.On = false;
-                        await _client.SendCommandAsync(command, new List<string> { lightId });
+
+                        if (lightId.Contains("group_id:"))
+                        {
+                            await _client.SendGroupCommandAsync(command, lightId.Replace("group_id:", ""));
+                        }
+                        else
+                        {
+                            await _client.SendCommandAsync(command, new List<string> { lightId.Replace("id:", "") });
+                        }
+
                         message = $"Turning Hue Light {lightId} Off";
                         _logger.LogInformation(message);
                         return;
@@ -117,7 +131,15 @@ namespace PresenceLight.Core
                         }
                     }
 
-                    await _client.SendCommandAsync(command, new List<string> { lightId });
+                    if (lightId.Contains("group_id:"))
+                    {
+                        await _client.SendGroupCommandAsync(command, lightId.Replace("group_id:", ""));
+                    }
+                    else
+                    {
+                        await _client.SendCommandAsync(command, new List<string> { lightId.Replace("id:", "") });
+                    }
+
                     message = $"Setting Hue Light {lightId} to {color}";
                     _logger.LogInformation(message);
                 }
@@ -197,6 +219,24 @@ namespace PresenceLight.Core
             }
         }
 
+        public async Task<IEnumerable<Group>> GetGroups()
+        {
+            try
+            {
+                if (_client == null)
+                {
+                    _client = new LocalHueClient(_options.LightSettings.Hue.HueIpAddress);
+                    _client.Initialize(_options.LightSettings.Hue.HueApiKey);
+                }
+                return await _client.GetGroupsAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Error Occurred Getting Bridge", e);
+                throw;
+            }
+        }
+
         private async Task<(string color, LightCommand command, bool returnFunc)> Handle(string presence, string lightId)
         {
             var props = _options.LightSettings.Hue.Statuses.GetType().GetProperties().ToList();
@@ -229,7 +269,15 @@ namespace PresenceLight.Core
                     else
                     {
                         command.On = false;
-                        await _client.SendCommandAsync(command, new List<string> { lightId });
+
+                        if (lightId.Contains("group_id:"))
+                        {
+                            await _client.SendGroupCommandAsync(command, lightId.Replace("group_id:", ""));
+                        }
+                        else
+                        {
+                            await _client.SendCommandAsync(command, new List<string> { lightId.Replace("id:", "") });
+                        }
                         message = $"Turning Hue Light {lightId} Off";
                         _logger.LogInformation(message);
                         return (color, command, true);

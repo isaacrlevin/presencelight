@@ -70,13 +70,29 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="80"/>
                     <RowDefinition Height="50"/>
                     <RowDefinition Height="50"/>
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <ComboBox Grid.Row="0" Grid.Column="1" x:Name="ddlLIFXLights" DisplayMemberPath="Label" SelectionChanged="ddlLIFXLights_SelectionChanged"  HorizontalAlignment="Center" VerticalAlignment="Top" Width="150" Margin="0,11,0,0" Grid.RowSpan="2"/>
+                <Grid x:Name="pnlLifxLights"   Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" Margin="0,0,0,0" Grid.RowSpan="4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="20"/>
+                        <RowDefinition Height="120"/>
+                    </Grid.RowDefinitions>
+
+                    <Label Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" x:Name="lifxItemType"  VerticalAlignment="Top" Margin="0,0,0,0" Content=""  Grid.RowSpan="2" />
+                    
+                    <ComboBox Grid.Row="2" Grid.Column="1" x:Name="ddlLIFXLights" DisplayMemberPath="Label" SelectionChanged="ddlLIFXLights_SelectionChanged"  HorizontalAlignment="Center" VerticalAlignment="Top" Width="150" Margin="0,11,0,0" Grid.RowSpan="2"/>
+                </Grid>
+
+                
 
                 <Grid x:Name="pnlLIFXBrightness"  Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" Margin="0,0,0,88" Grid.RowSpan="4">
                     <Grid.ColumnDefinitions>
