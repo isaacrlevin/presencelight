@@ -1,7 +1,7 @@
 ﻿@page "/hue"
 
 @inject PresenceLight.Worker.Services.SettingsService SettingsService
- 
+
 @inject AppState appState
 @inject IModalService Modal
 @inject IOptionsMonitor<BaseConfig> Config
@@ -51,20 +51,44 @@
                         }
                         <br />
                         <br />
+                        <button @onclick="@((ev) => CheckHue("Lights"))" class="btn btn-primary" type="submit">Get Lights</button>
+                        <span>&nbsp;&nbsp;</span>
+                        <button @onclick="@((ev) => CheckHue("Groups"))" class="btn btn-primary" type="submit">Get Groups</button>
+                        <br />
+                        <br />
                         @if (appState.HueLights != null)
                         {
+                            <span><strong>@lastType</strong></span>
                             <div class="form-group col-3  centering text-center">
                                 <select class="form-control" @onchange="OnChange">
                                     <option disabled="disabled">Select</option>
                                     @foreach (var light in appState.HueLights)
                                     {
-                                        @if (tempConfig.LightSettings.Hue.SelectedItemId == light.Id)
+                                        if (light.GetType() == typeof(Q42.HueApi.Models.Groups.Group))
                                         {
-                                            <option selected="selected" value=@light.Id>@light.Name</option>
+                                            var obj = (Q42.HueApi.Models.Groups.Group)light;
+
+                                            @if (Config.CurrentValue.LightSettings.LIFX.SelectedItemId == $"group_id:{obj.Id}")
+                                            {
+                                                <option selected="selected" value=group_id:@obj.Id>@obj.Name</option>
+                                            }
+                                            else
+                                            {
+                                                <option value=group_id:@obj.Id>@obj.Name</option>
+                                            }
                                         }
                                         else
                                         {
-                                            <option value=@light.Id>@light.Name</option>
+                                            var obj = (Q42.HueApi.Light)light;
+
+                                            @if (Config.CurrentValue.LightSettings.LIFX.SelectedItemId == $"id:{obj.Id}")
+                                            {
+                                                <option selected="selected" value=id:@obj.Id>@obj.Name</option>
+                                            }
+                                            else
+                                            {
+                                                <option value=id:@obj.Id>@obj.Name</option>
+                                            }
                                         }
                                     }
                                 </select>
@@ -146,7 +170,7 @@
 
     bool showAvail = false;
     bool showAct = false;
-
+    string lastType = "";
     void ToggleAvail()
     {
         showAvail = !showAvail;
@@ -205,7 +229,7 @@
 
                     if (string.IsNullOrEmpty(Config.CurrentValue.LightSettings.Hue.SelectedItemId) && appState.HueLights.Count() > 0)
                     {
-                        tempConfig.LightSettings.Hue.SelectedItemId = appState.HueLights.FirstOrDefault().Id;
+                        tempConfig.LightSettings.Hue.SelectedItemId = ((Q42.HueApi.Light)appState.HueLights.FirstOrDefault()).Id;
                     }
                 }
                 catch (Exception e)
@@ -230,6 +254,62 @@
         }
     }
 
+    async Task CheckHue(string type)
+    {
+        if (string.IsNullOrEmpty(lastType) || type != lastType)
+        {
+            Config.CurrentValue.LightSettings.Hue.SelectedItemId = string.Empty;
+            lastType = type;
+        }
+
+        if (!string.IsNullOrEmpty(Config.CurrentValue.LightSettings.Hue.HueApiKey))
+        {
+            try
+            {
+                Save();
+
+
+                if (type == "Groups")
+                {
+
+                    appState.SetHueLights(await _mediator.Send(new Core.HueServices.GetGroupsCommand()));
+
+                    if (string.IsNullOrEmpty(Config.CurrentValue.LightSettings.Hue.SelectedItemId) && appState.HueLights.Count() > 0)
+                    {
+                        var obj = (Q42.HueApi.Models.Groups.Group)appState.HueLights.FirstOrDefault();
+                        Config.CurrentValue.LightSettings.Hue.SelectedItemId = $"group_id:{obj.Id}";
+                    }
+                }
+                else
+                {
+                    appState.SetHueLights(await _mediator.Send(new Core.HueServices.GetLightsCommand()));
+
+                    if (string.IsNullOrEmpty(Config.CurrentValue.LightSettings.Hue.SelectedItemId) && appState.HueLights.Count() > 0)
+                    {
+                        var obj = (Q42.HueApi.Light)appState.HueLights.FirstOrDefault();
+                        Config.CurrentValue.LightSettings.Hue.SelectedItemId = $"id:{obj.Id}";
+                    }
+                }
+
+                Save();
+
+                showHueMessage = true;
+                hueMessage = "Connected to Hue";
+                hueMessageClass = "text-success";
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Error Occured Getting Hue Lights");
+                showHueMessage = true;
+                hueMessage = "Error Occured Connecting to Hue, please try again";
+                hueMessageClass = "text-danger";
+                this.StateHasChanged();
+                appState.SetHueLights(new List<Q42.HueApi.Light>());
+            }
+
+        }
+    }
+
     private void OnChange(ChangeEventArgs e)
     {
         var light = e.Value.ToString();
@@ -246,9 +326,18 @@
 
             if (!string.IsNullOrEmpty(tempConfig.LightSettings.Hue.HueApiKey))
             {
-     
-                appState.SetHueLights(await _mediator.Send(new PresenceLight.Core.HueServices.GetLightsCommand()));
+                if (Config.CurrentValue.LightSettings.LIFX.SelectedItemId.Contains("group"))
+                {
+                    appState.SetHueLights(await _mediator.Send(new PresenceLight.Core.HueServices.GetGroupsCommand()));
 
+                    lastType = "Groups";
+                }
+                else
+                {
+                    appState.SetHueLights(await _mediator.Send(new PresenceLight.Core.HueServices.GetLightsCommand()));
+
+                    lastType = "Lights";
+                }
             }
 
             appState.OnChange += RaiseStateHasChanged;
