@@ -2,20 +2,20 @@ on:
   push:
     branches: [ main ]
     paths-ignore:
-    - .github/workflows/Worker_Build.yml
-    - src/PresenceLight.Worker/*
-    - src/DockerFiles/*
-    - README.md
-    - worker-README.md
+    - '.github/workflows/Worker_Build.yml'
+    - 'src/PresenceLight.Worker/**'
+    - 'src/DockerFiles/**'
+    - 'README.md'
+    - 'worker-README.md'
 
   pull_request:
     branches: [ main ]
     paths-ignore:
-    - .github/workflows/Worker_Build.yml
-    - src/PresenceLight.Worker/*
-    - src/DockerFiles/*
-    - README.md
-    - worker-README.md
+    - '.github/workflows/Worker_Build.yml'
+    - 'src/PresenceLight.Worker/**'
+    - 'src/DockerFiles/**'
+    - 'README.md'
+    - 'worker-README.md'
 jobs:
 
   Build_WPF:
