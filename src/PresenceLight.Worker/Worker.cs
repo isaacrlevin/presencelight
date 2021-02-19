@@ -30,12 +30,12 @@ namespace PresenceLight.Worker
         public Worker(ILogger<Worker> logger,
                       IOptionsMonitor<BaseConfig> optionsAccessor,
                       AppState appState,
-                     
+                     MediatR.IMediator mediator,
                       IWorkingHoursService workingHoursService)
         {
             Config = optionsAccessor.CurrentValue;
             _workingHoursService = workingHoursService;
-
+            _mediator = mediator;
              
             _logger = logger;
             _appState = appState;
