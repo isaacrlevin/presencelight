@@ -81,6 +81,7 @@ namespace PresenceLight
                             if ($"id:{light?.Id}" == Config.LightSettings.LIFX.SelectedItemId)
                             {
                                 lifx.ddlLIFXLights.SelectedItem = item;
+                                lifx.lifxItemType.Content = "Lights";
                             }
                         }
                     }
@@ -97,6 +98,7 @@ namespace PresenceLight
                                 if ($"group_id:{group?.Id}" == Config.LightSettings.LIFX.SelectedItemId)
                                 {
                                     lifx.ddlLIFXLights.SelectedItem = item;
+                                    lifx.lifxItemType.Content = "Groups";
                                 }
                             }
                         }
@@ -150,11 +152,13 @@ namespace PresenceLight
                 if (lifx.ddlLIFXLights.SelectedItem.GetType() == typeof(LifxCloud.NET.Models.Group))
                 {
                     Config.LightSettings.LIFX.SelectedItemId = $"group_id:{((LifxCloud.NET.Models.Group)lifx.ddlLIFXLights.SelectedItem).Id}";
+                    lifx.lifxItemType.Content = "Groups";
                 }
 
                 if (lifx.ddlLIFXLights.SelectedItem.GetType() == typeof(LifxCloud.NET.Models.Light))
                 {
                     Config.LightSettings.LIFX.SelectedItemId = $"id:{((LifxCloud.NET.Models.Light)lifx.ddlLIFXLights.SelectedItem).Id}";
+                    lifx.lifxItemType.Content = "Lights";
                 }
 
                 SyncOptions();
@@ -179,11 +183,12 @@ namespace PresenceLight
                     if (((System.Windows.Controls.Button)e.Source).Name == "btnGetLIFXGroups")
                     {
                         lifx.ddlLIFXLights.ItemsSource = await _mediator.Send(new GetAllGroupsCommand()).ConfigureAwait(true);
+                        lifx.lifxItemType.Content = "Groups";
                     }
                     else
                     {
                         lifx.ddlLIFXLights.ItemsSource = await _mediator.Send(new GetAllLightsCommand()).ConfigureAwait(true);
-                        
+                        lifx.lifxItemType.Content = "Lights";
                     }
 
                     lifx.lblLIFXMessage.Visibility = Visibility.Visible;

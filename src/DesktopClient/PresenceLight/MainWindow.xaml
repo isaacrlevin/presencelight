@@ -34,6 +34,7 @@
                                 onHueApiKeyGet="HueApiKey_Get"
                                 onHueIpAddressTextChanged="HueIpAddress_TextChanged"
                                 onRegisterBridgeClick="RegisterBridge_Click"
+                                onCheckHueClick="CheckHue_Click"
                                 onSaveHueClick="SaveHue_Click"
                                 />
             </TabItem>

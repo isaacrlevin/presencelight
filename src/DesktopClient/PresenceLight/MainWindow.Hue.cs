@@ -1,12 +1,12 @@
 ﻿using System;
-using PresenceLight.Core;
-using System.Windows;
-using System.Windows.Media;
 using System.Text.RegularExpressions;
+using System.Windows;
 using System.Windows.Controls;
-using PresenceLight.Telemetry;
-using ABI.Windows.System.RemoteSystems;
-using System.Windows.Navigation;
+using System.Windows.Media;
+
+using PresenceLight.Core;
+
+using Q42.HueApi;
 
 namespace PresenceLight
 {
@@ -94,9 +94,9 @@ namespace PresenceLight
             CheckBox cb = e.Source as CheckBox ?? throw new ArgumentException("Check Box Not Found");
             var cbName = cb.Name.Replace("Disabled", "Colour");
             var colorpicker = (Xceed.Wpf.Toolkit.ColorPicker)this.FindName(cbName);
- 
+
             colorpicker.IsEnabled = !cb.IsChecked.Value;
- 
+
             SyncOptions();
             e.Handled = true;
         }
@@ -119,7 +119,7 @@ namespace PresenceLight
                     SyncOptions();
 
                     SolidColorBrush fontBrush = new SolidColorBrush();
-                 phillipsHue.   pnlHueData.Visibility = Visibility.Visible;
+                    phillipsHue.pnlHueData.Visibility = Visibility.Visible;
                     phillipsHue.lblHueMessage.Text = "App Registered with Bridge";
                     fontBrush.Color = MapColor("#009933");
                     phillipsHue.lblHueMessage.Foreground = fontBrush;
@@ -196,8 +196,8 @@ namespace PresenceLight
 
             try
             {
-              phillipsHue.   imgHueLoading.Visibility = Visibility.Visible;
-              phillipsHue.   lblHueMessage.Visibility = Visibility.Collapsed;
+                phillipsHue.imgHueLoading.Visibility = Visibility.Visible;
+                phillipsHue.lblHueMessage.Visibility = Visibility.Collapsed;
                 phillipsHue.pnlHueData.Visibility = Visibility.Collapsed;
                 Config.LightSettings.Hue.HueApiKey = await _mediator.Send(new Core.HueServices.RegisterBridgeCommand()).ConfigureAwait(true);
                 phillipsHue.ddlHueLights.ItemsSource = await _mediator.Send(new Core.HueServices.GetLightsCommand()).ConfigureAwait(true);
@@ -236,7 +236,19 @@ namespace PresenceLight
         {
             if (phillipsHue.ddlHueLights.SelectedItem != null)
             {
-                Config.LightSettings.Hue.SelectedItemId = ((Q42.HueApi.Light)phillipsHue.ddlHueLights.SelectedItem).Id;
+                // Get whether item is group or light
+                if (phillipsHue.ddlHueLights.SelectedItem.GetType() == typeof(Q42.HueApi.Models.Groups.Group))
+                {
+                    Config.LightSettings.Hue.SelectedItemId = $"group_id:{((Q42.HueApi.Models.Groups.Group)phillipsHue.ddlHueLights.SelectedItem).Id}";
+                    phillipsHue.hueItemType.Content = "Groups";
+                }
+
+                if (phillipsHue.ddlHueLights.SelectedItem.GetType() == typeof(Light))
+                {
+                    Config.LightSettings.Hue.SelectedItemId = $"id:{((Light)phillipsHue.ddlHueLights.SelectedItem).Id}";
+                    phillipsHue.hueItemType.Content = "Lights";
+                }
+
                 SyncOptions();
             }
             e.Handled = true;
@@ -268,6 +280,67 @@ namespace PresenceLight
                 _logger.LogError(ex, "Error Occured Saving Hue Settings");
                 _diagClient.TrackException(ex);
             }
+        }
+
+        private async void CheckHue_Click(object sender, RoutedEventArgs e)
+        {
+            phillipsHue.imgHueLoading.Visibility = Visibility.Visible;
+            phillipsHue.pnlHueData.Visibility = Visibility.Collapsed;
+            phillipsHue.lblHueMessage.Visibility = Visibility.Collapsed;
+            SolidColorBrush fontBrush = new SolidColorBrush();
+
+            if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey))
+            {
+                try
+                {
+                    SyncOptions();
+                    if (((System.Windows.Controls.Button)e.Source).Name == "btnGetHueGroups")
+                    {
+                        phillipsHue.ddlHueLights.ItemsSource = await _mediator.Send(new Core.HueServices.GetGroupsCommand());
+                        phillipsHue.hueItemType.Content = "Groups";
+                    }
+                    else
+                    {
+                        phillipsHue.ddlHueLights.ItemsSource = await _mediator.Send(new Core.HueServices.GetLightsCommand());
+                        phillipsHue.hueItemType.Content = "Lights";
+
+                    }
+
+                    phillipsHue.lblHueMessage.Visibility = Visibility.Visible;
+                    phillipsHue.pnlHueData.Visibility = Visibility.Visible;
+                    phillipsHue.lblHueMessage.Text = "Connected to Hue";
+
+                    phillipsHue.btnGetHueLights.IsEnabled = true;
+                    phillipsHue.btnGetHueGroups.IsEnabled = true;
+                    fontBrush.Color = MapColor("#009933");
+                    phillipsHue.lblHueMessage.Foreground = fontBrush;
+
+                    if (Config.LightSettings.Hue.UseActivityStatus)
+                    {
+                        phillipsHue.pnlHueAvailableStatuses.Visibility = Visibility.Collapsed;
+                        phillipsHue.pnlHueActivityStatuses.Visibility = Visibility.Visible;
+                    }
+                    else
+                    {
+                        phillipsHue.pnlHueAvailableStatuses.Visibility = Visibility.Visible;
+                        phillipsHue.pnlHueActivityStatuses.Visibility = Visibility.Collapsed;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error Getting Hue Lights");
+                    _diagClient.TrackException(ex);
+                    phillipsHue.lblHueMessage.Visibility = Visibility.Visible;
+                    phillipsHue.pnlHueData.Visibility = Visibility.Collapsed;
+                    phillipsHue.lblHueMessage.Text = "Error Occured Connecting to Hue, please try again";
+                    fontBrush.Color = MapColor("#ff3300");
+
+                    phillipsHue.btnGetHueLights.IsEnabled = false;
+                    phillipsHue.btnGetHueGroups.IsEnabled = false;
+                    phillipsHue.lblHueMessage.Foreground = fontBrush;
+                }
+            }
+            phillipsHue.imgHueLoading.Visibility = Visibility.Collapsed;
         }
 
         private async void CheckHue(bool getLights)
@@ -342,10 +415,30 @@ namespace PresenceLight
 
                         foreach (var item in phillipsHue.ddlHueLights.Items)
                         {
-                            var light = (Q42.HueApi.Light)item;
-                            if (light?.Id == Config.LightSettings.Hue.SelectedItemId)
+                            if (item != null)
                             {
-                                phillipsHue.ddlHueLights.SelectedItem = item;
+                                var light = (Light)item;
+                                if ($"id:{light?.Id}" == Config.LightSettings.Hue.SelectedItemId)
+                                {
+                                    phillipsHue.ddlHueLights.SelectedItem = item;
+                                }
+                            }
+                        }
+
+                        if (phillipsHue.ddlHueLights.SelectedItem == null)
+                        {
+                            phillipsHue.ddlHueLights.ItemsSource = await _mediator.Send(new Core.HueServices.GetGroupsCommand()).ConfigureAwait(true);
+
+                            foreach (var item in phillipsHue.ddlHueLights.Items)
+                            {
+                                if (item != null)
+                                {
+                                    var group = (Q42.HueApi.Models.Groups.Group)item;
+                                    if ($"group_id:{group?.Id}" == Config.LightSettings.Hue.SelectedItemId)
+                                    {
+                                        phillipsHue.ddlHueLights.SelectedItem = item;
+                                    }
+                                }
                             }
                         }
 
