@@ -10,7 +10,8 @@ WORKDIR /source/PresenceLight.Worker
 RUN dotnet publish -c release -o /app  -r linux-arm64 --self-contained false
 
 # final stage/image
-FROM mcr.microsoft.com/dotnet/aspnet:5.0
+FROM mcr.microsoft.com/dotnet/aspnet:5.0-buster-slim-arm64v8
 WORKDIR /app
 COPY --from=build /app ./
+LABEL org.opencontainers.image.source=https://github.com/isaacrlevin/presencelight
 ENTRYPOINT ["dotnet", "PresenceLight.dll"]

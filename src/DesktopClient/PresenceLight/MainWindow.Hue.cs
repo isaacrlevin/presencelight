@@ -1,12 +1,12 @@
 ﻿using System;
-using PresenceLight.Core;
-using System.Windows;
-using System.Windows.Media;
 using System.Text.RegularExpressions;
+using System.Windows;
 using System.Windows.Controls;
-using PresenceLight.Telemetry;
-using ABI.Windows.System.RemoteSystems;
-using System.Windows.Navigation;
+using System.Windows.Media;
+
+using PresenceLight.Core;
+
+using Q42.HueApi;
 
 namespace PresenceLight
 {
@@ -14,61 +14,163 @@ namespace PresenceLight
     {
         #region Hue Panel
 
-        private async void SaveHue_Click(object sender, RoutedEventArgs e)
+        private void cbIsPhillipsEnabledChanged(object sender, RoutedEventArgs e)
         {
-            btnHue.IsEnabled = false;
-            Config = Helpers.CleanColors(Config);
-            await _settingsService.SaveSettings(Config).ConfigureAwait(true);
-
-            if (Config.LightSettings.Hue.UseRemoteApi && _remoteHueService == null)
+            if (Config.LightSettings.Hue.IsEnabled)
             {
-                _remoteHueService = new RemoteHueService(Config);
+                phillipsHue.pnlPhillips.Visibility = Visibility.Visible;
+                phillipsHue.pnlHueApi.Visibility = Visibility.Visible;
             }
             else
             {
-                _hueService = new HueService(Config);
+                phillipsHue.pnlPhillips.Visibility = Visibility.Collapsed;
+                phillipsHue.pnlHueApi.Visibility = Visibility.Collapsed;
             }
-            CheckHue(false);
-            lblHueSaved.Visibility = Visibility.Visible;
-            btnHue.IsEnabled = true;
+
+            if (Config.LightSettings.Hue.UseRemoteApi)
+            {
+                phillipsHue.hueIpAddress.IsEnabled = false;
+                phillipsHue.btnFindBridge.IsEnabled = false;
+                phillipsHue.btnRegister.IsEnabled = false;
+                phillipsHue.remoteHueButton.IsEnabled = true;
+            }
+            else
+            {
+                phillipsHue.remoteHueButton.IsEnabled = false;
+                phillipsHue.hueIpAddress.IsEnabled = true;
+                phillipsHue.btnFindBridge.IsEnabled = true;
+                phillipsHue.btnRegister.IsEnabled = true;
+            }
+
+            SyncOptions();
+            e.Handled = true;
+        }
+
+        private void cbUseRemoteApiChanged(object sender, RoutedEventArgs e)
+        {
+            if (Config.LightSettings.Hue.UseRemoteApi)
+            {
+                phillipsHue.hueIpAddress.IsEnabled = false;
+                phillipsHue.btnFindBridge.IsEnabled = false;
+                phillipsHue.btnRegister.IsEnabled = false;
+                phillipsHue.remoteHueButton.IsEnabled = true;
+            }
+            else
+            {
+                phillipsHue.remoteHueButton.IsEnabled = false;
+                phillipsHue.hueIpAddress.IsEnabled = true;
+                phillipsHue.btnFindBridge.IsEnabled = true;
+                phillipsHue.btnRegister.IsEnabled = true;
+            }
+
+            if (previousRemoteFlag != Config.LightSettings.Hue.UseRemoteApi)
+            {
+                MessageBoxHelper.PrepToCenterMessageBoxOnForm(this);
+                MessageBox.Show("You toggled Use Remote Api, if this was intentional, please save.");
+            }
+            previousRemoteFlag = Config.LightSettings.Hue.UseRemoteApi;
+            SyncOptions();
+            e.Handled = true;
+        }
+
+        private void cbUseHueActivityStatus(object sender, RoutedEventArgs e)
+        {
+            if (Config.LightSettings.Hue.UseActivityStatus)
+            {
+                phillipsHue.pnlHueAvailableStatuses.Visibility = Visibility.Collapsed;
+                phillipsHue.pnlHueActivityStatuses.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                phillipsHue.pnlHueAvailableStatuses.Visibility = Visibility.Visible;
+                phillipsHue.pnlHueActivityStatuses.Visibility = Visibility.Collapsed;
+            }
+            SyncOptions();
+            e.Handled = true;
+        }
+
+        private void cbHueIsDisabledChange(object sender, RoutedEventArgs e)
+        {
+            CheckBox cb = e.Source as CheckBox ?? throw new ArgumentException("Check Box Not Found");
+            var cbName = cb.Name.Replace("Disabled", "Colour");
+            var colorpicker = (Xceed.Wpf.Toolkit.ColorPicker)this.FindName(cbName);
+
+            colorpicker.IsEnabled = !cb.IsChecked.Value;
+
+            SyncOptions();
+            e.Handled = true;
         }
 
         private async void HueApiKey_Get(object sender, RoutedEventArgs e)
         {
-            var (bridgeId, apiKey, bridgeIp) = await _remoteHueService.RegisterBridge();
-            if (!string.IsNullOrEmpty(apiKey) && !string.IsNullOrEmpty(bridgeId) && !string.IsNullOrEmpty(bridgeIp))
+            try
             {
-                hueIpAddress.Text = bridgeIp;
-                Config.LightSettings.Hue.HueApiKey = apiKey;
-                Config.LightSettings.Hue.RemoteBridgeId = bridgeId;
-                Config.LightSettings.Hue.HueIpAddress = bridgeIp;
+                var (bridgeId, apiKey, bridgeIp) = await _mediator.Send(new Core.RemoteHueServices.RegisterBridgeCommand());
+                if (!string.IsNullOrEmpty(apiKey) && !string.IsNullOrEmpty(bridgeId) && !string.IsNullOrEmpty(bridgeIp))
+                {
+                    phillipsHue.hueIpAddress.Text = bridgeIp;
+                    Config.LightSettings.Hue.HueApiKey = apiKey;
+                    Config.LightSettings.Hue.RemoteBridgeId = bridgeId;
+                    Config.LightSettings.Hue.HueIpAddress = bridgeIp;
 
-                await _settingsService.SaveSettings(Config);
+                    await _settingsService.SaveSettings(Config);
 
-                ddlHueLights.ItemsSource = await _remoteHueService.CheckLights();
-                SyncOptions();
+                    phillipsHue.ddlHueLights.ItemsSource = await _mediator.Send(new Core.RemoteHueServices.GetLightsCommand());
+                    SyncOptions();
 
-                SolidColorBrush fontBrush = new SolidColorBrush();
-                pnlHueBrightness.Visibility = Visibility.Visible;
-                lblHueMessage.Text = "App Registered with Bridge";
-                fontBrush.Color = MapColor("#009933");
-                lblHueMessage.Foreground = fontBrush;
+                    SolidColorBrush fontBrush = new SolidColorBrush();
+                    phillipsHue.pnlHueData.Visibility = Visibility.Visible;
+                    phillipsHue.lblHueMessage.Text = "App Registered with Bridge";
+                    fontBrush.Color = MapColor("#009933");
+                    phillipsHue.lblHueMessage.Foreground = fontBrush;
 
-                pnlHueBrightness.Visibility = Visibility.Visible;
-                imgHueLoading.Visibility = Visibility.Collapsed;
-                lblHueMessage.Visibility = Visibility.Visible;
+                    phillipsHue.imgHueLoading.Visibility = Visibility.Collapsed;
+                    phillipsHue.lblHueMessage.Visibility = Visibility.Visible;
+
+                    if (Config.LightSettings.Hue.UseActivityStatus)
+                    {
+                        phillipsHue.pnlHueActivityStatuses.Visibility = Visibility.Visible;
+                        phillipsHue.pnlHueAvailableStatuses.Visibility = Visibility.Collapsed;
+                    }
+                    else
+                    {
+                        phillipsHue.pnlHueAvailableStatuses.Visibility = Visibility.Visible;
+                        phillipsHue.pnlHueActivityStatuses.Visibility = Visibility.Collapsed;
+                    }
+
+                }
+                this.Activate();
             }
-            this.Activate();
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error Occured Getting Hue Api Key");
+                _diagClient.TrackException(ex);
+            }
         }
 
-        private void ddlHueLights_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void FindBridge_Click(object sender, RoutedEventArgs e)
         {
-            if (ddlHueLights.SelectedItem != null)
+            try
             {
-                Config.LightSettings.Hue.SelectedHueLightId = ((Q42.HueApi.Light)ddlHueLights.SelectedItem).Id;
-                SyncOptions();
+
+                Config.LightSettings.Hue.HueIpAddress = await _mediator.Send(new Core.HueServices.FindBridgeCommand()).ConfigureAwait(true);
+
+                phillipsHue.hueIpAddress.Text = Config.LightSettings.Hue.HueIpAddress;
+
+                if (!string.IsNullOrEmpty(phillipsHue.hueIpAddress.Text))
+                {
+                    phillipsHue.btnRegister.IsEnabled = true;
+                }
+                else
+                {
+                    phillipsHue.btnRegister.IsEnabled = false;
+                }
             }
-            e.Handled = true;
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error Occured Finding Hue Bridge");
+                _diagClient.TrackException(ex);
+            }
         }
 
         private void HueIpAddress_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
@@ -85,6 +187,162 @@ namespace PresenceLight
             e.Handled = true;
         }
 
+        private async void RegisterBridge_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBoxHelper.PrepToCenterMessageBoxOnForm(this);
+            MessageBox.Show("Please press the sync button on your Phillips Hue Bridge");
+
+            SolidColorBrush fontBrush = new SolidColorBrush();
+
+            try
+            {
+                phillipsHue.imgHueLoading.Visibility = Visibility.Visible;
+                phillipsHue.lblHueMessage.Visibility = Visibility.Collapsed;
+                phillipsHue.pnlHueData.Visibility = Visibility.Collapsed;
+                Config.LightSettings.Hue.HueApiKey = await _mediator.Send(new Core.HueServices.RegisterBridgeCommand()).ConfigureAwait(true);
+                phillipsHue.ddlHueLights.ItemsSource = await _mediator.Send(new Core.HueServices.GetLightsCommand()).ConfigureAwait(true);
+                SyncOptions();
+                phillipsHue.pnlHueData.Visibility = Visibility.Visible;
+                phillipsHue.imgHueLoading.Visibility = Visibility.Collapsed;
+                phillipsHue.lblHueMessage.Visibility = Visibility.Visible;
+
+                if (Config.LightSettings.Hue.UseActivityStatus)
+                { }
+                else
+                {
+                    phillipsHue.pnlHueAvailableStatuses.Visibility = Visibility.Visible;
+                }
+            }
+            catch (Exception ex)
+            {
+                _diagClient.TrackException(ex);
+                _logger.LogError(ex, "Error Occurred Registering Hue Bridge");
+                phillipsHue.lblHueMessage.Text = "Error Occured registering bridge, please try again";
+                fontBrush.Color = MapColor("#ff3300");
+                phillipsHue.lblHueMessage.Foreground = fontBrush;
+            }
+
+            if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey))
+            {
+                phillipsHue.lblHueMessage.Text = "App Registered with Bridge";
+                fontBrush.Color = MapColor("#009933");
+                phillipsHue.lblHueMessage.Foreground = fontBrush;
+            }
+
+            CheckHue(true);
+        }
+
+        private void ddlHueLights_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (phillipsHue.ddlHueLights.SelectedItem != null)
+            {
+                // Get whether item is group or light
+                if (phillipsHue.ddlHueLights.SelectedItem.GetType() == typeof(Q42.HueApi.Models.Groups.Group))
+                {
+                    Config.LightSettings.Hue.SelectedItemId = $"group_id:{((Q42.HueApi.Models.Groups.Group)phillipsHue.ddlHueLights.SelectedItem).Id}";
+                    phillipsHue.hueItemType.Content = "Groups";
+                }
+
+                if (phillipsHue.ddlHueLights.SelectedItem.GetType() == typeof(Light))
+                {
+                    Config.LightSettings.Hue.SelectedItemId = $"id:{((Light)phillipsHue.ddlHueLights.SelectedItem).Id}";
+                    phillipsHue.hueItemType.Content = "Lights";
+                }
+
+                SyncOptions();
+            }
+            e.Handled = true;
+        }
+
+        private async void SaveHue_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                phillipsHue.btnHue.IsEnabled = false;
+                Config = Helpers.CleanColors(Config);
+                await _settingsService.SaveSettings(Config).ConfigureAwait(true);
+
+                if (Config.LightSettings.Hue.UseRemoteApi)
+                {
+                    await _mediator.Send(new Core.RemoteHueServices.InitializeCommand { Options = Config });
+                }
+                else
+                {
+                    await _mediator.Send(new Core.HueServices.InitializeCommand { Request = Config });
+                }
+
+                CheckHue(false);
+                phillipsHue.lblHueSaved.Visibility = Visibility.Visible;
+                phillipsHue.btnHue.IsEnabled = true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error Occured Saving Hue Settings");
+                _diagClient.TrackException(ex);
+            }
+        }
+
+        private async void CheckHue_Click(object sender, RoutedEventArgs e)
+        {
+            phillipsHue.imgHueLoading.Visibility = Visibility.Visible;
+            phillipsHue.pnlHueData.Visibility = Visibility.Collapsed;
+            phillipsHue.lblHueMessage.Visibility = Visibility.Collapsed;
+            SolidColorBrush fontBrush = new SolidColorBrush();
+
+            if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey))
+            {
+                try
+                {
+                    SyncOptions();
+                    if (((System.Windows.Controls.Button)e.Source).Name == "btnGetHueGroups")
+                    {
+                        phillipsHue.ddlHueLights.ItemsSource = await _mediator.Send(new Core.HueServices.GetGroupsCommand());
+                        phillipsHue.hueItemType.Content = "Groups";
+                    }
+                    else
+                    {
+                        phillipsHue.ddlHueLights.ItemsSource = await _mediator.Send(new Core.HueServices.GetLightsCommand());
+                        phillipsHue.hueItemType.Content = "Lights";
+
+                    }
+
+                    phillipsHue.lblHueMessage.Visibility = Visibility.Visible;
+                    phillipsHue.pnlHueData.Visibility = Visibility.Visible;
+                    phillipsHue.lblHueMessage.Text = "Connected to Hue";
+
+                    phillipsHue.btnGetHueLights.IsEnabled = true;
+                    phillipsHue.btnGetHueGroups.IsEnabled = true;
+                    fontBrush.Color = MapColor("#009933");
+                    phillipsHue.lblHueMessage.Foreground = fontBrush;
+
+                    if (Config.LightSettings.Hue.UseActivityStatus)
+                    {
+                        phillipsHue.pnlHueAvailableStatuses.Visibility = Visibility.Collapsed;
+                        phillipsHue.pnlHueActivityStatuses.Visibility = Visibility.Visible;
+                    }
+                    else
+                    {
+                        phillipsHue.pnlHueAvailableStatuses.Visibility = Visibility.Visible;
+                        phillipsHue.pnlHueActivityStatuses.Visibility = Visibility.Collapsed;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error Getting Hue Lights");
+                    _diagClient.TrackException(ex);
+                    phillipsHue.lblHueMessage.Visibility = Visibility.Visible;
+                    phillipsHue.pnlHueData.Visibility = Visibility.Collapsed;
+                    phillipsHue.lblHueMessage.Text = "Error Occured Connecting to Hue, please try again";
+                    fontBrush.Color = MapColor("#ff3300");
+
+                    phillipsHue.btnGetHueLights.IsEnabled = false;
+                    phillipsHue.btnGetHueGroups.IsEnabled = false;
+                    phillipsHue.lblHueMessage.Foreground = fontBrush;
+                }
+            }
+            phillipsHue.imgHueLoading.Visibility = Visibility.Collapsed;
+        }
+
         private async void CheckHue(bool getLights)
         {
             try
@@ -93,35 +351,49 @@ namespace PresenceLight
                 {
                     SolidColorBrush fontBrush = new SolidColorBrush();
 
+                    if (Config.LightSettings.Hue.UseActivityStatus)
+                    {
+                        phillipsHue.pnlHueAvailableStatuses.Visibility = Visibility.Collapsed;
+                        phillipsHue.pnlHueActivityStatuses.Visibility = Visibility.Visible;
+                    }
+                    else
+                    {
+                        phillipsHue.pnlHueAvailableStatuses.Visibility = Visibility.Visible;
+                        phillipsHue.pnlHueActivityStatuses.Visibility = Visibility.Collapsed;
+                    }
+
                     if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress))
                     {
-                        hueIpAddress.Text = Config.LightSettings.Hue.HueIpAddress;
+                        phillipsHue.hueIpAddress.Text = Config.LightSettings.Hue.HueIpAddress;
                     }
 
                     if (string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey))
                     {
-                        lblHueMessage.Text = "Missing App Registration, please Login to Hue Cloud or Find Local Bridge";
+                        phillipsHue.lblHueMessage.Text = "Missing App Registration, please Login to Hue Cloud or Find Local Bridge";
                         fontBrush.Color = MapColor("#ff3300");
-                        pnlHueBrightness.Visibility = Visibility.Collapsed;
-                        lblHueMessage.Foreground = fontBrush;
+                        phillipsHue.pnlHueData.Visibility = Visibility.Collapsed;
+                        phillipsHue.lblHueMessage.Foreground = fontBrush;
+                        phillipsHue.btnRegister.IsEnabled = false;
                         return;
                     }
 
                     if (Config.LightSettings.Hue.UseRemoteApi && string.IsNullOrEmpty(Config.LightSettings.Hue.RemoteBridgeId))
                     {
-                        lblHueMessage.Text = "Bridge Has Not Been Registered, please Login to Hue Cloud";
+                        phillipsHue.lblHueMessage.Text = "Bridge Has Not Been Registered, please Login to Hue Cloud";
                         fontBrush.Color = MapColor("#ff3300");
-                        pnlHueBrightness.Visibility = Visibility.Collapsed;
-                        lblHueMessage.Foreground = fontBrush;
+                        phillipsHue.pnlHueData.Visibility = Visibility.Collapsed;
+                        phillipsHue.lblHueMessage.Foreground = fontBrush;
+                        phillipsHue.btnRegister.IsEnabled = false;
                         return;
                     }
 
                     if (!IsValidHueIP())
                     {
-                        lblHueMessage.Text = $"IP Address for Bridge Not Valid, please Login to Hue Cloud or Find Local Bridge";
+                        phillipsHue.lblHueMessage.Text = $"IP Address for Bridge Not Valid, please Login to Hue Cloud or Find Local Bridge";
                         fontBrush.Color = MapColor("#ff3300");
-                        pnlHueBrightness.Visibility = Visibility.Collapsed;
-                        lblHueMessage.Foreground = fontBrush;
+                        phillipsHue.pnlHueData.Visibility = Visibility.Collapsed;
+                        phillipsHue.btnRegister.IsEnabled = false;
+                        phillipsHue.lblHueMessage.Foreground = fontBrush;
                         return;
                     }
 
@@ -131,20 +403,42 @@ namespace PresenceLight
                     {
                         if (Config.LightSettings.Hue.UseRemoteApi)
                         {
-                            await _remoteHueService.RegisterBridge();
-                            ddlHueLights.ItemsSource = await _remoteHueService.CheckLights();
+
+                            await _mediator.Send(new PresenceLight.Core.RemoteHueServices.RegisterBridgeCommand());
+                            phillipsHue.ddlHueLights.ItemsSource = await _mediator.Send(new Core.RemoteHueServices.GetLightsCommand());
+
                         }
                         else
                         {
-                            ddlHueLights.ItemsSource = await _hueService.CheckLights();
+                            phillipsHue.ddlHueLights.ItemsSource = await _mediator.Send(new Core.HueServices.GetLightsCommand());
                         }
 
-                        foreach (var item in ddlHueLights.Items)
+                        foreach (var item in phillipsHue.ddlHueLights.Items)
                         {
-                            var light = (Q42.HueApi.Light)item;
-                            if (light?.Id == Config.LightSettings.Hue.SelectedHueLightId)
+                            if (item != null)
                             {
-                                ddlHueLights.SelectedItem = item;
+                                var light = (Light)item;
+                                if ($"id:{light?.Id}" == Config.LightSettings.Hue.SelectedItemId)
+                                {
+                                    phillipsHue.ddlHueLights.SelectedItem = item;
+                                }
+                            }
+                        }
+
+                        if (phillipsHue.ddlHueLights.SelectedItem == null)
+                        {
+                            phillipsHue.ddlHueLights.ItemsSource = await _mediator.Send(new Core.HueServices.GetGroupsCommand()).ConfigureAwait(true);
+
+                            foreach (var item in phillipsHue.ddlHueLights.Items)
+                            {
+                                if (item != null)
+                                {
+                                    var group = (Q42.HueApi.Models.Groups.Group)item;
+                                    if ($"group_id:{group?.Id}" == Config.LightSettings.Hue.SelectedItemId)
+                                    {
+                                        phillipsHue.ddlHueLights.SelectedItem = item;
+                                    }
+                                }
                             }
                         }
 
@@ -159,14 +453,32 @@ namespace PresenceLight
                             registrationMethod = "Local Bridge";
                         }
 
-                        pnlHueBrightness.Visibility = Visibility.Visible;
-                        lblHueMessage.Text = $"App Registered with {registrationMethod}";
+                        phillipsHue.pnlHueData.Visibility = Visibility.Visible;
+                        phillipsHue.lblHueMessage.Text = $"App Registered with {registrationMethod}";
                         fontBrush.Color = MapColor("#009933");
-                        lblHueMessage.Foreground = fontBrush;
+                        phillipsHue.lblHueMessage.Foreground = fontBrush;
+
+                        phillipsHue.btnRegister.IsEnabled = true;
+
+                        if (Config.LightSettings.Hue.UseActivityStatus)
+                        {
+                            phillipsHue.pnlHueAvailableStatuses.Visibility = Visibility.Collapsed;
+                            phillipsHue.pnlHueActivityStatuses.Visibility = Visibility.Visible;
+                        }
+                        else
+                        {
+                            phillipsHue.pnlHueAvailableStatuses.Visibility = Visibility.Visible;
+                            phillipsHue.pnlHueActivityStatuses.Visibility = Visibility.Collapsed;
+                        }
                     }
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error Occured Checking Hue Lights");
+
+                _diagClient.TrackException(ex);
+            }
         }
 
         private bool IsValidHueIP()
@@ -175,165 +487,12 @@ namespace PresenceLight
 
             Regex r = new Regex(r2);
 
-            if (string.IsNullOrEmpty(hueIpAddress.Text.Trim()) || !r.IsMatch(hueIpAddress.Text.Trim()) || hueIpAddress.Text.Trim().EndsWith(".", StringComparison.OrdinalIgnoreCase))
+            if (string.IsNullOrEmpty(phillipsHue.hueIpAddress.Text.Trim()) || !r.IsMatch(phillipsHue.hueIpAddress.Text.Trim()) || phillipsHue.hueIpAddress.Text.Trim().EndsWith(".", StringComparison.OrdinalIgnoreCase))
             {
                 return false;
             }
             return true;
         }
-
-        private async void FindBridge_Click(object sender, RoutedEventArgs e)
-        {
-            Config.LightSettings.Hue.HueIpAddress = await _hueService.FindBridge().ConfigureAwait(true);
-            hueIpAddress.Text = Config.LightSettings.Hue.HueIpAddress;
-        }
-
-        private void cbIsPhillipsEnabledChanged(object sender, RoutedEventArgs e)
-        {
-            if (Config.LightSettings.Hue.IsPhillipsHueEnabled)
-            {
-                pnlPhillips.Visibility = Visibility.Visible;
-                pnlHueApi.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                pnlPhillips.Visibility = Visibility.Collapsed;
-                pnlHueApi.Visibility = Visibility.Collapsed;
-            }
-
-            if (Config.LightSettings.Hue.UseRemoteApi)
-            {
-                hueIpAddress.IsEnabled = false;
-                btnFindBridge.IsEnabled = false;
-                btnRegister.IsEnabled = false;
-                remoteHueButton.IsEnabled = true;
-            }
-            else
-            {
-                remoteHueButton.IsEnabled = false;
-                hueIpAddress.IsEnabled = true;
-                btnFindBridge.IsEnabled = true;
-                btnRegister.IsEnabled = true;
-            }
-
-            SyncOptions();
-            e.Handled = true;
-        }
-
-        private void cbUseRemoteApiChanged(object sender, RoutedEventArgs e)
-        {
-            if (Config.LightSettings.Hue.UseRemoteApi)
-            {
-                hueIpAddress.IsEnabled = false;
-                btnFindBridge.IsEnabled = false;
-                btnRegister.IsEnabled = false;
-                remoteHueButton.IsEnabled = true;
-            }
-            else
-            {
-                remoteHueButton.IsEnabled = false;
-                hueIpAddress.IsEnabled = true;
-                btnFindBridge.IsEnabled = true;
-                btnRegister.IsEnabled = true;
-            }
-
-            if (previousRemoteFlag != Config.LightSettings.Hue.UseRemoteApi)
-            {
-                MessageBoxHelper.PrepToCenterMessageBoxOnForm(this);
-                MessageBox.Show("You toggled Use Remote Api, if this was intentional, please save.");
-            }
-            previousRemoteFlag = Config.LightSettings.Hue.UseRemoteApi;
-            SyncOptions();
-            e.Handled = true;
-        }
-
-        private void cbIsPhillipsAvailableStatusDisabledChanged(object sender, RoutedEventArgs e)
-        {
-            hueAvailableColour.IsEnabled = !Config.LightSettings.Hue.AvailableStatus.Disabled;
-            SyncOptions();
-            e.Handled = true;
-        }
-
-        private void cbIsPhillipsBusyStatusDisabledChanged(object sender, RoutedEventArgs e)
-        {
-            hueBusyColour.IsEnabled = !Config.LightSettings.Hue.BusyStatus.Disabled;
-            SyncOptions();
-            e.Handled = true;
-        }
-
-        private void cbIsPhillipsAwayStatusDisabledChanged(object sender, RoutedEventArgs e)
-        {
-            hueAwayColour.IsEnabled = !Config.LightSettings.Hue.AwayStatus.Disabled;
-            SyncOptions();
-            e.Handled = true;
-        }
-
-        private void cbIsPhillipsDoNotDisturbStatusDisabledChanged(object sender, RoutedEventArgs e)
-        {
-            hueDoNotDisturbColour.IsEnabled = !Config.LightSettings.Hue.DoNotDisturbStatus.Disabled;
-            SyncOptions();
-            e.Handled = true;
-        }
-
-        private void cbIsPhillipsBeRightBackStatusDisabledChanged(object sender, RoutedEventArgs e)
-        {
-            hueBeRightBackColour.IsEnabled = !Config.LightSettings.Hue.BeRightBackStatus.Disabled;
-            SyncOptions();
-            e.Handled = true;
-        }
-
-        private void cbIsPhillipsOfflineStatusDisabledChanged(object sender, RoutedEventArgs e)
-        {
-            hueOfflineColour.IsEnabled = !Config.LightSettings.Hue.OfflineStatus.Disabled;
-            SyncOptions();
-            e.Handled = true;
-        }
-
-        private void cbIsPhillipsOffStatusDisabledChanged(object sender, RoutedEventArgs e)
-        {
-            hueOffColour.IsEnabled = !Config.LightSettings.Hue.OffStatus.Disabled;
-            SyncOptions();
-            e.Handled = true;
-        }
-
-        private async void RegisterBridge_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBoxHelper.PrepToCenterMessageBoxOnForm(this);
-            MessageBox.Show("Please press the sync button on your Phillips Hue Bridge");
-
-            SolidColorBrush fontBrush = new SolidColorBrush();
-
-            try
-            {
-                imgHueLoading.Visibility = Visibility.Visible;
-                lblHueMessage.Visibility = Visibility.Collapsed;
-                pnlHueBrightness.Visibility = Visibility.Collapsed;
-                Config.LightSettings.Hue.HueApiKey = await _hueService.RegisterBridge().ConfigureAwait(true);
-                ddlHueLights.ItemsSource = await _hueService.CheckLights().ConfigureAwait(true);
-                SyncOptions();
-                pnlHueBrightness.Visibility = Visibility.Visible;
-                imgHueLoading.Visibility = Visibility.Collapsed;
-                lblHueMessage.Visibility = Visibility.Visible;
-            }
-            catch (Exception ex)
-            {
-                _diagClient.TrackException(ex);
-
-                lblHueMessage.Text = "Error Occured registering bridge, please try again";
-                fontBrush.Color = MapColor("#ff3300");
-                lblHueMessage.Foreground = fontBrush;
-            }
-
-            if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey))
-            {
-                lblHueMessage.Text = "App Registered with Bridge";
-                fontBrush.Color = MapColor("#009933");
-                lblHueMessage.Foreground = fontBrush;
-            }
-
-            CheckHue(true);
-        }
-
         #endregion
     }
 }

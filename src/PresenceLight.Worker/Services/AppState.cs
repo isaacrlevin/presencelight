@@ -1,6 +1,8 @@
 ﻿using System;
 using Microsoft.Graph;
 using System.Collections.Generic;
+using YeelightAPI;
+using Device = YeelightAPI.Device;
 
 namespace PresenceLight.Worker
 {
@@ -12,9 +14,13 @@ namespace PresenceLight.Worker
 
         public User User { get; set; }
 
-        public IEnumerable<Q42.HueApi.Light> HueLights { get; set; }
+        public IEnumerable<object> HueLights { get; set; }
 
         public string HueLightId { get; set; }
+
+        public List<Device> YeelightLights { get; set; }
+
+        public string YeelightLightId { get; set; }
 
         public IEnumerable<object> LIFXLights { get; set; }
 
@@ -70,7 +76,7 @@ namespace PresenceLight.Worker
             NotifyStateChanged();
         }
 
-        public void SetHueLights(IEnumerable<Q42.HueApi.Light> lights)
+        public void SetHueLights(IEnumerable<object> lights)
         {
             HueLights = lights;
             NotifyStateChanged();
@@ -79,6 +85,18 @@ namespace PresenceLight.Worker
         public void SetHueLight(string lightId)
         {
             HueLightId = lightId;
+            NotifyStateChanged();
+        }
+
+        public void SetYeelightLights(List<Device> lights)
+        {
+            YeelightLights = lights;
+            NotifyStateChanged();
+        }
+
+        public void SetYeelightLight(string lightId)
+        {
+            YeelightLightId = lightId;
             NotifyStateChanged();
         }
 

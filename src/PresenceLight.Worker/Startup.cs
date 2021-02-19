@@ -11,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using PresenceLight.Core;
 using System.Threading.Tasks;
+using MediatR;
 using Blazorise;
 using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
@@ -20,6 +21,7 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.ApplicationInsights.AspNetCore;
 using Microsoft.Extensions.Options;
 using Microsoft.ApplicationInsights.SnapshotCollector;
+using PresenceLight.Worker.Services;
 
 namespace PresenceLight.Worker
 {
@@ -50,6 +52,10 @@ namespace PresenceLight.Worker
         {
             var initialScopes = Configuration.GetValue<string>("DownstreamApi:Scopes")?.Split(' ');
 
+            //Need to tell MediatR what Assemblies to look in for Command Event Handlers
+            services.AddMediatR(typeof(App),
+                                typeof(BaseConfig));
+
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
                     .EnableTokenAcquisitionToCallDownstreamApi(initialScopes)
@@ -74,7 +80,6 @@ namespace PresenceLight.Worker
             services.AddServerSideBlazor()
                 .AddMicrosoftIdentityConsentHandler();
 
-
             services.AddBlazorise(options =>
             {
                 options.ChangeTextOnKeyPress = true;
@@ -84,15 +89,24 @@ namespace PresenceLight.Worker
             services.AddHttpContextAccessor();
 
             services.Configure<BaseConfig>(Configuration);
+            services.AddSingleton<SettingsService>();
 
             services.AddOptions();
-            services.AddSingleton<LIFXService, LIFXService>();
-            services.AddSingleton<IHueService, HueService>();
-            services.AddSingleton<ICustomApiService, CustomApiService>();
-            services.AddSingleton<AppState, AppState>();
+            services.AddSingleton<AppState>();
+            services.AddPresenceServices();
             services.AddBlazoredModal();
+
             services.AddHostedService<Worker>();
-            services.AddApplicationInsightsTelemetry(Configuration.GetValue<string>("ApplicationInsights:InstrumentationKey"));
+
+            services.AddApplicationInsightsTelemetry(options =>
+            {
+                options.InstrumentationKey = Configuration.GetValue<string>("ApplicationInsights:InstrumentationKey");
+                options.EnablePerformanceCounterCollectionModule = false;
+                options.EnableDependencyTrackingTelemetryModule = false;
+                options.EnableAdaptiveSampling = false;
+            });
+
+
 
             // Configure SnapshotCollector from application settings
             services.Configure<SnapshotCollectorConfiguration>(Configuration.GetSection(nameof(SnapshotCollectorConfiguration)));
@@ -104,6 +118,14 @@ namespace PresenceLight.Worker
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            var configuration = app.ApplicationServices.GetService<TelemetryConfiguration>();
+
+            var builder = configuration.DefaultTelemetrySink.TelemetryProcessorChainBuilder;
+            double fixedSamplingPercentage = 10;
+            builder.UseSampling(fixedSamplingPercentage);
+
+            builder.Build();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

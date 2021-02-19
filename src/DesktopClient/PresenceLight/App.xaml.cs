@@ -1,21 +1,25 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Threading;
 using System.Windows;
 
-using Microsoft.ApplicationInsights;
+using MediatR;
+
 using Microsoft.ApplicationInsights.Extensibility;
-using Microsoft.ApplicationInsights.SnapshotCollector;
-using Microsoft.ApplicationInsights.WorkerService;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Hosting;
 
 using PresenceLight.Core;
 using PresenceLight.Graph;
 using PresenceLight.Services;
 using PresenceLight.Telemetry;
+
+using Serilog;
+
+using Windows.Storage;
 
 namespace PresenceLight
 {
@@ -24,26 +28,17 @@ namespace PresenceLight
     /// </summary>
     public partial class App : System.Windows.Application
     {
-        private class SnapshotCollectorTelemetryProcessorFactory : ITelemetryProcessorFactory
-        {
-            private readonly IServiceProvider _serviceProvider;
-            public SnapshotCollectorTelemetryProcessorFactory(IServiceProvider serviceProvider) =>
-                _serviceProvider = serviceProvider;
-            public ITelemetryProcessor Create(ITelemetryProcessor next)
-            {
-                var snapshotConfigurationOptions = _serviceProvider.GetService<IOptions<SnapshotCollectorConfiguration>>();
-                return new SnapshotCollectorTelemetryProcessor(next, configuration: snapshotConfigurationOptions == null ? new SnapshotCollectorConfiguration() : snapshotConfigurationOptions.Value);
-            }
-        }
-
         public IServiceProvider? ServiceProvider { get; private set; }
 
-        public IConfiguration Configuration { get; private set; }
+        public IConfiguration? Configuration { get; private set; }
 
-        public static IConfiguration StaticConfig { get; private set; }
+        public static IConfiguration? StaticConfig { get; private set; }
 
+     
         public App()
         {
+            
+
         }
 
         private void OnStartup(object sender, StartupEventArgs e)
@@ -59,14 +54,18 @@ namespace PresenceLight
                 catch (Exception ex) when (IsCriticalFontLoadFailure(ex))
                 {
                     Trace.WriteLine($"## Warning Notify ##: {ex}");
+                    Log.Error(ex, "Stopped program because of exception");
                     OnCriticalFontLoadFailure();
                 }
             }
             else
             {
+                Log.CloseAndFlush();
                 Shutdown();
             }
         }
+
+        Dictionary<string, string> InMemorySettings = new();
 
         private void ContinueStartup()
         {
@@ -78,8 +77,45 @@ namespace PresenceLight
             Configuration = builder.Build();
             StaticConfig = builder.Build();
 
+            //Override the save file location for logs if this is a packaged app... 
+            if (Convert.ToBoolean(Configuration["IsAppPackaged"], CultureInfo.InvariantCulture))
+            {
+                var _logFilePath = System.IO.Path.Combine(ApplicationData.Current.LocalFolder.Path, "PresenceLight\\logs\\DesktopClient\\log-.json");
+
+                InMemorySettings.Add("Serilog:WriteTo:1:Args:Path", _logFilePath);
+                builder = new Microsoft.Extensions.Configuration.ConfigurationBuilder()
+                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                 .AddJsonFile($"appsettings.Development.json", optional: true, reloadOnChange: true)
+                 .AddInMemoryCollection(InMemorySettings);
+
+                Configuration = builder.Build();
+                StaticConfig = builder.Build();
+
+            }
+
+            var telemetryConfiguration = TelemetryConfiguration.CreateDefault();
+            telemetryConfiguration.InstrumentationKey = Configuration["ApplicationInsights:InstrumentationKey"];
+            var loggerConfig =
+            new LoggerConfiguration()
+                          .ReadFrom.Configuration(Configuration)
+                          .WriteTo.PresenceEventsLogSink()
+                          .WriteTo.ApplicationInsights(telemetryConfiguration, TelemetryConverter.Traces, Serilog.Events.LogEventLevel.Error)
+                          .Enrich.FromLogContext();
+
+
+            Log.Logger = loggerConfig.CreateLogger();
+            Log.Debug("Starting PresenceLight");
+
             IServiceCollection services = new ServiceCollection();
             services.AddOptions();
+            services.AddLogging(logging =>
+            {
+                logging.AddSerilog();
+            });
+
+            //Need to tell MediatR what Assemblies to look in for Command Event Handlers
+            services.AddMediatR(typeof(App),
+                                typeof(PresenceLight.Core.BaseConfig));
 
             services.Configure<BaseConfig>(Configuration);
             services.Configure<AADSettings>(Configuration.GetSection("AADSettings"));
@@ -91,24 +127,17 @@ namespace PresenceLight
         o.TelemetryInitializers.Add(new AppVersionTelemetryInitializer());
         o.TelemetryInitializers.Add(new EnvironmentTelemetryInitializer());
 
-        if (Convert.ToBoolean(Configuration["SendDiagnosticData"], CultureInfo.InvariantCulture))
-        {
-            //   o.TelemetryProcessorChainBuilder.UseSnapshotCollector(new SnapshotCollectorConfiguration
-            //    {
-            //        IsEnabled = true,
-            //        IsEnabledInDeveloperMode = true,
-            //        DeoptimizeMethodCount = 4
-            //    });
-        }
     });
-            services.AddApplicationInsightsTelemetryWorkerService();
+            services.AddApplicationInsightsTelemetryWorkerService(options =>
+        {
+            options.EnablePerformanceCounterCollectionModule = false;
+            options.EnableDependencyTrackingTelemetryModule = false;
+        });
 
             services.AddSingleton<IGraphService, GraphService>();
-            services.AddSingleton<IHueService, HueService>();
-            services.AddSingleton<IRemoteHueService, RemoteHueService>();
-            services.AddSingleton<LIFXService, LIFXService>();
-            services.AddSingleton<IYeelightService, YeelightService>();
-            services.AddSingleton<ICustomApiService, CustomApiService>();
+
+            services.AddPresenceServices();
+
             services.AddSingleton<LIFXOAuthHelper, LIFXOAuthHelper>();
             services.AddSingleton<ThisAppInfo, ThisAppInfo>();
             services.AddSingleton<MainWindow>();
@@ -126,9 +155,15 @@ namespace PresenceLight
 
             ServiceProvider = services.BuildServiceProvider();
 
-            var telemetryClient = ServiceProvider.GetRequiredService<TelemetryClient>();
+            var configuration = ServiceProvider.GetService<TelemetryConfiguration>();
 
-
+            if (configuration != null)
+            {
+                var b = configuration.DefaultTelemetrySink.TelemetryProcessorChainBuilder;
+                double fixedSamplingPercentage = 10;
+                b.UseSampling(fixedSamplingPercentage);
+                b.Build();
+            }
             var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
             mainWindow.Show();
         }

@@ -2,166 +2,554 @@
   "SendDiagnosticData": false,
   "IconType": "",
   "LightSettings": {
-    "HoursPassedStatus": "",
+    "HoursPassedStatus": "Keep",
     "SyncLights": true,
-    "WorkingDays": "",
-    "UseWorkingHours": false,
+    "WorkingDays": "Monday|Tuesday|Wednesday|Thursday|Friday",
     "WorkingHoursStartTime": "",
     "WorkingHoursEndTime": "",
+    "UseWorkingHours": false,
     "PollingInterval": 5.0,
     "UseDefaultBrightness": true,
     "DefaultBrightness": 100,
-    "Custom": {
-      "IsCustomApiEnabled": false,
-      "SelectedCustomLightId": "",
-      "CustomApiAvailableMethod": "",
-      "CustomApiAvailableUri": "",
-      "CustomApiBusyMethod": "",
-      "CustomApiBusyUri": "",
-      "CustomApiBeRightBackMethod": "",
-      "CustomApiBeRightBackUri": "",
-      "CustomApiAwayMethod": "",
-      "CustomApiAwayUri": "",
-      "CustomApiDoNotDisturbMethod": "",
-      "CustomApiDoNotDisturbUri": "",
-      "CustomApiAvailableIdleMethod": "",
-      "CustomApiAvailableIdleUri": "",
-      "CustomApiOfflineMethod": "",
-      "CustomApiOfflineUri": "",
-      "CustomApiOffMethod": "",
-      "CustomApiOffUri": "",
-      "CustomApiActivityAvailableMethod": "",
-      "CustomApiActivityAvailableUri": "",
-      "CustomApiActivityInACallMethod": "",
-      "CustomApiActivityInACallUri": "",
-      "CustomApiActivityInAMeetingMethod": "",
-      "CustomApiActivityInAMeetingUri": "",
-      "CustomApiActivityPresentingMethod": "",
-      "CustomApiActivityPresentingUri": "",
-      "CustomApiActivityBusyMethod": "",
-      "CustomApiActivityBusyUri": "",
-      "CustomApiActivityAwayMethod": "",
-      "CustomApiActivityAwayUri": "",
-      "CustomApiActivityBeRightBackMethod": "",
-      "CustomApiActivityBeRightBackUri": "",
-      "CustomApiActivityDoNotDisturbMethod": "",
-      "CustomApiActivityDoNotDisturbUri": "",
-      "CustomApiActivityIdleMethod": "",
-      "CustomApiActivityIdleUri": "",
-      "CustomApiActivityOfflineMethod": "",
-      "CustomApiActivityOfflineUri": "",
-      "CustomApiActivityOffMethod": "",
-      "CustomApiActivityOffUri": "",
-      "CustomApiTimeout": 100.0
-    },
     "LIFX": {
-      "LIFXApiKey": "",
       "LIFXClientId": "",
       "LIFXClientSecret": "",
-      "IsLIFXEnabled": false,
-      "SelectedLIFXItemId": "group_id:",
-      "LIFXBrightness": 100,
-      "AvailableStatus": {
-        "Disabled": false,
-        "Colour": "#009933"
-      },
-      "BusyStatus": {
-        "Disabled": false,
-        "Colour": "#FF3300"
-      },
-      "AwayStatus": {
-        "Disabled": false,
-        "Colour": "#FFFF00"
-      },
-      "BeRightBackStatus": {
-        "Disabled": false,
-        "Colour": "#FFFF00"
-      },
-      "DoNotDisturbStatus": {
-        "Disabled": false,
-        "Colour": "#B03CDE"
-      },
-      "OfflineStatus": {
-        "Disabled": false,
-        "Colour": "#FFFFFF"
-      },
-      "OffStatus": {
-        "Disabled": false,
-        "Colour": "#FFFFFF"
+      "LIFXApiKey": "",
+      "IsEnabled": false,
+      "SelectedItemId": "",
+      "Brightness": 100,
+      "UseActivityStatus": false,
+      "Statuses": {
+        "AvailabilityAvailableStatus": {
+          "Disabled": false,
+          "Colour": "#00ff55"
+        },
+        "AvailabilityAvailableIdleStatus": {
+          "Disabled": false,
+          "Colour": "#FFFF00"
+        },
+        "AvailabilityAwayStatus": {
+          "Disabled": false,
+          "Colour": "#FFFF00"
+        },
+        "AvailabilityBeRightBackStatus": {
+          "Disabled": false,
+          "Colour": "#FFFF00"
+        },
+        "AvailabilityBusyStatus": {
+          "Disabled": false,
+          "Colour": "#FF3300"
+        },
+        "AvailabilityBusyIdleStatus": {
+          "Disabled": false,
+          "Colour": "#FFFF00"
+        },
+        "AvailabilityDoNotDisturbStatus": {
+          "Disabled": false,
+          "Colour": "#B03CDE"
+        },
+        "AvailabilityOfflineStatus": {
+          "Disabled": false,
+          "Colour": "#FFFFFF"
+        },
+        "AvailabilityPresenceUnknownStatus": {
+          "Disabled": false,
+          "Colour": "#FFFFFF"
+        },
+        "AvailabilityOffStatus": {
+          "Disabled": false,
+          "Colour": "#FFFFFF"
+        },
+        "ActivityAvailableStatus": {
+          "Disabled": false,
+          "Colour": "#4f824f"
+        },
+        "ActivityAwayStatus": {
+          "Disabled": false,
+          "Colour": "#ffff00"
+        },
+        "ActivityBeRightBackStatus": {
+          "Disabled": false,
+          "Colour": "#ffff00"
+        },
+        "ActivityBusyStatus": {
+          "Disabled": false,
+          "Colour": "#ff0000"
+        },
+        "ActivityDoNotDisturbStatus": {
+          "Disabled": false,
+          "Colour": "#960000"
+        },
+        "ActivityInACallStatus": {
+          "Disabled": false,
+          "Colour": "#ff0000"
+        },
+        "ActivityInAConferenceCallStatus": {
+          "Disabled": false,
+          "Colour": "#ff00d4"
+        },
+        "ActivityInactiveStatus": {
+          "Disabled": false,
+          "Colour": "#ffff00"
+        },
+        "ActivityInAMeetingStatus": {
+          "Disabled": false,
+          "Colour": "#ff0000"
+        },
+        "ActivityOfflineStatus": {
+          "Disabled": false,
+          "Colour": "#FFFFFF"
+        },
+        "ActivityOffWorkStatus": {
+          "Disabled": false,
+          "Colour": "#FFFFFF"
+        },
+        "ActivityOutOfOfficeStatus": {
+          "Disabled": false,
+          "Colour": "#ae00ff"
+        },
+        "ActivityPresenceUnknownStatus": {
+          "Disabled": false,
+          "Colour": "#FFFFFF"
+        },
+        "ActivityPresentingStatus": {
+          "Disabled": false,
+          "Colour": "#960000"
+        },
+        "ActivityUrgentInterruptionsOnlyStatus": {
+          "Disabled": false,
+          "Colour": "#560061"
+        },
+        "ActivityOffStatus": {
+          "Disabled": false,
+          "Colour": "#FFFFFF"
+        }
       }
     },
     "Hue": {
+      "HueApiKey": "",
+      "SelectedItemId": "",
+      "HueIpAddress": "",
       "RemoteHueClientId": "",
       "RemoteHueClientSecret": "",
       "RemoteHueClientAppName": "",
-      "HueApiKey": "",
-      "RemoteHueApiKey": "",
-      "SelectedHueLightId": "",
-      "HueBrightness": 100,
-      "HueIpAddress": "",
-      "IsPhillipsHueEnabled": false,
-      "UseRemoteApi": false,
+      "IsEnabled": false,
       "RemoteBridgeId": "",
-      "AvailableStatus": {
-        "Disabled": false,
-        "Colour": "#009933"
-      },
-      "BusyStatus": {
-        "Disabled": false,
-        "Colour": "#FF3300"
-      },
-      "AwayStatus": {
-        "Disabled": false,
-        "Colour": "#FFFF00"
-      },
-      "BeRightBackStatus": {
-        "Disabled": false,
-        "Colour": "#FFFF00"
-      },
-      "DoNotDisturbStatus": {
-        "Disabled": false,
-        "Colour": "#B03CDE"
-      },
-      "OfflineStatus": {
-        "Disabled": false,
-        "Colour": "#FFFFFF"
-      },
-      "OffStatus": {
-        "Disabled": false,
-        "Colour": "#FFFFFF"
+      "UseRemoteApi": false,
+      "Brightness": 100,
+      "UseActivityStatus": false,
+      "Statuses": {
+        "AvailabilityAvailableStatus": {
+          "Disabled": false,
+          "Colour": "#00ff55"
+        },
+        "AvailabilityAvailableIdleStatus": {
+          "Disabled": false,
+          "Colour": "#FFFF00"
+        },
+        "AvailabilityAwayStatus": {
+          "Disabled": false,
+          "Colour": "#FFFF00"
+        },
+        "AvailabilityBeRightBackStatus": {
+          "Disabled": false,
+          "Colour": "#FFFF00"
+        },
+        "AvailabilityBusyStatus": {
+          "Disabled": false,
+          "Colour": "#FF3300"
+        },
+        "AvailabilityBusyIdleStatus": {
+          "Disabled": false,
+          "Colour": "#FFFF00"
+        },
+        "AvailabilityDoNotDisturbStatus": {
+          "Disabled": false,
+          "Colour": "#B03CDE"
+        },
+        "AvailabilityOfflineStatus": {
+          "Disabled": false,
+          "Colour": "#FFFFFF"
+        },
+        "AvailabilityPresenceUnknownStatus": {
+          "Disabled": false,
+          "Colour": "#FFFFFF"
+        },
+        "AvailabilityOffStatus": {
+          "Disabled": false,
+          "Colour": "#FFFFFF"
+        },
+        "ActivityAvailableStatus": {
+          "Disabled": false,
+          "Colour": "#4f824f"
+        },
+        "ActivityAwayStatus": {
+          "Disabled": false,
+          "Colour": "#ffff00"
+        },
+        "ActivityBeRightBackStatus": {
+          "Disabled": false,
+          "Colour": "#ffff00"
+        },
+        "ActivityBusyStatus": {
+          "Disabled": false,
+          "Colour": "#ff0000"
+        },
+        "ActivityDoNotDisturbStatus": {
+          "Disabled": false,
+          "Colour": "#960000"
+        },
+        "ActivityInACallStatus": {
+          "Disabled": false,
+          "Colour": "#ff0000"
+        },
+        "ActivityInAConferenceCallStatus": {
+          "Disabled": false,
+          "Colour": "#ff00d4"
+        },
+        "ActivityInactiveStatus": {
+          "Disabled": false,
+          "Colour": "#ffff00"
+        },
+        "ActivityInAMeetingStatus": {
+          "Disabled": false,
+          "Colour": "#ff0000"
+        },
+        "ActivityOfflineStatus": {
+          "Disabled": false,
+          "Colour": "#FFFFFF"
+        },
+        "ActivityOffWorkStatus": {
+          "Disabled": false,
+          "Colour": "#FFFFFF"
+        },
+        "ActivityOutOfOfficeStatus": {
+          "Disabled": false,
+          "Colour": "#ae00ff"
+        },
+        "ActivityPresenceUnknownStatus": {
+          "Disabled": false,
+          "Colour": "#FFFFFF"
+        },
+        "ActivityPresentingStatus": {
+          "Disabled": false,
+          "Colour": "#960000"
+        },
+        "ActivityUrgentInterruptionsOnlyStatus": {
+          "Disabled": false,
+          "Colour": "#560061"
+        },
+        "ActivityOffStatus": {
+          "Disabled": false,
+          "Colour": "#FFFFFF"
+        }
       }
     },
     "Yeelight": {
-      "SelectedYeelightId": "",
-      "YeelightBrightness": 100,
-      "IsYeelightEnabled": false,
-      "AvailableStatus": {
-        "Disabled": false,
-        "Colour": "#009933"
+      "SelectedItemId": "",
+      "IsEnabled": false,
+      "Brightness": 100,
+      "UseActivityStatus": false,
+      "Statuses": {
+        "AvailabilityAvailableStatus": {
+          "Disabled": false,
+          "Colour": "#00ff55"
+        },
+        "AvailabilityAvailableIdleStatus": {
+          "Disabled": false,
+          "Colour": "#FFFF00"
+        },
+        "AvailabilityAwayStatus": {
+          "Disabled": false,
+          "Colour": "#FFFF00"
+        },
+        "AvailabilityBeRightBackStatus": {
+          "Disabled": false,
+          "Colour": "#FFFF00"
+        },
+        "AvailabilityBusyStatus": {
+          "Disabled": false,
+          "Colour": "#FF3300"
+        },
+        "AvailabilityBusyIdleStatus": {
+          "Disabled": false,
+          "Colour": "#FFFF00"
+        },
+        "AvailabilityDoNotDisturbStatus": {
+          "Disabled": false,
+          "Colour": "#B03CDE"
+        },
+        "AvailabilityOfflineStatus": {
+          "Disabled": false,
+          "Colour": "#FFFFFF"
+        },
+        "AvailabilityPresenceUnknownStatus": {
+          "Disabled": false,
+          "Colour": "#FFFFFF"
+        },
+        "AvailabilityOffStatus": {
+          "Disabled": false,
+          "Colour": "#FFFFFF"
+        },
+        "ActivityAvailableStatus": {
+          "Disabled": false,
+          "Colour": "#4f824f"
+        },
+        "ActivityAwayStatus": {
+          "Disabled": false,
+          "Colour": "#ffff00"
+        },
+        "ActivityBeRightBackStatus": {
+          "Disabled": false,
+          "Colour": "#ffff00"
+        },
+        "ActivityBusyStatus": {
+          "Disabled": false,
+          "Colour": "#ff0000"
+        },
+        "ActivityDoNotDisturbStatus": {
+          "Disabled": false,
+          "Colour": "#960000"
+        },
+        "ActivityInACallStatus": {
+          "Disabled": false,
+          "Colour": "#ff0000"
+        },
+        "ActivityInAConferenceCallStatus": {
+          "Disabled": false,
+          "Colour": "#ff00d4"
+        },
+        "ActivityInactiveStatus": {
+          "Disabled": false,
+          "Colour": "#ffff00"
+        },
+        "ActivityInAMeetingStatus": {
+          "Disabled": false,
+          "Colour": "#ff0000"
+        },
+        "ActivityOfflineStatus": {
+          "Disabled": false,
+          "Colour": "#FFFFFF"
+        },
+        "ActivityOffWorkStatus": {
+          "Disabled": false,
+          "Colour": "#FFFFFF"
+        },
+        "ActivityOutOfOfficeStatus": {
+          "Disabled": false,
+          "Colour": "#ae00ff"
+        },
+        "ActivityPresenceUnknownStatus": {
+          "Disabled": false,
+          "Colour": "#FFFFFF"
+        },
+        "ActivityPresentingStatus": {
+          "Disabled": false,
+          "Colour": "#960000"
+        },
+        "ActivityUrgentInterruptionsOnlyStatus": {
+          "Disabled": false,
+          "Colour": "#560061"
+        },
+        "ActivityOffStatus": {
+          "Disabled": false,
+          "Colour": "#FFFFFF"
+        }
+      }
+    },
+    "CustomApi": {
+      "IsEnabled": true,
+      "SelectedItemId": "",
+      "Brightness": 100,
+      "UseActivityStatus": false,
+      "CustomApiAvailable": {
+        "Method": "",
+        "Uri": ""
       },
-      "BusyStatus": {
-        "Disabled": false,
-        "Colour": "#FF3300"
+      "CustomApiBusy": {
+        "Method": "",
+        "Uri": ""
       },
-      "AwayStatus": {
-        "Disabled": false,
-        "Colour": "#FFFF00"
+      "CustomApiBeRightBack": {
+        "Method": "",
+        "Uri": ""
       },
-      "BeRightBackStatus": {
-        "Disabled": false,
-        "Colour": "#FFFF00"
+      "CustomApiAway": {
+        "Method": "",
+        "Uri": ""
       },
-      "DoNotDisturbStatus": {
-        "Disabled": false,
-        "Colour": "#B03CDE"
+      "CustomApiDoNotDisturb": {
+        "Method": "",
+        "Uri": ""
       },
-      "OfflineStatus": {
-        "Disabled": false,
-        "Colour": "#FFFFFF"
+      "CustomApiOffline": {
+        "Method": "",
+        "Uri": ""
       },
-      "OffStatus": {
-        "Disabled": false,
-        "Colour": "#FFFFFF"
+      "CustomApiOff": {
+        "Method": "",
+        "Uri": ""
+      },
+      "CustomApiActivityAvailable": {
+        "Method": "",
+        "Uri": ""
+      },
+      "CustomApiActivityInACall": {
+        "Method": "",
+        "Uri": ""
+      },
+      "CustomApiActivityInAMeeting": {
+        "Method": "",
+        "Uri": ""
+      },
+      "CustomApiActivityPresenting": {
+        "Method": "",
+        "Uri": ""
+      },
+      "CustomApiActivityBusy": {
+        "Method": "",
+        "Uri": ""
+      },
+      "CustomApiActivityAway": {
+        "Method": "",
+        "Uri": ""
+      },
+      "CustomApiAvailableIdle": {
+        "Method": "",
+        "Uri": ""
+      },
+      "CustomApiActivityBeRightBack": {
+        "Method": "",
+        "Uri": ""
+      },
+      "CustomApiActivityDoNotDisturb": {
+        "Method": "",
+        "Uri": ""
+      },
+      "CustomApiActivityIdle": {
+        "Method": "",
+        "Uri": ""
+      },
+      "CustomApiActivityOffline": {
+        "Method": "",
+        "Uri": ""
+      },
+      "CustomApiActivityOff": {
+        "Method": "",
+        "Uri": ""
+      },
+      "CustomApiTimeout": 100
+    },
+    "Wiz": {
+      "SelectedItemId": "",
+      "Brightness": 100,
+      "IsEnabled": false,
+      "UseActivityStatus": false,
+      "Statuses": {
+        "AvailabilityAvailableStatus": {
+          "Disabled": false,
+          "Colour": "#00ff55"
+        },
+        "AvailabilityAvailableIdleStatus": {
+          "Disabled": false,
+          "Colour": "#FFFF00"
+        },
+        "AvailabilityAwayStatus": {
+          "Disabled": false,
+          "Colour": "#FFFF00"
+        },
+        "AvailabilityBeRightBackStatus": {
+          "Disabled": false,
+          "Colour": "#FFFF00"
+        },
+        "AvailabilityBusyStatus": {
+          "Disabled": false,
+          "Colour": "#FF3300"
+        },
+        "AvailabilityBusyIdleStatus": {
+          "Disabled": false,
+          "Colour": "#FFFF00"
+        },
+        "AvailabilityDoNotDisturbStatus": {
+          "Disabled": false,
+          "Colour": "#B03CDE"
+        },
+        "AvailabilityOfflineStatus": {
+          "Disabled": false,
+          "Colour": "#FFFFFF"
+        },
+        "AvailabilityPresenceUnknownStatus": {
+          "Disabled": false,
+          "Colour": "#FFFFFF"
+        },
+        "AvailabilityOffStatus": {
+          "Disabled": false,
+          "Colour": "#FFFFFF"
+        },
+        "ActivityAvailableStatus": {
+          "Disabled": false,
+          "Colour": "#4f824f"
+        },
+        "ActivityAwayStatus": {
+          "Disabled": false,
+          "Colour": "#ffff00"
+        },
+        "ActivityBeRightBackStatus": {
+          "Disabled": false,
+          "Colour": "#ffff00"
+        },
+        "ActivityBusyStatus": {
+          "Disabled": false,
+          "Colour": "#ff0000"
+        },
+        "ActivityDoNotDisturbStatus": {
+          "Disabled": false,
+          "Colour": "#960000"
+        },
+        "ActivityInACallStatus": {
+          "Disabled": false,
+          "Colour": "#ff0000"
+        },
+        "ActivityInAConferenceCallStatus": {
+          "Disabled": false,
+          "Colour": "#ff00d4"
+        },
+        "ActivityInactiveStatus": {
+          "Disabled": false,
+          "Colour": "#ffff00"
+        },
+        "ActivityInAMeetingStatus": {
+          "Disabled": false,
+          "Colour": "#ff0000"
+        },
+        "ActivityOfflineStatus": {
+          "Disabled": false,
+          "Colour": "#FFFFFF"
+        },
+        "ActivityOffWorkStatus": {
+          "Disabled": false,
+          "Colour": "#FFFFFF"
+        },
+        "ActivityOutOfOfficeStatus": {
+          "Disabled": false,
+          "Colour": "#ae00ff"
+        },
+        "ActivityPresenceUnknownStatus": {
+          "Disabled": false,
+          "Colour": "#FFFFFF"
+        },
+        "ActivityPresentingStatus": {
+          "Disabled": false,
+          "Colour": "#960000"
+        },
+        "ActivityUrgentInterruptionsOnlyStatus": {
+          "Disabled": false,
+          "Colour": "#560061"
+        },
+        "ActivityOffStatus": {
+          "Disabled": false,
+          "Colour": "#FFFFFF"
+        }
       }
     }
   }
