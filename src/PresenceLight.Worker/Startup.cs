@@ -80,7 +80,6 @@ namespace PresenceLight.Worker
             services.AddServerSideBlazor()
                 .AddMicrosoftIdentityConsentHandler();
 
-
             services.AddBlazorise(options =>
             {
                 options.ChangeTextOnKeyPress = true;
