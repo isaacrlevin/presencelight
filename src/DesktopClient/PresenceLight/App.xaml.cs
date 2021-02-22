@@ -140,7 +140,13 @@ namespace PresenceLight
 
             services.AddSingleton<LIFXOAuthHelper, LIFXOAuthHelper>();
             services.AddSingleton<ThisAppInfo, ThisAppInfo>();
-            services.AddSingleton<MainWindow>();
+
+
+
+            //services.AddSingleton<MainWindow>();
+            services.AddSingleton<MainWindowModern>();
+
+
 
             if (Convert.ToBoolean(Configuration["IsAppPackaged"], CultureInfo.InvariantCulture))
             {
@@ -164,7 +170,8 @@ namespace PresenceLight
                 b.UseSampling(fixedSamplingPercentage);
                 b.Build();
             }
-            var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
+
+            var mainWindow = ServiceProvider.GetRequiredService<MainWindowModern>();
             mainWindow.Show();
         }
 

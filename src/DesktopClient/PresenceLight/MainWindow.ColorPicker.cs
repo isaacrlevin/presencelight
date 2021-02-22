@@ -42,7 +42,6 @@ namespace PresenceLight
             }
         }
 
-
         private async void SetColor_Click(object sender, RoutedEventArgs e)
         {
             try
