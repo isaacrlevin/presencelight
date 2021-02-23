@@ -34,7 +34,7 @@ namespace PresenceLight
             {
                 yeelight.pnlYeelightData.Visibility = Visibility.Collapsed;
                 
-                var deviceGroup = await _mediator.Send(new Core.YeelightServices.FindLightsCommand()).ConfigureAwait(true);
+                var deviceGroup = await _mediator.Send(new Core.YeelightServices.GetLightCommand()).ConfigureAwait(true);
 
                 yeelight.ddlYeelightLights.ItemsSource = deviceGroup.ToList();
                 yeelight.pnlYeelightData.Visibility = Visibility.Visible;
@@ -76,7 +76,7 @@ namespace PresenceLight
                 {
                     SyncOptions();
 
-                    yeelight.ddlYeelightLights.ItemsSource = await _mediator.Send(new Core.YeelightServices.FindLightsCommand()).ConfigureAwait(true);
+                    yeelight.ddlYeelightLights.ItemsSource = await _mediator.Send(new Core.YeelightServices.GetLightCommand()).ConfigureAwait(true);
 
                     foreach (var item in yeelight.ddlYeelightLights.Items)
                     {

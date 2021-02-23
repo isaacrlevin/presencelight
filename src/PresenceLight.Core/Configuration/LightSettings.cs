@@ -1,8 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
-
-using Microsoft.Graph.TermStore;
 
 using Newtonsoft.Json;
 
@@ -33,8 +29,6 @@ namespace PresenceLight.Core
 
         public string WorkingHoursEndTime { get; set; }
 
-   
-
         public double PollingInterval { get; set; }
 
         public bool UseDefaultBrightness { get; set; }
@@ -46,5 +40,7 @@ namespace PresenceLight.Core
         public Hue Hue { get; set; }
 
         public Yeelight Yeelight { get; set; }
+
+        public Wiz Wiz { get; set; }
     }
 }
