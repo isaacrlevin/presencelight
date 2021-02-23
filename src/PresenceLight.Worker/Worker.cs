@@ -21,7 +21,7 @@ namespace PresenceLight.Worker
         private readonly AppState _appState;
         private readonly ILogger<Worker> _logger;
 
-      
+
         private MediatR.IMediator _mediator;
         private GraphServiceClient c;
         private IWorkingHoursService _workingHoursService;
@@ -36,7 +36,7 @@ namespace PresenceLight.Worker
             Config = optionsAccessor.CurrentValue;
             _workingHoursService = workingHoursService;
             _mediator = mediator;
-             
+
             _logger = logger;
             _appState = appState;
         }
@@ -255,7 +255,6 @@ namespace PresenceLight.Worker
                                 LightId = Config.LightSettings.Hue.SelectedItemId,
                                 BridgeId = Config.LightSettings.Hue.RemoteBridgeId
                             }).ConfigureAwait(true);
-
                         }
                     }
                     else
@@ -272,9 +271,7 @@ namespace PresenceLight.Worker
 
                 if (Config.LightSettings.Yeelight.IsEnabled && !string.IsNullOrEmpty(Config.LightSettings.Yeelight.SelectedItemId))
                 {
-                   
                     await _mediator.Send(new PresenceLight.Core.YeelightServices.SetColorCommand { Activity = activity, Availability = color, LightId = Config.LightSettings.Yeelight.SelectedItemId }).ConfigureAwait(true);
-
                 }
 
                 if (Config.LightSettings.CustomApi.IsEnabled)
@@ -284,7 +281,16 @@ namespace PresenceLight.Worker
                         Activity = activity,
                         Availability = color
                     });
+                }
 
+                if (Config.LightSettings.Wiz.IsEnabled)
+                {
+                    await _mediator.Send(new Core.WizServices.SetColorCommand
+                    {
+                        Activity = activity,
+                        Availability = color,
+                        LightID = Config.LightSettings.Wiz.SelectedItemId
+                    });
                 }
             }
             catch (Exception e)

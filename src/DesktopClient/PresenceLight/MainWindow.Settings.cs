@@ -25,7 +25,7 @@ namespace PresenceLight
                 bool useWorkingHours = await _mediator.Send(new Core.WorkingHoursServices.UseWorkingHoursCommand());
                 bool IsInWorkingHours = await _mediator.Send(new Core.WorkingHoursServices.IsInWorkingHoursCommand());
 
-                if (useWorkingHours)
+                if (useWorkingHours) 
                 {
                     settings.pnlWorkingHours.Visibility = Visibility.Visible;
                     SyncOptions();
@@ -56,6 +56,16 @@ namespace PresenceLight
                 else
                 {
                     yeelight.pnlYeelight.Visibility = Visibility.Collapsed;
+                }
+
+                if (Config.LightSettings.Wiz.IsEnabled)
+                {
+                    wiz.pnlWiz.Visibility = Visibility.Visible;
+                    SyncOptions();
+                }
+                else
+                {
+                    wiz.pnlWiz.Visibility = Visibility.Collapsed;
                 }
 
                 if (Config.LightSettings.LIFX.IsEnabled)
