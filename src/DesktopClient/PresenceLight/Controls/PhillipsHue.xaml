@@ -7,7 +7,7 @@
              xmlns:gif="http://wpfanimatedgif.codeplex.com"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="500" d:DesignWidth="800">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="50"/>
@@ -38,43 +38,55 @@
                 <RowDefinition Height="30" />
                 <RowDefinition Height="46" />
                 <RowDefinition Height="60"/>
+                <RowDefinition Height="60"/>
                 <RowDefinition Height="*" />
-                <RowDefinition Height="150" />
+                <RowDefinition Height="100" />
             </Grid.RowDefinitions>
             <Label Grid.Row="1" Grid.Column="0"  Content="Hue Bridge IP Address" />
             <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding LightSettings.Hue.HueIpAddress}" x:Name="hueIpAddress" HorizontalAlignment="Center" Height="23"  TextWrapping="Wrap" VerticalAlignment="Center" Width="120" TextChanged="HueIpAddress_TextChanged"/>
             <Button Grid.Row="1" VerticalAlignment="Center" x:Name="btnFindBridge" HorizontalAlignment="Left" Grid.Column="1" Height="23" Width="120" Content="Find Bridge" Click="FindBridge_Click" Grid.ColumnSpan="2" Margin="214,0,0,0"/>
 
-            <Button Grid.Row="2" Grid.Column="1" x:Name="btnRegister" Height="23" Width="120" HorizontalAlignment="Left" Content="Register Bridge"  Click="RegisterBridge_Click" Grid.ColumnSpan="2" Margin="214,11,0,11"/>
+            <Button Grid.Row="2" Grid.Column="1" x:Name="btnRegister" Height="23" Width="120" HorizontalAlignment="Left" Content="Register Bridge"  Click=" RegisterBridge_Click" Grid.ColumnSpan="2" Margin="214,11,0,11"/>
 
             <Label Grid.Row="3" VerticalAlignment="Top" Grid.Column="1" HorizontalAlignment="Center" Margin="0,0,0,0" >
                 <TextBlock  x:Name="lblHueMessage" TextWrapping="Wrap"   TextAlignment="Center">
                 </TextBlock>
             </Label>
 
-            <Grid x:Name="pnlHueData"   Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="3" Margin="0,0,0,0">
+            <Grid Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Row="2" Grid.Column="0" VerticalAlignment="Top" x:Name="btnGetHueLights" Click="CheckHue_Click" Height="45" Width="170" Content="Get Lights" />
+                <Button Grid.Row="2" Grid.Column="1" VerticalAlignment="Top" x:Name="btnGetHueGroups" Click="CheckHue_Click" Height="45" Width="170" Content="Get Groups" />
+            </Grid>
+
+            <Grid x:Name="pnlHueData"   Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="3" Margin="0,0,0,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="80"/>
                     <RowDefinition Height="50"/>
                     <RowDefinition Height="50"/>
                     <RowDefinition Height="50"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <Grid x:Name="pnlHueLights"   Grid.Column="0" Grid.Row="0" Margin="0,0,0,0" Grid.RowSpan="4">
+                <Grid x:Name="pnlHueLights"   Grid.Column="0" Grid.Row="0" Margin="0,0,0,0" Grid.RowSpan="2">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="100"/>
+                        <RowDefinition Height="20"/>
+                        <RowDefinition Height="120"/>
                     </Grid.RowDefinitions>
 
-                    <Label Grid.Row="0" Grid.Column="0" VerticalAlignment="Top" Margin="0,9,214,0" Content="Light" Grid.ColumnSpan="2" Grid.RowSpan="2" />
-                    <ComboBox Grid.Row="0" Grid.Column="1" x:Name="ddlHueLights" DisplayMemberPath="Name" SelectionChanged="ddlHueLights_SelectionChanged"  HorizontalAlignment="Center" VerticalAlignment="Top" Width="150" Margin="0,11,0,0" Grid.RowSpan="2"/>
+                    <Label Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" x:Name="hueItemType"  VerticalAlignment="Top" Margin="0,0,0,0" Content=""  Grid.RowSpan="2" />
+                    <ComboBox Grid.Row="2" Grid.Column="1" x:Name="ddlHueLights" DisplayMemberPath="Name" SelectionChanged="ddlHueLights_SelectionChanged"  HorizontalAlignment="Center" VerticalAlignment="Top" Width="150" Margin="0,11,0,0" Grid.RowSpan="2"/>
 
                 </Grid>
 
@@ -227,9 +239,9 @@
                 </Grid>
             </Grid>
 
-            <Image Grid.Row="4" Grid.Column="1" x:Name="imgHueLoading" Visibility="Collapsed" gif:ImageBehavior.AnimatedSource="../Icons/loading.gif" Width="75" Margin="70,42,69,215" Grid.RowSpan="4"  />
-            <Button Grid.Row="5" VerticalAlignment="Center" Grid.Column="1" x:Name="btnHue" Height="45" Width="170" Content="Save"  Click="SaveHue_Click" />
-            <Label Grid.Row="5"  VerticalAlignment="Top" Grid.Column="1" x:Name="lblHueSaved" HorizontalAlignment="Center" Visibility="Visible" Content="Settings Updated" Foreground="Green" Margin="0,0,0,0" Grid.RowSpan="2" />
+            <Image Grid.Row="5" Grid.Column="1" x:Name="imgHueLoading" Visibility="Collapsed" gif:ImageBehavior.AnimatedSource="../Icons/loading.gif" Width="75" Margin="70,42,69,215" Grid.RowSpan="4"  />
+            <Button Grid.Row="6" VerticalAlignment="Center" Grid.Column="1" x:Name="btnHue" Height="45" Width="170" Content="Save"  Click="SaveHue_Click" />
+            <Label Grid.Row="6"  VerticalAlignment="Top" Grid.Column="1" x:Name="lblHueSaved" HorizontalAlignment="Center" Visibility="Visible" Content="Settings Updated" Foreground="Green" Margin="0,0,0,0" Grid.RowSpan="2" />
         </Grid>
     </Grid>
 </UserControl>

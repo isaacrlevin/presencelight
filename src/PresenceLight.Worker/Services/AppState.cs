@@ -14,7 +14,7 @@ namespace PresenceLight.Worker
 
         public User User { get; set; }
 
-        public IEnumerable<Q42.HueApi.Light> HueLights { get; set; }
+        public IEnumerable<object> HueLights { get; set; }
 
         public string HueLightId { get; set; }
 
@@ -76,7 +76,7 @@ namespace PresenceLight.Worker
             NotifyStateChanged();
         }
 
-        public void SetHueLights(IEnumerable<Q42.HueApi.Light> lights)
+        public void SetHueLights(IEnumerable<object> lights)
         {
             HueLights = lights;
             NotifyStateChanged();

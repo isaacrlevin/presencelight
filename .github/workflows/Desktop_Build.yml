@@ -2,20 +2,20 @@ on:
   push:
     branches: [ main ]
     paths-ignore:
-    - .github/workflows/Worker_Build.yml
-    - src/PresenceLight.Worker/*
-    - src/DockerFiles/*
-    - README.md
-    - worker-README.md
+    - '.github/workflows/Worker_Build.yml'
+    - 'src/PresenceLight.Worker/**'
+    - 'src/DockerFiles/**'
+    - 'README.md'
+    - 'worker-README.md'
 
   pull_request:
     branches: [ main ]
     paths-ignore:
-    - .github/workflows/Worker_Build.yml
-    - src/PresenceLight.Worker/*
-    - src/DockerFiles/*
-    - README.md
-    - worker-README.md
+    - '.github/workflows/Worker_Build.yml'
+    - 'src/PresenceLight.Worker/**'
+    - 'src/DockerFiles/**'
+    - 'README.md'
+    - 'worker-README.md'
 jobs:
 
   Build_WPF:
@@ -66,6 +66,8 @@ jobs:
     - name: Add Version File to Artifact
       run : |
         New-Item -Path ${{ github.workspace }}\.chocolatey -Name "version.txt" -ItemType "file" -Value "${{ env.GitBuildVersionSimple }}"
+
+        New-Item -Path ${{ github.workspace }}\Build -Name "version.txt" -ItemType "file" -Value "${{ env.GitBuildVersionSimple }}"
 
         New-Item -Path ${{ github.workspace }}\${{ matrix.ChannelName }} -Name "version.txt" -ItemType "file" -Value "${{ env.GitBuildVersionSimple }}"
       shell: powershell
@@ -449,7 +451,7 @@ jobs:
           # Hash the Zip Files
           mkdir "${{ github.workspace }}\Download"
           Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x86.zip" -OutFile "${{ github.workspace }}\\Download\\PresenceLight.${{ env.VERSION }}-x86.zip"
-          Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x86.zip" -OutFile "${{ github.workspace }}\\Download\\PresenceLight.${{ env.VERSION }}-x64.zip"
+          Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x64.zip" -OutFile "${{ github.workspace }}\\Download\\PresenceLight.${{ env.VERSION }}-x64.zip"
           $hash64=Get-Filehash ${{ github.workspace }}\\Download\\PresenceLight.${{ env.VERSION }}-x64.zip
           $hash86=Get-Filehash ${{ github.workspace }}\\Download\\PresenceLight.${{ env.VERSION }}-x86.zip
 
@@ -483,7 +485,71 @@ jobs:
           }
         shell: powershell
 
+  Deploy_WinGet:
+    needs: Deploy_GitHub_Release
+    if: ${{ github.event_name != 'pull_request' }}
+    environment:
+        name: Deploy_WinGet
+        url: ${{ steps.deploy_staging.outputs.webapp-url }}
+    name: Deploy WPF WinGet
+    runs-on: windows-latest
+    env:
+      GitHubReleaseUrl: https://github.com/isaacrlevin/presencelight/releases/download/Desktop-
+    steps:
+      - uses: actions/download-artifact@v2
+        name: Download Signing Scripts Artifacts
+        with:
+          name: SigningScripts
+          path: "${{ github.workspace }}\\SigningScripts"
 
+      - name: Get Version from File
+        run: |
+          version=$(<"${{ github.workspace }}\\Build\\version.txt")
+          echo "VERSION=$version" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Update Winget Yaml
+        run: |
+          # Hash the Zip Files
+          mkdir "${{ github.workspace }}\Download"
+          
+          Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x64.zip" -OutFile "${{ github.workspace }}\\Download\\PresenceLight.${{ env.VERSION }}-x64.zip"
+          $hash64=Get-Filehash ${{ github.workspace }}\\Download\\PresenceLight.${{ env.VERSION }}-x64.zip
+          
+          # Update winget.yaml
+          $yaml = Get-Content -path "${{ github.workspace }}\\Build\\winget.yaml"
+          $yaml = $yaml -replace '{x64Link}' , "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x64.zip"
+          $yaml = $yaml -replace '{HASHx64}', $hash64.Hash
+          $yaml = $yaml -replace '{VERSION}', ${{ env.VERSION }}
+          $yaml | Set-Content -Path "${{ github.workspace }}\\Build\\${{ env.VERSION }}.yaml"
+        shell: powershell
+
+      - name: Add Version File to Artifact
+        run : |
+          New-Item -Path ${{ github.workspace }} -Name "token.txt" -ItemType "file" -Value "${{ secrets.GHCliToken }}"
+        shell: powershell
+
+      - name: Install GH Cli
+        run: |
+          choco.exe install gh
+
+      - name: GitHub Cli
+        run: |
+          gh auth login --with-token < "${{ github.workspace }}\\token.txt"
+          gh repo fork microsoft/winget-pkgs --clone=true --remote=true
+          Copy-Item "${{ github.workspace }}\\Build\\${{ env.VERSION }}.yaml" -Destination "${{ github.workspace }}\\winget-pkgs\\manifests\\isaaclevin\\presencelight" -Recurse -Verbose
+          
+          cd "${{ github.workspace }}\\winget-pkgs"
+
+          git config --global user.email "github-action@microsoft.com"
+          git config --global user.name "GitHub Action"
+
+          git add .
+          git commit -m "Submitting  PresenceLight version ${{ env.VERSION }}.yaml"
+          git push
+
+          gh pr create --title "Submitting  PresenceLight version ${{ env.VERSION }}.yaml" -R microsoft/winget-pkgs
+ 
   Deploy_Store:
     needs: Deploy_Azure_Blob
     if: ${{ github.event_name != 'pull_request' }}

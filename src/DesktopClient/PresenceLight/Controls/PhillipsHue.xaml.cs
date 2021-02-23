@@ -34,6 +34,7 @@ namespace PresenceLight.Controls
         public event EventHandler<RoutedEventArgs>? onSaveHueClick;
         public event EventHandler<RoutedEventArgs>? onHueApiKeyGet;
         public event EventHandler<RoutedEventArgs>? onRegisterBridgeClick;
+        public event EventHandler<RoutedEventArgs>? onCheckHueClick;
         public event EventHandler<TextChangedEventArgs>? onHueIpAddressTextChanged;
         public event EventHandler<SelectionChangedEventArgs>? onddlHueLightsSelectionChanged;
 
@@ -97,6 +98,17 @@ namespace PresenceLight.Controls
             }
             await Task.CompletedTask;
         }
+
+        private async void CheckHue_Click(object sender, RoutedEventArgs e)
+        {
+            var handler = onCheckHueClick;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+            await Task.CompletedTask;
+        }
+
         private async void HueIpAddress_TextChanged(object sender, TextChangedEventArgs e)
         {
             var handler = onHueIpAddressTextChanged;
