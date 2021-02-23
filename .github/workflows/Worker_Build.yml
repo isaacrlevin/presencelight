@@ -3,20 +3,20 @@ on:
   push:
     branches: [ main ]
     paths-ignore:
-    - .github/workflows/Desktop_Build.yml
-    - src/DesktopClient/*
-    - README.md
-    - desktop-README.md
-    - Build/PublishStore/*
+    - '.github/workflows/Desktop_Build.yml'
+    - 'src/DesktopClient/**'
+    - 'README.md'
+    - 'desktop-README.md'
+    - 'Build/PublishStore/**'
 
   pull_request:
     branches: [ main ]
     paths-ignore:
-    - .github/workflows/Desktop_Build.yml
-    - src/DesktopClient/*
-    - README.md
-    - desktop-README.md
-    - Build/PublishStore/*
+    - '.github/workflows/Desktop_Build.yml'
+    - 'src/DesktopClient/**'
+    - 'README.md'
+    - 'desktop-README.md'
+    - 'Build/PublishStore/**'
 
 jobs:
   Build_Worker:
