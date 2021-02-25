@@ -84,7 +84,7 @@
                             </ui:NavigationViewItem.Icon>
                         </ui:NavigationViewItem>
 
-                        <ui:NavigationViewItem Content="Yeelight">
+                        <ui:NavigationViewItem Content="Yeelight" Tag="{x:Type pages:Yeelight }">
                             <ui:NavigationViewItem.Icon>
                                 <ui:FontIcon Glyph="&#xE82F;" />
                             </ui:NavigationViewItem.Icon>

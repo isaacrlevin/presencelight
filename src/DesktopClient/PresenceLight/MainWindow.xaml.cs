@@ -45,11 +45,11 @@ namespace PresenceLight
         private LIFXOAuthHelper _lIFXOAuthHelper;
 
 
-         
+
         private readonly IGraphService _graphservice;
-        private DiagnosticsClient _diagClient; 
+        private DiagnosticsClient _diagClient;
         private IWorkingHoursService _workingHoursService;
-        private WindowState lastWindowState ;
+        private WindowState lastWindowState;
         private bool previousRemoteFlag;
         private readonly ILogger<MainWindow> _logger;
 
@@ -60,18 +60,18 @@ namespace PresenceLight
                           IOptionsMonitor<BaseConfig> optionsAccessor,
                           LIFXOAuthHelper lifxOAuthHelper,
                           DiagnosticsClient diagClient,
-                          ILogger<MainWindow> logger, 
+                          ILogger<MainWindow> logger,
                           ISettingsService settingsService)
         {
             _logger = logger;
             InitializeComponent();
             System.Windows.Application.Current.SessionEnding += new SessionEndingCancelEventHandler(Current_SessionEnding);
-             
+
 
             _workingHoursService = workingHoursService;
             _graphservice = graphService;
-           
- 
+
+
 
             _mediator = mediator;
             _options = optionsAccessor != null ? optionsAccessor.CurrentValue : throw new NullReferenceException("Options Accessor is null");
@@ -96,14 +96,13 @@ namespace PresenceLight
         }, TaskScheduler.Current);
         }
 
-     
+
         private void LoadApp()
         {
             try
             {
                 CheckHue(true);
                 CheckLIFX();
-                CheckYeelight();
                 CheckAAD();
 
                 previousRemoteFlag = Config.LightSettings.Hue.UseRemoteApi;
@@ -203,7 +202,7 @@ namespace PresenceLight
                 });
 
             }
-            
+
 
             landingPage.signInPanel.Visibility = Visibility.Collapsed;
             lightColors.lblTheme.Visibility = Visibility.Collapsed;
@@ -571,10 +570,8 @@ namespace PresenceLight
 
         private void TabControl_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            yeelight.lblYeelightSaved.Visibility = Visibility.Collapsed;
             phillipsHue.lblHueSaved.Visibility = Visibility.Collapsed;
             lifx.lblLIFXSaved.Visibility = Visibility.Collapsed;
-            //customapi.lblCustomApiSaved.Visibility = Visibility.Collapsed;
             settings.lblSettingSaved.Visibility = Visibility.Collapsed;
         }
 

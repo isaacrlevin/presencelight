@@ -25,7 +25,7 @@ namespace PresenceLight.Services
         {
           
         }
-        protected void SyncOptions()
+        protected internal static void SyncOptions()
         {
             PropertyInfo[] properties = typeof(BaseConfig).GetProperties();
             foreach (PropertyInfo property in properties)

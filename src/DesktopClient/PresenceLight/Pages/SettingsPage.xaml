@@ -14,7 +14,7 @@
         <local:AppThemeConverter x:Key="AppThemeConverter" />
     </Page.Resources>
 
-    <ScrollViewer>
+    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
         <Grid Margin="24,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="50"/>

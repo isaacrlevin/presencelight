@@ -38,16 +38,7 @@
                                 onSaveHueClick="SaveHue_Click"
                                 />
             </TabItem>
-            <TabItem Header="Configure Yeelight" >
-                <lc:Yeelight x:Name="yeelight"
-                             oncblsYeelightEnabledChanged="cbIsYeelightEnabledChanged"
-                             oncbUseYeelightActivityStatus="cbUseYeelightActivityStatus"
-                             oncbYeelightIsDisabledChange="cbYeelightIsDisabledChange"
-                            onddlYeelightLightsSelectionChanged="ddlYeelightLights_SelectionChanged"
-                             onFindYeelightsClick="FindYeelights_Click"
-                             onSaveYeelightsClick="SaveYeelight_Click"
-/>
-            </TabItem>
+           
             <TabItem Header="Configure LIFX" >
                 <lc:LIFX x:Name="lifx"
                          oncbIsLIFXEnabledChanged="cbIsLIFXEnabledChanged"

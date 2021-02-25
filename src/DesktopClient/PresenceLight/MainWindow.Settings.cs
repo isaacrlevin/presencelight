@@ -48,16 +48,7 @@ namespace PresenceLight
                     phillipsHue.pnlHueApi.Visibility = Visibility.Collapsed;
                 }
 
-                if (Config.LightSettings.Yeelight.IsEnabled)
-                {
-                    yeelight.pnlYeelight.Visibility = Visibility.Visible;
-                    SyncOptions();
-                }
-                else
-                {
-                    yeelight.pnlYeelight.Visibility = Visibility.Collapsed;
-                }
-
+               
                 if (Config.LightSettings.LIFX.IsEnabled)
                 {
                     if (!string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXClientId) && !(string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXClientSecret)))

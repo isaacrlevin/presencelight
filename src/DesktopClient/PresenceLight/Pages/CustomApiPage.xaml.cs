@@ -66,6 +66,8 @@ namespace PresenceLight.Pages
                 ? Visibility.Visible
                 : Visibility.Collapsed;
 
+            SettingsHandlerBase.SyncOptions();
+
             e.Handled = true;
         }
 
