@@ -60,8 +60,11 @@ namespace PresenceLight.Pages
             }
         }
         private void cbIsCustomApiEnabledChanged(object sender, RoutedEventArgs e)
-        {           
-            pnlCustomApi.Visibility = SettingsHandlerBase.Config.LightSettings.CustomApi.IsEnabled ? Visibility.Visible : Visibility.Collapsed;
+        {
+             
+            pnlCustomApi.Visibility = (SettingsHandlerBase.Config.LightSettings.CustomApi.IsEnabled = (sender as CheckBox)?.IsChecked ?? false)
+                ? Visibility.Visible
+                : Visibility.Collapsed;
 
             e.Handled = true;
         }

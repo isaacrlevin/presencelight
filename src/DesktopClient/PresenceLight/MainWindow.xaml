@@ -61,13 +61,7 @@
 
                          />
             </TabItem>
-            <TabItem Header="Configure Custom API" >
-                <lc:CustomApi x:Name="customapi"
-                              onbtnApiSettingsSaveClick="btnApiSettingsSave_Click"
-                              oncbIsCustomApiEnabledChanged="cbIsCustomApiEnabledChanged"
-                              oncustomApiMethodSelectionChanged="customApiMethod_SelectionChanged"
-                              />
-            </TabItem>
+           
             <TabItem Header="Settings" >
                 <lc:Settings x:Name="settings"
                              oncbSyncLights="cbSyncLights"
@@ -76,12 +70,7 @@
                              onSaveSettingsClick="SaveSettings_Click"
                              ontimeValueChanged="time_ValueChanged"/>
             </TabItem>
-            <!--<TabItem Header="Logs" >
-                <l:LogsPage x:Name="logs"/>
-            </TabItem>-->
-            <TabItem Header="About" >
-                <lc:About x:Name="about" onHyperlinkRequestNavigate="Hyperlink_RequestNavigate" />
-            </TabItem>
+          
         </TabControl>
     </Grid>
 </Window>

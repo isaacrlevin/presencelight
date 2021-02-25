@@ -66,8 +66,7 @@ namespace PresenceLight
             _logger = logger;
             InitializeComponent();
             System.Windows.Application.Current.SessionEnding += new SessionEndingCancelEventHandler(Current_SessionEnding);
-
-            LoadAboutMe();
+             
 
             _workingHoursService = workingHoursService;
             _graphservice = graphService;
@@ -97,17 +96,7 @@ namespace PresenceLight
         }, TaskScheduler.Current);
         }
 
-        private void LoadAboutMe()
-        {
-            about.packageName.Text = ThisAppInfo.GetDisplayName();
-            about.packageVersion.Text = ThisAppInfo.GetPackageVersion();
-            about.installedFrom.Text = ThisAppInfo.GetAppInstallerUri();
-            about.installLocation.Text = ThisAppInfo.GetInstallLocation();
-            about.settingsLocation.Text = ThisAppInfo.GetSettingsLocation();
-            about.installedDate.Text = ThisAppInfo.GetInstallationDate();
-            about.RuntimeVersionInfo.Text = ThisAppInfo.GetDotNetRuntimeInfo();
-        }
-
+     
         private void LoadApp()
         {
             try
