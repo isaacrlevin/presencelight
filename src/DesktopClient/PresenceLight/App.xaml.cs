@@ -151,11 +151,13 @@ namespace PresenceLight
                 try
                 {
                     await Host.StartAsync();
-                    var mainWindow = Host.Services.GetRequiredService<MainWindowModern>();
 
                     SettingsHandlerBase.Options = Host.Services.GetRequiredService<IOptionsMonitor<BaseConfig>>().CurrentValue;
                     SettingsHandlerBase.Config = Host.Services.GetRequiredService<IOptionsMonitor<BaseConfig>>().CurrentValue;
+                    SettingsHandlerBase.Config.LightSettings.WorkingHoursStartTimeAsDate = string.IsNullOrEmpty(SettingsHandlerBase.Config.LightSettings.WorkingHoursStartTime) ? null : DateTime.Parse(SettingsHandlerBase.Config.LightSettings.WorkingHoursStartTime, null);
+                    SettingsHandlerBase.Config.LightSettings.WorkingHoursEndTimeAsDate = string.IsNullOrEmpty(SettingsHandlerBase.Config.LightSettings.WorkingHoursEndTime) ? null : DateTime.Parse(SettingsHandlerBase.Config.LightSettings.WorkingHoursEndTime, null);
 
+                    var mainWindow = Host.Services.GetRequiredService<MainWindowModern>();
 
 
                     Log.Debug("Starting PresenceLight");

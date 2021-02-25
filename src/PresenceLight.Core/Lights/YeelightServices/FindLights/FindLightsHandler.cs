@@ -7,10 +7,10 @@ using YeelightAPI;
 
 namespace PresenceLight.Core.YeelightServices
 {
-    internal class FindLightsHandler : IRequestHandler<FindLightsCommand, DeviceGroup>
+    internal class GetLightsHandler : IRequestHandler<FindLightsCommand, DeviceGroup>
     {
         IYeelightService _service;
-        public FindLightsHandler(IYeelightService service)
+        public GetLightsHandler(IYeelightService service)
         {
             _service = service;
         }

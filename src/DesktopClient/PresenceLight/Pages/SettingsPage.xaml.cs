@@ -19,6 +19,9 @@ using Microsoft.Extensions.Logging;
 using PresenceLight.Services;
 using PresenceLight.Telemetry;
 
+
+using ModernWpf;
+
 namespace PresenceLight.Pages
 {
     /// <summary>
@@ -41,10 +44,94 @@ namespace PresenceLight.Pages
 
             InitializeComponent();
 
-            LoadSettings();
+         
+
+            switch (SettingsHandlerBase.Config.Theme)
+            {
+                case "Light":
+                    themeLight.IsChecked = true;
+                    break;
+                case "Dark":
+                    themeDark.IsChecked = true;
+                    break;
+                case "Use system setting":
+                    themeDefault.IsChecked = true;
+                    break;
+                default:
+                    themeDefault.IsChecked = true;
+                    break;
+            }
+            if (SettingsHandlerBase.Config.IconType == "Transparent")
+            {
+                Transparent.IsChecked = true;
+            }
+            else
+            {
+                 White.IsChecked = true;
+            }
+
+            switch (SettingsHandlerBase.Config.LightSettings.HoursPassedStatus)
+            {
+                case "Keep":
+                    HourStatusKeep.IsChecked = true;
+                    break;
+                case "White":
+                    HourStatusWhite.IsChecked = true;
+                    break;
+                case "Off":
+                   HourStatusOff.IsChecked = true;
+                    break;
+                default:
+                  HourStatusKeep.IsChecked = true;
+                    break;
+            }
+            if (SettingsHandlerBase.Config.IconType == "Transparent")
+            {
+                Transparent.IsChecked = true;
+            }
+            else
+            {
+                
+                White.IsChecked = true;
+            }
         }
 
-        private async void LoadSettings()
+        private void OnThemeToggle(object sender, RoutedEventArgs e)
+        {
+            if (themeDark.IsChecked.Value)
+            {
+                SettingsHandlerBase.Config.Theme = "Dark";
+            }
+
+            if (themeDefault.IsChecked.Value)
+            {
+                SettingsHandlerBase.Config.Theme = "Use default setting";
+            }
+
+            if (themeLight.IsChecked.Value)
+            {
+                SettingsHandlerBase.Config.Theme = "Light";
+            }
+
+            switch (SettingsHandlerBase.Config.Theme)
+            {
+                case "Light":
+                    ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
+                    break;
+                case "Dark":
+                    ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
+                    break;
+                case "Use system setting":
+                    ThemeManager.Current.ApplicationTheme = null;
+                    break;
+                default:
+                    ThemeManager.Current.ApplicationTheme = null;
+                    break;
+            }
+        }
+
+
+        private async Task LoadSettings()
         {
             try
             {

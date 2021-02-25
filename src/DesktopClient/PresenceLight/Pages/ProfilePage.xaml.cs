@@ -33,7 +33,7 @@ namespace PresenceLight.Pages
         private MediatR.IMediator _mediator;
         private readonly IGraphService _graphservice;
         private Presence presence { get; set; }
-    
+
         private DateTime settingsLastSaved = DateTime.MinValue;
         public static string LightMode { get; set; }
         ILogger _logger;
@@ -44,10 +44,22 @@ namespace PresenceLight.Pages
             _logger = App.Host.Services.GetRequiredService<ILogger<ProfilePage>>();
             _graphservice = App.Host.Services.GetRequiredService<IGraphService>();
             parentWindow = System.Windows.Application.Current.Windows.OfType<MainWindowModern>().First();
-
             InitializeComponent();
-        }
 
+            notificationIcon.Text = PresenceConstants.Inactive;
+            notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(String.Empty, IconConstants.Inactive)));
+
+            turnOffButton.Visibility = Visibility.Collapsed;
+            turnOnButton.Visibility = Visibility.Collapsed;
+
+           
+        }
+        protected override void Start()
+        {
+            CheckAAD();
+            CallGraph().ConfigureAwait(true);
+            base.Start();
+        }
         #region Profile Panel
 
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
@@ -89,7 +101,7 @@ namespace PresenceLight.Pages
             {
                 var (profile, presence) = await _mediator.Send(new Core.GraphServices.GetProfileAndPresenceCommand());
                 var photo = await _mediator.Send(new GetPhotoCommand()).ConfigureAwait(true);
-                
+
 
                 if (photo == null)
                 {
@@ -235,8 +247,8 @@ namespace PresenceLight.Pages
                         {
                             case "Graph":
                                 _logger.LogInformation("PresenceLight Running in Teams Mode");
-                                presence =  await _mediator.Send(new Core.GraphServices.GetPresenceCommand());
-                                
+                                presence = await _mediator.Send(new Core.GraphServices.GetPresenceCommand());
+
                                 if (newColor == string.Empty)
                                 {
 
@@ -253,7 +265,7 @@ namespace PresenceLight.Pages
                                 if (DateTime.Now.AddMinutes(-5) > settingsLastSaved)
                                 {
                                     await _mediator.Send(new SaveSettingsCommand()).ConfigureAwait(true);
-                                    
+
                                     settingsLastSaved = DateTime.Now;
                                 }
 
@@ -284,7 +296,7 @@ namespace PresenceLight.Pages
                                     {
                                         await _mediator.Send(new SaveSettingsCommand()).ConfigureAwait(true);
 
-                                 
+
                                     }
                                 }
                                 catch (Exception ex)
@@ -322,53 +334,53 @@ namespace PresenceLight.Pages
                     case "Busy":
                         image = new BitmapImage(new Uri(IconConstants.GetIcon(SettingsHandlerBase.Config.IconType, IconConstants.Busy)));
                         color = "ff3300".MapColor();
-                       notificationIcon.Text = PresenceConstants.Busy;
+                        notificationIcon.Text = PresenceConstants.Busy;
                         break;
                     case "BeRightBack":
                         image = new BitmapImage(new Uri(IconConstants.GetIcon(SettingsHandlerBase.Config.IconType, IconConstants.BeRightBack)));
-                        color =  "#ffff00".MapColor();
-                       notificationIcon.Text = PresenceConstants.BeRightBack;
+                        color = "#ffff00".MapColor();
+                        notificationIcon.Text = PresenceConstants.BeRightBack;
                         break;
                     case "Away":
                         image = new BitmapImage(new Uri(IconConstants.GetIcon(SettingsHandlerBase.Config.IconType, IconConstants.Away)));
                         color = "#ffff00".MapColor();
-                       notificationIcon.Text = PresenceConstants.Away;
+                        notificationIcon.Text = PresenceConstants.Away;
                         break;
                     case "DoNotDisturb":
                         image = new BitmapImage(new Uri(IconConstants.GetIcon(SettingsHandlerBase.Config.IconType, IconConstants.DoNotDisturb)));
                         color = "#B03CDE".MapColor();
-                       notificationIcon.Text = PresenceConstants.DoNotDisturb;
+                        notificationIcon.Text = PresenceConstants.DoNotDisturb;
                         break;
                     case "OutOfOffice":
                         image = new BitmapImage(new Uri(IconConstants.GetIcon(SettingsHandlerBase.Config.IconType, IconConstants.OutOfOffice)));
                         color = "#800080".MapColor();
-                       notificationIcon.Text = PresenceConstants.OutOfOffice;
+                        notificationIcon.Text = PresenceConstants.OutOfOffice;
                         break;
                     default:
                         image = new BitmapImage(new Uri(IconConstants.GetIcon(string.Empty, IconConstants.Inactive)));
                         color = "#FFFFFF".MapColor();
-                       notificationIcon.Text = PresenceConstants.Inactive;
+                        notificationIcon.Text = PresenceConstants.Inactive;
                         break;
                 }
 
                 if (profileImageBit != null)
                 {
-                   profileImage.Source = profileImageBit;
+                    profileImage.Source = profileImageBit;
                 }
 
-               notificationIcon.Icon = image;
+                notificationIcon.Icon = image;
                 mySolidColorBrush.Color = color;
-               status.Fill = mySolidColorBrush;
-               status.StrokeThickness = 1;
-               status.Stroke = System.Windows.Media.Brushes.Black;
+                status.Fill = mySolidColorBrush;
+                status.StrokeThickness = 1;
+                status.Stroke = System.Windows.Media.Brushes.Black;
 
                 if (profile != null)
                 {
-                   userName.Content = profile.DisplayName;
+                    userName.Content = profile.DisplayName;
                 }
 
-               activity.Content = "Activity: " + presence.Activity;
-               availability.Content = "Availability: " + presence.Availability;
+                activity.Content = "Activity: " + presence.Activity;
+                availability.Content = "Availability: " + presence.Availability;
             }
             catch (Exception e)
             {
@@ -506,8 +518,8 @@ namespace PresenceLight.Pages
         {
             LightMode = "Graph";
 
-             turnOffButton.Visibility = Visibility.Visible;
-             turnOnButton.Visibility = Visibility.Collapsed;
+            turnOffButton.Visibility = Visibility.Visible;
+            turnOnButton.Visibility = Visibility.Collapsed;
 
             parentWindow.WindowState = parentWindow.lastWindowState;
             _logger.LogInformation("Turning On PresenceLight Sync");
@@ -546,7 +558,7 @@ namespace PresenceLight.Pages
 
                 turnOffButton.Visibility = Visibility.Collapsed;
                 turnOnButton.Visibility = Visibility.Visible;
-                
+
                 notificationIcon.Text = PresenceConstants.Inactive;
                 notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(string.Empty, IconConstants.Inactive)));
 

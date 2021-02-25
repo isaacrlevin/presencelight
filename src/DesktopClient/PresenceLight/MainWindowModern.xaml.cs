@@ -30,6 +30,7 @@ using PresenceLight.Telemetry;
 using Media = System.Windows.Media;
 using System.Reflection;
 using PresenceLight.Pages;
+using ModernWpf;
 
 namespace PresenceLight
 {
@@ -80,6 +81,32 @@ namespace PresenceLight
             _lIFXOAuthHelper = lifxOAuthHelper;
 
             DataContext = SettingsHandlerBase.Config;
+
+            this.Dispatcher.Invoke(() =>
+            {
+              
+                //var tbContext = landingPage.notificationIcon.DataContext;
+                DataContext = SettingsHandlerBase.Config;
+                //landingPage.notificationIcon.DataContext = tbContext;
+
+                switch (SettingsHandlerBase.Config.Theme)
+                {
+                    case "Light":
+                        ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
+                        break;
+                    case "Dark":
+                        ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
+                        break;
+                    case "Use system setting":
+                        ThemeManager.Current.ApplicationTheme = null;
+                        break;
+                    default:
+                        ThemeManager.Current.ApplicationTheme = null;
+                        break;
+                }
+            });
+
+
 
             NavView.SelectedItem = NavView.MenuItems.OfType<NavigationViewItem>().First();
             Navigate(NavView.SelectedItem);
@@ -141,7 +168,6 @@ namespace PresenceLight
                 {
                     await _mediator.Send(new PresenceLight.Core.LifxServices.SetColorCommand { Activity = "", Availability = "Off", LightId = SettingsHandlerBase.Config.LightSettings.LIFX.SelectedItemId }).ConfigureAwait(true);
 
-
                 }
 
                 if (SettingsHandlerBase.Config.LightSettings.CustomApi.IsEnabled && !string.IsNullOrEmpty(SettingsHandlerBase.Config.LightSettings.CustomApi.CustomApiOff.Method) && !string.IsNullOrEmpty(SettingsHandlerBase.Config.LightSettings.CustomApi.CustomApiOff.Uri))
@@ -150,7 +176,7 @@ namespace PresenceLight
 
                 }
                 await _mediator.Send(new SaveSettingsCommand()).ConfigureAwait(true);
-                
+
             }
             catch (Exception ex)
             {
@@ -214,105 +240,9 @@ namespace PresenceLight
                 AppTitle.Margin = new Thickness(largeLeftIndent, currMargin.Top, currMargin.Right, currMargin.Bottom);
             }
         }
-        private void LoadApp()
-        {
-            var settings = System.Windows.Application.Current.Windows.OfType<Pages.SettingsPage>().First();
-            var profilePage = System.Windows.Application.Current.Windows.OfType<Pages.ProfilePage>().First();
 
-            try
-            {
+     
 
-
-                profilePage.CheckAAD();
-
-
-                if (SettingsHandlerBase.Config.IconType == "Transparent")
-                {
-                    settings.Transparent.IsChecked = true;
-                }
-                else
-                {
-                    settings.White.IsChecked = true;
-                }
-
-                switch (SettingsHandlerBase.Config.LightSettings.HoursPassedStatus)
-                {
-                    case "Keep":
-                        settings.HourStatusKeep.IsChecked = true;
-                        break;
-                    case "White":
-                        settings.HourStatusWhite.IsChecked = true;
-                        break;
-                    case "Off":
-                        settings.HourStatusOff.IsChecked = true;
-                        break;
-                    default:
-                        settings.HourStatusKeep.IsChecked = true;
-                        break;
-                }
-
-                PopulateWorkingDays();
-
-                profilePage.notificationIcon.Text = PresenceConstants.Inactive;
-                profilePage.notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(String.Empty, IconConstants.Inactive)));
-
-                profilePage.turnOffButton.Visibility = Visibility.Collapsed;
-                profilePage.turnOnButton.Visibility = Visibility.Collapsed;
-
-                SettingsHandlerBase.Config.LightSettings.WorkingHoursStartTimeAsDate = string.IsNullOrEmpty(SettingsHandlerBase.Config.LightSettings.WorkingHoursStartTime) ? null : DateTime.Parse(SettingsHandlerBase.Config.LightSettings.WorkingHoursStartTime, null);
-                SettingsHandlerBase.Config.LightSettings.WorkingHoursEndTimeAsDate = string.IsNullOrEmpty(SettingsHandlerBase.Config.LightSettings.WorkingHoursEndTime) ? null : DateTime.Parse(SettingsHandlerBase.Config.LightSettings.WorkingHoursEndTime, null);
-
-
-                profilePage.CallGraph().ConfigureAwait(true);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, $"Error occured - {e.Message}");
-                _diagClient.TrackException(e);
-            }
-        }
-        private void PopulateWorkingDays()
-        {
-            var settings = System.Windows.Application.Current.Windows.OfType<Pages.SettingsPage>().First();
-
-            if (!string.IsNullOrEmpty(SettingsHandlerBase.Config.LightSettings.WorkingDays))
-            {
-                if (SettingsHandlerBase.Config.LightSettings.WorkingDays.Contains("Monday", StringComparison.OrdinalIgnoreCase))
-                {
-                    settings.Monday.IsChecked = true;
-                }
-
-                if (SettingsHandlerBase.Config.LightSettings.WorkingDays.Contains("Tuesday", StringComparison.OrdinalIgnoreCase))
-                {
-                    settings.Tuesday.IsChecked = true;
-                }
-
-                if (SettingsHandlerBase.Config.LightSettings.WorkingDays.Contains("Wednesday", StringComparison.OrdinalIgnoreCase))
-                {
-                    settings.Wednesday.IsChecked = true;
-                }
-
-                if (SettingsHandlerBase.Config.LightSettings.WorkingDays.Contains("Thursday", StringComparison.OrdinalIgnoreCase))
-                {
-                    settings.Thursday.IsChecked = true;
-                }
-
-                if (SettingsHandlerBase.Config.LightSettings.WorkingDays.Contains("Friday", StringComparison.OrdinalIgnoreCase))
-                {
-                    settings.Friday.IsChecked = true;
-                }
-
-                if (SettingsHandlerBase.Config.LightSettings.WorkingDays.Contains("Saturday", StringComparison.OrdinalIgnoreCase))
-                {
-                    settings.Saturday.IsChecked = true;
-                }
-
-                if (SettingsHandlerBase.Config.LightSettings.WorkingDays.Contains("Sunday", StringComparison.OrdinalIgnoreCase))
-                {
-                    settings.Sunday.IsChecked = true;
-                }
-            }
-        }
         private void Navigate(object item)
         {
             if (item is NavigationViewItem menuItem)

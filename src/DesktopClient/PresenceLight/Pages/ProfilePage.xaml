@@ -75,7 +75,7 @@
                 <Image gif:ImageBehavior.AnimatedSource="../Icons/loading.gif" Width="100" />
                 <Label HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-150,0,0" Content="If you are adding new lights, this may take up to a minute" />
             </Grid>
-            <l:NotifyIcon x:Name="notificationIcon" MouseDoubleClick="OnNotifyIconDoubleClick">
+            <l:NotifyIcon x:Name="notificationIcon"  >
                 <l:NotifyIcon.ContextMenu>
                     <ContextMenu>
                         <MenuItem Header="Open" Click="OnOpenClick" />
