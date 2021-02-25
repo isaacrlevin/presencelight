@@ -16,7 +16,7 @@ namespace PresenceLight
         {
             try
             {
-                return Package.Current.DisplayName;
+                return Package.Current?.DisplayName;
             }
             catch
             {
@@ -68,7 +68,7 @@ namespace PresenceLight
         {
             try
             {
-                return $"{Package.Current.Id.Version.Major}.{Package.Current.Id.Version.Minor}.{Package.Current.Id.Version.Build}.{Package.Current.Id.Version.Revision}";
+                return $"{Package.Current?.Id.Version.Major}.{Package.Current?.Id.Version.Minor}.{Package.Current?.Id.Version.Build}.{Package.Current?.Id.Version.Revision}";
             }
             catch
             {
@@ -80,7 +80,7 @@ namespace PresenceLight
         {
             try
             {
-                return Package.Current.Id.Name.Substring(Package.Current.Id.Name.LastIndexOf('.') + 1);
+                return Package.Current?.Id.Name.Substring(Package.Current.Id.Name.LastIndexOf('.') + 1);
             }
             catch
             {

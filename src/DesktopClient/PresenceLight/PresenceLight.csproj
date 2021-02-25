@@ -134,4 +134,11 @@
     <PackageReference Update="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.2" />
     <PackageReference Update="Microsoft.SourceLink.GitHub" Version="1.0.0" />
     <PackageReference Update="Nerdbank.GitVersioning" Version="3.3.37" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Pages\HuePage.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+  </ItemGroup>
 </Project>

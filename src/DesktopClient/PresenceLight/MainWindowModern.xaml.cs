@@ -29,6 +29,7 @@ using PresenceLight.Telemetry;
 
 using Media = System.Windows.Media;
 using System.Reflection;
+using ModernWpf;
 
 namespace PresenceLight
 {
@@ -89,11 +90,27 @@ namespace PresenceLight
 
             this.Dispatcher.Invoke(() =>
             {
-                //LoadApp();
+                LoadApp();
 
                 //var tbContext = landingPage.notificationIcon.DataContext;
                 DataContext = Config;
                 //landingPage.notificationIcon.DataContext = tbContext;
+
+                switch (Config.Theme)
+                {
+                    case "Light":
+                        ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
+                        break;
+                    case "Dark":
+                        ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
+                        break;
+                    case "Use system setting":
+                        ThemeManager.Current.ApplicationTheme = null;
+                        break;
+                    default:
+                        ThemeManager.Current.ApplicationTheme = null;
+                        break;
+                }
             });
         }, TaskScheduler.Current);
 
@@ -146,9 +163,61 @@ namespace PresenceLight
             }
         }
 
+        public Media.Color MapColor(string hexColor)
+        {
+            return (Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(hexColor);
+        }
 
 
+        private void LoadApp()
+        {
+            try
+            {
+                //CheckHue(true);
+                //CheckLIFX();
+                //CheckYeelight();
+                //CheckWiz();
+                //CheckAAD();
 
+                previousRemoteFlag = Config.LightSettings.Hue.UseRemoteApi;
+
+
+                switch (Config.LightSettings.HoursPassedStatus)
+                {
+                    case "Keep":
+                        settings.HourStatusKeep.IsChecked = true;
+                        break;
+                    case "White":
+                        settings.HourStatusWhite.IsChecked = true;
+                        break;
+                    case "Off":
+                        settings.HourStatusOff.IsChecked = true;
+                        break;
+                    default:
+                        settings.HourStatusKeep.IsChecked = true;
+                        break;
+                }
+
+                PopulateWorkingDays();
+
+                landingPage.notificationIcon.Text = PresenceConstants.Inactive;
+                landingPage.notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(String.Empty, IconConstants.Inactive)));
+
+                landingPage.turnOffButton.Visibility = Visibility.Collapsed;
+                landingPage.turnOnButton.Visibility = Visibility.Collapsed;
+
+                Config.LightSettings.WorkingHoursStartTimeAsDate = string.IsNullOrEmpty(Config.LightSettings.WorkingHoursStartTime) ? null : DateTime.Parse(Config.LightSettings.WorkingHoursStartTime, null);
+                Config.LightSettings.WorkingHoursEndTimeAsDate = string.IsNullOrEmpty(Config.LightSettings.WorkingHoursEndTime) ? null : DateTime.Parse(Config.LightSettings.WorkingHoursEndTime, null);
+
+
+                CallGraph().ConfigureAwait(true);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"Error occured - {e.Message}");
+                _diagClient.TrackException(e);
+            }
+        }
 
 
 

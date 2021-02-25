@@ -13,6 +13,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using ModernWpf;
+
 namespace PresenceLight
 {
     /// <summary>
@@ -27,7 +29,67 @@ namespace PresenceLight
             parentWindow = Application.Current.Windows.OfType<MainWindowModern>().FirstOrDefault();
 
             LoadSettings();
+
+            switch (parentWindow.Config.Theme)
+            {
+                case "Light":
+                    themeLight.IsChecked = true;
+                    break;
+                case "Dark":
+                    themeDark.IsChecked = true;
+                    break;
+                case "Use system setting":
+                    themeDefault.IsChecked = true;
+                    break;
+                default:
+                    themeDefault.IsChecked = true;
+                    break;
+            }
+
+            if (Config.IconType == "Transparent")
+            {
+                transp settings.Transparent.IsChecked = true;
+            }
+            else
+            {
+                settings.White.IsChecked = true;
+            }
         }
+
+        private void OnThemeToggle(object sender, RoutedEventArgs e)
+        {
+            if (themeDark.IsChecked.Value)
+            {
+                parentWindow.Config.Theme = "Dark";
+            }
+
+            if (themeDefault.IsChecked.Value)
+            {
+                parentWindow.Config.Theme = "Use default setting";
+            }
+
+            if (themeLight.IsChecked.Value)
+            {
+                parentWindow.Config.Theme = "Light";
+            }
+
+            switch (parentWindow.Config.Theme)
+            {
+                case "Light":
+                    ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
+                    break;
+                case "Dark":
+                    ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
+                    break;
+                case "Use system setting":
+                    ThemeManager.Current.ApplicationTheme = null;
+                    break;
+                default:
+                    ThemeManager.Current.ApplicationTheme = null;
+                    break;
+            }
+        }
+
 
         private async Task LoadSettings()
         {
