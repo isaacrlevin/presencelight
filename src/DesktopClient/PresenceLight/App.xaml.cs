@@ -96,6 +96,7 @@ namespace PresenceLight
             services.AddMediatR(typeof(App),
                                 typeof(PresenceLight.Core.BaseConfig));
 
+            services.AddSingleton<ColorService>();
             services.Configure<BaseConfig>(Configuration);
             services.Configure<AADSettings>(Configuration?.GetSection("AADSettings"));
             services.Configure<TelemetryConfiguration>(

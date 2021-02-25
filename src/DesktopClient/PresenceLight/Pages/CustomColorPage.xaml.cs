@@ -17,6 +17,9 @@ using System.Windows.Shapes;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
+using PresenceLight.Services;
+using PresenceLight.Telemetry;
+
 namespace PresenceLight.Pages
 {
 
@@ -24,12 +27,13 @@ namespace PresenceLight.Pages
     {
         private MediatR.IMediator _mediator;
         MainWindowModern parentWindow;
+        private  DiagnosticsClient _diagClient;
         ILogger _logger;
 
         public CustomColorPage()
         {
             _mediator = App.Host.Services.GetRequiredService<MediatR.IMediator>();
-
+            _diagClient = App.Host.Services.GetRequiredService<DiagnosticsClient>();
             _logger = App.Host.Services.GetRequiredService<ILogger<CustomColorPage>>();
 
          
@@ -39,7 +43,7 @@ namespace PresenceLight.Pages
 
         private void SetTeamsPresence_Click(object sender, RoutedEventArgs e)
         {
-            parentWindow.lightMode = "Graph";
+            parentWindow.LightMode = "Graph";
             syncTeamsButton.IsEnabled = false;
             syncThemeButton.IsEnabled = true;
         }
@@ -48,7 +52,7 @@ namespace PresenceLight.Pages
         {
             try
             {
-                parentWindow.lightMode = "Theme";
+                parentWindow.LightMode = "Theme";
                 syncTeamsButton.IsEnabled = true;
                 syncThemeButton.IsEnabled = false;
 
@@ -60,14 +64,15 @@ namespace PresenceLight.Pages
                 lblTheme.Foreground = (SolidColorBrush)SystemParameters.WindowGlassBrush;
                 lblTheme.Visibility = Visibility.Visible;
 
-                //await SetColor(color).ConfigureAwait(true);
+             
+                await _mediator.Send(new SetColorCommand {  Color =  color}).ConfigureAwait(true);
 
                 parentWindow._logger.LogInformation(color);
             }
             catch (Exception ex)
             {
                 parentWindow._logger.LogError(ex, "Error occured Setting Theme Color");
-                parentWindow._diagClient.TrackException(ex);
+                _diagClient.TrackException(ex);
             }
         }
 
@@ -77,15 +82,16 @@ namespace PresenceLight.Pages
             {
                 if (ColorGrid.SelectedColor.HasValue)
                 {
-                    parentWindow.lightMode = "Custom";
+                    parentWindow.LightMode = "Custom";
                     syncTeamsButton.IsEnabled = true;
                     syncThemeButton.IsEnabled = true;
 
                     string color = $"#{ColorGrid.HexadecimalString.ToString().Substring(3)}";
 
-                    if (parentWindow.lightMode == "Custom")
+                    if (parentWindow.LightMode == "Custom")
                     {
-                        //SetColor(color).ConfigureAwait(true);
+                        await _mediator.Send(new SetColorCommand {   Color =  color }).ConfigureAwait(true);
+                         
                     }
 
                     parentWindow._logger.LogInformation(color);
@@ -94,8 +100,10 @@ namespace PresenceLight.Pages
             catch (Exception ex)
             {
                 parentWindow._logger.LogError(ex, "Error occured Setting Custom Color");
-                parentWindow._diagClient.TrackException(ex);
+                _diagClient.TrackException(ex);
             }
         }
+
+       
     }
 }

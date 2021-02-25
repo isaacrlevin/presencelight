@@ -3,7 +3,7 @@ using PresenceLight.Core;
 
 namespace PresenceLight.Services
 {
-    public class LoadSettingsCommand : IRequest<BaseConfig?>
+    public class LoadSettingsCommand : IRequest<Unit>
     {
     }
 }

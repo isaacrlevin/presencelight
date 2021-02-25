@@ -70,9 +70,9 @@ namespace PresenceLight.Worker
             NotifyStateChanged();
         }
 
-        public void SetLightMode(string lightMode)
+        public void SetLightMode(string LightMode)
         {
-            LightMode = lightMode;
+            LightMode = LightMode;
             NotifyStateChanged();
         }
 

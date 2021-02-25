@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace PresenceLight.Services
 {
-    internal class LoadSettingsHandler : SettingsHandlerBase, IRequestHandler<LoadSettingsCommand, BaseConfig?>
+    internal class LoadSettingsHandler : SettingsHandlerBase, IRequestHandler<LoadSettingsCommand, Unit>
     {
         ISettingsService _service;
         public LoadSettingsHandler(ISettingsService settingsService) : base()
@@ -19,9 +19,15 @@ namespace PresenceLight.Services
             _service = settingsService;
         }
 
-        public async Task<BaseConfig?> Handle(LoadSettingsCommand command, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(LoadSettingsCommand command, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var cfg = await _service.LoadSettings();
+
+            if (cfg == null) throw new NullReferenceException("Settings Load Service Returned null");
+
+            Config = cfg;
+
+            return Unit.Value;
         }
     }
 }
