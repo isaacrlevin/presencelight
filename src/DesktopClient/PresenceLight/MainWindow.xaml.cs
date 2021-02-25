@@ -34,7 +34,7 @@ namespace PresenceLight
         private readonly BaseConfig _options;
         public BaseConfig Config { get; set; }
 
-        private string lightMode;
+        private string? lightMode;
 
         private Presence presence { get; set; }
         private DateTime settingsLastSaved = DateTime.MinValue;
@@ -71,8 +71,7 @@ namespace PresenceLight
             _workingHoursService = workingHoursService;
             _graphservice = graphService;
            
-
-            logs.LogFilePath = App.StaticConfig["Serilog:WriteTo:1:Args:Path"];
+ 
 
             _mediator = mediator;
             _options = optionsAccessor != null ? optionsAccessor.CurrentValue : throw new NullReferenceException("Options Accessor is null");
@@ -170,15 +169,15 @@ namespace PresenceLight
             PropertyInfo[] properties = typeof(BaseConfig).GetProperties();
             foreach (PropertyInfo property in properties)
             {
-                object value = property.GetValue(Config);
+                object? value = property?.GetValue(Config);
 
-                if (property.PropertyType == typeof(string) && value != null && string.IsNullOrEmpty(value.ToString()))
+                if (property?.PropertyType == typeof(string) && value != null && string.IsNullOrEmpty(value.ToString()))
                 {
-                    property.SetValue(_options, value.ToString().Trim());
+                    property.SetValue(_options, $"{value}".Trim());
                 }
                 else
                 {
-                    property.SetValue(_options, value);
+                    property?.SetValue(_options, value);
                 }
             }
         }
@@ -303,7 +302,7 @@ namespace PresenceLight
             }
         }
 
-        public async Task SetColor(string color, string? activity = null)
+        public async Task SetColor(string color, string activity = null)
         {
             try
             {

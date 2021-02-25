@@ -76,9 +76,9 @@
                              onSaveSettingsClick="SaveSettings_Click"
                              ontimeValueChanged="time_ValueChanged"/>
             </TabItem>
-            <TabItem Header="Logs" >
-                <lc:Logs x:Name="logs"/>
-            </TabItem>
+            <!--<TabItem Header="Logs" >
+                <l:LogsPage x:Name="logs"/>
+            </TabItem>-->
             <TabItem Header="About" >
                 <lc:About x:Name="about" onHyperlinkRequestNavigate="Hyperlink_RequestNavigate" />
             </TabItem>

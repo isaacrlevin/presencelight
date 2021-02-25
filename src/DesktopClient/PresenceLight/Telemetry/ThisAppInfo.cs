@@ -37,7 +37,7 @@ namespace PresenceLight
 
         internal static string GetAppInstallType()
         {
-            if (Convert.ToBoolean(App.StaticConfig["IsAppPackaged"], CultureInfo.InvariantCulture))
+            if (Convert.ToBoolean(App.Configuration?["IsAppPackaged"], CultureInfo.InvariantCulture))
             {
                 return "AppPackage";
             }
@@ -52,7 +52,7 @@ namespace PresenceLight
             string settingsFileName = "settings.json";
             string settingsPath = "";
 
-            if (Convert.ToBoolean(App.StaticConfig["IsAppPackaged"], CultureInfo.InvariantCulture))
+            if (Convert.ToBoolean(App.Configuration?["IsAppPackaged"], CultureInfo.InvariantCulture))
             {
                 StorageFolder _settingsFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
                 settingsPath = _settingsFolder.Path;

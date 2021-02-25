@@ -133,15 +133,15 @@ namespace PresenceLight
             PropertyInfo[] properties = typeof(BaseConfig).GetProperties();
             foreach (PropertyInfo property in properties)
             {
-                object value = property.GetValue(Config);
+                object? value = property?.GetValue(Config);
 
-                if (property.PropertyType == typeof(string) && value != null && string.IsNullOrEmpty(value.ToString()))
+                if (property?.PropertyType == typeof(string) && value != null && string.IsNullOrEmpty(value.ToString()))
                 {
-                    property.SetValue(_options, value.ToString().Trim());
+                    property.SetValue(_options, $"{value}".Trim());
                 }
                 else
                 {
-                    property.SetValue(_options, value);
+                    property?.SetValue(_options, value);
                 }
             }
         }
@@ -254,7 +254,7 @@ namespace PresenceLight
         {
             if (item is NavigationViewItem menuItem)
             {
-                Type pageType = GetPageType(menuItem);
+               var pageType = GetPageType(menuItem);
                 if (ContentFrame.CurrentSourcePageType != pageType)
                 {
                     ContentFrame.Navigate(pageType);
@@ -270,7 +270,7 @@ namespace PresenceLight
             }
         }
 
-        private Type GetPageType(NavigationViewItem item)
+        private Type? GetPageType(NavigationViewItem item)
         {
             return item.Tag as Type;
         }

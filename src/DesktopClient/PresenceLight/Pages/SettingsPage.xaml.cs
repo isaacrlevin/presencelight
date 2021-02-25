@@ -24,12 +24,14 @@ namespace PresenceLight
         public SettingsPage()
         {
             InitializeComponent();
+#pragma warning disable CS8601 // Possible null reference assignment.
             parentWindow = Application.Current.Windows.OfType<MainWindowModern>().FirstOrDefault();
+#pragma warning restore CS8601 // Possible null reference assignment.
 
             LoadSettings();
         }
 
-        private async Task LoadSettings()
+        private async void LoadSettings()
         {
             try
             {

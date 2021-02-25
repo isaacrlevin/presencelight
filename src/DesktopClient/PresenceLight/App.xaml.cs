@@ -29,110 +29,80 @@ namespace PresenceLight
     public partial class App : System.Windows.Application
     {
         public IServiceProvider? ServiceProvider { get; private set; }
+        private IHost _host;
+        public static IConfiguration? Configuration { get; private set; }
 
-        public IConfiguration? Configuration { get; private set; }
 
-        public static IConfiguration? StaticConfig { get; private set; }
-
-     
         public App()
         {
-            
-
-        }
-
-        private void OnStartup(object sender, StartupEventArgs e)
-        {
-            if (SingleInstanceAppMutex.TakeExclusivity())
-            {
-                Exit += (_, __) => SingleInstanceAppMutex.ReleaseExclusivity();
-
-                try
-                {
-                    ContinueStartup();
-                }
-                catch (Exception ex) when (IsCriticalFontLoadFailure(ex))
-                {
-                    Trace.WriteLine($"## Warning Notify ##: {ex}");
-                    Log.Error(ex, "Stopped program because of exception");
-                    OnCriticalFontLoadFailure();
-                }
-            }
-            else
-            {
-                Log.CloseAndFlush();
-                Shutdown();
-            }
-        }
-
-        Dictionary<string, string> InMemorySettings = new();
-
-        private void ContinueStartup()
-        {
-            var builder = new Microsoft.Extensions.Configuration.ConfigurationBuilder()
-                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                 .AddJsonFile($"appsettings.Development.json", optional: true, reloadOnChange: true);
-
-
-            Configuration = builder.Build();
-            StaticConfig = builder.Build();
-
-            //Override the save file location for logs if this is a packaged app... 
-            if (Convert.ToBoolean(Configuration["IsAppPackaged"], CultureInfo.InvariantCulture))
-            {
-                var _logFilePath = System.IO.Path.Combine(ApplicationData.Current.LocalFolder.Path, "PresenceLight\\logs\\DesktopClient\\log-.json");
-
-                InMemorySettings.Add("Serilog:WriteTo:1:Args:Path", _logFilePath);
-                builder = new Microsoft.Extensions.Configuration.ConfigurationBuilder()
-                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                 .AddJsonFile($"appsettings.Development.json", optional: true, reloadOnChange: true)
-                 .AddInMemoryCollection(InMemorySettings);
-
-                Configuration = builder.Build();
-                StaticConfig = builder.Build();
-
-            }
+            Configuration = new Microsoft.Extensions.Configuration.ConfigurationBuilder()
+               .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+               .AddJsonFile($"appsettings.Development.json", optional: true, reloadOnChange: true)
+               .AddEnvironmentVariables()
+                .Build();
 
             var telemetryConfiguration = TelemetryConfiguration.CreateDefault();
-            telemetryConfiguration.InstrumentationKey = Configuration["ApplicationInsights:InstrumentationKey"];
+            telemetryConfiguration.InstrumentationKey = Configuration?["ApplicationInsights:InstrumentationKey"];
             var loggerConfig =
             new LoggerConfiguration()
                           .ReadFrom.Configuration(Configuration)
                           .WriteTo.PresenceEventsLogSink()
+                          .WriteTo.Console()
                           .WriteTo.ApplicationInsights(telemetryConfiguration, TelemetryConverter.Traces, Serilog.Events.LogEventLevel.Error)
                           .Enrich.FromLogContext();
 
 
+#if DEBUG
+            Serilog.Debugging.SelfLog.Enable(Console.Out);
+#endif
             Log.Logger = loggerConfig.CreateLogger();
             Log.Debug("Starting PresenceLight");
 
-            IServiceCollection services = new ServiceCollection();
+
+            _host = new HostBuilder().
+                          ConfigureAppConfiguration( builder => builder.AddConfiguration(Configuration))
+                         .ConfigureServices((context, services) =>
+                         {
+                             ConfigureServices(services);
+                         })
+                         .ConfigureLogging(logging =>
+                         {
+                             logging.AddSerilog();
+                         })
+                         .UseSerilog()
+                         .Build();
+
+
+        }
+
+
+        private void ConfigureServices(IServiceCollection services)
+        {
+
+
             services.AddOptions();
-            services.AddLogging(logging =>
-            {
-                logging.AddSerilog();
-            });
+
 
             //Need to tell MediatR what Assemblies to look in for Command Event Handlers
             services.AddMediatR(typeof(App),
                                 typeof(PresenceLight.Core.BaseConfig));
 
             services.Configure<BaseConfig>(Configuration);
-            services.Configure<AADSettings>(Configuration.GetSection("AADSettings"));
+            services.Configure<AADSettings>(Configuration?.GetSection("AADSettings"));
             services.Configure<TelemetryConfiguration>(
-    (o) =>
-    {
-        o.InstrumentationKey = Configuration["ApplicationInsights:InstrumentationKey"];
-        o.TelemetryInitializers.Add(new OperationCorrelationTelemetryInitializer());
-        o.TelemetryInitializers.Add(new AppVersionTelemetryInitializer());
-        o.TelemetryInitializers.Add(new EnvironmentTelemetryInitializer());
+            (o) =>
+            {
+                o.InstrumentationKey = Configuration?["ApplicationInsights:InstrumentationKey"];
+                o.TelemetryInitializers.Add(new OperationCorrelationTelemetryInitializer());
+                o.TelemetryInitializers.Add(new AppVersionTelemetryInitializer());
+                o.TelemetryInitializers.Add(new EnvironmentTelemetryInitializer());
 
-    });
+            });
             services.AddApplicationInsightsTelemetryWorkerService(options =>
-        {
-            options.EnablePerformanceCounterCollectionModule = false;
-            options.EnableDependencyTrackingTelemetryModule = false;
-        });
+            {
+                options.EnablePerformanceCounterCollectionModule = false;
+                options.EnableDependencyTrackingTelemetryModule = false;
+            });
 
             services.AddSingleton<IGraphService, GraphService>();
 
@@ -142,13 +112,11 @@ namespace PresenceLight
             services.AddSingleton<ThisAppInfo, ThisAppInfo>();
 
 
-
-            //services.AddSingleton<MainWindow>();
             services.AddSingleton<MainWindowModern>();
 
 
 
-            if (Convert.ToBoolean(Configuration["IsAppPackaged"], CultureInfo.InvariantCulture))
+            if (Convert.ToBoolean(Configuration?["IsAppPackaged"], CultureInfo.InvariantCulture))
             {
                 services.AddSingleton<ISettingsService, AppPackageSettingsService>();
             }
@@ -171,14 +139,52 @@ namespace PresenceLight
                 b.Build();
             }
 
-            var mainWindow = ServiceProvider.GetRequiredService<MainWindowModern>();
-            mainWindow.Show();
+      
         }
+
+
+        private async void OnStartup(object sender, StartupEventArgs e)
+        {
+            if (SingleInstanceAppMutex.TakeExclusivity())
+            {
+                Exit += (_, __) => SingleInstanceAppMutex.ReleaseExclusivity();
+
+                try
+                {
+                    await _host.StartAsync();
+                    var mainWindow = _host.Services.GetService<MainWindowModern>();
+
+                    Log.Debug("Starting PresenceLight");
+                    mainWindow?.Show();
+                }
+                catch (Exception ex) when (IsCriticalFontLoadFailure(ex))
+                {
+                    Trace.WriteLine($"## Warning Notify ##: {ex}");
+                    Log.Error(ex, "Stopped program because of exception");
+                    OnCriticalFontLoadFailure();
+                }
+            }
+            else
+            {
+                Log.CloseAndFlush();
+                Shutdown();
+            }
+        }
+        private async void OnExit(object sender, ExitEventArgs e)
+        {
+            using (_host)
+            {
+                await _host.StopAsync(TimeSpan.FromSeconds(5));
+            }
+        }
+        Dictionary<string, string> InMemorySettings = new();
+
+
 
         private static bool IsCriticalFontLoadFailure(Exception ex)
         {
-            return ex.StackTrace.Contains("MS.Internal.Text.TextInterface.FontFamily.GetFirstMatchingFont", StringComparison.OrdinalIgnoreCase) ||
-                   ex.StackTrace.Contains("MS.Internal.Text.Line.Format", StringComparison.OrdinalIgnoreCase);
+            return (ex?.StackTrace?.Contains("MS.Internal.Text.TextInterface.FontFamily.GetFirstMatchingFont", StringComparison.OrdinalIgnoreCase) ?? false) ||
+                   (ex?.StackTrace?.Contains("MS.Internal.Text.Line.Format", StringComparison.OrdinalIgnoreCase) ?? false);
         }
 
         private static void OnCriticalFontLoadFailure()
