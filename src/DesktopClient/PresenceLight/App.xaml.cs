@@ -11,6 +11,7 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 
 using PresenceLight.Core;
 using PresenceLight.Graph;
@@ -149,12 +150,12 @@ namespace PresenceLight
                 try
                 {
                     await Host.StartAsync();
-                    var mainWindow = Host.Services.GetService<MainWindowModern>();
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
-                    SettingsHandlerBase.Options = Host.Services.GetService<Microsoft.Extensions.Options.IOptionsMonitor<BaseConfig>>().CurrentValue;
-                    SettingsHandlerBase.Config = SettingsHandlerBase.Options = Host.Services.GetService<Microsoft.Extensions.Options.IOptionsMonitor<BaseConfig>>().CurrentValue;
+                    var mainWindow = Host.Services.GetRequiredService<MainWindowModern>();
 
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
+                    SettingsHandlerBase.Options = Host.Services.GetRequiredService<IOptionsMonitor<BaseConfig>>().CurrentValue;
+                    SettingsHandlerBase.Config = Host.Services.GetRequiredService<IOptionsMonitor<BaseConfig>>().CurrentValue;
+
+
 
                     Log.Debug("Starting PresenceLight");
                     mainWindow?.Show();
