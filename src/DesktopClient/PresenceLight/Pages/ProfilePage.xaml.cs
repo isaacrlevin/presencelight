@@ -39,10 +39,10 @@ namespace PresenceLight.Pages
         ILogger _logger;
         public ProfilePage()
         {
-            _mediator = App.Host.Services.GetRequiredService<MediatR.IMediator>();
-            _diagClient = App.Host.Services.GetRequiredService<DiagnosticsClient>();
-            _logger = App.Host.Services.GetRequiredService<ILogger<ProfilePage>>();
-            _graphservice = App.Host.Services.GetRequiredService<IGraphService>();
+            _mediator = App.ServiceProvider.GetRequiredService<MediatR.IMediator>();
+            _diagClient = App.ServiceProvider.GetRequiredService<DiagnosticsClient>();
+            _logger = App.ServiceProvider.GetRequiredService<ILogger<ProfilePage>>();
+            _graphservice = App.ServiceProvider.GetRequiredService<IGraphService>();
             parentWindow = System.Windows.Application.Current.Windows.OfType<MainWindowModern>().First();
             InitializeComponent();
 

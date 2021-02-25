@@ -27,12 +27,12 @@ namespace PresenceLight.Pages
         ILogger _logger;
         public LIFX()
         {
-            _mediator = App.Host.Services.GetRequiredService<MediatR.IMediator>();
+            _mediator = App.ServiceProvider.GetRequiredService<MediatR.IMediator>();
 
-            _logger = App.Host.Services.GetRequiredService<ILogger<LIFX>>();
+            _logger = App.ServiceProvider.GetRequiredService<ILogger<LIFX>>();
 
 
-            _lifxOAuthHelper = App.Host.Services.GetRequiredService<LIFXOAuthHelper>();
+            _lifxOAuthHelper = App.ServiceProvider.GetRequiredService<LIFXOAuthHelper>();
             InitializeComponent();
 
             if (SettingsHandlerBase.Config.LightSettings.LIFX.IsEnabled)

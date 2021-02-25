@@ -29,26 +29,36 @@ namespace PresenceLight
     /// </summary>
     public partial class App : System.Windows.Application
     {
-        public static IHost Host;
+        public static IServiceProvider? ServiceProvider { get; private set; }
+
         public static IConfiguration? Configuration { get; private set; }
 
         public App()
         {
-            Configuration = new Microsoft.Extensions.Configuration.ConfigurationBuilder()
+            var builder = new Microsoft.Extensions.Configuration.ConfigurationBuilder()
                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-               .AddJsonFile($"appsettings.Development.json", optional: true, reloadOnChange: true)
-               .AddEnvironmentVariables()
-                .Build();
+               .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true)
+               .AddEnvironmentVariables();
+
+            Configuration = builder.Build();
+            if (Convert.ToBoolean(Configuration["IsAppPackaged"], CultureInfo.InvariantCulture))
+            {
+                var _logFilePath = System.IO.Path.Combine(ApplicationData.Current.LocalFolder.Path, "PresenceLight\\logs\\DesktopClient\\log-.json");
+
+                InMemorySettings.Add("Serilog:WriteTo:1:Args:Path", _logFilePath);
+                builder.AddInMemoryCollection(InMemorySettings);
+                Configuration = builder.Build();
+            }
 
             var telemetryConfiguration = TelemetryConfiguration.CreateDefault();
             telemetryConfiguration.InstrumentationKey = Configuration?["ApplicationInsights:InstrumentationKey"];
-            var loggerConfig =
-            new LoggerConfiguration()
-                          .ReadFrom.Configuration(Configuration)
-                          .WriteTo.PresenceEventsLogSink()
-                          .WriteTo.Console()
-                          .WriteTo.ApplicationInsights(telemetryConfiguration, TelemetryConverter.Traces, Serilog.Events.LogEventLevel.Error)
-                          .Enrich.FromLogContext();
+
+            var loggerConfig = new LoggerConfiguration()
+                                      .ReadFrom.Configuration(Configuration)
+                                      .WriteTo.PresenceEventsLogSink()
+                                      .WriteTo.Console()
+                                      .WriteTo.ApplicationInsights(telemetryConfiguration, TelemetryConverter.Traces, Serilog.Events.LogEventLevel.Error)
+                                      .Enrich.FromLogContext();
 
 
 #if DEBUG
@@ -58,39 +68,14 @@ namespace PresenceLight
             Log.Debug("Starting PresenceLight");
 
 
-            Host = new HostBuilder().
-                          ConfigureAppConfiguration(builder => builder.AddConfiguration(Configuration))
-                         .ConfigureServices((context, services) =>
-                         {
-                            
-                             ConfigureServices(services);
-                         })
-                         .ConfigureLogging(logging =>
-                         {
-                             logging.AddSerilog();
-                         })
-                         .UseSerilog()
-                         .Build();
-
-            var configuration = Host.Services.GetService<TelemetryConfiguration>();
-
-
-            if (configuration != null)
-            {
-                var b = configuration.DefaultTelemetrySink.TelemetryProcessorChainBuilder;
-                double fixedSamplingPercentage = 10;
-                b.UseSampling(fixedSamplingPercentage);
-                b.Build();
-            }
-
         }
 
 
-        private void ConfigureServices(IServiceCollection services)
+        private void ContinueStartup()
         {
 
-
-             services.AddOptions();
+            IServiceCollection services = new ServiceCollection();
+            services.AddOptions();
 
 
             //Need to tell MediatR what Assemblies to look in for Command Event Handlers
@@ -98,6 +83,7 @@ namespace PresenceLight
                                 typeof(SetColorHandler).Assembly,
                                 typeof(BaseConfig).Assembly);
 
+            //Override the save file location for logs if this is a packaged app... 
 
             services.Configure<BaseConfig>(Configuration);
             services.Configure<AADSettings>(Configuration?.GetSection("AADSettings"));
@@ -140,6 +126,15 @@ namespace PresenceLight
 
 
 
+            ServiceProvider = services.BuildServiceProvider();
+            SettingsHandlerBase.Options = ServiceProvider.GetRequiredService<IOptionsMonitor<BaseConfig>>().CurrentValue;
+            SettingsHandlerBase.Config = ServiceProvider.GetRequiredService<IOptionsMonitor<BaseConfig>>().CurrentValue;
+            SettingsHandlerBase.Config.LightSettings.WorkingHoursStartTimeAsDate = string.IsNullOrEmpty(SettingsHandlerBase.Config.LightSettings.WorkingHoursStartTime) ? null : DateTime.Parse(SettingsHandlerBase.Config.LightSettings.WorkingHoursStartTime, null);
+            SettingsHandlerBase.Config.LightSettings.WorkingHoursEndTimeAsDate = string.IsNullOrEmpty(SettingsHandlerBase.Config.LightSettings.WorkingHoursEndTime) ? null : DateTime.Parse(SettingsHandlerBase.Config.LightSettings.WorkingHoursEndTime, null);
+
+
+            var mainWindow = ServiceProvider.GetRequiredService<MainWindowModern>();
+            mainWindow.Show();
         }
 
 
@@ -151,18 +146,7 @@ namespace PresenceLight
 
                 try
                 {
-                    await Host.StartAsync();
-
-                    SettingsHandlerBase.Options = Host.Services.GetRequiredService<IOptionsMonitor<BaseConfig>>().CurrentValue;
-                    SettingsHandlerBase.Config = Host.Services.GetRequiredService<IOptionsMonitor<BaseConfig>>().CurrentValue;
-                    SettingsHandlerBase.Config.LightSettings.WorkingHoursStartTimeAsDate = string.IsNullOrEmpty(SettingsHandlerBase.Config.LightSettings.WorkingHoursStartTime) ? null : DateTime.Parse(SettingsHandlerBase.Config.LightSettings.WorkingHoursStartTime, null);
-                    SettingsHandlerBase.Config.LightSettings.WorkingHoursEndTimeAsDate = string.IsNullOrEmpty(SettingsHandlerBase.Config.LightSettings.WorkingHoursEndTime) ? null : DateTime.Parse(SettingsHandlerBase.Config.LightSettings.WorkingHoursEndTime, null);
-
-                    var mainWindow = Host.Services.GetRequiredService<MainWindowModern>();
-
-
-                    Log.Debug("Starting PresenceLight");
-                    mainWindow?.Show();
+                    ContinueStartup();
                 }
                 catch (Exception ex) when (IsCriticalFontLoadFailure(ex))
                 {
@@ -179,10 +163,7 @@ namespace PresenceLight
         }
         private async void OnExit(object sender, ExitEventArgs e)
         {
-            using (Host)
-            {
-                await Host.StopAsync(TimeSpan.FromSeconds(5));
-            }
+
         }
         Dictionary<string, string> InMemorySettings = new();
 

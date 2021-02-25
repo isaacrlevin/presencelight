@@ -36,9 +36,9 @@ namespace PresenceLight.Pages
         ILogger _logger;
         public SettingsPage()
         {
-            _mediator = App.Host.Services.GetRequiredService<MediatR.IMediator>();
-            _diagClient = App.Host.Services.GetRequiredService<DiagnosticsClient>();
-            _logger = App.Host.Services.GetRequiredService<ILogger<SettingsPage>>();
+            _mediator = App.ServiceProvider.GetRequiredService<MediatR.IMediator>();
+            _diagClient = App.ServiceProvider.GetRequiredService<DiagnosticsClient>();
+            _logger = App.ServiceProvider.GetRequiredService<ILogger<SettingsPage>>();
 
             parentWindow = System.Windows.Application.Current.Windows.OfType<MainWindowModern>().First();
 

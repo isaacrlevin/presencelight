@@ -35,9 +35,9 @@ namespace PresenceLight.Controls
         ILogger _logger;
         public Wiz()
         {
-            _mediator = App.Host.Services.GetRequiredService<MediatR.IMediator>();
-            _diagClient = App.Host.Services.GetRequiredService<DiagnosticsClient>();
-            _logger = App.Host.Services.GetRequiredService<ILogger<Wiz>>();
+            _mediator = App.ServiceProvider.GetRequiredService<MediatR.IMediator>();
+            _diagClient = App.ServiceProvider.GetRequiredService<DiagnosticsClient>();
+            _logger = App.ServiceProvider.GetRequiredService<ILogger<Wiz>>();
 
             parentWindow = System.Windows.Application.Current.Windows.OfType<MainWindowModern>().First();
 

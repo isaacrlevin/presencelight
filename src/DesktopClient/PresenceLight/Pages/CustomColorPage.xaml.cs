@@ -32,9 +32,9 @@ namespace PresenceLight.Pages
 
         public CustomColorPage()
         {
-            _mediator = App.Host.Services.GetRequiredService<MediatR.IMediator>();
-            _diagClient = App.Host.Services.GetRequiredService<DiagnosticsClient>();
-            _logger = App.Host.Services.GetRequiredService<ILogger<CustomColorPage>>();
+            _mediator = App.ServiceProvider.GetRequiredService<MediatR.IMediator>();
+            _diagClient = App.ServiceProvider.GetRequiredService<DiagnosticsClient>();
+            _logger = App.ServiceProvider.GetRequiredService<ILogger<CustomColorPage>>();
 
          
             InitializeComponent();

@@ -30,9 +30,9 @@ namespace PresenceLight.Pages
         ILogger _logger;
         public Yeelight()
         {
-            _mediator = App.Host.Services.GetRequiredService<MediatR.IMediator>();
+            _mediator = App.ServiceProvider.GetRequiredService<MediatR.IMediator>();
 
-            _logger = App.Host.Services.GetRequiredService<ILogger<Yeelight>>();
+            _logger = App.ServiceProvider.GetRequiredService<ILogger<Yeelight>>();
 
              InitializeComponent();
             pnlYeelight.Visibility = SettingsHandlerBase.Config.LightSettings.Yeelight.IsEnabled ? Visibility.Visible : Visibility.Collapsed;
