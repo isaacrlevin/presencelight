@@ -62,6 +62,7 @@ namespace PresenceLight
                           ConfigureAppConfiguration(builder => builder.AddConfiguration(Configuration))
                          .ConfigureServices((context, services) =>
                          {
+                            
                              ConfigureServices(services);
                          })
                          .ConfigureLogging(logging =>
@@ -89,14 +90,15 @@ namespace PresenceLight
         {
 
 
-            services.AddOptions();
+             services.AddOptions();
 
 
             //Need to tell MediatR what Assemblies to look in for Command Event Handlers
-            services.AddMediatR(typeof(App),
-                                typeof(PresenceLight.Core.BaseConfig));
+            services.AddMediatR(
+                                typeof(SetColorHandler).Assembly,
+                                typeof(BaseConfig).Assembly);
 
-            services.AddSingleton<ColorService>();
+
             services.Configure<BaseConfig>(Configuration);
             services.Configure<AADSettings>(Configuration?.GetSection("AADSettings"));
             services.Configure<TelemetryConfiguration>(
@@ -118,10 +120,10 @@ namespace PresenceLight
 
             services.AddPresenceServices();
 
-            services.AddSingleton<LIFXOAuthHelper, LIFXOAuthHelper>();
-            services.AddSingleton<ThisAppInfo, ThisAppInfo>();
-
-
+            services.AddSingleton<LIFXOAuthHelper>();
+            services.AddSingleton<ThisAppInfo>();
+            services.AddSingleton<ColorService>();
+            services.AddTransient<DiagnosticsClient>();
             services.AddSingleton<MainWindowModern>();
 
 
@@ -135,7 +137,6 @@ namespace PresenceLight
                 services.AddSingleton<ISettingsService, StandaloneSettingsService>();
             }
 
-            services.AddTransient<DiagnosticsClient, DiagnosticsClient>();
 
 
 

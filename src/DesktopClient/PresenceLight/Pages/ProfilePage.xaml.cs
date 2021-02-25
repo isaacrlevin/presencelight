@@ -57,7 +57,7 @@ namespace PresenceLight.Pages
         protected override void Start()
         {
             CheckAAD();
-            CallGraph().ConfigureAwait(true);
+            //CallGraph().ConfigureAwait(true);
             base.Start();
         }
         #region Profile Panel
@@ -76,12 +76,12 @@ namespace PresenceLight.Pages
 
         public async Task CallGraph()
         {
-            var lightColors = System.Windows.Application.Current.Windows.OfType<Pages.CustomColorPage>().First();
+           // var lightColors = System.Windows.Application.Current.Windows.OfType<Pages.CustomColorPage>().First();
 
 
             LightMode = "Graph";
-            lightColors.syncTeamsButton.IsEnabled = false;
-            lightColors.syncThemeButton.IsEnabled = true;
+            //lightColors.syncTeamsButton.IsEnabled = false;
+            //lightColors.syncThemeButton.IsEnabled = true;
 
             if (!await _mediator.Send(new Core.GraphServices.GetIsInitializedCommand()))
             {
@@ -94,7 +94,7 @@ namespace PresenceLight.Pages
 
 
             signInPanel.Visibility = Visibility.Collapsed;
-            lightColors.lblTheme.Visibility = Visibility.Collapsed;
+            //lightColors.lblTheme.Visibility = Visibility.Collapsed;
             loadingPanel.Visibility = Visibility.Visible;
 
             try
