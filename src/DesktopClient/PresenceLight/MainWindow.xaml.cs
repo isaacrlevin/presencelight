@@ -40,13 +40,14 @@ namespace PresenceLight
         private DateTime settingsLastSaved = DateTime.MinValue;
 
         private MediatR.IMediator _mediator;
+
+        private ISettingsService _settingsService;
         private LIFXOAuthHelper _lIFXOAuthHelper;
 
 
          
         private readonly IGraphService _graphservice;
-        private DiagnosticsClient _diagClient;
-        private ISettingsService _settingsService;
+        private DiagnosticsClient _diagClient; 
         private IWorkingHoursService _workingHoursService;
         private WindowState lastWindowState ;
         private bool previousRemoteFlag;
@@ -348,15 +349,16 @@ namespace PresenceLight
                 {
                     string response = await _mediator.Send(new Core.CustomApiServices.SetColorCommand() { Activity = activity, Availability = color });
 
-                    customapi.customApiLastResponse.Content = response;
-                    if (response.Contains("Error:", StringComparison.OrdinalIgnoreCase))
-                    {
-                        customapi.customApiLastResponse.Foreground = new SolidColorBrush(Colors.Red);
-                    }
-                    else
-                    {
-                        customapi.customApiLastResponse.Foreground = new SolidColorBrush(Colors.Green);
-                    }
+                    //TODO: Fix this so it works!
+                    //customapi.customApiLastResponse.Content = response;
+                    //if (response.Contains("Error:", StringComparison.OrdinalIgnoreCase))
+                    //{
+                    //    customapi.customApiLastResponse.Foreground = new SolidColorBrush(Colors.Red);
+                    //}
+                    //else
+                    //{
+                    //    customapi.customApiLastResponse.Foreground = new SolidColorBrush(Colors.Green);
+                    //}
                 }
             }
             catch (Exception e)
@@ -583,7 +585,7 @@ namespace PresenceLight
             yeelight.lblYeelightSaved.Visibility = Visibility.Collapsed;
             phillipsHue.lblHueSaved.Visibility = Visibility.Collapsed;
             lifx.lblLIFXSaved.Visibility = Visibility.Collapsed;
-            customapi.lblCustomApiSaved.Visibility = Visibility.Collapsed;
+            //customapi.lblCustomApiSaved.Visibility = Visibility.Collapsed;
             settings.lblSettingSaved.Visibility = Visibility.Collapsed;
         }
 

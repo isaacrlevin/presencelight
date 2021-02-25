@@ -29,6 +29,7 @@ using PresenceLight.Telemetry;
 
 using Media = System.Windows.Media;
 using System.Reflection;
+using PresenceLight.Pages;
 
 namespace PresenceLight
 {
@@ -38,7 +39,7 @@ namespace PresenceLight
     public partial class MainWindowModern : Window
     {
         private readonly BaseConfig _options;
-        public BaseConfig Config { get; set; }
+        public static BaseConfig Config { get; set; }
 
         public string lightMode;
 
@@ -255,7 +256,7 @@ namespace PresenceLight
             if (item is NavigationViewItem menuItem)
             {
                var pageType = GetPageType(menuItem);
-                if (ContentFrame.CurrentSourcePageType != pageType)
+                if (pageType != null && ContentFrame.CurrentSourcePageType != pageType)
                 {
                     ContentFrame.Navigate(pageType);
                 }

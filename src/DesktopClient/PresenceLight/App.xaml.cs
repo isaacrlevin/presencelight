@@ -28,10 +28,8 @@ namespace PresenceLight
     /// </summary>
     public partial class App : System.Windows.Application
     {
-        public IServiceProvider? ServiceProvider { get; private set; }
-        private IHost _host;
+        public static IHost Host;
         public static IConfiguration? Configuration { get; private set; }
-
 
         public App()
         {
@@ -59,8 +57,8 @@ namespace PresenceLight
             Log.Debug("Starting PresenceLight");
 
 
-            _host = new HostBuilder().
-                          ConfigureAppConfiguration( builder => builder.AddConfiguration(Configuration))
+            Host = new HostBuilder().
+                          ConfigureAppConfiguration(builder => builder.AddConfiguration(Configuration))
                          .ConfigureServices((context, services) =>
                          {
                              ConfigureServices(services);
@@ -72,6 +70,16 @@ namespace PresenceLight
                          .UseSerilog()
                          .Build();
 
+            var configuration = Host.Services.GetService<TelemetryConfiguration>();
+
+
+            if (configuration != null)
+            {
+                var b = configuration.DefaultTelemetrySink.TelemetryProcessorChainBuilder;
+                double fixedSamplingPercentage = 10;
+                b.UseSampling(fixedSamplingPercentage);
+                b.Build();
+            }
 
         }
 
@@ -127,19 +135,8 @@ namespace PresenceLight
 
             services.AddTransient<DiagnosticsClient, DiagnosticsClient>();
 
-            ServiceProvider = services.BuildServiceProvider();
 
-            var configuration = ServiceProvider.GetService<TelemetryConfiguration>();
 
-            if (configuration != null)
-            {
-                var b = configuration.DefaultTelemetrySink.TelemetryProcessorChainBuilder;
-                double fixedSamplingPercentage = 10;
-                b.UseSampling(fixedSamplingPercentage);
-                b.Build();
-            }
-
-      
         }
 
 
@@ -151,8 +148,13 @@ namespace PresenceLight
 
                 try
                 {
-                    await _host.StartAsync();
-                    var mainWindow = _host.Services.GetService<MainWindowModern>();
+                    await Host.StartAsync();
+                    var mainWindow = Host.Services.GetService<MainWindowModern>();
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+                    SettingsHandlerBase.Options = Host.Services.GetService<Microsoft.Extensions.Options.IOptionsMonitor<BaseConfig>>().CurrentValue;
+                    SettingsHandlerBase.Config = SettingsHandlerBase.Options = Host.Services.GetService<Microsoft.Extensions.Options.IOptionsMonitor<BaseConfig>>().CurrentValue;
+
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
 
                     Log.Debug("Starting PresenceLight");
                     mainWindow?.Show();
@@ -172,9 +174,9 @@ namespace PresenceLight
         }
         private async void OnExit(object sender, ExitEventArgs e)
         {
-            using (_host)
+            using (Host)
             {
-                await _host.StopAsync(TimeSpan.FromSeconds(5));
+                await Host.StopAsync(TimeSpan.FromSeconds(5));
             }
         }
         Dictionary<string, string> InMemorySettings = new();

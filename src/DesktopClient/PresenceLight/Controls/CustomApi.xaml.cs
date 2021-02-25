@@ -13,6 +13,11 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using Microsoft.Extensions.Options;
+
+using PresenceLight.Core;
+using PresenceLight.Services;
+
 namespace PresenceLight.Controls
 {
     /// <summary>
@@ -30,24 +35,29 @@ namespace PresenceLight.Controls
 
 
         private async void btnApiSettingsSave_Click(object sender, RoutedEventArgs e)
-        {
-            var handler = onbtnApiSettingsSaveClick;
-            if (handler != null)
-            {
-                handler(this, e);
-            }
-            await Task.CompletedTask;
+        {//NOte: reolved
+            //var handler = onbtnApiSettingsSaveClick;
+            //if (handler != null)
+            //{
+            //    handler(this, e);
+            //}
+            //await Task.CompletedTask;
         }
+        private void cbIsCustomApiEnabledChanged(object sender, RoutedEventArgs e)
+        {
+            if (SettingsHandlerBase.Config.LightSettings.CustomApi.IsEnabled)
+            {
+                Visibility = Visibility.Visible;
+            }
+            else
+            {
+                 Visibility = Visibility.Collapsed;
+            }
 
-        private async void cbIsCustomApiEnabledChanged(object sender, RoutedEventArgs e)
-        {
-            var handler = oncbIsCustomApiEnabledChanged;
-            if (handler != null)
-            {
-                handler(this, e);
-            }
-            await Task.CompletedTask;
+            
+            e.Handled = true;
         }
+       
         private async void customApiMethod_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var handler = oncustomApiMethodSelectionChanged;

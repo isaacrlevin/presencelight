@@ -13,9 +13,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace PresenceLight
+namespace PresenceLight.Pages
 {
-
     public partial class ProfilePage 
     {
         public ProfilePage()

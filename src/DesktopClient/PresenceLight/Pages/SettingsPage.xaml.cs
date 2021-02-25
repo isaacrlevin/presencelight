@@ -13,7 +13,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace PresenceLight
+using PresenceLight.Services;
+
+namespace PresenceLight.Pages
 {
     /// <summary>
     /// Interaction logic for SettingsPage.xaml
@@ -62,37 +64,40 @@ namespace PresenceLight
             try
             {
                 btnSettings.IsEnabled = false;
+               
                 if (Transparent.IsChecked == true)
                 {
-                    parentWindow.Config.IconType = "Transparent";
+                    SettingsHandlerBase.Config.IconType = "Transparent";
                 }
                 else
                 {
-                    parentWindow.Config.IconType = "White";
+                    SettingsHandlerBase.Config.IconType = "White";
                 }
 
                 if (HourStatusKeep.IsChecked == true)
                 {
-                    parentWindow.Config.LightSettings.HoursPassedStatus = "Keep";
+                    SettingsHandlerBase.Config.LightSettings.HoursPassedStatus = "Keep";
                 }
 
                 if (HourStatusOff.IsChecked == true)
                 {
-                    parentWindow.Config.LightSettings.HoursPassedStatus = "Off";
+                    SettingsHandlerBase.Config.LightSettings.HoursPassedStatus = "Off";
                 }
 
                 if (HourStatusWhite.IsChecked == true)
                 {
-                    parentWindow.Config.LightSettings.HoursPassedStatus = "White";
+                    SettingsHandlerBase.Config.LightSettings.HoursPassedStatus = "White";
                 }
+                SettingsHandlerBase.Config.LightSettings.DefaultBrightness = Convert.ToInt32(brightness.Value);
 
                 CheckAAD();
-                parentWindow.Config.LightSettings.DefaultBrightness = Convert.ToInt32(brightness.Value);
+
 
                 SetWorkingDays();
 
                 parentWindow.SyncOptions();
-                await parentWindow._settingsService.SaveSettings(parentWindow.Config).ConfigureAwait(true);
+                await parentWindow._mediator.Send(new SaveSettingsCommand()).ConfigureAwait(true);
+
                 lblSettingSaved.Visibility = Visibility.Visible;
                 btnSettings.IsEnabled = true;
             }
@@ -142,7 +147,7 @@ namespace PresenceLight
                 days.Add("Sunday");
             }
 
-            parentWindow.Config.LightSettings.WorkingDays = string.Join("|", days);
+            SettingsHandlerBase.Config.LightSettings.WorkingDays = string.Join("|", days);
         }
 
         private async void CheckAAD()
@@ -176,39 +181,39 @@ namespace PresenceLight
 
         private void PopulateWorkingDays()
         {
-            if (!string.IsNullOrEmpty(parentWindow.Config.LightSettings.WorkingDays))
+            if (!string.IsNullOrEmpty(SettingsHandlerBase.Config.LightSettings.WorkingDays))
             {
-                if (parentWindow.Config.LightSettings.WorkingDays.Contains("Monday", StringComparison.OrdinalIgnoreCase))
+                if (SettingsHandlerBase.Config.LightSettings.WorkingDays.Contains("Monday", StringComparison.OrdinalIgnoreCase))
                 {
                     Monday.IsChecked = true;
                 }
 
-                if (parentWindow.Config.LightSettings.WorkingDays.Contains("Tuesday", StringComparison.OrdinalIgnoreCase))
+                if (SettingsHandlerBase.Config.LightSettings.WorkingDays.Contains("Tuesday", StringComparison.OrdinalIgnoreCase))
                 {
                     Tuesday.IsChecked = true;
                 }
 
-                if (parentWindow.Config.LightSettings.WorkingDays.Contains("Wednesday", StringComparison.OrdinalIgnoreCase))
+                if (SettingsHandlerBase.Config.LightSettings.WorkingDays.Contains("Wednesday", StringComparison.OrdinalIgnoreCase))
                 {
                     Wednesday.IsChecked = true;
                 }
 
-                if (parentWindow.Config.LightSettings.WorkingDays.Contains("Thursday", StringComparison.OrdinalIgnoreCase))
+                if (SettingsHandlerBase.Config.LightSettings.WorkingDays.Contains("Thursday", StringComparison.OrdinalIgnoreCase))
                 {
                     Thursday.IsChecked = true;
                 }
 
-                if (parentWindow.Config.LightSettings.WorkingDays.Contains("Friday", StringComparison.OrdinalIgnoreCase))
+                if (SettingsHandlerBase.Config.LightSettings.WorkingDays.Contains("Friday", StringComparison.OrdinalIgnoreCase))
                 {
                     Friday.IsChecked = true;
                 }
 
-                if (parentWindow.Config.LightSettings.WorkingDays.Contains("Saturday", StringComparison.OrdinalIgnoreCase))
+                if (SettingsHandlerBase.Config.LightSettings.WorkingDays.Contains("Saturday", StringComparison.OrdinalIgnoreCase))
                 {
                     Saturday.IsChecked = true;
                 }
 
-                if (parentWindow.Config.LightSettings.WorkingDays.Contains("Sunday", StringComparison.OrdinalIgnoreCase))
+                if (SettingsHandlerBase.Config.LightSettings.WorkingDays.Contains("Sunday", StringComparison.OrdinalIgnoreCase))
                 {
                     Sunday.IsChecked = true;
                 }
@@ -217,7 +222,7 @@ namespace PresenceLight
 
         private async void cbSyncLights(object sender, RoutedEventArgs e)
         {
-            if (!parentWindow.Config.LightSettings.SyncLights)
+            if (!SettingsHandlerBase.Config.LightSettings.SyncLights)
             {
                 //await SetColor("Off").ConfigureAwait(true);
                 //landingPage.turnOffButton.Visibility = Visibility.Collapsed;
@@ -225,13 +230,13 @@ namespace PresenceLight
             }
 
             parentWindow.SyncOptions();
-            await parentWindow._settingsService.SaveSettings(parentWindow.Config).ConfigureAwait(true);
+            await parentWindow._settingsService.SaveSettings(SettingsHandlerBase.Config).ConfigureAwait(true);
             e.Handled = true;
         }
 
         private async void cbUseDefaultBrightnessChanged(object sender, RoutedEventArgs e)
         {
-            if (parentWindow.Config.LightSettings.UseDefaultBrightness)
+            if (SettingsHandlerBase.Config.LightSettings.UseDefaultBrightness)
             {
                 pnlDefaultBrightness.Visibility = Visibility.Visible;
             }
@@ -241,20 +246,20 @@ namespace PresenceLight
             }
 
             parentWindow.SyncOptions();
-            await parentWindow._settingsService.SaveSettings(parentWindow.Config).ConfigureAwait(true);
+            await parentWindow._settingsService.SaveSettings(SettingsHandlerBase.Config).ConfigureAwait(true);
             e.Handled = true;
         }
 
         private async void cbUseWorkingHoursChanged(object sender, RoutedEventArgs e)
         {
-            if (!string.IsNullOrEmpty(parentWindow.Config.LightSettings.WorkingHoursStartTime))
+            if (!string.IsNullOrEmpty(SettingsHandlerBase.Config.LightSettings.WorkingHoursStartTime))
             {
-                parentWindow.Config.LightSettings.WorkingHoursStartTime = parentWindow.Config.LightSettings.WorkingHoursStartTimeAsDate.HasValue ? parentWindow.Config.LightSettings.WorkingHoursStartTimeAsDate.Value.TimeOfDay.ToString() : string.Empty;
+                SettingsHandlerBase.Config.LightSettings.WorkingHoursStartTime = SettingsHandlerBase.Config.LightSettings.WorkingHoursStartTimeAsDate.HasValue ? SettingsHandlerBase.Config.LightSettings.WorkingHoursStartTimeAsDate.Value.TimeOfDay.ToString() : string.Empty;
             }
 
-            if (!string.IsNullOrEmpty(parentWindow.Config.LightSettings.WorkingHoursEndTime))
+            if (!string.IsNullOrEmpty(SettingsHandlerBase.Config.LightSettings.WorkingHoursEndTime))
             {
-                parentWindow.Config.LightSettings.WorkingHoursEndTime = parentWindow.Config.LightSettings.WorkingHoursEndTimeAsDate.HasValue ? parentWindow.Config.LightSettings.WorkingHoursEndTimeAsDate.Value.TimeOfDay.ToString() : string.Empty;
+                SettingsHandlerBase.Config.LightSettings.WorkingHoursEndTime = SettingsHandlerBase.Config.LightSettings.WorkingHoursEndTimeAsDate.HasValue ? SettingsHandlerBase.Config.LightSettings.WorkingHoursEndTimeAsDate.Value.TimeOfDay.ToString() : string.Empty;
             }
             bool useWorkingHours = await parentWindow._mediator.Send(new Core.WorkingHoursServices.UseWorkingHoursCommand());
 
@@ -273,15 +278,16 @@ namespace PresenceLight
 
         private void time_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            if (parentWindow.Config.LightSettings.WorkingHoursStartTimeAsDate.HasValue)
-            {
-                parentWindow.Config.LightSettings.WorkingHoursStartTime = parentWindow.Config.LightSettings.WorkingHoursStartTimeAsDate.HasValue ? parentWindow.Config.LightSettings.WorkingHoursStartTimeAsDate.Value.TimeOfDay.ToString() : string.Empty;
-            }
+            //TODO: Revisit and fix
+            //if (SettingsHandlerBase.Config.LightSettings.WorkingHoursStartTimeAsDate.HasValue)
+            //{
+            //    SettingsHandlerBase.Config.LightSettings.WorkingHoursStartTime = SettingsHandlerBase.Config.LightSettings.WorkingHoursStartTimeAsDate.HasValue ? SettingsHandlerBase.Config.LightSettings.WorkingHoursStartTimeAsDate.Value.TimeOfDay.ToString() : string.Empty;
+            //}
 
-            if (parentWindow.Config.LightSettings.WorkingHoursEndTimeAsDate.HasValue)
-            {
-                parentWindow.Config.LightSettings.WorkingHoursEndTime = parentWindow.Config.LightSettings.WorkingHoursEndTimeAsDate.HasValue ? parentWindow.Config.LightSettings.WorkingHoursEndTimeAsDate.Value.TimeOfDay.ToString() : string.Empty;
-            }
+            //if (SettingsHandlerBase.Config.LightSettings.WorkingHoursEndTimeAsDate.HasValue)
+            //{
+            //    SettingsHandlerBase.Config.LightSettings.WorkingHoursEndTime = SettingsHandlerBase.Config.LightSettings.WorkingHoursEndTimeAsDate.HasValue ? SettingsHandlerBase.Config.LightSettings.WorkingHoursEndTimeAsDate.Value.TimeOfDay.ToString() : string.Empty;
+            //}
 
             parentWindow.SyncOptions();
             e.Handled = true;

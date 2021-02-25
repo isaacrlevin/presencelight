@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 
 using PresenceLight.Core;
+using PresenceLight.Services;
 
 using Q42.HueApi;
 
@@ -112,8 +113,7 @@ namespace PresenceLight
                     Config.LightSettings.Hue.HueApiKey = apiKey;
                     Config.LightSettings.Hue.RemoteBridgeId = bridgeId;
                     Config.LightSettings.Hue.HueIpAddress = bridgeIp;
-
-                    await _settingsService.SaveSettings(Config);
+                    await _mediator.Send(new SaveSettingsCommand ());
 
                     phillipsHue.ddlHueLights.ItemsSource = await _mediator.Send(new Core.RemoteHueServices.GetLightsCommand());
                     SyncOptions();

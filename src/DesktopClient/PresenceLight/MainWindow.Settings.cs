@@ -72,17 +72,17 @@ namespace PresenceLight
                     lifx.getTokenLink.Visibility = Visibility.Collapsed;
                     lifx.pnlLIFX.Visibility = Visibility.Collapsed;
                 }
+                //TODO: Come Back and readdress if necessary
+                //if (Config.LightSettings.CustomApi.IsEnabled)
+                //{
+                //    customapi.pnlCustomApi.Visibility = Visibility.Visible;
 
-                if (Config.LightSettings.CustomApi.IsEnabled)
-                {
-                    customapi.pnlCustomApi.Visibility = Visibility.Visible;
-
-                    SyncOptions();
-                }
-                else
-                {
-                    customapi.pnlCustomApi.Visibility = Visibility.Collapsed;
-                }
+                //    SyncOptions();
+                //}
+                //else
+                //{
+                //    customapi.pnlCustomApi.Visibility = Visibility.Collapsed;
+                //}
             }
             catch (Exception e)
             {

@@ -13,20 +13,7 @@ namespace PresenceLight
     public partial class MainWindow : Window
     {
 
-        private void cbIsCustomApiEnabledChanged(object sender, RoutedEventArgs e)
-        {
-            if (Config.LightSettings.CustomApi.IsEnabled)
-            {
-                customapi.pnlCustomApi.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                customapi.pnlCustomApi.Visibility = Visibility.Collapsed;
-            }
-
-            SyncOptions();
-            e.Handled = true;
-        }
+      
 
         private void customApiMethod_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
@@ -100,20 +87,6 @@ namespace PresenceLight
             e.Handled = true;
         }
 
-        private async void btnApiSettingsSave_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                Config = Helpers.CleanColors(Config);
-                await _settingsService.SaveSettings(Config).ConfigureAwait(true);
-                customapi.lblCustomApiSaved.Visibility = Visibility.Visible;
-                SyncOptions();
-            }
-            catch (Exception ex)
-            {
-                 _logger.LogError(ex, "Error Occured Saving Custom Api Settings");
-                _diagClient.TrackException(ex);
-            }
-        }
+      
     }
 }

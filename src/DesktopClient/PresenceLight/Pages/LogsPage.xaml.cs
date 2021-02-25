@@ -25,7 +25,7 @@ using PresenceLight.Core;
 using Serilog.Events;
 
 
-namespace PresenceLight
+namespace PresenceLight.Pages
 {
 
     public partial class LogsPage
