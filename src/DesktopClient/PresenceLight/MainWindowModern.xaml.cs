@@ -56,7 +56,7 @@ namespace PresenceLight
         public ISettingsService _settingsService;
         public IWorkingHoursService _workingHoursService;
         public WindowState lastWindowState;
-        public bool previousRemoteFlag;
+       
         public readonly ILogger<MainWindowModern> _logger;
 
    

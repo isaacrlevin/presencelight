@@ -101,7 +101,7 @@ namespace PresenceLight
         {
             try
             {
-                CheckHue(true);
+                
                
                 CheckAAD();
 
@@ -456,7 +456,7 @@ namespace PresenceLight
                         break;
                     case "Busy":
                         image = new BitmapImage(new Uri(IconConstants.GetIcon(Config.IconType, IconConstants.Busy)));
-                        color = MapColor("#ff3300");
+                        color = "ff3300".MapColor();
                         landingPage.notificationIcon.Text = PresenceConstants.Busy;
                         break;
                     case "BeRightBack":
@@ -570,8 +570,7 @@ namespace PresenceLight
 
         private void TabControl_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            phillipsHue.lblHueSaved.Visibility = Visibility.Collapsed;
-   
+         
             settings.lblSettingSaved.Visibility = Visibility.Collapsed;
         }
 

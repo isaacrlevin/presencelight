@@ -36,18 +36,7 @@ namespace PresenceLight
                     SyncOptions();
                 }
 
-                if (Config.LightSettings.Hue.IsEnabled)
-                {
-                    phillipsHue.pnlPhillips.Visibility = Visibility.Visible;
-                    phillipsHue.pnlHueApi.Visibility = Visibility.Visible;
-                    SyncOptions();
-                }
-                else
-                {
-                    phillipsHue.pnlPhillips.Visibility = Visibility.Collapsed;
-                    phillipsHue.pnlHueApi.Visibility = Visibility.Collapsed;
-                }
-
+             
                
               
              

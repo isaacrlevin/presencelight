@@ -23,22 +23,6 @@
             <TabItem Header="Set Light Colors">
                 <lc:LightColors x:Name="lightColors" onSetColorClick="SetColor_Click" onSetTeamsPresenceClick="SetTeamsPresence_Click" onSyncThemeClick="SyncTheme_Click" />
             </TabItem>
-            <TabItem Header="Configure Phillips Hue" >
-                <lc:PhillipsHue x:Name="phillipsHue"
-                                oncbHueIsDisabledChange="cbHueIsDisabledChange"
-                                oncbIsPhillipsEnabledChanged="cbIsPhillipsEnabledChanged"
-                                oncbUseHueActivityStatus="cbUseHueActivityStatus"
-                                oncbUseRemoteApiChanged="cbUseRemoteApiChanged"
-                                onddlHueLightsSelectionChanged="ddlHueLights_SelectionChanged"
-                                onFindBridgeClick="FindBridge_Click"
-                                onHueApiKeyGet="HueApiKey_Get"
-                                onHueIpAddressTextChanged="HueIpAddress_TextChanged"
-                                onRegisterBridgeClick="RegisterBridge_Click"
-                                onCheckHueClick="CheckHue_Click"
-                                onSaveHueClick="SaveHue_Click"
-                                />
-            </TabItem>
-           
             
            
             <TabItem Header="Settings" >
