@@ -13,6 +13,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+
 using PresenceLight.Services;
 
 namespace PresenceLight.Pages
@@ -23,13 +26,19 @@ namespace PresenceLight.Pages
     public partial class SettingsPage
     {
         private MainWindowModern parentWindow;
+
+        private MediatR.IMediator _mediator;
+
+        ILogger _logger;
         public SettingsPage()
         {
-            InitializeComponent();
-#pragma warning disable CS8601 // Possible null reference assignment.
-            parentWindow = Application.Current.Windows.OfType<MainWindowModern>().FirstOrDefault();
-#pragma warning restore CS8601 // Possible null reference assignment.
+            _mediator = App.Host.Services.GetRequiredService<MediatR.IMediator>();
 
+            _logger = App.Host.Services.GetRequiredService<ILogger<SettingsPage>>();
+
+
+            InitializeComponent();
+ 
             LoadSettings();
         }
 
@@ -37,8 +46,8 @@ namespace PresenceLight.Pages
         {
             try
             {
-                bool useWorkingHours = await parentWindow._mediator.Send(new Core.WorkingHoursServices.UseWorkingHoursCommand());
-                bool IsInWorkingHours = await parentWindow._mediator.Send(new Core.WorkingHoursServices.IsInWorkingHoursCommand());
+                bool useWorkingHours = await _mediator.Send(new Core.WorkingHoursServices.UseWorkingHoursCommand());
+                bool IsInWorkingHours = await _mediator.Send(new Core.WorkingHoursServices.IsInWorkingHoursCommand());
 
                 if (useWorkingHours)
                 {
@@ -64,7 +73,7 @@ namespace PresenceLight.Pages
             try
             {
                 btnSettings.IsEnabled = false;
-               
+
                 if (Transparent.IsChecked == true)
                 {
                     SettingsHandlerBase.Config.IconType = "Transparent";

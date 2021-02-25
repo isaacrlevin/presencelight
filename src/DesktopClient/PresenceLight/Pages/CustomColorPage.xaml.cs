@@ -14,16 +14,27 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+
 namespace PresenceLight.Pages
 {
 
     public partial class CustomColorPage
     {
-        private MainWindowModern parentWindow;
+        private MediatR.IMediator _mediator;
+        MainWindowModern parentWindow;
+        ILogger _logger;
+
         public CustomColorPage()
         {
+            _mediator = App.Host.Services.GetRequiredService<MediatR.IMediator>();
+
+            _logger = App.Host.Services.GetRequiredService<ILogger<CustomColorPage>>();
+
+         
             InitializeComponent();
-            parentWindow = Application.Current.Windows.OfType<MainWindowModern>().FirstOrDefault();
+            parentWindow = Application.Current.Windows.OfType<MainWindowModern>().First();
         }
 
         private void SetTeamsPresence_Click(object sender, RoutedEventArgs e)

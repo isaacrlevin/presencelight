@@ -78,7 +78,7 @@
                             </ui:NavigationViewItem.Icon>
                         </ui:NavigationViewItem>
 
-                        <ui:NavigationViewItem Content="LIFX">
+                        <ui:NavigationViewItem Content="LIFX" Tag="{x:Type pages:LIFX }">
                             <ui:NavigationViewItem.Icon>
                                 <ui:FontIcon Glyph="&#xE82F;" />
                             </ui:NavigationViewItem.Icon>

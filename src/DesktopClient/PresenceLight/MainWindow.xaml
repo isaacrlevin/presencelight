@@ -39,19 +39,7 @@
                                 />
             </TabItem>
            
-            <TabItem Header="Configure LIFX" >
-                <lc:LIFX x:Name="lifx"
-                         oncbIsLIFXEnabledChanged="cbIsLIFXEnabledChanged"
-                         oncbLIFXIsDisabledChange="cbLIFXIsDisabledChange"
-                         oncbUseLIFXActivityStatus="cbUseLIFXActivityStatus"
-                         onCheckLIFXClick="CheckLIFX_Click"
-                         onddlLIFXLightsSelectionChanged="ddlLIFXLights_SelectionChanged"
-                         onLIFXTokenGet="LIFXToken_Get"
-                         onSaveLIFXClick="SaveLIFX_Click"
-                         
-
-                         />
-            </TabItem>
+            
            
             <TabItem Header="Settings" >
                 <lc:Settings x:Name="settings"

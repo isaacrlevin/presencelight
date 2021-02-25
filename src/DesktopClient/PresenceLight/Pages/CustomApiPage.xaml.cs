@@ -40,6 +40,16 @@ namespace PresenceLight.Pages
             _logger = App.Host.Services.GetRequiredService<ILogger<CustomApiPage>>();
 
             InitializeComponent();
+            if (SettingsHandlerBase.Config.LightSettings.CustomApi.IsEnabled)
+            {
+                pnlCustomApi.Visibility = Visibility.Visible;
+
+                SettingsHandlerBase.SyncOptions();
+            }
+            else
+            {
+                pnlCustomApi.Visibility = Visibility.Collapsed;
+            }
         }
 
         private async void btnApiSettingsSave_Click(object sender, RoutedEventArgs e)

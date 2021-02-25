@@ -49,31 +49,8 @@ namespace PresenceLight
                 }
 
                
-                if (Config.LightSettings.LIFX.IsEnabled)
-                {
-                    if (!string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXClientId) && !(string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXClientSecret)))
-                    {
-                        lifx.getTokenLink.Visibility = Visibility.Visible;
-                        lifx.pnlLIFX.Visibility = Visibility.Visible;
-                    }
-                    SyncOptions();
-                }
-                else
-                {
-                    lifx.getTokenLink.Visibility = Visibility.Collapsed;
-                    lifx.pnlLIFX.Visibility = Visibility.Collapsed;
-                }
-                //TODO: Come Back and readdress if necessary
-                //if (Config.LightSettings.CustomApi.IsEnabled)
-                //{
-                //    customapi.pnlCustomApi.Visibility = Visibility.Visible;
-
-                //    SyncOptions();
-                //}
-                //else
-                //{
-                //    customapi.pnlCustomApi.Visibility = Visibility.Collapsed;
-                //}
+              
+             
             }
             catch (Exception e)
             {

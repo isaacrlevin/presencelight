@@ -102,7 +102,7 @@ namespace PresenceLight
             try
             {
                 CheckHue(true);
-                CheckLIFX();
+               
                 CheckAAD();
 
                 previousRemoteFlag = Config.LightSettings.Hue.UseRemoteApi;
@@ -571,7 +571,7 @@ namespace PresenceLight
         private void TabControl_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             phillipsHue.lblHueSaved.Visibility = Visibility.Collapsed;
-            lifx.lblLIFXSaved.Visibility = Visibility.Collapsed;
+   
             settings.lblSettingSaved.Visibility = Visibility.Collapsed;
         }
 
