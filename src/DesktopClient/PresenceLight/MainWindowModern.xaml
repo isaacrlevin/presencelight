@@ -7,7 +7,7 @@
         xmlns:pages="clr-namespace:PresenceLight.Pages"
         mc:Ignorable="d"
         Title="PresenceLight"
-        Width="1366"
+        Width="1100"
         Height="768"
         MinWidth="500"
         MinHeight="500"
@@ -98,12 +98,6 @@
                     </ui:NavigationViewItem.MenuItems>
                 </ui:NavigationViewItem>
                 
-                <ui:NavigationViewItem Content="Settings" Tag="{x:Type pages:SettingsPage }">
-                    <ui:NavigationViewItem.Icon>
-                        <ui:FontIcon FontFamily="Wingdings" Glyph="&#x0032;" />
-                    </ui:NavigationViewItem.Icon>
-                </ui:NavigationViewItem>
-
                 <ui:NavigationViewItem Content="Logs" Tag="{x:Type pages:LogsPage }">
                     <ui:NavigationViewItem.Icon>
                         <ui:FontIcon FontFamily="Wingdings" Glyph="&#x0032;" />

@@ -27,8 +27,15 @@
                 <CheckBox x:Name="cbIsPhillipsEnabled" IsChecked="{Binding LightSettings.Hue.IsEnabled}" Content="Connect to Phillips Hue" Grid.Column="1" Grid.ColumnSpan="4" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbIsPhillipsEnabledChanged" Checked="cbIsPhillipsEnabledChanged" />
             </Grid>
             <Grid x:Name="pnlHueApi" Grid.Column="2" Grid.ColumnSpan="2">
-                <CheckBox x:Name="cbUseRemoteHueApi" IsChecked="{Binding LightSettings.Hue.UseRemoteApi}" Content="Use Remote Api" Grid.Column="1" Grid.ColumnSpan="4" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbUseRemoteApiChanged" Checked="cbUseRemoteApiChanged" />
-                <Button Grid.Row="1" VerticalAlignment="Center" x:Name="remoteHueButton" HorizontalAlignment="Left" Grid.Column="1" Height="23" Width="120" Content="Login to Hue Cloud" Click="HueApiKey_Get" Grid.ColumnSpan="2" Margin="214,20,0,0"/>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <CheckBox x:Name="cbUseRemoteHueApi" IsChecked="{Binding LightSettings.Hue.UseRemoteApi}" Content="Use Remote Api" Grid.Column="0" HorizontalAlignment="Center" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbUseRemoteApiChanged" Checked="cbUseRemoteApiChanged" />
+                <Button VerticalAlignment="Center" x:Name="remoteHueButton" HorizontalAlignment="Left" Grid.Column="1" Width="150" Content="Login to Hue Cloud" Click="HueApiKey_Get" Margin="0,15,0,0"/>
             </Grid>
             <Grid x:Name="pnlPhillips"  Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3">
                 <Grid.ColumnDefinitions>
@@ -38,21 +45,21 @@
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="10" />
-                    <RowDefinition Height="30" />
-                    <RowDefinition Height="46" />
+                    <RowDefinition Height="50" />
+                    <RowDefinition Height="50" />
                     <RowDefinition Height="60"/>
                     <RowDefinition Height="60"/>
                     <RowDefinition Height="*" />
                     <RowDefinition Height="100" />
                 </Grid.RowDefinitions>
                 <Label Grid.Row="1" Grid.Column="0"  Content="Hue Bridge IP Address" />
-                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding LightSettings.Hue.HueIpAddress}" x:Name="hueIpAddress" HorizontalAlignment="Center" Height="23"  TextWrapping="Wrap" VerticalAlignment="Center" Width="120" TextChanged="HueIpAddress_TextChanged"/>
-                <Button Grid.Row="1" VerticalAlignment="Center" x:Name="btnFindBridge" HorizontalAlignment="Left" Grid.Column="1" Height="23" Width="120" Content="Find Bridge" Click="FindBridge_Click" Grid.ColumnSpan="2" Margin="214,0,0,0"/>
+                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding LightSettings.Hue.HueIpAddress}" x:Name="hueIpAddress" HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Center" Width="150" TextChanged="HueIpAddress_TextChanged"/>
+                <Button Grid.Row="1" VerticalAlignment="Center" x:Name="btnFindBridge" HorizontalAlignment="Left" Grid.Column="2" Width="150" Content="Find Bridge" Click="FindBridge_Click" Grid.ColumnSpan="2" Margin="0,0,0,0"/>
 
-                <Button Grid.Row="2" Grid.Column="1" x:Name="btnRegister" Height="23" Width="120" HorizontalAlignment="Left" Content="Register Bridge"  Click=" RegisterBridge_Click" Grid.ColumnSpan="2" Margin="214,11,0,11"/>
+                <Button Grid.Row="2" Grid.Column="2" x:Name="btnRegister" Width="150" HorizontalAlignment="Left" Content="Register Bridge"  Click=" RegisterBridge_Click" Grid.ColumnSpan="2" Margin="0,0,0,0"/>
 
-                <Label Grid.Row="3" VerticalAlignment="Top" Grid.Column="1" HorizontalAlignment="Center" Margin="0,0,0,0" >
-                    <TextBlock  x:Name="lblHueMessage" TextWrapping="Wrap"   TextAlignment="Center">
+                <Label Grid.Row="3" VerticalAlignment="Top" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Center" Margin="0,0,0,0" >
+                    <TextBlock  x:Name="lblHueMessage" TextWrapping="Wrap" TextAlignment="Center">
                     </TextBlock>
                 </Label>
 
@@ -61,8 +68,8 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <Button Grid.Row="2" Grid.Column="0" VerticalAlignment="Top" x:Name="btnGetHueLights" Click="CheckHue_Click" Height="45" Width="170" Content="Get Lights" />
-                    <Button Grid.Row="2" Grid.Column="1" VerticalAlignment="Top" x:Name="btnGetHueGroups" Click="CheckHue_Click" Height="45" Width="170" Content="Get Groups" />
+                    <Button Grid.Row="2" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Top" x:Name="btnGetHueLights" Click="CheckHue_Click" Height="45" Width="150" Content="Get Lights" />
+                    <Button Grid.Row="2" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Top" x:Name="btnGetHueGroups" Click="CheckHue_Click" Height="45" Width="150" Content="Get Groups" />
                 </Grid>
 
                 <Grid x:Name="pnlHueData"   Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="3" Margin="0,0,0,0">
@@ -242,8 +249,8 @@
                 </Grid>
 
                 <Image Grid.Row="5" Grid.Column="1" x:Name="imgHueLoading" Visibility="Collapsed" gif:ImageBehavior.AnimatedSource="../Icons/loading.gif" Width="75" Margin="70,42,69,215" Grid.RowSpan="4"  />
-                <Button Grid.Row="6" VerticalAlignment="Center" Grid.Column="1" x:Name="btnHue" Height="45" Width="170" Content="Save"  Click="SaveHue_Click" />
-                <Label Grid.Row="6"  VerticalAlignment="Top" Grid.Column="1" x:Name="lblHueSaved" HorizontalAlignment="Center" Visibility="Visible" Content="Settings Updated" Foreground="Green" Margin="0,0,0,0" Grid.RowSpan="2" />
+                <Button Grid.Row="6" VerticalAlignment="Center" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Center" x:Name="btnHue" Height="45" Width="170" Content="Save"  Click="SaveHue_Click" />
+                <Label Grid.Row="6"  VerticalAlignment="Top" Grid.Column="0" Grid.ColumnSpan="3" x:Name="lblHueSaved" HorizontalAlignment="Center" Visibility="Visible" Content="Settings Updated" Foreground="Green" Margin="0,0,0,0" />
             </Grid>
         </Grid>
     </ScrollViewer>

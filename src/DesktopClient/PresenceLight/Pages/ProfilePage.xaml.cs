@@ -52,7 +52,7 @@ namespace PresenceLight.Pages
             turnOffButton.Visibility = Visibility.Collapsed;
             turnOnButton.Visibility = Visibility.Collapsed;
 
-           
+
         }
         protected override void Start()
         {
@@ -76,7 +76,7 @@ namespace PresenceLight.Pages
 
         public async Task CallGraph()
         {
-           // var lightColors = System.Windows.Application.Current.Windows.OfType<Pages.CustomColorPage>().First();
+            // var lightColors = System.Windows.Application.Current.Windows.OfType<Pages.CustomColorPage>().First();
 
 
             LightMode = "Graph";
@@ -119,7 +119,7 @@ namespace PresenceLight.Pages
                     {
                         if (LightMode == "Graph")
                         {
-                            await _mediator.Send(new SetColorCommand { Activity = presence.Activity, Color = presence.Availability }).ConfigureAwait(true);
+                            // await _mediator.Send(new SetColorCommand { Activity = presence.Activity, Color = presence.Availability }).ConfigureAwait(true);
 
                         }
                     }
@@ -130,7 +130,7 @@ namespace PresenceLight.Pages
                         {
                             if (LightMode == "Graph")
                             {
-                                await _mediator.Send(new Services.SetColorCommand { Activity = presence.Activity, Color = presence.Availability }).ConfigureAwait(true);
+                                //await _mediator.Send(new Services.SetColorCommand { Activity = presence.Activity, Color = presence.Availability }).ConfigureAwait(true);
 
                             }
                         }
@@ -145,15 +145,15 @@ namespace PresenceLight.Pages
                                     {
 
                                         case "White":
-                                            await _mediator.Send(new SetColorCommand { Activity = presence.Activity, Color = "Offline" }).ConfigureAwait(true);
+                                            // await _mediator.Send(new SetColorCommand { Activity = presence.Activity, Color = "Offline" }).ConfigureAwait(true);
 
                                             break;
                                         case "Off":
-                                            await _mediator.Send(new SetColorCommand { Activity = presence.Activity, Color = "Off" }).ConfigureAwait(true);
+                                            // await _mediator.Send(new SetColorCommand { Activity = presence.Activity, Color = "Off" }).ConfigureAwait(true);
 
                                             break;
                                         default:
-                                            await _mediator.Send(new SetColorCommand { Activity = presence.Activity, Color = presence.Availability }).ConfigureAwait(true);
+                                            // await _mediator.Send(new SetColorCommand { Activity = presence.Activity, Color = presence.Availability }).ConfigureAwait(true);
 
 
                                             break;
@@ -252,12 +252,12 @@ namespace PresenceLight.Pages
                                 if (newColor == string.Empty)
                                 {
 
-                                    await _mediator.Send(new SetColorCommand { Activity = presence.Activity, Color = presence.Availability }).ConfigureAwait(true);
+                                    // await _mediator.Send(new SetColorCommand { Activity = presence.Activity, Color = presence.Availability }).ConfigureAwait(true);
 
                                 }
                                 else
                                 {
-                                    await _mediator.Send(new SetColorCommand { Activity = presence.Activity, Color = newColor }).ConfigureAwait(true);
+                                    // await _mediator.Send(new SetColorCommand { Activity = presence.Activity, Color = newColor }).ConfigureAwait(true);
 
                                 }
 
@@ -287,7 +287,7 @@ namespace PresenceLight.Pages
 
                                     if (LightMode == "Theme")
                                     {
-                                        await _mediator.Send(new SetColorCommand { Color = color }).ConfigureAwait(true);
+                                        //  await _mediator.Send(new SetColorCommand { Color = color }).ConfigureAwait(true);
 
 
                                     }
@@ -379,8 +379,8 @@ namespace PresenceLight.Pages
                     userName.Content = profile.DisplayName;
                 }
 
-                activity.Content = "Activity: " + presence.Activity;
-                availability.Content = "Availability: " + presence.Availability;
+                activity.Content = "Activity: " + Helpers.HumanifyText(presence.Activity);
+                availability.Content = "Availability: " + Helpers.HumanifyText(presence.Availability);
             }
             catch (Exception e)
             {

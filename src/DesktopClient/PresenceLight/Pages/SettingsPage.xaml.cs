@@ -31,12 +31,12 @@ namespace PresenceLight.Pages
     {
         private MainWindowModern parentWindow;
         private DiagnosticsClient _diagClient;
-        private MediatR.IMediator _mediator;
+        //private MediatR.IMediator _mediator;
 
         ILogger _logger;
         public SettingsPage()
         {
-            _mediator = App.ServiceProvider.GetRequiredService<MediatR.IMediator>();
+            //_mediator = App.ServiceProvider.GetRequiredService<MediatR.IMediator>();
             _diagClient = App.ServiceProvider.GetRequiredService<DiagnosticsClient>();
             _logger = App.ServiceProvider.GetRequiredService<ILogger<SettingsPage>>();
 
@@ -44,7 +44,16 @@ namespace PresenceLight.Pages
 
             InitializeComponent();
 
-         
+            if (SettingsHandlerBase.Config.LightSettings.UseWorkingHours)
+            {
+
+                pnlWorkingHours.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                pnlWorkingHours.Visibility = Visibility.Collapsed;
+            }
+
 
             switch (SettingsHandlerBase.Config.Theme)
             {
@@ -67,7 +76,7 @@ namespace PresenceLight.Pages
             }
             else
             {
-                 White.IsChecked = true;
+                White.IsChecked = true;
             }
 
             switch (SettingsHandlerBase.Config.LightSettings.HoursPassedStatus)
@@ -79,10 +88,10 @@ namespace PresenceLight.Pages
                     HourStatusWhite.IsChecked = true;
                     break;
                 case "Off":
-                   HourStatusOff.IsChecked = true;
+                    HourStatusOff.IsChecked = true;
                     break;
                 default:
-                  HourStatusKeep.IsChecked = true;
+                    HourStatusKeep.IsChecked = true;
                     break;
             }
             if (SettingsHandlerBase.Config.IconType == "Transparent")
@@ -91,7 +100,7 @@ namespace PresenceLight.Pages
             }
             else
             {
-                
+
                 White.IsChecked = true;
             }
         }
@@ -135,8 +144,8 @@ namespace PresenceLight.Pages
         {
             try
             {
-                bool useWorkingHours = await _mediator.Send(new Core.WorkingHoursServices.UseWorkingHoursCommand());
-                bool IsInWorkingHours = await _mediator.Send(new Core.WorkingHoursServices.IsInWorkingHoursCommand());
+                bool useWorkingHours = await parentWindow._mediator.Send(new Core.WorkingHoursServices.UseWorkingHoursCommand());
+                bool IsInWorkingHours = await parentWindow._mediator.Send(new Core.WorkingHoursServices.IsInWorkingHoursCommand());
 
                 if (useWorkingHours)
                 {
@@ -324,16 +333,16 @@ namespace PresenceLight.Pages
         {
             if (!SettingsHandlerBase.Config.LightSettings.SyncLights)
             {
-                await _mediator.Send(new Services.SetColorCommand { Color = "Off" }).ConfigureAwait(true);
-             
-                 var landingPage = System.Windows.Application.Current.Windows.OfType<Pages.ProfilePage>().First();
+                await parentWindow._mediator.Send(new SetColorCommand { Color = "Off" }).ConfigureAwait(true);
+
+                var landingPage = System.Windows.Application.Current.Windows.OfType<Pages.ProfilePage>().First();
 
                 landingPage.turnOffButton.Visibility = Visibility.Collapsed;
                 landingPage.turnOnButton.Visibility = Visibility.Visible;
             }
 
             SettingsHandlerBase.SyncOptions();
-            await _mediator.Send(new SaveSettingsCommand()).ConfigureAwait(true);
+            await parentWindow._mediator.Send(new SaveSettingsCommand()).ConfigureAwait(true);
             e.Handled = true;
         }
 
@@ -349,7 +358,7 @@ namespace PresenceLight.Pages
             }
 
             SettingsHandlerBase.SyncOptions();
-            await _mediator.Send(new SaveSettingsCommand()).ConfigureAwait(true);
+            await parentWindow._mediator.Send(new SaveSettingsCommand()).ConfigureAwait(true);
             e.Handled = true;
         }
 
@@ -381,7 +390,7 @@ namespace PresenceLight.Pages
 
         private void time_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-             
+
             if (SettingsHandlerBase.Config.LightSettings.WorkingHoursStartTimeAsDate.HasValue)
             {
                 SettingsHandlerBase.Config.LightSettings.WorkingHoursStartTime = SettingsHandlerBase.Config.LightSettings.WorkingHoursStartTimeAsDate.HasValue ? SettingsHandlerBase.Config.LightSettings.WorkingHoursStartTimeAsDate.Value.TimeOfDay.ToString() : string.Empty;

@@ -45,7 +45,7 @@
                     <RowDefinition Height="50" />
                 </Grid.RowDefinitions>
                 <Grid VerticalAlignment="Top" Grid.Row="0">
-                    <Button x:Name="SignOutButton" Height="30" Width="60" Content="Sign-Out" HorizontalAlignment="Right" Click="SignOutButton_Click"  FontFamily="Segoe Ui"/>
+                    <Button x:Name="SignOutButton" Height="40" Width="100" Content="Sign-Out" HorizontalAlignment="Right" Click="SignOutButton_Click"  FontFamily="Segoe Ui"/>
                 </Grid>
                 <Grid Grid.Row="1">
                     <Label x:Name="userName" HorizontalAlignment="Center" FontSize="40" MinHeight="120" FontFamily="Segoe Ui"/>
