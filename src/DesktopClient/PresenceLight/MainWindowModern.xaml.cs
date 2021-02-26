@@ -44,20 +44,13 @@ namespace PresenceLight
 
         public Presence presence { get; set; }
         public DateTime settingsLastSaved = DateTime.MinValue;
-
         public MediatR.IMediator _mediator;
         public LIFXOAuthHelper _lIFXOAuthHelper;
-
-
-        private DiagnosticsClient _diagClient;
-
+        public DiagnosticsClient _diagClient;
         public readonly IGraphService _graphservice;
-
         public IWorkingHoursService _workingHoursService;
         public WindowState lastWindowState;
-
         public readonly ILogger<MainWindowModern> _logger;
-
 
         public MainWindowModern(IGraphService graphService,
                           IWorkingHoursService workingHoursService,
@@ -106,8 +99,6 @@ namespace PresenceLight
                 }
             });
 
-
-
             NavView.SelectedItem = NavView.MenuItems.OfType<NavigationViewItem>().First();
             Navigate(NavView.SelectedItem);
 
@@ -115,6 +106,10 @@ namespace PresenceLight
             {
                 UpdateAppTitle();
             };
+
+            //while (true)
+            //{ }
+
         }
 
 
@@ -186,6 +181,7 @@ namespace PresenceLight
 
             _logger.LogInformation("PresenceLight Session Ending");
         }
+
         private void NavView_PaneOpening(NavigationView sender, object args)
         {
             UpdateAppTitleMargin(sender);
@@ -240,9 +236,7 @@ namespace PresenceLight
                 AppTitle.Margin = new Thickness(largeLeftIndent, currMargin.Top, currMargin.Right, currMargin.Bottom);
             }
         }
-
-     
-
+          
         private void Navigate(object item)
         {
             if (item is NavigationViewItem menuItem)

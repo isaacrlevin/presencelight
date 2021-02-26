@@ -1,25 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-
 using PresenceLight.Services;
 using PresenceLight.Telemetry;
-
-
 using ModernWpf;
 
 namespace PresenceLight.Pages
@@ -29,18 +15,15 @@ namespace PresenceLight.Pages
     /// </summary>
     public partial class SettingsPage
     {
-        private MainWindowModern parentWindow;
+        private MainWindowModern _parentWindow;
         private DiagnosticsClient _diagClient;
-        //private MediatR.IMediator _mediator;
-
-        ILogger _logger;
+        private ILogger _logger;
         public SettingsPage()
         {
-            //_mediator = App.ServiceProvider.GetRequiredService<MediatR.IMediator>();
             _diagClient = App.ServiceProvider.GetRequiredService<DiagnosticsClient>();
             _logger = App.ServiceProvider.GetRequiredService<ILogger<SettingsPage>>();
 
-            parentWindow = System.Windows.Application.Current.Windows.OfType<MainWindowModern>().First();
+            _parentWindow = Application.Current.Windows.OfType<MainWindowModern>().First();
 
             InitializeComponent();
 
@@ -103,6 +86,8 @@ namespace PresenceLight.Pages
 
                 White.IsChecked = true;
             }
+
+            PopulateWorkingDays();
         }
 
         private void OnThemeToggle(object sender, RoutedEventArgs e)
@@ -122,50 +107,42 @@ namespace PresenceLight.Pages
                 SettingsHandlerBase.Config.Theme = "Light";
             }
 
-            switch (SettingsHandlerBase.Config.Theme)
+            ThemeManager.Current.ApplicationTheme = SettingsHandlerBase.Config.Theme switch
             {
-                case "Light":
-                    ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
-                    break;
-                case "Dark":
-                    ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
-                    break;
-                case "Use system setting":
-                    ThemeManager.Current.ApplicationTheme = null;
-                    break;
-                default:
-                    ThemeManager.Current.ApplicationTheme = null;
-                    break;
-            }
+                "Light" => ApplicationTheme.Light,
+                "Dark" => ApplicationTheme.Dark,
+                "Use system setting" => null,
+                _ => null,
+            };
         }
 
 
-        private async Task LoadSettings()
-        {
-            try
-            {
-                bool useWorkingHours = await parentWindow._mediator.Send(new Core.WorkingHoursServices.UseWorkingHoursCommand());
-                bool IsInWorkingHours = await parentWindow._mediator.Send(new Core.WorkingHoursServices.IsInWorkingHoursCommand());
+        //private async Task LoadSettings()
+        //{
+        //    try
+        //    {
+        //        bool useWorkingHours = await parentWindow._mediator.Send(new Core.WorkingHoursServices.UseWorkingHoursCommand());
+        //        bool IsInWorkingHours = await parentWindow._mediator.Send(new Core.WorkingHoursServices.IsInWorkingHoursCommand());
 
-                if (useWorkingHours)
-                {
-                    pnlWorkingHours.Visibility = Visibility.Visible;
+        //        if (useWorkingHours)
+        //        {
+        //            pnlWorkingHours.Visibility = Visibility.Visible;
 
-                    SettingsHandlerBase.SyncOptions();
-                }
-                else
-                {
-                    pnlWorkingHours.Visibility = Visibility.Collapsed;
-                    SettingsHandlerBase.SyncOptions();
-                }
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "Error occured Loading Settings");
+        //            SettingsHandlerBase.SyncOptions();
+        //        }
+        //        else
+        //        {
+        //            pnlWorkingHours.Visibility = Visibility.Collapsed;
+        //            SettingsHandlerBase.SyncOptions();
+        //        }
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        _logger.LogError(e, "Error occured Loading Settings");
 
-                _diagClient.TrackException(e);
-            }
-        }
+        //        _diagClient.TrackException(e);
+        //    }
+        //}
 
         private async void SaveSettings_Click(object sender, RoutedEventArgs e)
         {
@@ -204,7 +181,10 @@ namespace PresenceLight.Pages
                 SetWorkingDays();
 
                 SettingsHandlerBase.SyncOptions();
-                await parentWindow._mediator.Send(new SaveSettingsCommand()).ConfigureAwait(true);
+                if (!await _parentWindow._mediator.Send(new SaveSettingsCommand()).ConfigureAwait(true))
+                {
+                    _logger.LogDebug("Settings Not Saved Properly");
+                }
 
                 lblSettingSaved.Visibility = Visibility.Visible;
                 btnSettings.IsEnabled = true;
@@ -219,7 +199,7 @@ namespace PresenceLight.Pages
 
         private void SetWorkingDays()
         {
-            List<string> days = new List<string>();
+            var days = new List<string>();
 
             if (Monday.IsChecked != null && Monday.IsChecked.Value)
             {
@@ -272,11 +252,11 @@ namespace PresenceLight.Pages
                 //    landingPage.signInPanel.Visibility = Visibility.Visible;
                 //}
 
-                if (!await parentWindow._mediator.Send(new Core.GraphServices.GetIsInitializedCommand()))
+                if (!await _parentWindow._mediator.Send(new Core.GraphServices.GetIsInitializedCommand()))
                 {
-                    await parentWindow._mediator.Send(new Core.GraphServices.InitializeCommand()
+                    await _parentWindow._mediator.Send(new Core.GraphServices.InitializeCommand()
                     {
-                        Client = parentWindow._graphservice.GetAuthenticatedGraphClient()
+                        Client = _parentWindow._graphservice.GetAuthenticatedGraphClient()
                     });
 
                 }
@@ -333,16 +313,19 @@ namespace PresenceLight.Pages
         {
             if (!SettingsHandlerBase.Config.LightSettings.SyncLights)
             {
-                await parentWindow._mediator.Send(new SetColorCommand { Color = "Off" }).ConfigureAwait(true);
+                await _parentWindow._mediator.Send(new SetColorCommand { Color = "Off" }).ConfigureAwait(true);
 
-                var landingPage = System.Windows.Application.Current.Windows.OfType<Pages.ProfilePage>().First();
+                //var landingPage = System.Windows.Application.Current.Windows.OfType<Pages.ProfilePage>().First();
 
-                landingPage.turnOffButton.Visibility = Visibility.Collapsed;
-                landingPage.turnOnButton.Visibility = Visibility.Visible;
+                //landingPage.turnOffButton.Visibility = Visibility.Collapsed;
+                //landingPage.turnOnButton.Visibility = Visibility.Visible;
             }
 
             SettingsHandlerBase.SyncOptions();
-            await parentWindow._mediator.Send(new SaveSettingsCommand()).ConfigureAwait(true);
+            if (!await _parentWindow._mediator.Send(new SaveSettingsCommand()).ConfigureAwait(true))
+            {
+                _logger.LogDebug("Settings Not Saved Properly");
+            }
             e.Handled = true;
         }
 
@@ -358,7 +341,10 @@ namespace PresenceLight.Pages
             }
 
             SettingsHandlerBase.SyncOptions();
-            await parentWindow._mediator.Send(new SaveSettingsCommand()).ConfigureAwait(true);
+            if (!await _parentWindow._mediator.Send(new SaveSettingsCommand()).ConfigureAwait(true))
+            {
+                _logger.LogDebug("Settings Not Saved Properly");
+            }
             e.Handled = true;
         }
 
@@ -373,7 +359,7 @@ namespace PresenceLight.Pages
             {
                 SettingsHandlerBase.Config.LightSettings.WorkingHoursEndTime = SettingsHandlerBase.Config.LightSettings.WorkingHoursEndTimeAsDate.HasValue ? SettingsHandlerBase.Config.LightSettings.WorkingHoursEndTimeAsDate.Value.TimeOfDay.ToString() : string.Empty;
             }
-            bool useWorkingHours = await parentWindow._mediator.Send(new Core.WorkingHoursServices.UseWorkingHoursCommand());
+            var useWorkingHours = await _parentWindow._mediator.Send(new Core.WorkingHoursServices.UseWorkingHoursCommand());
 
             if (useWorkingHours)
             {

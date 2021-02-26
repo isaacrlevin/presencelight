@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Media;
-
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace PresenceLight.Services
@@ -13,10 +9,10 @@ namespace PresenceLight.Services
     {
         readonly MediatR.IMediator _mediator;
         readonly ILogger _logger;
-        public ColorService(MediatR.Mediator mediator, ILogger<ColorService> logger)
+        public ColorService(ILogger<ColorService> logger)
         {
             _logger = logger;
-            _mediator = mediator;
+            _mediator = App.ServiceProvider.GetRequiredService<MediatR.IMediator>();
         }
 
         public async Task SetColor(string color, string activity)
@@ -64,18 +60,6 @@ namespace PresenceLight.Services
                 if (SettingsHandlerBase.Config.LightSettings.CustomApi.IsEnabled)
                 {
                     string response = await _mediator.Send(new Core.CustomApiServices.SetColorCommand() { Activity = activity, Availability = color });
-                    var customapi = System.Windows.Application.Current.Windows.OfType<Pages.CustomApiPage>().First();
-
-                    //TODO: Fix this so it works!
-                    customapi.customApiLastResponse.Content = response;
-                    if (response.Contains("Error:", StringComparison.OrdinalIgnoreCase))
-                    {
-                        customapi.customApiLastResponse.Foreground = new SolidColorBrush(Colors.Red);
-                    }
-                    else
-                    {
-                        customapi.customApiLastResponse.Foreground = new SolidColorBrush(Colors.Green);
-                    }
                 }
             }
             catch (Exception e)

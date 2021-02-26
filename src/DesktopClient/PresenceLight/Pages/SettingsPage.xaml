@@ -4,12 +4,12 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:ui="http://schemas.modernwpf.com/2019"
-         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
-            xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-      xmlns:local="clr-namespace:PresenceLight"
-      mc:Ignorable="d" 
-      d:DesignHeight="1000" d:DesignWidth="600"
-      Title="SettingsPage">
+    xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+    xmlns:local="clr-namespace:PresenceLight"
+    mc:Ignorable="d" 
+    d:DesignHeight="1000" d:DesignWidth="600"
+    Title="SettingsPage">
     <Page.Resources>
         <local:AppThemeConverter x:Key="AppThemeConverter" />
     </Page.Resources>

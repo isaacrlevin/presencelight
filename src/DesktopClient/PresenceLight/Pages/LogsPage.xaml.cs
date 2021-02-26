@@ -39,7 +39,7 @@ namespace PresenceLight.Pages
             PresenceEventsLogSink.PresenceEventsLogHandler += Handler;
             InitializeFileWatcher();
         }
-         
+
         ObservableCollection<LogEvent> _events = new();
         ObservableCollection<FileInfo> LogFiles = new();
 
@@ -79,7 +79,7 @@ namespace PresenceLight.Pages
             UpdateCollection(e);
 
         }
-     
+
 
         bool fileWatcherInitialized = false;
 
@@ -182,7 +182,6 @@ namespace PresenceLight.Pages
                      {
                          UpdateCollection(e);
                      }));
-
             }
 
         }

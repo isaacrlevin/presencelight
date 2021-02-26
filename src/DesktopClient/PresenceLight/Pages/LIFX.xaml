@@ -7,7 +7,7 @@
       xmlns:gif="http://wpfanimatedgif.codeplex.com"
       xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="1100" d:DesignWidth="800"
       Title="LIFX">
 
     <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
@@ -29,11 +29,8 @@
                     <ColumnDefinition Width="553*"/>
                 </Grid.ColumnDefinitions>
                 <CheckBox x:Name="cbIsLIFXEnabled" IsChecked="{Binding LightSettings.LIFX.IsEnabled}" Content="Connect to LIFX Light" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbIsLIFXEnabledChanged" Checked="cbIsLIFXEnabledChanged" />
-                <TextBlock x:Name="getTokenLink" Grid.Column="1"  Margin="59,20,0,0" >
-                            <Hyperlink NavigateUri="https://cloud.lifx.com/settings"  RequestNavigate="LIFXToken_Get">
-                            Get Token
-                        </Hyperlink>
-                </TextBlock>
+                <Button x:Name="getTokenLink" Content="Get Token" Click="LIFXToken_Get" Grid.Column="1"  Margin="59,20,0,0" />
+
             </Grid>
             <Grid x:Name="pnlLIFX" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3">
                 <Grid.ColumnDefinitions>
@@ -43,42 +40,43 @@
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="10" />
-                    <RowDefinition Height="70" />
                     <RowDefinition Height="50" />
                     <RowDefinition Height="50" />
+                    <RowDefinition Height="60"/>
+                    <RowDefinition Height="60"/>
                     <RowDefinition Height="*" />
-                    <RowDefinition Height="150" />
+                    <RowDefinition Height="100" />
                 </Grid.RowDefinitions>
                 <Label Grid.Row="1" Grid.Column="0" Content="LIFX Token" />
                 <TextBox  Grid.Row="1" Grid.ColumnSpan="3" Grid.Column="0" Margin="80,0,0,0" Text="{Binding LightSettings.LIFX.LIFXApiKey}" x:Name="lifxApiKey" HorizontalAlignment="Left" Height="50" TextWrapping="Wrap" VerticalAlignment="Top" Width="470" />
 
-                <Grid Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="3">
+                <Grid Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="3">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <Button Grid.Row="2" Grid.Column="0" VerticalAlignment="Top" x:Name="btnGetLIFXLights" Height="45" Width="170" Content="Get Lights"  Click="CheckLIFX_Click"/>
-                    <Button Grid.Row="2" Grid.Column="1" VerticalAlignment="Top" x:Name="btnGetLIFXGroups" Height="45" Width="170" Content="Get Groups" Click="CheckLIFX_Click"/>
+                    <Button Grid.Row="2" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Top" x:Name="btnGetLIFXLights" Click="CheckLIFX_Click" Height="45" Width="150" Content="Get Lights" />
+                    <Button Grid.Row="2" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Top" x:Name="btnGetLIFXGroups" Click="CheckLIFX_Click" Height="45" Width="150" Content="Get Groups" />
                 </Grid>
-                <Label HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="3" Grid.ColumnSpan="3" Grid.Column="0" >
-                    <TextBlock  x:Name="lblLIFXMessage" TextWrapping="Wrap"  TextAlignment="Center">
+
+                <Label Grid.Row="3" VerticalAlignment="Top" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Center" Margin="0,0,0,0" >
+                    <TextBlock  x:Name="lblLIFXMessage" TextWrapping="Wrap" TextAlignment="Center">
                     </TextBlock>
                 </Label>
 
-                <Grid x:Name="pnlLIFXData"  Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="3" Margin="0,0,0,0" Grid.RowSpan="4">
+                
+                <Grid x:Name="pnlLIFXData"   Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="3" Margin="0,0,0,0">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="80"/>
                         <RowDefinition Height="50"/>
                         <RowDefinition Height="50"/>
-                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <Grid x:Name="pnlLifxLights"   Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" Margin="0,0,0,0" Grid.RowSpan="4">
+                    <Grid x:Name="pnlLIFXLights"   Grid.Column="0" Grid.Row="0" Margin="0,0,0,0" Grid.RowSpan="2">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
@@ -90,11 +88,9 @@
                         </Grid.RowDefinitions>
 
                         <Label Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" x:Name="lifxItemType"  VerticalAlignment="Top" Margin="0,0,0,0" Content=""  Grid.RowSpan="2" />
+                        <ComboBox Grid.Row="2" Grid.Column="1" x:Name="ddlLIFXLights" DisplayMemberPath="Name" SelectionChanged="ddlLIFXLights_SelectionChanged"  HorizontalAlignment="Center" VerticalAlignment="Top" Width="150" Margin="0,11,0,0" Grid.RowSpan="2"/>
 
-                        <ComboBox Grid.Row="2" Grid.Column="1" x:Name="ddlLIFXLights" DisplayMemberPath="Label" SelectionChanged="ddlLIFXLights_SelectionChanged"  HorizontalAlignment="Center" VerticalAlignment="Top" Width="150" Margin="0,11,0,0" Grid.RowSpan="2"/>
                     </Grid>
-
-
 
                     <Grid x:Name="pnlLIFXBrightness"  Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" Margin="0,0,0,88" Grid.RowSpan="4">
                         <Grid.ColumnDefinitions>
@@ -110,11 +106,11 @@
                         <TextBox Grid.Column="2" VerticalAlignment="Center" Text="{Binding ElementName=lifxBrightness, Path=Value, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="20" TextAlignment="Center" Width="40" Grid.Row="0" />
                     </Grid>
 
-                    <Grid Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="2">
+                    <Grid Grid.Column="0" Grid.Row="2">
                         <CheckBox IsChecked="{Binding LightSettings.LIFX.UseActivityStatus}" Content="Use Activity Status" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Center" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbUseLIFXActivityStatus" Checked="cbUseLIFXActivityStatus" />
                     </Grid>
 
-                    <Grid x:Name="pnlLIFXAvailableStatuses" Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="3" Margin="0,20,0,0">
+                    <Grid x:Name="pnlLIFXAvailableStatuses" Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="3" Margin="0,20,0,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
@@ -164,9 +160,10 @@
                         <CheckBox x:Name="lifxAvailabilityOfflineDisabled" IsChecked="{Binding LightSettings.LIFX.Statuses.AvailabilityOfflineStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="7" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbLIFXIsDisabledChange" Checked="cbLIFXIsDisabledChange" />
                         <CheckBox x:Name="lifxAvailabilityPresenceUnknownDisabled" IsChecked="{Binding LightSettings.LIFX.Statuses.AvailabilityPresenceUnknownStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="8" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbLIFXIsDisabledChange" Checked="cbLIFXIsDisabledChange" />
                         <CheckBox x:Name="lifxAvailabilityOffDisabled" IsChecked="{Binding LightSettings.LIFX.Statuses.AvailabilityOffStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="9" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbLIFXIsDisabledChange" Checked="cbLIFXIsDisabledChange" />
+
                     </Grid>
 
-                    <Grid x:Name="pnlLIFXActivityStatuses"  Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="3" Margin="0,20,0,0">
+                    <Grid x:Name="pnlLIFXActivityStatuses"  Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="3" Margin="0,20,0,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
@@ -240,11 +237,13 @@
                         <CheckBox x:Name="lifxActivityPresentingDisabled" IsChecked="{Binding LightSettings.LIFX.Statuses.ActivityPresentingStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="13" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbLIFXIsDisabledChange" Checked="cbLIFXIsDisabledChange" />
                         <CheckBox x:Name="lifxActivityUrgentInterruptionsOnlyDisabled" IsChecked="{Binding LightSettings.LIFX.Statuses.ActivityUrgentInterruptionsOnlyStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="14" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbLIFXIsDisabledChange" Checked="cbLIFXIsDisabledChange" />
                         <CheckBox x:Name="lifxActivityOffDisabled" IsChecked="{Binding LightSettings.LIFX.Statuses.ActivityOffStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="15" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbLIFXIsDisabledChange" Checked="cbLIFXIsDisabledChange" />
+
                     </Grid>
                 </Grid>
-                <Image Grid.Row="4" Grid.Column="1" x:Name="imgLIFXLoading" Visibility="Collapsed" gif:ImageBehavior.AnimatedSource="../Icons/loading.gif" Width="75" Margin="70,42,69,215" Grid.RowSpan="4"  />
-                <Button Grid.Row="5" VerticalAlignment="Center" Grid.Column="1" x:Name="btnLIFX" Height="45" Width="170" Content="Save"  Click="SaveLIFX_Click" />
-                <Label Grid.Row="5" Grid.Column="1" x:Name="lblLIFXSaved" HorizontalAlignment="Center" Visibility="Visible" Content="Settings Updated" Foreground="Green" Margin="0,0,0,0" Grid.RowSpan="2" />
+
+                <Image Grid.Row="5" Grid.Column="1" x:Name="imgLIFXLoading" Visibility="Collapsed" gif:ImageBehavior.AnimatedSource="../Icons/loading.gif" Width="75" Margin="70,42,69,215" Grid.RowSpan="4"  />
+                <Button Grid.Row="6" VerticalAlignment="Center" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Center" x:Name="btnLIFX" Height="45" Width="170" Content="Save"  Click="SaveLIFX_Click" />
+                <Label Grid.Row="6"  VerticalAlignment="Top" Grid.Column="0" Grid.ColumnSpan="3" x:Name="lblLIFXSaved" HorizontalAlignment="Center" Visibility="Visible" Content="Settings Updated" Foreground="Green" Margin="0,0,0,0" />
             </Grid>
         </Grid>
     </ScrollViewer>

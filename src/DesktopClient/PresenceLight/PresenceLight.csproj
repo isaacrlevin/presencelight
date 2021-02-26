@@ -37,6 +37,7 @@
     <PackageReference Include="Microsoft.Graph.Beta" Version="0.35.0-preview" />
     <PackageReference Include="Microsoft.Graph.Core" Version="2.0.0-preview.3" />
     <PackageReference Include="Microsoft.Identity.Client" Version="4.26.0" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.705.50" />
     <PackageReference Include="ModernWpfUI" Version="0.9.3" />
     <PackageReference Include="ModernWpfUI.MahApps" Version="0.9.3" />
     <PackageReference Include="NETStandard.HttpListener" Version="1.0.3.5" />
@@ -134,11 +135,5 @@
     <PackageReference Update="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.2" />
     <PackageReference Update="Microsoft.SourceLink.GitHub" Version="1.0.0" />
     <PackageReference Update="Nerdbank.GitVersioning" Version="3.3.37" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Page Update="Pages\HuePage.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-    </Page>
   </ItemGroup>
 </Project>

@@ -21,12 +21,12 @@ using PresenceLight.Core.WizServices;
 using PresenceLight.Services;
 using PresenceLight.Telemetry;
 
-namespace PresenceLight.Controls
+namespace PresenceLight.Pages
 {
     /// <summary>
     /// Interaction logic for xaml
     /// </summary>
-    public partial class Wiz : UserControl
+    public partial class Wiz
     {
         private MainWindowModern parentWindow;
         private DiagnosticsClient _diagClient;

@@ -28,7 +28,7 @@ namespace PresenceLight.Pages
     /// Interaction logic for CustomApiPage.xaml
     /// </summary>
     [ContentProperty("Content")]
-    public partial class CustomApiPage : Page
+    public partial class CustomApiPage 
     {
         private MediatR.IMediator _mediator;
 
@@ -50,6 +50,22 @@ namespace PresenceLight.Pages
             {
                 pnlCustomApi.Visibility = Visibility.Collapsed;
             }
+
+            //string response = _mediator.Send(new Core.CustomApiServices.SetColorCommand() { Activity = activity, Availability = color });
+
+            //    var customapi = System.Windows.Application.Current.Windows.OfType<Pages.CustomApiPage>().First();
+
+            //    //TODO: Fix this so it works!
+            //    customapi.customApiLastResponse.Content = response;
+            //    if (response.Contains("Error:", StringComparison.OrdinalIgnoreCase))
+            //    {
+            //        customapi.customApiLastResponse.Foreground = new SolidColorBrush(Colors.Red);
+            //    }
+            //    else
+            //    {
+            //        customapi.customApiLastResponse.Foreground = new SolidColorBrush(Colors.Green);
+            //    }
+
         }
 
         private async void btnApiSettingsSave_Click(object sender, RoutedEventArgs e)

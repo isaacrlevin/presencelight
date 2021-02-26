@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 using System.Threading;
 using System.Windows;
 
@@ -77,11 +78,10 @@ namespace PresenceLight
             IServiceCollection services = new ServiceCollection();
             services.AddOptions();
 
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies().Where(a=> a.FullName.Contains("PresenceLight")).ToArray();
 
             //Need to tell MediatR what Assemblies to look in for Command Event Handlers
-            services.AddMediatR(
-                                typeof(SetColorHandler).Assembly,
-                                typeof(BaseConfig).Assembly);
+            services.AddMediatR(assemblies);
 
             //Override the save file location for logs if this is a packaged app... 
 

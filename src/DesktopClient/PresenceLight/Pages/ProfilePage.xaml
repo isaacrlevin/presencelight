@@ -67,8 +67,8 @@
                     <Label VerticalAlignment="Center" FontSize="20" Margin="0,-100,0,0" HorizontalAlignment="Center" x:Name="activity" />
                 </Grid>
             </Grid>
-            <Grid Grid.Column="1" Grid.Row="1" x:Name="signInPanel" Visibility="Collapsed">
-                <Button Content="Sign In" Click="SignIn_Click" Height="45" Width="170" />
+            <Grid Grid.Column="1" Grid.Row="1" x:Name="signInPanel">
+                <Button Content="Sign In" HorizontalAlignment="Center" Click="SignIn_Click" Height="45" Width="170" />
                 <Label VerticalAlignment="Center" Margin="0,-100,0,0" HorizontalAlignment="Center" Content="Login to Microsoft Account to Sync Presence" />
             </Grid>
             <Grid Grid.Column="1" Grid.Row="1" x:Name="loadingPanel" Visibility="Collapsed">

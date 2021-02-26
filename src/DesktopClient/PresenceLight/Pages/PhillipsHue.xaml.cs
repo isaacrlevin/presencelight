@@ -18,7 +18,7 @@ namespace PresenceLight.Pages
     /// <summary>
     /// Interaction logic forxaml
     /// </summary>
-    public partial class PhillipsHue : Page
+    public partial class PhillipsHue 
     {
         public bool previousRemoteFlag;
 

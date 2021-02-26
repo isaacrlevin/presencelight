@@ -90,6 +90,12 @@
                             </ui:NavigationViewItem.Icon>
                         </ui:NavigationViewItem>
 
+                        <ui:NavigationViewItem Content="Wiz" Tag="{x:Type pages:Wiz }">
+                            <ui:NavigationViewItem.Icon>
+                                <ui:FontIcon Glyph="&#xE82F;" />
+                            </ui:NavigationViewItem.Icon>
+                        </ui:NavigationViewItem>
+
                         <ui:NavigationViewItem Content="Custom Api" Tag="{x:Type pages:CustomApiPage }">
                             <ui:NavigationViewItem.Icon>
                                 <ui:FontIcon Glyph="&#xE82F;" />

@@ -19,7 +19,7 @@ namespace PresenceLight.Pages
     /// <summary>
     /// Interaction logic for LIFX.xaml
     /// </summary>
-    public partial class LIFX : Page
+    public partial class LIFX 
     {
         LIFXOAuthHelper _lifxOAuthHelper;
         private MediatR.IMediator _mediator;
@@ -55,7 +55,7 @@ namespace PresenceLight.Pages
 
         #region LIFX Panel
 
-        private async void LIFXToken_Get(object sender, RequestNavigateEventArgs e)
+        private async void LIFXToken_Get(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -66,6 +66,8 @@ namespace PresenceLight.Pages
                     SettingsHandlerBase.Config.LightSettings.LIFX.LIFXApiKey = accessToken;
                     btnGetLIFXLights.IsEnabled = true;
                     btnGetLIFXGroups.IsEnabled = true;
+
+                    CheckLIFX();
 
                     SettingsHandlerBase.SyncOptions();
                 }
@@ -110,42 +112,55 @@ namespace PresenceLight.Pages
             SolidColorBrush fontBrush = new SolidColorBrush();
             try
             {
-                if (SettingsHandlerBase.Config.LightSettings.LIFX.IsEnabled && !string.IsNullOrEmpty(SettingsHandlerBase.Config.LightSettings.LIFX.LIFXApiKey) && !string.IsNullOrEmpty(SettingsHandlerBase.Config.LightSettings.LIFX.SelectedItemId))
+                if (SettingsHandlerBase.Config.LightSettings.LIFX.IsEnabled && !string.IsNullOrEmpty(SettingsHandlerBase.Config.LightSettings.LIFX.LIFXApiKey))
                 {
                     ddlLIFXLights.ItemsSource = await _mediator.Send(new Core.LifxServices.GetAllLightsCommand()).ConfigureAwait(true);
 
-                    foreach (var item in ddlLIFXLights.Items)
+                    if (!string.IsNullOrEmpty(SettingsHandlerBase.Config.LightSettings.LIFX.SelectedItemId))
                     {
-                        if (item != null)
-                        {
-                            var light = (Light)item;
-                            if ($"id:{light?.Id}" == SettingsHandlerBase.Config.LightSettings.LIFX.SelectedItemId)
-                            {
-                                ddlLIFXLights.SelectedItem = item;
-                                lifxItemType.Content = "Lights";
-                            }
-                        }
-                    }
-
-                    if (ddlLIFXLights.SelectedItem == null)
-                    {
-                        ddlLIFXLights.ItemsSource = await _mediator.Send(new GetAllGroupsCommand()).ConfigureAwait(true);
-
                         foreach (var item in ddlLIFXLights.Items)
                         {
                             if (item != null)
                             {
-                                var group = (LifxCloud.NET.Models.Group)item;
-                                if ($"group_id:{group?.Id}" == SettingsHandlerBase.Config.LightSettings.LIFX.SelectedItemId)
+                                var light = (Light)item;
+                                if ($"id:{light?.Id}" == SettingsHandlerBase.Config.LightSettings.LIFX.SelectedItemId)
                                 {
                                     ddlLIFXLights.SelectedItem = item;
-                                    lifxItemType.Content = "Groups";
+                                    lifxItemType.Content = "Lights";
                                 }
                             }
                         }
-                    }
 
-                    if (ddlLIFXLights.SelectedItem != null)
+                        if (ddlLIFXLights.SelectedItem == null)
+                        {
+                            ddlLIFXLights.ItemsSource = await _mediator.Send(new GetAllGroupsCommand()).ConfigureAwait(true);
+
+                            foreach (var item in ddlLIFXLights.Items)
+                            {
+                                if (item != null)
+                                {
+                                    var group = (LifxCloud.NET.Models.Group)item;
+                                    if ($"group_id:{group?.Id}" == SettingsHandlerBase.Config.LightSettings.LIFX.SelectedItemId)
+                                    {
+                                        ddlLIFXLights.SelectedItem = item;
+                                        lifxItemType.Content = "Groups";
+                                    }
+                                }
+                            }
+                        }
+
+                        if (SettingsHandlerBase.Config.LightSettings.LIFX.UseActivityStatus)
+                        {
+                            pnlLIFXAvailableStatuses.Visibility = Visibility.Collapsed;
+                            pnlLIFXActivityStatuses.Visibility = Visibility.Visible;
+                        }
+                        else
+                        {
+                            pnlLIFXAvailableStatuses.Visibility = Visibility.Visible;
+                            pnlLIFXActivityStatuses.Visibility = Visibility.Collapsed;
+                        }
+                    }
+                    else
                     {
                         btnGetLIFXLights.IsEnabled = true;
                         btnGetLIFXGroups.IsEnabled = true;
@@ -154,17 +169,6 @@ namespace PresenceLight.Pages
                         lblLIFXMessage.Text = "Connected to LIFX Cloud";
                         fontBrush.Color = "#009933".MapColor();
                         lblLIFXMessage.Foreground = fontBrush;
-                    }
-
-                    if (SettingsHandlerBase.Config.LightSettings.LIFX.UseActivityStatus)
-                    {
-                        pnlLIFXAvailableStatuses.Visibility = Visibility.Collapsed;
-                        pnlLIFXActivityStatuses.Visibility = Visibility.Visible;
-                    }
-                    else
-                    {
-                        pnlLIFXAvailableStatuses.Visibility = Visibility.Visible;
-                        pnlLIFXActivityStatuses.Visibility = Visibility.Collapsed;
                     }
                 }
                 else
@@ -307,6 +311,7 @@ namespace PresenceLight.Pages
                 getTokenLink.Visibility = Visibility.Collapsed;
                 pnlLIFX.Visibility = Visibility.Collapsed;
             }
+            CheckLIFX();
 
             SettingsHandlerBase.SyncOptions();
             e.Handled = true;
