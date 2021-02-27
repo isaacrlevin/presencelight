@@ -9,7 +9,8 @@
 @inject Microsoft.Graph.GraphServiceClient GraphServiceClient
 @inject MicrosoftIdentityConsentAndConditionalAccessHandler ConsentHandler
 @inject ILogger<Index> _logger;
-
+@inject UserAuthService _userAuthService
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor _httpContextAccessor
 
 <SpinLoader IsLoading="@(appState.Presence == null)">
     <LoadingTemplate>
@@ -41,38 +42,52 @@
 </SpinLoader>
 
 @code {
-            protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
+    {
+        appState.OnChange += RaiseStateHasChanged;
+
+        @*                try
             {
-                appState.OnChange += RaiseStateHasChanged;
-
-                try
-                {
-                    if (appState.LightMode != "Custom")
-                    {
-
-                        var user = await GraphServiceClient.Me.Request().GetAsync();
-                        appState.SetLightMode("Graph");
-                        appState.SetUserAuthentication(true);
-                        appState.SetGraphServiceClient(GraphServiceClient);
-                    }
-                }
-                catch (Exception ex)
-                {
-
-                    _logger.LogError(ex,"Error Occured loading Index");
-                    appState.SetLightMode("");
-                    appState.SetUserAuthentication(false);
-                    ConsentHandler.HandleException(ex);
-                }
-            }
-
-            public void Dispose()
+            if (appState.LightMode != "Custom")
             {
-                appState.OnChange -= RaiseStateHasChanged;
-            }
 
-            private void RaiseStateHasChanged()
-            {
-                InvokeAsync(StateHasChanged);
+            var user = await GraphServiceClient.Me.Request().GetAsync();
+            appState.SetLightMode("Graph");
+            appState.SetUserAuthentication(true);
+            appState.SetGraphServiceClient(GraphServiceClient);
             }
+            }
+            catch (Exception ex)
+            {
+
+            _logger.LogError(ex,"Error Occured loading Index");
+            appState.SetLightMode("");
+            appState.SetUserAuthentication(false);
+            ConsentHandler.HandleException(ex);
+            }*@
+
+        bool isUserAuth = await _userAuthService.IsUserAuthenticated();
+        if (!isUserAuth)
+        {
+            appState.SetLightMode("");
+            await _httpContextAccessor.HttpContext.ChallengeAsync();
+        }
+        else
+        {
+            if (appState.LightMode != "Custom")
+            {
+                appState.SetLightMode("Graph");
+            }
+        }
+    }
+
+    public void Dispose()
+    {
+        appState.OnChange -= RaiseStateHasChanged;
+    }
+
+    private void RaiseStateHasChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
 }

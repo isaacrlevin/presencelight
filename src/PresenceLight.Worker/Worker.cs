@@ -20,34 +20,36 @@ namespace PresenceLight.Worker
         private readonly BaseConfig Config;
         private readonly AppState _appState;
         private readonly ILogger<Worker> _logger;
-
-
+        UserAuthService _userAuthService;
+        private readonly GraphServiceClient _graphClient;
         private MediatR.IMediator _mediator;
-        private GraphServiceClient c;
+
         private IWorkingHoursService _workingHoursService;
 
 
         public Worker(ILogger<Worker> logger,
                       IOptionsMonitor<BaseConfig> optionsAccessor,
                       AppState appState,
+                      UserAuthService userAuthService,
                      MediatR.IMediator mediator,
                       IWorkingHoursService workingHoursService)
         {
             Config = optionsAccessor.CurrentValue;
             _workingHoursService = workingHoursService;
             _mediator = mediator;
-
+            _userAuthService = userAuthService;
             _logger = logger;
             _appState = appState;
+
+            _graphClient = new GraphServiceClient(userAuthService);
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                if (_appState.IsUserAuthenticated)
+                if (await _userAuthService.IsUserAuthenticated())
                 {
-                    c = _appState.GraphServiceClient;
                     _logger.LogInformation("User is Authenticated, starting worker");
                     try
                     {
@@ -98,7 +100,7 @@ namespace PresenceLight.Worker
         private async Task InteractWithLights()
         {
             bool previousWorkingHours = false;
-            while (_appState.IsUserAuthenticated)
+            while (await _userAuthService.IsUserAuthenticated())
             {
 
                 bool useWorkingHours = await _mediator.Send(new Core.WorkingHoursServices.UseWorkingHoursCommand());
@@ -187,7 +189,7 @@ namespace PresenceLight.Worker
         {
             try
             {
-                var me = await c.Me.Request().GetAsync();
+                var me = await _graphClient.Me.Request().GetAsync();
                 _logger.LogInformation($"User is {me.DisplayName}");
                 return me;
             }
@@ -202,7 +204,7 @@ namespace PresenceLight.Worker
         {
             try
             {
-                var photoStream = await c.Me.Photo.Content.Request().GetAsync();
+                var photoStream = await _graphClient.Me.Photo.Content.Request().GetAsync();
                 var memoryStream = new MemoryStream();
                 photoStream.CopyTo(memoryStream);
 
@@ -222,7 +224,7 @@ namespace PresenceLight.Worker
         {
             try
             {
-                var presence = await c.Me.Presence.Request().GetAsync();
+                var presence = await _graphClient.Me.Presence.Request().GetAsync();
 
                 var r = new Regex(@"
                 (?<=[A-Z])(?=[A-Z][a-z]) |
