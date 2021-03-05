@@ -70,8 +70,6 @@ namespace PresenceLight.Worker
             var userAuthService = new UserAuthService(Configuration);
             services.AddSingleton(userAuthService);
 
-
-
             services.AddOptions<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme)
                  .Configure<IServiceProvider>((options, serviceProvider) =>
                  {
@@ -91,10 +89,11 @@ namespace PresenceLight.Worker
 
                      options.Events = new OpenIdConnectEvents
                      {
-                        OnAuthenticationFailed = async context => {
-                            context.Response.Redirect("/Error");
-                            context.HandleResponse();
-                        },
+                         OnAuthenticationFailed = async context =>
+                         {
+                             context.Response.Redirect("/Error");
+                             context.HandleResponse();
+                         },
 
                          OnAuthorizationCodeReceived = async context =>
                      {
@@ -113,53 +112,7 @@ namespace PresenceLight.Worker
                      };
                  });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             services.AddHttpClient();
-
-
 
             services.AddHttpContextAccessor();
 

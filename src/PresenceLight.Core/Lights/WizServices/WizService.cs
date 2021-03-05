@@ -222,7 +222,6 @@ namespace PresenceLight.Core
             }
             return (color, command, false);
         }
-
         private WizResult UpdateLight(WizParams wizParams, string lightId)
         {
             WizSocket socket = new WizSocket();
