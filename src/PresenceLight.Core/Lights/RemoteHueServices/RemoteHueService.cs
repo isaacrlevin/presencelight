@@ -41,7 +41,7 @@ namespace PresenceLight.Core
             }
             else {
                 _logger.LogWarning("Remote Hue Client Id is empty");
-            } 
+            }
         }
 
         public void Initialize(BaseConfig options)
@@ -185,7 +185,6 @@ namespace PresenceLight.Core
 
                 if (!useWorkingHours || (useWorkingHours && IsInWorkingHours))
                 {
-
                     var command = new LightCommand();
                     string color = "";
                     string message = "";
@@ -215,7 +214,7 @@ namespace PresenceLight.Core
                             else
                             {
                                 message = $"Turning Hue Light {lightId} Off";
-                                _logger.LogInformation(message); 
+                                _logger.LogInformation(message);
                                 command.On = false;
                                 await _client.SendCommandAsync(command, new List<string> { lightId });
                                 return;
