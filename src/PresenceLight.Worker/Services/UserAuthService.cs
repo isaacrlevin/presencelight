@@ -21,14 +21,11 @@ namespace PresenceLight.Worker
         public UserAuthService(IConfiguration Configuration)
         {
             _msalClient = ConfidentialClientApplicationBuilder
-                .Create(Configuration["AzureAd:ClientId"])
-                .WithClientSecret(Configuration["AzureAd:ClientSecret"])
-                .WithAuthority($"{Configuration["AzureAd:Instance"]}common/v2.0")
-                .WithRedirectUri($"https://localhost:5001{Configuration["AzureAd:CallbackPath"]}")
-                .Build();
-
-            // TODO: Token cache serialization
-            // For now, the cache will be maintained in memory
+                 .Create(Configuration["AzureAd:ClientId"])
+                 .WithClientSecret(Configuration["AzureAd:ClientSecret"])
+                 .WithAuthority($"{Configuration["AzureAd:Instance"]}common/v2.0")
+                 .WithRedirectUri($"{Configuration["AzureAd:RedirectHost"].ToString()}{Configuration["AzureAd:CallbackPath"]}")
+                 .Build();
         }
 
         public async Task<bool> IsUserAuthenticated()
