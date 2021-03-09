@@ -12,13 +12,13 @@ namespace PresenceLight.Core
         private BaseConfig _options;
         private LifxCloudClient _client;
         private readonly ILogger<LIFXService> _logger;
-        private readonly IWorkingHoursService _workingHoursService;
+        MediatR.IMediator _mediator;
 
-        public LIFXService(Microsoft.Extensions.Options.IOptionsMonitor<BaseConfig> optionsAccessor, ILogger<LIFXService> logger, IWorkingHoursService workingHoursService)
+        public LIFXService(Microsoft.Extensions.Options.IOptionsMonitor<BaseConfig> optionsAccessor, MediatR.IMediator mediator, ILogger<LIFXService> logger)
         {
-            _workingHoursService = workingHoursService;
             _logger = logger;
             _options = optionsAccessor.CurrentValue;
+            _mediator = mediator;
         }
 
         public void Initialize(BaseConfig options)
@@ -45,7 +45,7 @@ namespace PresenceLight.Core
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error Getting Lights"  );
+                _logger.LogError(e, "Error Getting Lights");
                 throw;
             }
         }
@@ -77,144 +77,148 @@ namespace PresenceLight.Core
         {
             if (string.IsNullOrEmpty(lightId))
             {
-                throw new ArgumentNullException(nameof(lightId),"Selected LIFX Light Not Specified") ;
+                throw new ArgumentNullException(nameof(lightId), "Selected LIFX Light Not Specified");
             }
 
-            Selector selector = null;
+            bool useWorkingHours = await _mediator.Send(new WorkingHoursServices.UseWorkingHoursCommand());
+            bool IsInWorkingHours = await _mediator.Send(new WorkingHoursServices.IsInWorkingHoursCommand());
+            if (!useWorkingHours || (useWorkingHours && IsInWorkingHours))
+            {
+                Selector selector = null;
 
-            if (!lightId.Contains("group"))
-            {
-                selector = new Selector.LightId(lightId.Replace("id:", ""));
-            }
-            else
-            {
-                selector = new Selector.GroupId(lightId.Replace("group_id:", ""));
-            }
-
-            if (!string.IsNullOrEmpty(apiKey))
-            {
-                _options.LightSettings.LIFX.LIFXApiKey = apiKey;
-            }
-            if (!_options.LightSettings.LIFX.IsEnabled || string.IsNullOrEmpty(_options.LightSettings.LIFX.LIFXApiKey))
-            {
-                return;
-            }
-
-            try
-            {
-                _client = await LifxCloudClient.CreateAsync(_options.LightSettings.LIFX.LIFXApiKey);
-                string color = "";
-                switch (availability)
+                if (!lightId.Contains("group"))
                 {
-                    case "Available":
-                        if (!_options.LightSettings.LIFX.Statuses.AvailabilityAvailableStatus.Disabled)
-                        {
-                            color = $"{_options.LightSettings.LIFX.Statuses.AvailabilityAvailableStatus.Colour.ToString()}";
-                        }
-                        else
-                        {
-                            _logger.LogInformation($"Turning LIFX Light {lightId} Off - LIFXService:SetColor");
-                            var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
-                            {
-                                Power = PowerState.Off
-                            });
-                            return;
-                        }
-                        break;
-                    case "Busy":
-                        if (!_options.LightSettings.LIFX.Statuses.AvailabilityBusyStatus.Disabled)
-                        {
-                            color = $"{_options.LightSettings.LIFX.Statuses.AvailabilityBusyStatus.Colour.ToString()}";
-                        }
-                        else
-                        {
-                            _logger.LogInformation($"Turning LIFX Light {lightId} Off - LIFXService:SetColor");
-                            var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
-                            {
-                                Power = PowerState.Off
-                            });
-                            return;
-                        }
-                        break;
-                    case "BeRightBack":
-                        if (!_options.LightSettings.LIFX.Statuses.AvailabilityBeRightBackStatus.Disabled)
-                        {
-                            color = $"{_options.LightSettings.LIFX.Statuses.AvailabilityBeRightBackStatus.Colour.ToString()}";
-                        }
-                        else
-                        {
-                            _logger.LogInformation($"Turning LIFX Light {lightId} Off - LIFXService:SetColor");
-                            var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
-                            {
-                                Power = PowerState.Off
-                            });
-                            return;
-                        }
-                        break;
-                    case "Away":
-                        if (!_options.LightSettings.LIFX.Statuses.AvailabilityAwayStatus.Disabled)
-                        {
-                            color = $"{_options.LightSettings.LIFX.Statuses.AvailabilityAwayStatus.Colour.ToString()}";
-                        }
-                        else
-                        {
-                            _logger.LogInformation($"Turning LIFX Light {lightId} Off - LIFXService:SetColor");
-                            var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
-                            {
-                                Power = PowerState.Off
-                            });
-                            return;
-                        }
-                        break;
-                    case "DoNotDisturb":
-                        if (!_options.LightSettings.LIFX.Statuses.AvailabilityDoNotDisturbStatus.Disabled)
-                        {
-                            color = $"{_options.LightSettings.LIFX.Statuses.AvailabilityDoNotDisturbStatus.Colour.ToString()}";
-                        }
-                        else
-                        {
-                            _logger.LogInformation($"Turning LIFX Light {lightId} Off - LIFXService:SetColor");
-                            var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
-                            {
-                                Power = PowerState.Off
-                            });
-                            return;
-                        }
-                        break;
-                    case "Offline":
-                        if (!_options.LightSettings.LIFX.Statuses.AvailabilityOfflineStatus.Disabled)
-                        {
-                            color = $"{_options.LightSettings.LIFX.Statuses.AvailabilityOfflineStatus.Colour.ToString()}";
-                        }
-                        else
-                        {
-                            _logger.LogInformation($"Turning LIFX Light {lightId} Off - LIFXService:SetColor");
-                            var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
-                            {
-                                Power = PowerState.Off
-                            });
-                            return;
-                        }
-                        break;
-                    case "Off":
-                        if (!_options.LightSettings.LIFX.Statuses.AvailabilityOffStatus.Disabled)
-                        {
-                            color = $"{_options.LightSettings.LIFX.Statuses.AvailabilityOffStatus.Colour.ToString()}";
-                        }
-                        else
-                        {
-                            _logger.LogInformation($"Turning LIFX Light {lightId} Off - LIFXService:SetColor");
-                            var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
-                            {
-                                Power = PowerState.Off
-                            });
-                            return;
-                        }
-                        break;
-                    default:
-                        color = $"{_options.LightSettings.LIFX.Statuses.AvailabilityOffStatus.Colour.ToString()}";
-                        break;
+                    selector = new Selector.LightId(lightId.Replace("id:", ""));
                 }
+                else
+                {
+                    selector = new Selector.GroupId(lightId.Replace("group_id:", ""));
+                }
+
+                if (!string.IsNullOrEmpty(apiKey))
+                {
+                    _options.LightSettings.LIFX.LIFXApiKey = apiKey;
+                }
+                if (!_options.LightSettings.LIFX.IsEnabled || string.IsNullOrEmpty(_options.LightSettings.LIFX.LIFXApiKey))
+                {
+                    return;
+                }
+
+                try
+                {
+                    _client = await LifxCloudClient.CreateAsync(_options.LightSettings.LIFX.LIFXApiKey);
+                    string color = "";
+                    switch (availability)
+                    {
+                        case "Available":
+                            if (!_options.LightSettings.LIFX.Statuses.AvailabilityAvailableStatus.Disabled)
+                            {
+                                color = $"{_options.LightSettings.LIFX.Statuses.AvailabilityAvailableStatus.Colour.ToString()}";
+                            }
+                            else
+                            {
+                                _logger.LogInformation($"Turning LIFX Light {lightId} Off - LIFXService:SetColor");
+                                var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
+                                {
+                                    Power = PowerState.Off
+                                });
+                                return;
+                            }
+                            break;
+                        case "Busy":
+                            if (!_options.LightSettings.LIFX.Statuses.AvailabilityBusyStatus.Disabled)
+                            {
+                                color = $"{_options.LightSettings.LIFX.Statuses.AvailabilityBusyStatus.Colour.ToString()}";
+                            }
+                            else
+                            {
+                                _logger.LogInformation($"Turning LIFX Light {lightId} Off - LIFXService:SetColor");
+                                var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
+                                {
+                                    Power = PowerState.Off
+                                });
+                                return;
+                            }
+                            break;
+                        case "BeRightBack":
+                            if (!_options.LightSettings.LIFX.Statuses.AvailabilityBeRightBackStatus.Disabled)
+                            {
+                                color = $"{_options.LightSettings.LIFX.Statuses.AvailabilityBeRightBackStatus.Colour.ToString()}";
+                            }
+                            else
+                            {
+                                _logger.LogInformation($"Turning LIFX Light {lightId} Off - LIFXService:SetColor");
+                                var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
+                                {
+                                    Power = PowerState.Off
+                                });
+                                return;
+                            }
+                            break;
+                        case "Away":
+                            if (!_options.LightSettings.LIFX.Statuses.AvailabilityAwayStatus.Disabled)
+                            {
+                                color = $"{_options.LightSettings.LIFX.Statuses.AvailabilityAwayStatus.Colour.ToString()}";
+                            }
+                            else
+                            {
+                                _logger.LogInformation($"Turning LIFX Light {lightId} Off - LIFXService:SetColor");
+                                var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
+                                {
+                                    Power = PowerState.Off
+                                });
+                                return;
+                            }
+                            break;
+                        case "DoNotDisturb":
+                            if (!_options.LightSettings.LIFX.Statuses.AvailabilityDoNotDisturbStatus.Disabled)
+                            {
+                                color = $"{_options.LightSettings.LIFX.Statuses.AvailabilityDoNotDisturbStatus.Colour.ToString()}";
+                            }
+                            else
+                            {
+                                _logger.LogInformation($"Turning LIFX Light {lightId} Off - LIFXService:SetColor");
+                                var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
+                                {
+                                    Power = PowerState.Off
+                                });
+                                return;
+                            }
+                            break;
+                        case "Offline":
+                            if (!_options.LightSettings.LIFX.Statuses.AvailabilityOfflineStatus.Disabled)
+                            {
+                                color = $"{_options.LightSettings.LIFX.Statuses.AvailabilityOfflineStatus.Colour.ToString()}";
+                            }
+                            else
+                            {
+                                _logger.LogInformation($"Turning LIFX Light {lightId} Off - LIFXService:SetColor");
+                                var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
+                                {
+                                    Power = PowerState.Off
+                                });
+                                return;
+                            }
+                            break;
+                        case "Off":
+                            if (!_options.LightSettings.LIFX.Statuses.AvailabilityOffStatus.Disabled)
+                            {
+                                color = $"{_options.LightSettings.LIFX.Statuses.AvailabilityOffStatus.Colour.ToString()}";
+                            }
+                            else
+                            {
+                                _logger.LogInformation($"Turning LIFX Light {lightId} Off - LIFXService:SetColor");
+                                var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
+                                {
+                                    Power = PowerState.Off
+                                });
+                                return;
+                            }
+                            break;
+                        default:
+                            color = $"{_options.LightSettings.LIFX.Statuses.AvailabilityOffStatus.Colour.ToString()}";
+                            break;
+                    }
 
                     if (color.Length == 9 && color.Contains("#"))
                     {
@@ -249,55 +253,56 @@ namespace PresenceLight.Core
                     }
 
 
-                if (_options.LightSettings.UseDefaultBrightness)
-                {
-                    if (_options.LightSettings.DefaultBrightness == 0)
+                    if (_options.LightSettings.UseDefaultBrightness)
                     {
-                        _logger.LogInformation($"Turning LIFX Light {lightId} Off - LIFXService:SetColor");
-                        var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
+                        if (_options.LightSettings.DefaultBrightness == 0)
                         {
-                            Power = PowerState.Off
-                        });
+                            _logger.LogInformation($"Turning LIFX Light {lightId} Off - LIFXService:SetColor");
+                            var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
+                            {
+                                Power = PowerState.Off
+                            });
+                        }
+                        else
+                        {
+                            string message = $"Setting LIFX Light {lightId} to {color}";
+                            _logger.LogInformation(message);
+                            var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
+                            {
+                                Brightness = Convert.ToDouble(_options.LightSettings.DefaultBrightness) / 100,
+                                Color = color,
+                                Duration = 0
+                            });
+                        }
                     }
                     else
                     {
-                        string message = $"Setting LIFX Light {lightId} to {color}";
-                        _logger.LogInformation(message);
-                        var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
+                        if (_options.LightSettings.LIFX.Brightness == 0)
                         {
-                            Brightness = Convert.ToDouble(_options.LightSettings.DefaultBrightness) / 100,
-                            Color = color,
-                            Duration = 0
-                        });
+                            _logger.LogInformation($"Turning LIFX Light {lightId} Off - LIFXService:SetColor");
+                            var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
+                            {
+                                Power = PowerState.Off
+                            });
+                        }
+                        else
+                        {
+                            string message = $"Setting LIFX Light {lightId} to {color}";
+                            _logger.LogInformation(message);
+                            var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
+                            {
+                                Brightness = Convert.ToDouble(_options.LightSettings.LIFX.Brightness) / 100,
+                                Color = color,
+                                Duration = 0
+                            });
+                        }
                     }
                 }
-                else
+                catch (Exception e)
                 {
-                    if (_options.LightSettings.LIFX.Brightness == 0)
-                    {
-                        _logger.LogInformation($"Turning LIFX Light {lightId} Off - LIFXService:SetColor");
-                        var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
-                        {
-                            Power = PowerState.Off
-                        });
-                    }
-                    else
-                    {
-                        string message = $"Setting LIFX Light {lightId} to {color}";
-                        _logger.LogInformation(message);
-                        var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
-                        {
-                            Brightness = Convert.ToDouble(_options.LightSettings.LIFX.Brightness) / 100,
-                            Color = color,
-                            Duration = 0
-                        });
-                    }
+                    _logger.LogError(e, "Error Occured Setting Color");
+                    throw;
                 }
-            }
-            catch (Exception e)
-            {
-             _logger.LogError(e,"Error Occured Setting Color");
-                throw;
             }
         }
     }

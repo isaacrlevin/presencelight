@@ -1,4 +1,4 @@
-﻿@page "/yeelight"
+﻿@page "/wiz"
 
 @inject PresenceLight.Worker.Services.SettingsService SettingsService
 
@@ -11,72 +11,73 @@
         <div class="container-fluid">
             <div class="row-fluid">
                 <div>
-                    <h1>Configure Yeelight</h1>
+                    <h1>Configure Wiz</h1>
                     <br />
                     <br />
                     <div>
-                        <input type="checkbox" checked="@Config.CurrentValue.LightSettings.Yeelight.IsEnabled" @bind-value="@Config.CurrentValue.LightSettings.Yeelight.IsEnabled" /> Connect to Yeelight
+                        <input type="checkbox" checked="@Config.CurrentValue.LightSettings.Wiz.IsEnabled" @bind-value="@Config.CurrentValue.LightSettings.Wiz.IsEnabled" /> Connect to Wiz
                     </div>
                     <br />
                     <br />
-                    @if (Config.CurrentValue.LightSettings.Yeelight.IsEnabled)
+                    @if (Config.CurrentValue.LightSettings.Wiz.IsEnabled)
                     {
                         <div class="row">
                             <div class="col-12">
-                                <button @onclick="GetYeeLights" class="btn btn-primary" type="submit">Find Yeelight's</button>
+                                <button @onclick="GetLights" class="btn btn-primary" type="submit">Find Wiz Lights</button>
                             </div>
                         </div>
 
                         <br />
                         <br />
-                        @if (appState.YeelightLights != null)
+                        @if (appState.WizLights != null)
                         {
                             <div class="form-group col-3 centering text-center">
                                 <select class="form-control" @onchange="OnChange">
                                     <option disabled="disabled">Select</option>
-                                    @foreach (var light in appState.YeelightLights)
+                                    @foreach (var light in appState.WizLights)
                                     {
-                                        @if (Config.CurrentValue.LightSettings.Yeelight.SelectedItemId == light.Id)
+                                        @if (Config.CurrentValue.LightSettings.Wiz.SelectedItemId == light.MacAddress)
                                         {
-                                            <option selected="selected" value=@light.Id>@light.Name</option>
+                                            <option selected="selected" value=@light.MacAddress>@light.LightName</option>
                                         }
                                         else
                                         {
-                                            <option value=@light.Id>@light.Name</option>
+                                            <option value=@light.MacAddress>@light.LightName</option>
                                         }
                                     }
                                 </select>
                             </div>
                         }
-
+                          <br />
+                        <br />
                         <div class="row">
                             <div class="col-4">
                                 <h5>Brightness</h5>
                             </div>
                             <div class="col-4">
-                                <Slider TValue="int" @bind-Value="@Config.CurrentValue.LightSettings.Yeelight.Brightness" Step="1" Min="0" Max="100" />
+                                <Slider TValue="int" @bind-Value="@Config.CurrentValue.LightSettings.Wiz.Brightness" Step="1" Min="0" Max="100" />
                             </div>
                             <div class="col-4">
-                                <input style="width:50px" @bind-value="@Config.CurrentValue.LightSettings.Yeelight.Brightness" type="text" />
+                                <input style="width:50px" @bind-value="@Config.CurrentValue.LightSettings.Wiz.Brightness" type="text" />
                             </div>
                         </div>
 
                         <br />
                         <br />
 
-                        <Statuses Light="@Config.CurrentValue.LightSettings.Yeelight"></Statuses>
+                        <Statuses Light="@Config.CurrentValue.LightSettings.Wiz"></Statuses>
 
                         <br />
                         <br />
 
-                        <button class="btn btn-primary" @onclick="Save">Save Yeelight Settings</button>
+                        <button class="btn btn-primary" @onclick="Save">Save Wiz Settings</button>
 
                         <br />
                         <br />
                         <div>
                             @if (settingsSaved)
                             {
-                                <span class="text-success">@message</span>
+                                <span class="@wizMessageClass">@message</span>
                             }
                         </div>
                     }
@@ -97,23 +98,37 @@
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Error Occured Saving Yeelight Settings");
+            _logger.LogError(e, "Error Occured Saving Wiz Settings");
             throw;
         }
     }
 
     bool settingsSaved = false;
     string message;
+    string wizMessageClass;
+    bool isLoadingLights = false;
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
             appState.OnChange += RaiseStateHasChanged;
+
+            if (Config.CurrentValue.LightSettings.Wiz.IsEnabled
+            && !string.IsNullOrEmpty(Config.CurrentValue.LightSettings.Wiz.SelectedItemId))
+            {
+                isLoadingLights = true;
+                appState.SetWizLights(await _mediator.Send(new Core.WizServices.GetLightsCommand()));
+
+                settingsSaved = true;
+                message = "Connected to Wiz Cloud";
+                wizMessageClass = "text-success";
+                isLoadingLights = false;
+            }
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Error Occured loading Yeelight");
+            _logger.LogError(e, "Error Occured loading Wiz");
             throw;
         }
         await Task.CompletedTask;
@@ -122,25 +137,25 @@
     private void OnChange(ChangeEventArgs e)
     {
         var light = e.Value.ToString();
-        Config.CurrentValue.LightSettings.Yeelight.SelectedItemId = light;
-        appState.SetYeelightLight(light);
+        Config.CurrentValue.LightSettings.Wiz.SelectedItemId = light;
+        appState.SetWizLight(light);
     }
 
-    public async Task GetYeeLights()
+    public async Task GetLights()
     {
         try
         {
-            appState.SetYeelightLights(await _mediator.Send(new Core.YeelightServices.GetLightCommand()));
+            appState.SetWizLights(await _mediator.Send(new Core.WizServices.GetLightsCommand()));
 
-            if (string.IsNullOrEmpty(Config.CurrentValue.LightSettings.Yeelight.SelectedItemId) && appState.YeelightLights.Count() > 0)
+            if (string.IsNullOrEmpty(Config.CurrentValue.LightSettings.Wiz.SelectedItemId) && appState.WizLights.Count() > 0)
             {
-                Config.CurrentValue.LightSettings.Yeelight.SelectedItemId = appState.YeelightLights.FirstOrDefault().Id;
+                Config.CurrentValue.LightSettings.Wiz.SelectedItemId = appState.WizLights.FirstOrDefault().MacAddress;
             }
 
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error occured Finding YeeLights");
+            _logger.LogError(ex, "Error occured Finding Wiz");
             throw;
         }
     }

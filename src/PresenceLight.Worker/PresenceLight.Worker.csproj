@@ -8,6 +8,7 @@
     <DockerfileFile>../Dockerfiles/Dockerfile</DockerfileFile>
     <DockerfileContext>..</DockerfileContext>
     <ApplicationIcon>favicon.ico</ApplicationIcon>
+    <UserSecretsId>8509488430545</UserSecretsId>
  </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -16,10 +17,6 @@
 
   <ItemGroup>
     <Content Remove="wwwroot\Icon.ico" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="presencelight.pfx" />
   </ItemGroup>
 
   <ItemGroup>
@@ -49,9 +46,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="presencelight.pfx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Resource Include="wwwroot\images\profileimage.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
