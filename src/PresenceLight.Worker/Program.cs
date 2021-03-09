@@ -113,9 +113,7 @@ namespace PresenceLight.Worker
                         {
                             throw new ArgumentException("Supplied Server Ip Address is not configured or it is not in list of redirect Uris for Azure Active Directory");
                         }
-                        try
-                        {
-
+                       
                    
                         options.Listen(System.Net.IPAddress.Parse(configForMain["ServerIP"]), 5001, listenOptions =>
                         {
@@ -129,40 +127,27 @@ namespace PresenceLight.Worker
                             else
                             { }
                         });
-                        }
-                        catch (Exception)
-                        {
-                            //If there's an exception with the SSL Cert, dont expose the SSL endpoint and dont cause the application execution to fail
-
-
-                        }
+                        
                         options.Listen(System.Net.IPAddress.Parse(configForMain["ServerIP"]), 5000, listenOptions =>
                         {
                         });
                     }
                     else
                     {
-                        try
+                        
+                        options.ListenLocalhost(5001, listenOptions =>
                         {
-
-
-                            options.ListenLocalhost(5001, listenOptions =>
+                            var envCertPath = Environment.GetEnvironmentVariable("ASPNETCORE_Kestrel__Certificates__Default__Path");
+                            if (string.IsNullOrEmpty(envCertPath) && !string.IsNullOrWhiteSpace(configForMain["Certificate:Name"]) && !string.IsNullOrWhiteSpace(configForMain["Certificate:Password"]))
                             {
-                                var envCertPath = Environment.GetEnvironmentVariable("ASPNETCORE_Kestrel__Certificates__Default__Path");
-                                if (string.IsNullOrEmpty(envCertPath) && !string.IsNullOrWhiteSpace(configForMain["Certificate:Name"]) && !string.IsNullOrWhiteSpace(configForMain["Certificate:Password"]))
-                                {
-                                // Cert Env Not provided, use appsettings
-                                //assumes cert is at same level as exe
-                                listenOptions.UseHttps(configForMain["Certificate:Name"], configForMain["Certificate:Password"]);
-                                }
-                                else
-                                { }
-                            });
-                        }
-                        catch (Exception e)
-                        {
-                            //If there's an exception with the SSL Cert, dont expose the SSL endpoint and dont cause the application execution to fail
-                        }
+                            // Cert Env Not provided, use appsettings
+                            //assumes cert is at same level as exe
+                            listenOptions.UseHttps(configForMain["Certificate:Name"], configForMain["Certificate:Password"]);
+                            }
+                            else
+                            { }
+                        });
+                        
                         options.ListenLocalhost(5000, listenOptions =>
                         {
                         });
