@@ -49,6 +49,16 @@
                              onSaveYeelightsClick="SaveYeelight_Click"
 />
             </TabItem>
+            <TabItem Header="Configure Wiz" >
+                <lc:Wiz x:Name="wiz"
+                             oncblsWizEnabledChanged="cbIsWizEnabledChanged"
+                             oncbUseWizActivityStatus="cbUseWizActivityStatus"
+                             oncbWizIsDisabledChange="cbWizIsDisabledChange"
+                            onddlWizLightsSelectionChanged="ddlWizLights_SelectionChanged"
+                             onFindWizsClick="FindWiz_Click"
+                             onSaveWizsClick="SaveWiz_Click"
+/>
+            </TabItem>
             <TabItem Header="Configure LIFX" >
                 <lc:LIFX x:Name="lifx"
                          oncbIsLIFXEnabledChanged="cbIsLIFXEnabledChanged"

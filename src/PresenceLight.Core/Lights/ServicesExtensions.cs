@@ -22,8 +22,7 @@ namespace PresenceLight.Core
             services.AddSingleton<LIFXService>();
             services.AddSingleton<IYeelightService, YeelightService>();
             services.AddSingleton<ICustomApiService, CustomApiService>();
-         
-        
-    }
+            services.AddSingleton<IWizService, WizService>();
+        }
     }
 }
