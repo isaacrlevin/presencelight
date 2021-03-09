@@ -9,8 +9,7 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d" Title="PresenceLight" Icon="Icons/Icon.ico" Height="1100" Width="750">
     <Grid>
-        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-        <TabControl x:Name="tabControl" SelectionChanged="TabControl_SelectionChanged">
+         <TabControl x:Name="tabControl" SelectionChanged="TabControl_SelectionChanged">
             <TabItem Header="Sign In">
                 <lc:LandingPage x:Name="landingPage"
                                 onExitClick="OnExitClick"
@@ -94,6 +93,5 @@
                 <lc:About x:Name="about" onHyperlinkRequestNavigate="Hyperlink_RequestNavigate" />
             </TabItem>
         </TabControl>
-        </ScrollViewer>
     </Grid>
 </Window>
