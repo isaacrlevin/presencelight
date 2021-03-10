@@ -31,6 +31,7 @@ using Media = System.Windows.Media;
 using System.Reflection;
 using PresenceLight.Pages;
 using ModernWpf;
+using System.IO;
 
 namespace PresenceLight
 {
@@ -51,6 +52,10 @@ namespace PresenceLight
         public IWorkingHoursService _workingHoursService;
         public WindowState lastWindowState;
         public readonly ILogger<MainWindowModern> _logger;
+
+        public User? profile { get; set; }
+
+        public Stream? photo { get; set; }
 
         public MainWindowModern(IGraphService graphService,
                           IWorkingHoursService workingHoursService,
@@ -77,7 +82,7 @@ namespace PresenceLight
 
             this.Dispatcher.Invoke(() =>
             {
-              
+
                 //var tbContext = landingPage.notificationIcon.DataContext;
                 DataContext = SettingsHandlerBase.Config;
                 //landingPage.notificationIcon.DataContext = tbContext;
@@ -236,7 +241,7 @@ namespace PresenceLight
                 AppTitle.Margin = new Thickness(largeLeftIndent, currMargin.Top, currMargin.Right, currMargin.Bottom);
             }
         }
-          
+
         private void Navigate(object item)
         {
             if (item is NavigationViewItem menuItem)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,7 +30,6 @@ namespace PresenceLight.Pages
     public partial class ProfilePage
     {
         private MainWindowModern _parentWindow;
-        private Presence presence { get; set; }
 
         private DateTime settingsLastSaved = DateTime.MinValue;
         public static string LightMode { get; set; }
@@ -42,15 +42,38 @@ namespace PresenceLight.Pages
             notificationIcon.Text = PresenceConstants.Inactive;
             notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(String.Empty, IconConstants.Inactive)));
 
-            turnOffButton.Visibility = Visibility.Collapsed;
-            turnOnButton.Visibility = Visibility.Collapsed;
+            if (_parentWindow.presence != null && _parentWindow.profile != null)
+            {
+                if (_parentWindow.photo == null)
+                {
+                    MapUI(_parentWindow.presence, _parentWindow.profile, new BitmapImage(new Uri("pack://application:,,,/PresenceLight;component/images/UnknownProfile.png")));
+                }
+                else
+                {
+                    MapUI(_parentWindow.presence, _parentWindow.profile, _parentWindow.photo.LoadImage());
+                }
 
+                loadingPanel.Visibility = Visibility.Collapsed;
+                signInPanel.Visibility = Visibility.Collapsed;
+
+
+                dataPanel.Visibility = Visibility.Visible;
+
+
+                turnOffButton.Visibility = Visibility.Visible;
+                turnOnButton.Visibility = Visibility.Collapsed;
+            }
+            //else
+            //{
+            //    Start();
+            //}
 
         }
+
         protected override void Start()
         {
             CheckAAD();
-            //CallGraph().ConfigureAwait(true);
+            CallGraph().ConfigureAwait(true);
             base.Start();
         }
         #region Profile Panel
@@ -69,40 +92,31 @@ namespace PresenceLight.Pages
 
         public async Task CallGraph()
         {
-            // var lightColors = System.Windows.Application.Current.Windows.OfType<Pages.CustomColorPage>().First();
-
-
             LightMode = "Graph";
-            //lightColors.syncTeamsButton.IsEnabled = false;
-            //lightColors.syncThemeButton.IsEnabled = true;
-
             if (!await _parentWindow._mediator.Send(new Core.GraphServices.GetIsInitializedCommand()))
             {
                 await _parentWindow._mediator.Send(new Core.GraphServices.InitializeCommand()
                 {
                     Client = _parentWindow._graphservice.GetAuthenticatedGraphClient()
                 });
-
             }
 
-
             signInPanel.Visibility = Visibility.Collapsed;
-            //lightColors.lblTheme.Visibility = Visibility.Collapsed;
             loadingPanel.Visibility = Visibility.Visible;
 
             try
             {
-                var (profile, presence) = await _parentWindow._mediator.Send(new Core.GraphServices.GetProfileAndPresenceCommand());
-                var photo = await _parentWindow._mediator.Send(new GetPhotoCommand()).ConfigureAwait(true);
+                (_parentWindow.profile, _parentWindow.presence) = await _parentWindow._mediator.Send(new Core.GraphServices.GetProfileAndPresenceCommand());
+                _parentWindow.photo = await _parentWindow._mediator.Send(new GetPhotoCommand()).ConfigureAwait(true);
 
 
-                if (photo == null)
+                if (_parentWindow.photo == null)
                 {
-                    MapUI(presence, profile, new BitmapImage(new Uri("pack://application:,,,/PresenceLight;component/images/UnknownProfile.png")));
+                    MapUI(_parentWindow.presence, _parentWindow.profile, new BitmapImage(new Uri("pack://application:,,,/PresenceLight;component/images/UnknownProfile.png")));
                 }
                 else
                 {
-                    MapUI(presence, profile, photo.LoadImage());
+                    MapUI(_parentWindow.presence, _parentWindow.profile, _parentWindow.photo.LoadImage());
                 }
 
 
@@ -122,7 +136,7 @@ namespace PresenceLight.Pages
                         {
                             if (LightMode == "Graph")
                             {
-                                await _parentWindow._mediator.Send(new Services.SetColorCommand { Activity = presence.Activity, Color = presence.Availability }).ConfigureAwait(true);
+                                await _parentWindow._mediator.Send(new Services.SetColorCommand { Activity = _parentWindow.presence.Activity, Color = _parentWindow.presence.Availability }).ConfigureAwait(true);
                             }
                         }
                         else
@@ -136,13 +150,13 @@ namespace PresenceLight.Pages
                                     {
 
                                         case "White":
-                                            await _parentWindow._mediator.Send(new SetColorCommand { Activity = presence.Activity, Color = "Offline" }).ConfigureAwait(true);
+                                            await _parentWindow._mediator.Send(new SetColorCommand { Activity = _parentWindow.presence.Activity, Color = "Offline" }).ConfigureAwait(true);
                                             break;
                                         case "Off":
-                                            await _parentWindow._mediator.Send(new SetColorCommand { Activity = presence.Activity, Color = "Off" }).ConfigureAwait(true);
+                                            await _parentWindow._mediator.Send(new SetColorCommand { Activity = _parentWindow.presence.Activity, Color = "Off" }).ConfigureAwait(true);
                                             break;
                                         default:
-                                            await _parentWindow._mediator.Send(new SetColorCommand { Activity = presence.Activity, Color = presence.Availability }).ConfigureAwait(true);
+                                            await _parentWindow._mediator.Send(new SetColorCommand { Activity = _parentWindow.presence.Activity, Color = _parentWindow.presence.Availability }).ConfigureAwait(true);
                                             break;
                                     }
                                 }
@@ -234,15 +248,15 @@ namespace PresenceLight.Pages
                         {
                             case "Graph":
                                 _parentWindow._logger.LogInformation("PresenceLight Running in Teams Mode");
-                                presence = await _parentWindow._mediator.Send(new Core.GraphServices.GetPresenceCommand());
+                                _parentWindow.presence = await _parentWindow._mediator.Send(new Core.GraphServices.GetPresenceCommand());
 
                                 if (newColor == string.Empty)
                                 {
-                                    await _parentWindow._mediator.Send(new SetColorCommand { Activity = presence.Activity, Color = presence.Availability }).ConfigureAwait(true);
+                                    await _parentWindow._mediator.Send(new SetColorCommand { Activity = _parentWindow.presence.Activity, Color = _parentWindow.presence.Availability }).ConfigureAwait(true);
                                 }
                                 else
                                 {
-                                    await _parentWindow._mediator.Send(new SetColorCommand { Activity = presence.Activity, Color = newColor }).ConfigureAwait(true);
+                                    await _parentWindow._mediator.Send(new SetColorCommand { Activity = _parentWindow.presence.Activity, Color = newColor }).ConfigureAwait(true);
                                 }
 
                                 if (DateTime.Now.AddMinutes(-5) > settingsLastSaved)
@@ -252,7 +266,7 @@ namespace PresenceLight.Pages
                                     settingsLastSaved = DateTime.Now;
                                 }
 
-                                MapUI(presence, null, null);
+                                MapUI(_parentWindow.presence, null, null);
                                 break;
                             case "Theme":
                                 _parentWindow._logger.LogInformation("PresenceLight Running in Theme Mode");
@@ -446,6 +460,9 @@ namespace PresenceLight.Pages
                 {
                 }
             }
+            _parentWindow.presence = null;
+            _parentWindow.profile = null;
+            _parentWindow.profile = null;
             await _parentWindow._mediator.Send(new SaveSettingsCommand()).ConfigureAwait(true);
 
         }
