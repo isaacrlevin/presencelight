@@ -671,6 +671,7 @@ namespace PresenceLight
         private async Task InteractWithLights()
         {
             bool previousWorkingHours = false;
+            string previousLightMode = string.Empty;
             while (true)
             {
                 try
@@ -705,6 +706,7 @@ namespace PresenceLight
                                 // check to see if working hours have passed
                                 if (previousWorkingHours)
                                 {
+                                    previousLightMode = lightMode;
                                     switch (Config.LightSettings.HoursPassedStatus)
                                     {
                                       
@@ -734,6 +736,8 @@ namespace PresenceLight
                             case "Manual":
                                 // No need to check presence... if it's after hours, we just want to action upon it... 
                                 await SetColor(newColor, presence.Activity).ConfigureAwait(true);
+                                //Reset the light mode so that we don't potentially mess something up.
+                                lightMode = previousLightMode;
                                 break;
                             case "Graph":
                                 _logger.LogInformation("PresenceLight Running in Teams Mode");
