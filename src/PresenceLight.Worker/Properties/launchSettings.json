@@ -31,7 +31,7 @@
       "commandName": "Docker",
       "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
+         
         "DOTNET_RUNNING_IN_CONTAINER": "true",
    
       },
