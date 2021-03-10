@@ -181,8 +181,16 @@ namespace PresenceLight.Core
             return result;
         }
 
+        static string _lastUriCalled = string.Empty;
         private async Task<string> PerformWebRequest(string method, string uri, string result, CancellationToken cancellationToken)
         {
+            if (_lastUriCalled.Equals( $"{method}|{uri}", StringComparison.CurrentCultureIgnoreCase))
+            {
+                _logger.LogInformation("No Change to State... NOT calling Api");
+                return "Skipped";
+            }
+
+           
             using (Serilog.Context.LogContext.PushProperty("method", method))
             using (Serilog.Context.LogContext.PushProperty("uri", uri))
             {
@@ -208,6 +216,8 @@ namespace PresenceLight.Core
                         string message = $"Sending {method} method to {uri}";
 
                         _logger.LogInformation(message);
+
+                        _lastUriCalled = $"{method}|{uri}";
 
                         using (Serilog.Context.LogContext.PushProperty("result", result))
                             _logger.LogDebug(message + " Results");
