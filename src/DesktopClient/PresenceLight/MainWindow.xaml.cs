@@ -707,17 +707,20 @@ namespace PresenceLight
                                 {
                                     switch (Config.LightSettings.HoursPassedStatus)
                                     {
-                                        case "Keep":
-                                            break;
+                                      
                                         case "White":
                                             newColor = "Offline";
+                                            lightMode = "Manual";
                                             break;
                                         case "Off":
                                             newColor = "Off";
+                                            lightMode = "Manual";
                                             break;
+                                        case "Keep":
                                         default:
                                             break;
                                     }
+                                  
                                     touchLight = true;
                                 }
                             }
@@ -728,6 +731,10 @@ namespace PresenceLight
                     {
                         switch (lightMode)
                         {
+                            case "Manual":
+                                // No need to check presence... if it's after hours, we just want to action upon it... 
+                                await SetColor(newColor, presence.Activity).ConfigureAwait(true);
+                                break;
                             case "Graph":
                                 _logger.LogInformation("PresenceLight Running in Teams Mode");
                                 presence = await System.Threading.Tasks.Task.Run(() => GetPresence()).ConfigureAwait(true);
