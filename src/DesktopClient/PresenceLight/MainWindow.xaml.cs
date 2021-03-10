@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -22,7 +23,10 @@ using PresenceLight.Graph;
 using PresenceLight.Services;
 using PresenceLight.Telemetry;
 
+using Windows.ApplicationModel;
+
 using Media = System.Windows.Media;
+using Package = Windows.ApplicationModel.Package;
 
 namespace PresenceLight
 {
@@ -106,6 +110,25 @@ namespace PresenceLight
             about.settingsLocation.Text = ThisAppInfo.GetSettingsLocation();
             about.installedDate.Text = ThisAppInfo.GetInstallationDate();
             about.RuntimeVersionInfo.Text = ThisAppInfo.GetDotNetRuntimeInfo();
+
+            if (Convert.ToBoolean(App.StaticConfig["IsAppPackaged"], CultureInfo.InvariantCulture))
+            {
+                about.updateBtn.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                about.updateBtn.Visibility = Visibility.Collapsed;
+            }
+
+        }
+
+        private async void CheckForUpdates(object sender, RoutedEventArgs e)
+        {
+            var result = await Package.Current.CheckUpdateAvailabilityAsync();
+            if (result.Availability == PackageUpdateAvailability.Available)
+            {
+                MessageBox.Show("There's a new update! Restart your app to install it");
+            }
         }
 
         private void LoadApp()

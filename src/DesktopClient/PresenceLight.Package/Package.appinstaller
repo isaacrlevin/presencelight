@@ -9,7 +9,8 @@
               Uri="{MainPackageUri}"/>
 
   <UpdateSettings>
-    <OnLaunch HoursBetweenUpdateChecks="4" />
+    <OnLaunch HoursBetweenUpdateChecks="4" ShowPrompt="true" UpdateBlocksActivation="true" />
+      <ForceUpdateFromAnyVersion>true</ForceUpdateFromAnyVersion>
     <AutomaticBackgroundTask/>
   </UpdateSettings>
 </AppInstaller>
