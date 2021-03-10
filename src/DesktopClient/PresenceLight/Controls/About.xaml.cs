@@ -25,7 +25,7 @@ namespace PresenceLight.Controls
             InitializeComponent();
         }
         public event EventHandler<RequestNavigateEventArgs>? onHyperlinkRequestNavigate;
-
+        public event EventHandler<RoutedEventArgs>? onUpdateClick;
 
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
@@ -35,6 +35,15 @@ namespace PresenceLight.Controls
                 handler(this, e);
             }
         }
-        
+
+        private async void UpdateClick(object sender, RoutedEventArgs e)
+        {
+            var handler = onUpdateClick;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+            await Task.CompletedTask;
+        }
     }
 }

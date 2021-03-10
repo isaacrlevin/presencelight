@@ -52,6 +52,10 @@
             </TextBlock>
         </Border>
 
+        <Border VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,80,0,0" Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2">
+            <Button x:Name="updateBtn" Click="UpdateClick" Width="150px">Check for Updates</Button>
+        </Border>
+
 
 
         <Image Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Left" Grid.Column="1" Height="100"  Source="/Images/profileimage.jpg"  Width="100"/>
