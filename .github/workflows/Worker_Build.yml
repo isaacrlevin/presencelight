@@ -389,6 +389,17 @@ jobs:
         shell: pwsh
         if: ${{ success() && github.event_name != 'pull_request' }}
 
+      - name: Download Linux_ARM64 Artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: Linux_ARM64
+          path: ${{ github.workspace }}/Sign/Linux_ARM64
+
+      - name: Get Version from File
+        run: |
+          version=$(<"${{ github.workspace }}/Sign/Linux_ARM64/version.txt")
+          echo "VERSION=$version" >> $GITHUB_ENV
+
       - name: Push latest to GitHub
         uses: opspresso/action-docker@master
         with:
@@ -399,7 +410,7 @@ jobs:
           PASSWORD: ${{ secrets.GH_PERSONAL_TOKEN }}
           DOCKERFILE: "${{ github.workspace }}/src/DockerFiles/Dockerfile"
           IMAGE_NAME: "isaacrlevin/presencelight"
-          TAG_NAME: "${{ env.GitBuildVersionSimple }}"
+          TAG_NAME: "${{ env.VERSION }}"
           LATEST: "true"
           BUILD_PATH: "${{ github.workspace }}/src/"
 
@@ -438,9 +449,9 @@ jobs:
           PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
           DOCKERFILE: "${{ github.workspace }}/src/DockerFiles/Dockerfile.debian-arm32"
           IMAGE_NAME: "isaaclevin/presencelight"
-          TAG_NAME: "${{ env.GitBuildVersionSimple }}-debian-arm32"
+          TAG_NAME: "${{ env.VERSION }}-debian-arm32"
           BUILD_PATH: "${{ github.workspace }}/src/"
-      
+
       - name: Push ARM to DockerHub (Latest)
         uses: opspresso/action-docker@master
         with:
@@ -462,7 +473,7 @@ jobs:
           PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
           DOCKERFILE: "${{ github.workspace }}/src/DockerFiles/Dockerfile.debian-arm64"
           IMAGE_NAME: "isaaclevin/presencelight"
-          TAG_NAME: "${{ env.GitBuildVersionSimple }}-debian-arm64"
+          TAG_NAME: "${{ env.VERSION }}-debian-arm64"
           BUILD_PATH: "${{ github.workspace }}/src/"
 
       - name: Push ARM64 to DockerHub (Latest)
@@ -486,7 +497,7 @@ jobs:
           PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
           DOCKERFILE: "${{ github.workspace }}/src/DockerFiles/Dockerfile"
           IMAGE_NAME: "isaaclevin/presencelight"
-          TAG_NAME: "${{ env.GitBuildVersionSimple }}"
+          TAG_NAME: "${{ env.VERSION }}"
           LATEST: "true"
           BUILD_PATH: "${{ github.workspace }}/src/"
 
