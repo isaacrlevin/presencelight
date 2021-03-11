@@ -185,10 +185,6 @@ namespace PresenceLight.Worker
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.ApplicationServices
-                .UseBootstrapProviders()
-                .UseFontAwesomeIcons();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
