@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<AppInstaller xmlns="http://schemas.microsoft.com/appx/appinstaller/2017/2"
+<AppInstaller xmlns="http://schemas.microsoft.com/appx/appinstaller/2018"
               Uri="{AppInstallerUri}"
               Version="{Version}">
 
