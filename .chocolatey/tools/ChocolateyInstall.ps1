@@ -13,10 +13,10 @@ if ($IsCorrectBuild -lt "17134") {
 
 $packageName    = "presencelight"
 $toolsDir       = "$(Split-Path -parent $MyInvocation.MyCommand.Definition)"
-$url_x86        = "https://github.com/isaacrlevin/presencelight/releases/download/Desktop-v4.0.1/PresenceLight.4.0.1-x86.zip"
-$url_x64        = "https://github.com/isaacrlevin/presencelight/releases/download/Desktop-v4.0.1/PresenceLight.4.0.1-x64.zip"
-$checksum_x86   = "579CEBA3771C0287C268D8D80E1C6FB2BA5D91CA6C87C1C0666540CA2D509A91"
-$checksum_x64   = "1055A76F5E5500D0BC4D8617DF6928487558F55A6DF467D7EC5EFA47492C08BB"
+$url_x86        = "{x86Link}"
+$url_x64        = "{x64Link}"
+$checksum_x86   = "{ReplaceCheckSumx86}"
+$checksum_x64   = "{ReplaceCheckSumx64}"
 
 # Detect Architecture automatically
 # Respect user choice first 
@@ -52,4 +52,3 @@ Install-ChocolateyShortcut -ShortcutFilePath "C:\ProgramData\Microsoft\Windows\S
 
 Write-Output "Adding shortcut to Startup"
 Install-ChocolateyShortcut -ShortcutFilePath "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Startup\PresenceLight.lnk" -TargetPath $exePath
-
