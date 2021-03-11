@@ -22,11 +22,14 @@ $checksum_x64   = "{ReplaceCheckSumx64}"
 # Respect user choice first 
 $pp = Get-PackageParameters
 $Is64Bit = [Environment]::Is64BitOperatingSystem
-if ($pp['x86'] -eq 'true' -Or $Is64Bit -eq 'false')
+if ($pp['x86'] -eq 'true')
 {
   $url = $url_x86
   $checksum = $checksum_x86
-}elseif ($pp['x64'] -eq 'true' -Or $Is64Bit -eq 'true') {
+}elseif ($pp['x64'] -eq 'true') {
+  $url = $url_x64
+  $checksum = $checksum_x64
+}elseif ($Is64Bit -eq 'true') {
   $url = $url_x64
   $checksum = $checksum_x64
 }else { # Default to 32 bit system
