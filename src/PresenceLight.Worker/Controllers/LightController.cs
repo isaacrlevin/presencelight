@@ -17,17 +17,17 @@ namespace PresenceLight.Worker.Controllers
     {
         private readonly BaseConfig Config;
         private MediatR.IMediator _mediator;
-   
+
         private readonly AppState _appState;
         private ILogger _logger;
         public LightController(MediatR.IMediator mediator,
                       IOptionsMonitor<BaseConfig> optionsAccessor,
                       AppState appState,
-                      ILogger<LightController> logger )
+                      ILogger<LightController> logger)
         {
             Config = optionsAccessor.CurrentValue;
             _mediator = mediator;
-         
+
             _appState = appState;
             _logger = logger;
         }
@@ -72,13 +72,18 @@ namespace PresenceLight.Worker.Controllers
                         Activity = "",
                         LightID = Config.LightSettings.Hue.SelectedItemId
                     });
-                    
+
                 }
 
-                if (Config.LightSettings.LIFX.IsEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
+                if (Config.LightSettings.LIFX.IsEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey) && !string.IsNullOrWhiteSpace(Config.LightSettings.LIFX.SelectedItemId))
                 {
-                
-                    await _mediator.Send(new Core.LifxServices.SetColorCommand() { Availability = _appState.CustomColor, Activity = "", LightId = Config.LightSettings.LIFX.SelectedItemId });
+
+                    await _mediator.Send(new Core.LifxServices.SetColorCommand()
+                    {
+                        Availability = _appState.CustomColor,
+                        Activity = "",
+                        LightId = Config.LightSettings.LIFX.SelectedItemId
+                    });
 
                 }
             }

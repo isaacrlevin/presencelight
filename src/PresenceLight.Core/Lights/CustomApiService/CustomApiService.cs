@@ -181,12 +181,12 @@ namespace PresenceLight.Core
             return result;
         }
 
-        static string _lastUriCalled = string.Empty;
+        static Stack< string> _lastUriCalled =  new Stack<string>(2);
         private async Task<string> PerformWebRequest(string method, string uri, string result, CancellationToken cancellationToken)
         {
-            if (_lastUriCalled.Equals( $"{method}|{uri}", StringComparison.CurrentCultureIgnoreCase))
+            if (_lastUriCalled.Contains( $"{method}|{uri}" ))
             {
-                _logger.LogInformation("No Change to State... NOT calling Api");
+                _logger.LogDebug("No Change to State... NOT calling Api");
                 return "Skipped";
             }
 
@@ -217,7 +217,7 @@ namespace PresenceLight.Core
 
                         _logger.LogInformation(message);
 
-                        _lastUriCalled = $"{method}|{uri}";
+                        _lastUriCalled.Push( $"{method}|{uri}");
 
                         using (Serilog.Context.LogContext.PushProperty("result", result))
                             _logger.LogDebug(message + " Results");
