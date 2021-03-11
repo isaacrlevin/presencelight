@@ -18,16 +18,23 @@ $url_x64        = "{x64Link}"
 $checksum_x86   = "{ReplaceCheckSumx86}"
 $checksum_x64   = "{ReplaceCheckSumx64}"
 
-# By default, we want 32-bit installer
-$url = $url_x86
-$checksum = $checksum_x86
-
-# If specifically asked for 64-bit, we use that
+# Detect Architecture automatically
+# Respect user choice first 
 $pp = Get-PackageParameters
-if ($pp['x64'] -eq 'true')
+$Is64Bit = [Environment]::Is64BitOperatingSystem
+if ($pp['x86'] -eq 'true')
 {
+  $url = $url_x86
+  $checksum = $checksum_x86
+}elseif ($pp['x64'] -eq 'true') {
   $url = $url_x64
   $checksum = $checksum_x64
+}elseif ($Is64Bit -eq 'true') {
+  $url = $url_x64
+  $checksum = $checksum_x64
+}else { # Default to 32 bit system
+  $url = $url_x86
+  $checksum = $checksum_x86
 }
 
 $packageArgs = @{
