@@ -186,7 +186,7 @@ namespace PresenceLight.Core
         {
             if (_lastUriCalled.Contains( $"{method}|{uri}" ))
             {
-                _logger.LogInformation("No Change to State... NOT calling Api");
+                _logger.LogDebug("No Change to State... NOT calling Api");
                 return "Skipped";
             }
 
