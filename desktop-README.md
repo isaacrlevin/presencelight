@@ -3,14 +3,16 @@
 
 ![.github/workflows/Desktop_Build.yml](https://github.com/isaacrlevin/presencelight/workflows/.github/workflows/Desktop_Build.yml/badge.svg)
 
-### WPF Installs
+## Versions
 
-| Release Channel | Install Type | Build Number | Link |
-|--- | ------------ | ---- | --- |
-| Nightly | App Installer | [![Nightly build number](https://presencelight.blob.core.windows.net/nightly/ci_badge.svg)](https://presencelight.blob.core.windows.net/nightly/index.html)| [Install Link](https://presencelight.blob.core.windows.net/nightly/index.html)
-| Microsoft Store | App Installer | [![Stable build number](https://presencelight.blob.core.windows.net/store/stable_badge.svg)](https://www.microsoft.com/en-us/p/presencelight/9nffkd8gznl7)| [![Install](https://github.com/isaacrlevin/PresenceLight/raw/main/static/store.svg)](https://www.microsoft.com/en-us/p/presencelight/9nffkd8gznl7)
-| Chocolatey | Standalone exe | [![Stable build number](https://presencelight.blob.core.windows.net/store/stable_badge.svg)](https://www.microsoft.com/en-us/p/presencelight/9nffkd8gznl7)| [Packge Page](https://chocolatey.org/packages/PresenceLight/)
-| GitHub Releases | Standalone exe |  [![Stable build number](https://presencelight.blob.core.windows.net/store/stable_badge.svg)](https://www.microsoft.com/en-us/p/presencelight/9nffkd8gznl7)| [Release Page](https://github.com/isaacrlevin/presencelight/releases)
+| Desktop Stable | Desktop Nightly |
+|--- | ------------ |
+| [![Stable build number](https://presencelight.blob.core.windows.net/store/stable_badge.svg)](https://www.microsoft.com/en-us/p/presencelight/9nffkd8gznl7) | [![Nightly build number](https://presencelight.blob.core.windows.net/nightly/ci_badge.svg)](https://presencelight.blob.core.windows.net/nightly/index.html)  |
+### Desktop Installs
+
+| Nightly | Microsoft Store | Chocolatey | GitHub Releases  |
+| ------- | --------------- |--------------- | ---------------  |
+| [<img src="https://github.com/isaacrlevin/PresenceLight/raw/main/Icon.png" width="100">](https://presencelight.blob.core.windows.net/nightly/index.html)| [<img src="https://github.com/isaacrlevin/PresenceLight/raw/main/static/store.svg" width="100">](https://www.microsoft.com/en-us/p/presencelight/9nffkd8gznl7) | [<img src="https://chocolatey.org/content/images/global-shared/logo-square.svg" width="100">](https://chocolatey.org/packages/PresenceLight/) | [<img src="https://user-images.githubusercontent.com/8878502/110871471-55fe7c00-8283-11eb-8ce4-afeeaf62458a.png" width="100">](https://user-images.githubusercontent.com/8878502/110871316-061fb500-8283-11eb-8ad6-db529a86eab0.png) |
 
 ## Desktop App Setup
 
