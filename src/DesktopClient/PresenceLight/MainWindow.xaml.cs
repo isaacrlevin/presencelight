@@ -377,16 +377,19 @@ namespace PresenceLight
                 if (Config.LightSettings.CustomApi.IsEnabled)
                 {
                     string response = await _mediator.Send(new Core.CustomApiServices.SetColorCommand() { Activity = activity, Availability = color });
+                    this.Dispatcher.Invoke(() =>
+                    {
+                        customapi.customApiLastResponse.Content = response;
+                        if (response.Contains("Error:", StringComparison.OrdinalIgnoreCase))
+                        {
+                            customapi.customApiLastResponse.Foreground = new SolidColorBrush(Colors.Red);
+                        }
+                        else
+                        {
+                            customapi.customApiLastResponse.Foreground = new SolidColorBrush(Colors.Green);
+                        }
+                    });
 
-                    customapi.customApiLastResponse.Content = response;
-                    if (response.Contains("Error:", StringComparison.OrdinalIgnoreCase))
-                    {
-                        customapi.customApiLastResponse.Foreground = new SolidColorBrush(Colors.Red);
-                    }
-                    else
-                    {
-                        customapi.customApiLastResponse.Foreground = new SolidColorBrush(Colors.Green);
-                    }
                 }
             }
             catch (Exception e)

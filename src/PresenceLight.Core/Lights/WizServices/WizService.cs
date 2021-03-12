@@ -59,7 +59,8 @@ namespace PresenceLight.Core
         {
             if (string.IsNullOrEmpty(lightId))
             {
-                throw new ArgumentOutOfRangeException("Wiz Selected Light Id Invalid");
+                _logger.LogInformation("Selected Wiz Light Not Specified");
+                return;
             }
 
             try

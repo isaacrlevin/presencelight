@@ -5,8 +5,7 @@ on:
     - '.github/workflows/Worker_Build.yml'
     - 'src/PresenceLight.Worker/**'
     - 'src/DockerFiles/**'
-    - 'README.md'
-    - 'worker-README.md'
+    - '*.md'
 
   pull_request:
     branches: [ main ]
@@ -14,8 +13,8 @@ on:
     - '.github/workflows/Worker_Build.yml'
     - 'src/PresenceLight.Worker/**'
     - 'src/DockerFiles/**'
-    - 'README.md'
-    - 'worker-README.md'
+    - '*.md'
+
 jobs:
 
   Build_WPF:
@@ -512,10 +511,10 @@ jobs:
         run: |
           # Hash the Zip Files
           mkdir "${{ github.workspace }}\Download"
-          
+
           Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x64.zip" -OutFile "${{ github.workspace }}\\Download\\PresenceLight.${{ env.VERSION }}-x64.zip"
           $hash64=Get-Filehash ${{ github.workspace }}\\Download\\PresenceLight.${{ env.VERSION }}-x64.zip
-          
+
           # Update winget.yaml
           $yaml = Get-Content -path "${{ github.workspace }}\\Build\\winget.yaml"
           $yaml = $yaml -replace '{x64Link}' , "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x64.zip"
@@ -538,7 +537,7 @@ jobs:
           gh auth login --with-token < "${{ github.workspace }}\\token.txt"
           gh repo fork microsoft/winget-pkgs --clone=true --remote=true
           Copy-Item "${{ github.workspace }}\\Build\\${{ env.VERSION }}.yaml" -Destination "${{ github.workspace }}\\winget-pkgs\\manifests\\isaaclevin\\presencelight" -Recurse -Verbose
-          
+
           cd "${{ github.workspace }}\\winget-pkgs"
 
           git config --global user.email "github-action@microsoft.com"
@@ -549,7 +548,7 @@ jobs:
           git push
 
           gh pr create --title "Submitting  PresenceLight version ${{ env.VERSION }}.yaml" -R microsoft/winget-pkgs
- 
+
   Deploy_Store:
     needs: Deploy_Azure_Blob
     if: ${{ github.event_name != 'pull_request' }}

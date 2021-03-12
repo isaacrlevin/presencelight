@@ -77,7 +77,8 @@ namespace PresenceLight.Core
         {
             if (string.IsNullOrEmpty(lightId))
             {
-                throw new ArgumentNullException(nameof(lightId), "Selected LIFX Light Not Specified");
+                _logger.LogInformation("Selected LIFX Light Not Specified");
+                return;
             }
 
             bool useWorkingHours = await _mediator.Send(new WorkingHoursServices.UseWorkingHoursCommand());

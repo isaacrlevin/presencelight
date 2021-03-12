@@ -43,8 +43,8 @@ namespace PresenceLight.Core
 
             if (string.IsNullOrEmpty(lightId))
             {
-                _logger.LogError($"Yeelight Selected Light Id {lightId} Invalid");
-                throw new ArgumentOutOfRangeException(nameof(lightId), $"Yeelight Selected Light Id {lightId} Invalid");
+                _logger.LogInformation("Selected Yeelight Light Not Specified");
+                return;
             }
 
             bool useWorkingHours = await _mediator.Send(new WorkingHoursServices.UseWorkingHoursCommand());
