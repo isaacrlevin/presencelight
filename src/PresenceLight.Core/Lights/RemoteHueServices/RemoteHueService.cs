@@ -172,7 +172,8 @@ namespace PresenceLight.Core
             {
                 if (string.IsNullOrEmpty(lightId))
                 {
-                    throw new ArgumentNullException("Remote Hue Selected Light Id Invalid");
+                    _logger.LogInformation("Selected Hue Light Not Specified");
+                    return;
                 }
 
 
