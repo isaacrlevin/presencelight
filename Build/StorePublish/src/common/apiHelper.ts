@@ -6,7 +6,7 @@
 /// <reference path="../../typings/index.d.ts" />
 
 import request = require("./requestHelper");
-
+import { Dictionary } from "lodash";
 import fs = require("fs");
 import path = require("path");
 
@@ -40,6 +40,110 @@ export const MAX_PACKAGES_PER_GROUP = 25;
  * informative since the user will see more details in additional messages.
  */
 const COMMIT_FAILED_MSG = "Commit failed";
+
+export function deleteOldPackages(submissionPackages: any, numberOfPackagesToKeep: number): void
+{
+    if (numberOfPackagesToKeep === undefined) {
+        return;
+    }
+
+    if (numberOfPackagesToKeep > MAX_PACKAGES_PER_GROUP) {
+        numberOfPackagesToKeep = MAX_PACKAGES_PER_GROUP;
+    }
+
+    var dict :Dictionary<string[]>= {};
+    // For each of the target device family in the submission resource
+    // get all the different versions available
+    submissionPackages.forEach((submissionPackage: { hasOwnProperty: (arg0: string) => any; targetDeviceFamilies: any[]; version: any; targetPlatform: string; architecture: string; }) =>
+    {
+        if (submissionPackage.hasOwnProperty('targetDeviceFamilies') &&
+            Array.isArray(submissionPackage.targetDeviceFamilies) &&
+            submissionPackage.targetDeviceFamilies.length > 0)
+        {
+            submissionPackage.targetDeviceFamilies.forEach(targetDeviceFamily =>
+            {
+                if (dict[targetDeviceFamily] === undefined)
+                {
+                    dict[targetDeviceFamily] = [];
+                }
+                dict[targetDeviceFamily].push(submissionPackage.version);
+            });
+        }
+        else
+        {
+            var key = submissionPackage.targetPlatform + "_" + submissionPackage.architecture;
+            if (dict[key] === undefined)
+            {
+                dict[key] = [];
+            }
+            dict[key].push(submissionPackage.version);
+        }
+    });
+
+    var versionsToKeep = new Set();
+    for (var entry in dict)
+    {
+        if (dict.hasOwnProperty(entry))
+        {
+            // Sort in descending order of versions and only keep number of packages that we need
+            dict[entry].sort(compareVersions).reverse();
+            dict[entry].slice(0, numberOfPackagesToKeep).forEach(bundle => versionsToKeep.add(bundle));
+        }
+    }
+
+    if (versionsToKeep.size > 0)
+    {
+        console.log("Keeping packages with following versions:");
+        versionsToKeep.forEach(version =>
+        {
+            console.log(`${version}`);
+        });
+    }
+
+    // Mark all the packages for deletion which are not present in the set of versions we calculated
+    submissionPackages.forEach((submissionPackage: { version: unknown; fileStatus: string; }) =>
+    {
+        if (!versionsToKeep.has(submissionPackage.version))
+        {
+            console.log(`Removing ${submissionPackage.version}`);
+            submissionPackage.fileStatus = 'PendingDelete';
+        }
+    });
+}
+
+/**
+ * Compares two version strings, returns a positive integer if X is greated than Y,
+ * negative if Y is greater than X, 0 if equal.
+ * @param x The version string to compare in the form of X[.X]* | X : number
+ * @param y The version string to compare in the form of X[.X]* | X : number
+ * Examples:
+ * 2 > 1.5.1 > 1.5.0.45
+ * 1.7 == 1.7.0.0
+ */
+ function compareVersions(x: string, y: string): number {
+  var i = 0;
+  var xParts = x.split('.');
+  var yParts = y.split('.');
+
+  // Add zeroes to shorter version to handle all cases as equal length
+  while (xParts.length > yParts.length) {
+      yParts.push('0');
+  }
+  while (yParts.length > xParts.length) {
+      xParts.push('0');
+  }
+
+  // Compare parts
+  for (i = 0; i < xParts.length; i++) {
+      var diff = parseInt(xParts[i], 10) - parseInt(yParts[i], 10);
+      if (diff) {
+          return diff;
+      }
+  }
+
+  // Because both arrays are of equal length, 1.7 == 1.7.0.0
+  return 0;
+}
 
 export function includePackagesInSubmission(
   givenPackages: string[],
