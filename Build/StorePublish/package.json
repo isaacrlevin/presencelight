@@ -9,11 +9,14 @@
   },
   "dependencies": {
     "@azure/storage-blob": "^12.4.0",
+    "@types/lodash": "^4.14.168",
     "dotenv": "^8.2.0",
     "glob": "^7.0.3",
     "jszip": "^3.1.1",
+    "lodash": "^4.17.21",
     "q": "^1.4.1",
     "request": "^2.72.0",
+    "save": "^2.4.0",
     "streamifier": "^0.1.1",
     "url": "^0.11.0",
     "uuid": "^8.3.2"
