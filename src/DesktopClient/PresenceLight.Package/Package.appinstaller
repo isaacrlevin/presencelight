@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<AppInstaller xmlns="http://schemas.microsoft.com/appx/appinstaller/2018"
+<AppInstaller xmlns="http://schemas.microsoft.com/appx/appinstaller/2017/2"
               Uri="{AppInstallerUri}"
               Version="{Version}">
 
@@ -9,8 +9,7 @@
               Uri="{MainPackageUri}"/>
 
   <UpdateSettings>
-    <OnLaunch HoursBetweenUpdateChecks="4" ShowPrompt="true" UpdateBlocksActivation="true" />
-      <ForceUpdateFromAnyVersion>true</ForceUpdateFromAnyVersion>
+    <OnLaunch HoursBetweenUpdateChecks="4" />
     <AutomaticBackgroundTask/>
   </UpdateSettings>
 </AppInstaller>
