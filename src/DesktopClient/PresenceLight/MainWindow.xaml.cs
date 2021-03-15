@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -119,7 +120,21 @@ namespace PresenceLight
             {
                 about.updateBtn.Visibility = Visibility.Collapsed;
             }
+        }
 
+        private void SettingsLinkClick(object sender, RoutedEventArgs e)
+        {
+            string filePath = ThisAppInfo.GetSettingsLocation();
+            if (!System.IO.File.Exists(filePath))
+            {
+                _logger.LogError("Settings File Not Found");
+            }
+            else
+            {
+                //Clean up file path so it can be navigated OK
+                filePath = System.IO.Path.GetFullPath(filePath);
+                System.Diagnostics.Process.Start("explorer.exe", string.Format("/select,\"{0}\"", filePath));
+            }
         }
 
         private async void CheckForUpdates(object sender, RoutedEventArgs e)
@@ -735,7 +750,7 @@ namespace PresenceLight
                                     previousLightMode = lightMode;
                                     switch (Config.LightSettings.HoursPassedStatus)
                                     {
-                                      
+
                                         case "White":
                                             newColor = "Offline";
                                             lightMode = "Manual";
@@ -748,7 +763,7 @@ namespace PresenceLight
                                         default:
                                             break;
                                     }
-                                  
+
                                     touchLight = true;
                                 }
                             }

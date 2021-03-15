@@ -90,7 +90,7 @@
                 <lc:Logs x:Name="logs"/>
             </TabItem>
             <TabItem Header="About" >
-                <lc:About x:Name="about" onHyperlinkRequestNavigate="Hyperlink_RequestNavigate" onUpdateClick="CheckForUpdates" />
+                <lc:About x:Name="about" onHyperlinkRequestNavigate="Hyperlink_RequestNavigate" onSettingsLinkClick="SettingsLinkClick"  onUpdateClick="CheckForUpdates" />
             </TabItem>
         </TabControl>
     </Grid>
