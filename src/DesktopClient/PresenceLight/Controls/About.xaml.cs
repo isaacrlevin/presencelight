@@ -25,11 +25,22 @@ namespace PresenceLight.Controls
             InitializeComponent();
         }
         public event EventHandler<RequestNavigateEventArgs>? onHyperlinkRequestNavigate;
+        public event EventHandler<RoutedEventArgs>? onSettingsLinkClick;
         public event EventHandler<RoutedEventArgs>? onUpdateClick;
 
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
             var handler = onHyperlinkRequestNavigate;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
+
+        private void SettingsClicked(object sender, RoutedEventArgs e)
+        {
+            var handler = onSettingsLinkClick;
             if (handler != null)
             {
                 handler(this, e);
