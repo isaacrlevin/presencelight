@@ -25,7 +25,7 @@ namespace PresenceLight
                 bool useWorkingHours = await _mediator.Send(new Core.WorkingHoursServices.UseWorkingHoursCommand());
                 bool IsInWorkingHours = await _mediator.Send(new Core.WorkingHoursServices.IsInWorkingHoursCommand());
 
-                if (useWorkingHours) 
+                if (useWorkingHours)
                 {
                     settings.pnlWorkingHours.Visibility = Visibility.Visible;
                     SyncOptions();
@@ -278,10 +278,42 @@ namespace PresenceLight
             if (Config.LightSettings.UseDefaultBrightness)
             {
                 settings.pnlDefaultBrightness.Visibility = Visibility.Visible;
+
+                lifx.lifxBrightness.IsEnabled = false;
+                lifx.lifxBrightnessNum.IsEnabled = false;
+                lifx.lifxBrightnessText.Visibility = Visibility.Visible;
+
+                phillipsHue.hueBrightness.IsEnabled = false;
+                phillipsHue.hueBrightnessNum.IsEnabled = false;
+                phillipsHue.hueBrightnessText.Visibility = Visibility.Visible;
+
+                wiz.WizBrightness.IsEnabled = false;
+                wiz.WizBrightnessNum.IsEnabled = false;
+                wiz.wizBrightnessText.Visibility = Visibility.Visible;
+
+                yeelight.yeelightBrightness.IsEnabled = false;
+                yeelight.yeelightBrightnessNum.IsEnabled = false;
+                yeelight.yeelightBrightnessText.Visibility = Visibility.Visible;
             }
             else
             {
                 settings.pnlDefaultBrightness.Visibility = Visibility.Collapsed;
+
+                lifx.lifxBrightness.IsEnabled = true;
+                lifx.lifxBrightnessNum.IsEnabled = true;
+                lifx.lifxBrightnessText.Visibility = Visibility.Collapsed;
+
+                phillipsHue.hueBrightness.IsEnabled = true;
+                phillipsHue.hueBrightnessNum.IsEnabled = true;
+                phillipsHue.hueBrightnessText.Visibility = Visibility.Collapsed;
+
+                wiz.WizBrightness.IsEnabled = true;
+                wiz.WizBrightnessNum.IsEnabled = true;
+                wiz.wizBrightnessText.Visibility = Visibility.Collapsed;
+
+                yeelight.yeelightBrightness.IsEnabled = true;
+                yeelight.yeelightBrightnessNum.IsEnabled = true;
+                yeelight.yeelightBrightnessText.Visibility = Visibility.Collapsed;
             }
 
             SyncOptions();
