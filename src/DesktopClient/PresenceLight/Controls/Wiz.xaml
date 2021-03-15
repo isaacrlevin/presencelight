@@ -72,9 +72,10 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="40"/>
                         </Grid.RowDefinitions>
-                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Brightness"  Grid.ColumnSpan="3" Grid.Row="0" />
+                        <Label Grid.Column="0" x:Name="wizBrightnessText"  VerticalAlignment="Bottom" Foreground="Red" Content="Default Brightness in Settings is enabled"  Grid.ColumnSpan="3" Grid.Row="0" />
+                        <Label Grid.Column="0" VerticalAlignment="Top" Content="Brightness"  Grid.ColumnSpan="3" Grid.Row="0" />
                         <Slider Grid.Column="1" VerticalAlignment="Center" Width="180"  HorizontalAlignment="Center" x:Name = "WizBrightness" Value="{Binding LightSettings.Wiz.Brightness}" IsSnapToTickEnabled="True"  Minimum = "0" Maximum = "100" TickFrequency = "10" TickPlacement = "BottomRight"  Grid.Row="0" />
-                        <TextBox Grid.Column="2" VerticalAlignment="Center" Text="{Binding ElementName=WizBrightness, Path=Value, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="20" TextAlignment="Center" Width="40" Grid.Row="0" />
+                        <TextBox Grid.Column="2" VerticalAlignment="Center"  x:Name="WizBrightnessNum" Text="{Binding ElementName=WizBrightness, Path=Value, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="20" TextAlignment="Center" Width="40" Grid.Row="0" />
                     </Grid>
 
                     <Grid Grid.Column="0" Grid.Row="2">

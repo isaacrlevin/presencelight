@@ -103,9 +103,10 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="40"/>
                     </Grid.RowDefinitions>
-                    <Label Grid.Column="0" VerticalAlignment="Center" Content="Brightness"  Grid.ColumnSpan="3" Grid.Row="0" />
+                    <Label Grid.Column="0" x:Name="lifxBrightnessText"  VerticalAlignment="Bottom" Foreground="Red" Content="Default Brightness in Settings is enabled"  Grid.ColumnSpan="3" Grid.Row="0" />
+                    <Label Grid.Column="0" VerticalAlignment="Top" Content="Brightness"  Grid.ColumnSpan="3" Grid.Row="0" />
                     <Slider Grid.Column="1" VerticalAlignment="Center" Width="180"  HorizontalAlignment="Center" x:Name = "lifxBrightness" Value="{Binding LightSettings.LIFX.Brightness}" IsSnapToTickEnabled="True"  Minimum = "0" Maximum = "100" TickFrequency = "10" TickPlacement = "BottomRight"  Grid.Row="0" />
-                    <TextBox Grid.Column="2" VerticalAlignment="Center" Text="{Binding ElementName=lifxBrightness, Path=Value, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="20" TextAlignment="Center" Width="40" Grid.Row="0" />
+                    <TextBox Grid.Column="2" VerticalAlignment="Center" x:Name = "lifxBrightnessNum" Text="{Binding ElementName=lifxBrightness, Path=Value, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="20" TextAlignment="Center" Width="40" Grid.Row="0" />
                 </Grid>
 
                 <Grid Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="2">
