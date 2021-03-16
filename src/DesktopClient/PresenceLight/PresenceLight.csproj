@@ -6,7 +6,7 @@
     <OutputType>WinExe</OutputType>
     <AssemblyName>PresenceLight</AssemblyName>
     <Title>PresenceLight</Title>
-    <Description>PresenceLight is a solution to broadcast your Microsoft Teams presence to a Phillips Hue or LIFX light bulb. There are other solutions that do something similar, but they require a tethered solution (plugging a light into a computer via USB). What PresenceLight does is leverage the Presence Api, which is available in Microsoft Graph, allowing to retrieve your presence without having to be tethered. This could potentially allow someone to update the light bulb from a remote machine they do not use.</Description>
+    <Description>PresenceLight is a solution to broadcast your Microsoft Teams presence to a Philips Hue or LIFX light bulb. There are other solutions that do something similar, but they require a tethered solution (plugging a light into a computer via USB). What PresenceLight does is leverage the Presence Api, which is available in Microsoft Graph, allowing to retrieve your presence without having to be tethered. This could potentially allow someone to update the light bulb from a remote machine they do not use.</Description>
     <RootNamespace>PresenceLight</RootNamespace>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <TieredCompilationQuickJitForLoops>true</TieredCompilationQuickJitForLoops>

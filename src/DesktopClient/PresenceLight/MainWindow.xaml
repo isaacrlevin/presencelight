@@ -23,10 +23,10 @@
             <TabItem Header="Set Light Colors">
                 <lc:LightColors x:Name="lightColors" onSetColorClick="SetColor_Click" onSetTeamsPresenceClick="SetTeamsPresence_Click" onSyncThemeClick="SyncTheme_Click" />
             </TabItem>
-            <TabItem Header="Configure Phillips Hue" >
-                <lc:PhillipsHue x:Name="phillipsHue"
+            <TabItem Header="Configure Philips Hue" >
+                <lc:PhilipsHue x:Name="philipsHue"
                                 oncbHueIsDisabledChange="cbHueIsDisabledChange"
-                                oncbIsPhillipsEnabledChanged="cbIsPhillipsEnabledChanged"
+                                oncbIsPhilipsEnabledChanged="cbIsPhilipsEnabledChanged"
                                 oncbUseHueActivityStatus="cbUseHueActivityStatus"
                                 oncbUseRemoteApiChanged="cbUseRemoteApiChanged"
                                 onddlHueLightsSelectionChanged="ddlHueLights_SelectionChanged"

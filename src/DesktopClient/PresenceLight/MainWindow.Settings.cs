@@ -38,14 +38,14 @@ namespace PresenceLight
 
                 if (Config.LightSettings.Hue.IsEnabled)
                 {
-                    phillipsHue.pnlPhillips.Visibility = Visibility.Visible;
-                    phillipsHue.pnlHueApi.Visibility = Visibility.Visible;
+                    philipsHue.pnlPhilips.Visibility = Visibility.Visible;
+                    philipsHue.pnlHueApi.Visibility = Visibility.Visible;
                     SyncOptions();
                 }
                 else
                 {
-                    phillipsHue.pnlPhillips.Visibility = Visibility.Collapsed;
-                    phillipsHue.pnlHueApi.Visibility = Visibility.Collapsed;
+                    philipsHue.pnlPhilips.Visibility = Visibility.Collapsed;
+                    philipsHue.pnlHueApi.Visibility = Visibility.Collapsed;
                 }
 
                 if (Config.LightSettings.Yeelight.IsEnabled)
@@ -283,9 +283,9 @@ namespace PresenceLight
                 lifx.lifxBrightnessNum.IsEnabled = false;
                 lifx.lifxBrightnessText.Visibility = Visibility.Visible;
 
-                phillipsHue.hueBrightness.IsEnabled = false;
-                phillipsHue.hueBrightnessNum.IsEnabled = false;
-                phillipsHue.hueBrightnessText.Visibility = Visibility.Visible;
+                philipsHue.hueBrightness.IsEnabled = false;
+                philipsHue.hueBrightnessNum.IsEnabled = false;
+                philipsHue.hueBrightnessText.Visibility = Visibility.Visible;
 
                 wiz.WizBrightness.IsEnabled = false;
                 wiz.WizBrightnessNum.IsEnabled = false;
@@ -303,9 +303,9 @@ namespace PresenceLight
                 lifx.lifxBrightnessNum.IsEnabled = true;
                 lifx.lifxBrightnessText.Visibility = Visibility.Collapsed;
 
-                phillipsHue.hueBrightness.IsEnabled = true;
-                phillipsHue.hueBrightnessNum.IsEnabled = true;
-                phillipsHue.hueBrightnessText.Visibility = Visibility.Collapsed;
+                philipsHue.hueBrightness.IsEnabled = true;
+                philipsHue.hueBrightnessNum.IsEnabled = true;
+                philipsHue.hueBrightnessText.Visibility = Visibility.Collapsed;
 
                 wiz.WizBrightness.IsEnabled = true;
                 wiz.WizBrightnessNum.IsEnabled = true;
