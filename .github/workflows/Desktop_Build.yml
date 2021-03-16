@@ -503,7 +503,7 @@ jobs:
 
       - name: Get Version from File
         run: |
-          version=$(<"${{ github.workspace }}\\Build\\version.txt")
+          version=$(<"${{ github.workspace }}\\SigningScripts\\version.txt")
           echo "VERSION=$version" >> $GITHUB_ENV
         shell: bash
 
@@ -516,11 +516,11 @@ jobs:
           $hash64=Get-Filehash ${{ github.workspace }}\\Download\\PresenceLight.${{ env.VERSION }}-x64.zip
 
           # Update winget.yaml
-          $yaml = Get-Content -path "${{ github.workspace }}\\Build\\winget.yaml"
+          $yaml = Get-Content -path "${{ github.workspace }}\\SigningScripts\\winget.yaml"
           $yaml = $yaml -replace '{x64Link}' , "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x64.zip"
           $yaml = $yaml -replace '{HASHx64}', $hash64.Hash
           $yaml = $yaml -replace '{VERSION}', ${{ env.VERSION }}
-          $yaml | Set-Content -Path "${{ github.workspace }}\\Build\\${{ env.VERSION }}.yaml"
+          $yaml | Set-Content -Path "${{ github.workspace }}\\SigningScripts\\${{ env.VERSION }}.yaml"
         shell: powershell
 
       - name: Add Version File to Artifact
@@ -536,7 +536,7 @@ jobs:
         run: |
           gh auth login --with-token < "${{ github.workspace }}\\token.txt"
           gh repo fork microsoft/winget-pkgs --clone=true --remote=true
-          Copy-Item "${{ github.workspace }}\\Build\\${{ env.VERSION }}.yaml" -Destination "${{ github.workspace }}\\winget-pkgs\\manifests\\isaaclevin\\presencelight" -Recurse -Verbose
+          Copy-Item "${{ github.workspace }}\\SigningScripts\\${{ env.VERSION }}.yaml" -Destination "${{ github.workspace }}\\winget-pkgs\\manifests\\isaaclevin\\presencelight" -Recurse -Verbose
 
           cd "${{ github.workspace }}\\winget-pkgs"
 
