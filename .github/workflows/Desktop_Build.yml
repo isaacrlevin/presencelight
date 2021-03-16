@@ -503,7 +503,7 @@ jobs:
 
       - name: Get Version from File
         run: |
-          version=$(<"${{ github.workspace }}/SigningScripts\\version.txt")
+          version=$(<"${{ github.workspace }}/SigningScripts/version.txt")
           echo "VERSION=$version" >> $GITHUB_ENV
         shell: bash
 
@@ -512,11 +512,11 @@ jobs:
           # Hash the Zip Files
           mkdir "${{ github.workspace }}/Download"
 
-          Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x64.zip" -OutFile "${{ github.workspace }}\\Download\\PresenceLight.${{ env.VERSION }}-x64.zip"
+          Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x64.zip" -OutFile "${{ github.workspace }}/Download/PresenceLight.${{ env.VERSION }}-x64.zip"
           $hash64=Get-Filehash ${{ github.workspace }}/Download/PresenceLight.${{ env.VERSION }}-x64.zip
 
           # Update winget.yaml
-          $yaml = Get-Content -path "${{ github.workspace }}/SigningScripts\\winget.yaml"
+          $yaml = Get-Content -path "${{ github.workspace }}/SigningScripts/winget.yaml"
           $yaml = $yaml -replace '{x64Link}' , "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x64.zip"
           $yaml = $yaml -replace '{HASHx64}', $hash64.Hash
           $yaml = $yaml -replace '{VERSION}', ${{ env.VERSION }}
