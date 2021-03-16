@@ -129,6 +129,8 @@ namespace PresenceLight
 
         private void cbWizIsDisabledChange(object sender, RoutedEventArgs e)
         {
+            var userControl = (PresenceLight.Controls.PhilipsHue)this.FindName("wiz");
+
             CheckBox cb = e.Source as CheckBox ?? throw new ArgumentException("Check Box Not Found");
             var cbName = cb.Name.Replace("Disabled", "Colour");
             var colorpicker = (Xceed.Wpf.Toolkit.ColorPicker)this.FindName(cbName);

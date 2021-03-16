@@ -284,9 +284,11 @@ namespace PresenceLight
 
         private void cbLIFXIsDisabledChange(object sender, RoutedEventArgs e)
         {
+            var userControl = (PresenceLight.Controls.PhilipsHue)this.FindName("lifx");
+
             CheckBox cb = e.Source as CheckBox ?? throw new ArgumentException("Check Box Not Found");
             var cbName = cb.Name.Replace("Disabled", "Colour");
-            var colorpicker = (Xceed.Wpf.Toolkit.ColorPicker)this.FindName(cbName);
+            var colorpicker = (Xceed.Wpf.Toolkit.ColorPicker)userControl.FindName(cbName);
             colorpicker.IsEnabled = !cb.IsChecked.Value;
             SyncOptions();
             e.Handled = true;
