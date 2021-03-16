@@ -49,14 +49,8 @@ namespace PresenceLight.Core
 
         public async Task<string> SetColor(string availability, string? activity, CancellationToken cancellationToken = default)
         {
-            bool useWorkingHours = await _mediator.Send(new WorkingHoursServices.UseWorkingHoursCommand());
-            bool IsInWorkingHours = await _mediator.Send(new WorkingHoursServices.IsInWorkingHoursCommand());
-
-            if (!useWorkingHours || (useWorkingHours && IsInWorkingHours))
-            {
-                // If we are outside of working hours we should signal that we are off
-                availability = activity = availability;
-            }
+            // If we are outside of working hours we should signal that we are off
+            availability = activity = availability;
 
             string result = await SetAvailability(availability, cancellationToken);
             result += await SetActivity(activity, cancellationToken);
@@ -181,16 +175,16 @@ namespace PresenceLight.Core
             return result;
         }
 
-        static Stack< string> _lastUriCalled =  new Stack<string>(2);
+        static Stack<string> _lastUriCalled = new Stack<string>(2);
         private async Task<string> PerformWebRequest(string method, string uri, string result, CancellationToken cancellationToken)
         {
-            if (_lastUriCalled.Contains( $"{method}|{uri}" ))
+            if (_lastUriCalled.Contains($"{method}|{uri}"))
             {
                 _logger.LogDebug("No Change to State... NOT calling Api");
                 return "Skipped";
             }
 
-           
+
             using (Serilog.Context.LogContext.PushProperty("method", method))
             using (Serilog.Context.LogContext.PushProperty("uri", uri))
             {
@@ -217,7 +211,7 @@ namespace PresenceLight.Core
 
                         _logger.LogInformation(message);
 
-                        _lastUriCalled.Push( $"{method}|{uri}");
+                        _lastUriCalled.Push($"{method}|{uri}");
 
                         using (Serilog.Context.LogContext.PushProperty("result", result))
                             _logger.LogDebug(message + " Results");
