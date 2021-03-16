@@ -558,17 +558,6 @@ jobs:
     name: Deploy WPF Windows Store
     runs-on: ubuntu-latest
     steps:
-    - name: Azure Login
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-    - uses: actions/download-artifact@v2
-      name: Download Signing Scripts Artifacts
-      with:
-        name: SigningScripts
-        path: "${{ github.workspace }}/SigningScripts"
-
     - uses: actions/download-artifact@v2
       name: Download Release Signed
       with:
@@ -576,43 +565,10 @@ jobs:
         path: "${{ github.workspace }}/ReleaseSigned"
 
     - name: Windows Store Publish
-      uses: isaacrlevin/windows-store-action@0.91
+      uses: isaacrlevin/windows-store-action@1.0
       with:
         tenant-id: ${{ secrets.STORE_TENANT }}
         client-id: ${{ secrets.STORE_CLIENT_ID }}
         client-secret: ${{ secrets.STORE_CLIENT_SECRET }}
         app-id: ${{ secrets.APP_ID }}
         package-path: "${{ github.workspace }}/ReleaseSigned/"
-
-
-    # - name: Get Version from File
-    #   run: |
-    #     dir "${{ github.workspace }}/ReleaseSigned"
-    #     version=$(<"${{ github.workspace }}/ReleaseSigned/version.txt")
-    #     echo "VERSION=$version" >> $GITHUB_ENV
-
-    # - name: Update .ENV File
-    #   working-directory: "${{ github.workspace }}/SigningScripts/StorePublish"
-    #   run: |
-    #     # Update Verification.txt
-    #     $envFile = Get-Content -path ./.env
-    #     $envFile = $envFile -replace '{TENANT}' ,"${{ secrets.STORE_TENANT }}"
-    #     $envFile = $envFile -replace '{CLIENT_ID}' ,"${{ secrets.STORE_CLIENT_ID }}"
-    #     $envFile = $envFile -replace '{CLIENT_SECRET}', "${{ secrets.STORE_CLIENT_SECRET }}"
-    #     $envFile = $envFile -replace '{ENDPOINT}', "${{ secrets.ENDPOINT }}"
-    #     $envFile = $envFile -replace '{APP_ID}', "${{ secrets.APP_ID }}"
-    #     $envFile = $envFile -replace '{PACKAGE_PATH}', "${{ github.workspace }}/ReleaseSigned/PresenceLight.Package_${{ env.VERSION }}.0_x64_bundle.appxupload"
-    #     $envFile | Set-Content -Path ./.env
-
-    #     echo $envFile
-    #   shell: pwsh
-
-    # - uses: bahmutov/npm-install@v1
-    #   name: NPM Install
-    #   with:
-    #     working-directory: "${{ github.workspace }}/SigningScripts/StorePublish"
-
-    # - name: Publish to Store
-    #   working-directory: "${{ github.workspace }}/SigningScripts/StorePublish"
-    #   run: |
-    #     npm run publish
