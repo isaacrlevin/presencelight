@@ -576,7 +576,7 @@ jobs:
         path: "${{ github.workspace }}/ReleaseSigned"
 
     - name: Windows Store Publish
-      uses: isaacrlevin/windows-store-action@0.82
+      uses: isaacrlevin/windows-store-action@0.9
       with:
         tenant-id: ${{ secrets.STORE_TENANT }}
         client-id: ${{ secrets.STORE_CLIENT_ID }}
