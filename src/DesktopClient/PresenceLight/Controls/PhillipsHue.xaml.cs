@@ -16,18 +16,18 @@ using System.Windows.Shapes;
 namespace PresenceLight.Controls
 {
     /// <summary>
-    /// Interaction logic for PhillipsHue.xaml
+    /// Interaction logic for PhilipsHue.xaml
     /// </summary>
-    public partial class PhillipsHue : UserControl
+    public partial class PhilipsHue : UserControl
     {
-        public PhillipsHue()
+        public PhilipsHue()
         {
             InitializeComponent();
         }
 
 
         public event EventHandler<RoutedEventArgs>? oncbHueIsDisabledChange;
-        public event EventHandler<RoutedEventArgs>? oncbIsPhillipsEnabledChanged;
+        public event EventHandler<RoutedEventArgs>? oncbIsPhilipsEnabledChanged;
         public event EventHandler<RoutedEventArgs>? oncbUseHueActivityStatus;
         public event EventHandler<RoutedEventArgs>? oncbUseRemoteApiChanged;
         public event EventHandler<RoutedEventArgs>? onFindBridgeClick;
@@ -46,9 +46,9 @@ namespace PresenceLight.Controls
                 handler(this, e);
             }
         }
-        private void cbIsPhillipsEnabledChanged(object sender, RoutedEventArgs e)
+        private void cbIsPhilipsEnabledChanged(object sender, RoutedEventArgs e)
         {
-            var handler = oncbIsPhillipsEnabledChanged;
+            var handler = oncbIsPhilipsEnabledChanged;
             if (handler != null)
             {
                 handler(this, e);

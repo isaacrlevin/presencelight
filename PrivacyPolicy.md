@@ -33,5 +33,5 @@ When user specifies a different package source than the default source at http:/
 ## Third-Party Policies
 
 * LIFX https://www.lifx.com/pages/privacy-policy
-* Phillips Hue https://www2.meethue.com/en-us/support/privacy-policy
+* Philips Hue https://www2.meethue.com/en-us/support/privacy-policy
 * Microsoft Store https://docs.microsoft.com/en-us/legal/windows/agreements/store-policies

@@ -12,12 +12,12 @@
         <div class="container-fluid">
             <div class="row-fluid">
                 <div>
-                    <h1>Configure Phillips Hue</h1>
+                    <h1>Configure Philips Hue</h1>
                     <br />
                     <br />
                     <div class="row">
                         <div class="col-4">
-                            <input type="checkbox" checked="@Config.CurrentValue.LightSettings.Hue.IsEnabled" @bind-value="@Config.CurrentValue.LightSettings.Hue.IsEnabled" /> Connect to Phillips Hue
+                            <input type="checkbox" checked="@Config.CurrentValue.LightSettings.Hue.IsEnabled" @bind-value="@Config.CurrentValue.LightSettings.Hue.IsEnabled" /> Connect to Philips Hue
                         </div>
                         @if (Config.CurrentValue.LightSettings.Hue.IsEnabled)
                         {
@@ -193,7 +193,7 @@
 
     async Task RegisterBridge()
     {
-        var formModal = Modal.Show<Confirm>("Please press the sync button on your Phillips Hue Bridge");
+        var formModal = Modal.Show<Confirm>("Please press the sync button on your Philips Hue Bridge");
         var result = await formModal.Result;
 
         if (result.Cancelled)

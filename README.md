@@ -28,11 +28,11 @@
 
 | Light Type  |
 | ------------ |
-| Phillips Hue (Local and Remote)
+| Philips Hue (Local and Remote)
 | LIFX |
 | Yeelight |
 | Any light which can be controlled via a GET or POST call to a web API |
-| Phillips Wiz **Coming Soon** |
+| Philips Wiz **Coming Soon** |
 
 ## Configure Hardware
 - [Configure Hardware](https://github.com/isaacrlevin/PresenceLight/wiki/Configure-Hardware)

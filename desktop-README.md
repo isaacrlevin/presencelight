@@ -21,7 +21,7 @@
 In order for the desktop app to work, you need to be running Windows 10, version 1903 (19H1), as well as provide the following steps.
 
 - Install App via the desired build link above
-- Hue Only- Obtain the IP Address for your Phillips Hue Bridge
+- Hue Only- Obtain the IP Address for your Philips Hue Bridge
 - LIFX Only - Obtain a LIFX Developer Token from [here](https://cloud.lifx.com/settings)
 
 
@@ -63,11 +63,11 @@ You can change the icon type in the settings pane.
 
 After you change and save, the icon will update in the icon tray.
 
-## Wire Up Phillips Light
+## Wire Up Philips Light
 
-To connect PresenceLight to Phillips Hue, you can do it 1 of 2 ways
+To connect PresenceLight to Philips Hue, you can do it 1 of 2 ways
 
- - Obtain the IP Address of your Phillips Hue Bridge (if you have it)
+ - Obtain the IP Address of your Philips Hue Bridge (if you have it)
  - Ask PresenceLight to find it for you (may no work in certain network configurations)
 
  ![Hue Settings](https://github.com/isaacrlevin/PresenceLight/raw/main/static/hue-settings.png)
