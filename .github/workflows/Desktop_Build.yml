@@ -576,13 +576,13 @@ jobs:
         path: "${{ github.workspace }}/ReleaseSigned"
 
     - name: Windows Store Publish
-      uses: isaacrlevin/windows-store-action@0.8
+      uses: isaacrlevin/windows-store-action@0.82
       with:
         tenant-id: ${{ secrets.STORE_TENANT }}
         client-id: ${{ secrets.STORE_CLIENT_ID }}
         client-secret: ${{ secrets.STORE_CLIENT_SECRET }}
         app-id: ${{ secrets.APP_ID }}
-        package-path: "${{ github.workspace }}/ReleaseSigned/PresenceLight.Package_${{ env.VERSION }}.0_x64_bundle.appxupload"
+        package-path: "${{ github.workspace }}/ReleaseSigned/"
 
 
     # - name: Get Version from File
