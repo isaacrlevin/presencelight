@@ -526,7 +526,7 @@ jobs:
       - name: Add Version File to Artifact
         run : |
           New-Item -Path ${{ github.workspace }} -Name "token.txt" -ItemType "file" -Value "${{ secrets.GHCliToken }}"
-        shell: powershell
+        shell: pwsh
 
       - name: Install GH Cli
         run: |
