@@ -531,11 +531,21 @@ jobs:
       - name: Install GH Cli
         run: |
           brew install gh
+          
+      - name: GitHub Cli Auth
+        run: |
+          gh auth login --with-token < "${{ github.workspace }}/token.txt"
+
+      - name: GitHub Cli Fork
+        run: |
+          gh repo fork microsoft/winget-pkgs --clone=true --remote=true
+          dir
+      
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
 
       - name: GitHub Cli
         run: |
-          gh auth login --with-token < "${{ github.workspace }}/token.txt"
-          gh repo fork microsoft/winget-pkgs --clone=true --remote=true
           cp "${{ github.workspace }}/SigningScripts/${{ env.VERSION }}.yaml" "${{ github.workspace }}/winget-pkgs/manifests/isaaclevin/presencelight"
 
           cd "${{ github.workspace }}/winget-pkgs"
