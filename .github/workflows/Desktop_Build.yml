@@ -539,10 +539,10 @@ jobs:
       - name: GitHub Cli Fork
         run: |
           gh repo fork microsoft/winget-pkgs --clone=true --remote=true
-          dir
+          cd Download && dir
       
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
+      - name: Start SSH via tmate
+        uses: P3TERX/ssh2actions@main
 
       - name: GitHub Cli
         run: |
