@@ -536,7 +536,7 @@ jobs:
         run: |
           gh auth login --with-token < "${{ github.workspace }}/token.txt"
           gh repo fork microsoft/winget-pkgs --clone=true --remote=true
-          Copy-Item "${{ github.workspace }}/SigningScripts/${{ env.VERSION }}.yaml" -Destination "${{ github.workspace }}/winget-pkgs/manifests/isaaclevin/presencelight" -Recurse -Verbose
+          cp "${{ github.workspace }}/SigningScripts/${{ env.VERSION }}.yaml" "${{ github.workspace }}/winget-pkgs/manifests/isaaclevin/presencelight"
 
           cd "${{ github.workspace }}/winget-pkgs"
 
