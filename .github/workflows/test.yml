@@ -19,6 +19,10 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+    
       - name: Get Version from File
         run: |
           version="4.1.10"
@@ -34,11 +38,11 @@ jobs:
           $hash64=Get-Filehash ${{ github.workspace }}/Download/PresenceLight.${{ env.VERSION }}-x64.zip
 
           # Update winget.yaml
-          $yaml = Get-Content -path "${{ github.workspace }}/SigningScripts/winget.yaml"
+          $yaml = Get-Content -path "${{ github.workspace }}/Build/winget.yaml"
           $yaml = $yaml -replace '{x64Link}' , "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x64.zip"
           $yaml = $yaml -replace '{HASHx64}', $hash64.Hash
           $yaml = $yaml -replace '{VERSION}', ${{ env.VERSION }}
-          $yaml | Set-Content -Path "${{ github.workspace }}/SigningScripts/${{ env.VERSION }}.yaml"
+          $yaml | Set-Content -Path "${{ github.workspace }}/Build/${{ env.VERSION }}.yaml"
         shell: pwsh
 
       - name: Add Version File to Artifact
@@ -64,7 +68,7 @@ jobs:
 
       - name: GitHub Cli
         run: |
-          cp "${{ github.workspace }}/SigningScripts/${{ env.VERSION }}.yaml" "${{ github.workspace }}/winget-pkgs/manifests/isaaclevin/presencelight"
+          cp "${{ github.workspace }}/Build/${{ env.VERSION }}.yaml" "${{ github.workspace }}/winget-pkgs/manifests/isaaclevin/presencelight"
 
           cd "${{ github.workspace }}/winget-pkgs"
 
