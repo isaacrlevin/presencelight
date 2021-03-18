@@ -73,8 +73,9 @@ jobs:
           git commit -m "Submitting  PresenceLight version ${{ env.VERSION }}.yaml"
           git push
 
-          gh pr create --title "Submitting  PresenceLight version ${{ env.VERSION }}.yaml" -R microsoft/winget-pkgs
-          
+          COMMIT_MESSAGE="Adding PresenceLight Version: ${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x64.zip"
+          gh pr create --title "Submitting  PresenceLight" --body "$COMMIT_MESSAGE" -R microsoft/winget-pkgs
+      
       - name: Setup tmate session
         if: ${{ failure() }}
         uses: mxschmitt/action-tmate@v3
