@@ -4,6 +4,7 @@ on:
     branches: [ main ]
     paths-ignore:
     - '.github/workflows/Desktop_Build.yml'
+    - '.github/workflows/test.yml'
     - 'src/DesktopClient/**'
     - 'README.md'
     - 'desktop-README.md'
@@ -13,6 +14,7 @@ on:
     branches: [ main ]
     paths-ignore:
     - '.github/workflows/Desktop_Build.yml'
+    - '.github/workflows/test.yml'
     - 'src/DesktopClient/**'
     - 'README.md'
     - 'desktop-README.md'

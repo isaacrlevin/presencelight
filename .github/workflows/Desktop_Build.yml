@@ -3,6 +3,7 @@ on:
     branches: [ main ]
     paths-ignore:
     - '.github/workflows/Worker_Build.yml'
+    - '.github/workflows/test.yml'
     - 'src/PresenceLight.Worker/**'
     - 'src/DockerFiles/**'
     - '*.md'
@@ -11,6 +12,7 @@ on:
     branches: [ main ]
     paths-ignore:
     - '.github/workflows/Worker_Build.yml'
+    - '.github/workflows/test.yml'
     - 'src/PresenceLight.Worker/**'
     - 'src/DockerFiles/**'
     - '*.md'
@@ -531,7 +533,7 @@ jobs:
       - name: Install GH Cli
         run: |
           brew install gh
-          
+
       - name: GitHub Cli Auth
         run: |
           gh auth login --with-token < "${{ github.workspace }}/token.txt"
@@ -540,7 +542,7 @@ jobs:
         run: |
           gh repo fork microsoft/winget-pkgs --clone=true --remote=true
           cd Download && dir
-      
+
       - name: Start SSH via tmate
         uses: P3TERX/ssh2actions@main
 
