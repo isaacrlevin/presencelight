@@ -57,7 +57,8 @@ jobs:
       - name: GitHub Cli Fork
         run: |
           cd ~
-          gh repo fork microsoft/winget-pkgs --clone=true --remote=true
+          gh repo fork microsoft/winget-pkgs --clone=false
+          gh repo clone isaacrlevin/winget-pkgs
           dir
 
       - name: GitHub Cli
