@@ -431,8 +431,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: "/home/runner/work/presencelight/presencelight/ReleaseSigned/PresenceLight.Package_${{ env.VERSION }}_x64_bundle.appxupload"
-          asset_name: "PresenceLight.Package_${{ env.VERSION }}_x64_bundle.appxupload"
+          asset_path: "/home/runner/work/presencelight/presencelight/ReleaseSigned/PresenceLight.Package_${{ env.VERSION }}.0_x64_bundle.appxupload"
+          asset_name: "PresenceLight.Package_${{ env.VERSION }}.0_x64_bundle.appxupload"
           asset_content_type: application/zip
 
   Deploy_Choco:
@@ -529,12 +529,12 @@ jobs:
           # Hash the Zip Files
           mkdir "${{ github.workspace }}/Download"
 
-          Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.Package_${{ env.VERSION }}_x64_bundle.appxupload" -OutFile "${{ github.workspace }}/Download/PresenceLight.Package_${{ env.VERSION }}_x64_bundle.appxupload"
-          $hash64=Get-Filehash ${{ github.workspace }}/Download/PresenceLight.Package_${{ env.VERSION }}_x64_bundle.appxupload
+          Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.Package_${{ env.VERSION }}.0_x64_bundle.appxupload" -OutFile "${{ github.workspace }}/Download/PresenceLight.Package_${{ env.VERSION }}.0_x64_bundle.appxupload"
+          $hash64=Get-Filehash ${{ github.workspace }}/Download/PresenceLight.Package_${{ env.VERSION }}.0_x64_bundle.appxupload
 
           # Update winget.yaml
           $yaml = Get-Content -path "${{ github.workspace }}/Build/winget.yaml"
-          $yaml = $yaml -replace '{x64Link}' , "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.Package_${{ env.VERSION }}_x64_bundle.appxupload"
+          $yaml = $yaml -replace '{x64Link}' , "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.Package_${{ env.VERSION }}.0_x64_bundle.appxupload"
           $yaml = $yaml -replace '{HASHx64}', $hash64.Hash
           $yaml = $yaml -replace '{VERSION}', " ${{ env.VERSION }}"
           $yaml | Set-Content -Path "${{ github.workspace }}/Build/${{ env.VERSION }}.yaml"
@@ -568,7 +568,7 @@ jobs:
           git commit -m "Submitting  PresenceLight version ${{ env.VERSION }}.yaml"
           git push
 
-          COMMIT_MESSAGE="Adding PresenceLight Version: ${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.Package_${{ env.VERSION }}_x64_bundle.appxupload"
+          COMMIT_MESSAGE="Adding PresenceLight Version: ${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.Package_${{ env.VERSION }}.0_x64_bundle.appxupload"
           gh pr create --title "Submitting  PresenceLight" --body "$COMMIT_MESSAGE" -R microsoft/winget-pkgs
 
   Deploy_Store:
