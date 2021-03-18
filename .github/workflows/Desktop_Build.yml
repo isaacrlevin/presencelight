@@ -520,7 +520,7 @@ jobs:
 
       - name: Get Version from File
         run: |
-          version="4.1.10"
+          version=$(<"${{ github.workspace }}\\Chocolatey\\version.txt")
           echo "VERSION=$version" >> $GITHUB_ENV
         shell: bash
 
