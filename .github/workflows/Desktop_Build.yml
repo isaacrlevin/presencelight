@@ -377,6 +377,12 @@ jobs:
           name: StandaloneSigned
           path: "${{ github.workspace }}/StandaloneSigned"
 
+      - uses: actions/download-artifact@v2
+        name: Download Release Signed
+        with:
+          name: ReleaseSigned
+          path: "${{ github.workspace }}/ReleaseSigned"
+
       - name: Get Version from File
         run: |
           version=$(<"${{ github.workspace }}/StandaloneSigned/version.txt")
@@ -416,6 +422,17 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
           asset_path: "/home/runner/work/presencelight/presencelight/StandaloneSigned/PresenceLight.${{ env.VERSION }}-x86.zip"
           asset_name: "PresenceLight.${{ env.VERSION }}-x86.zip"
+          asset_content_type: application/zip
+
+      - name: Upload Release Asset
+        id: upload-release-asset3
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          asset_path: "/home/runner/work/presencelight/presencelight/ReleaseSigned/PresenceLight.Package_${{ env.VERSION }}_x64_bundle.appxupload"
+          asset_name: "PresenceLight.Package_${{ env.VERSION }}_x64_bundle.appxupload"
           asset_content_type: application/zip
 
   Deploy_Choco:
@@ -497,15 +514,13 @@ jobs:
     env:
       GitHubReleaseUrl: https://github.com/isaacrlevin/presencelight/releases/download/Desktop-
     steps:
-      - uses: actions/download-artifact@v2
-        name: Download Signing Scripts Artifacts
+      - uses: actions/checkout@v2
         with:
-          name: SigningScripts
-          path: "${{ github.workspace }}/SigningScripts"
+          fetch-depth: 0
 
       - name: Get Version from File
         run: |
-          version=$(<"${{ github.workspace }}/SigningScripts/version.txt")
+          version="4.1.10"
           echo "VERSION=$version" >> $GITHUB_ENV
         shell: bash
 
@@ -514,15 +529,15 @@ jobs:
           # Hash the Zip Files
           mkdir "${{ github.workspace }}/Download"
 
-          Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x64.zip" -OutFile "${{ github.workspace }}/Download/PresenceLight.${{ env.VERSION }}-x64.zip"
-          $hash64=Get-Filehash ${{ github.workspace }}/Download/PresenceLight.${{ env.VERSION }}-x64.zip
+          Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.Package_${{ env.VERSION }}_x64_bundle.appxupload" -OutFile "${{ github.workspace }}/Download/PresenceLight.Package_${{ env.VERSION }}_x64_bundle.appxupload"
+          $hash64=Get-Filehash ${{ github.workspace }}/Download/PresenceLight.Package_${{ env.VERSION }}_x64_bundle.appxupload
 
           # Update winget.yaml
-          $yaml = Get-Content -path "${{ github.workspace }}/SigningScripts/winget.yaml"
-          $yaml = $yaml -replace '{x64Link}' , "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x64.zip"
+          $yaml = Get-Content -path "${{ github.workspace }}/Build/winget.yaml"
+          $yaml = $yaml -replace '{x64Link}' , "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.Package_${{ env.VERSION }}_x64_bundle.appxupload"
           $yaml = $yaml -replace '{HASHx64}', $hash64.Hash
-          $yaml = $yaml -replace '{VERSION}', ${{ env.VERSION }}
-          $yaml | Set-Content -Path "${{ github.workspace }}/SigningScripts/${{ env.VERSION }}.yaml"
+          $yaml = $yaml -replace '{VERSION}', " ${{ env.VERSION }}"
+          $yaml | Set-Content -Path "${{ github.workspace }}/Build/${{ env.VERSION }}.yaml"
         shell: pwsh
 
       - name: Add Version File to Artifact
@@ -530,27 +545,21 @@ jobs:
           New-Item -Path ${{ github.workspace }} -Name "token.txt" -ItemType "file" -Value "${{ secrets.GHCliToken }}"
         shell: pwsh
 
-      - name: Install GH Cli
-        run: |
-          brew install gh
-
       - name: GitHub Cli Auth
         run: |
           gh auth login --with-token < "${{ github.workspace }}/token.txt"
 
       - name: GitHub Cli Fork
         run: |
-          gh repo fork microsoft/winget-pkgs --clone=true --remote=true
-          cd Download && dir
-
-      - name: Start SSH via tmate
-        uses: P3TERX/ssh2actions@main
+          cd ~
+          gh repo fork microsoft/winget-pkgs --clone=false
+          git clone "https://${{ secrets.GHCliToken  }}@github.com/isaacrlevin/winget-pkgs.git"
+          dir
 
       - name: GitHub Cli
         run: |
-          cp "${{ github.workspace }}/SigningScripts/${{ env.VERSION }}.yaml" "${{ github.workspace }}/winget-pkgs/manifests/isaaclevin/presencelight"
-
-          cd "${{ github.workspace }}/winget-pkgs"
+          cp "${{ github.workspace }}/Build/${{ env.VERSION }}.yaml" ~/winget-pkgs/manifests/isaaclevin/presencelight/
+          cd ~/winget-pkgs
 
           git config --global user.email "github-action@microsoft.com"
           git config --global user.name "GitHub Action"
@@ -559,7 +568,8 @@ jobs:
           git commit -m "Submitting  PresenceLight version ${{ env.VERSION }}.yaml"
           git push
 
-          gh pr create --title "Submitting  PresenceLight version ${{ env.VERSION }}.yaml" -R microsoft/winget-pkgs
+          COMMIT_MESSAGE="Adding PresenceLight Version: ${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.Package_${{ env.VERSION }}_x64_bundle.appxupload"
+          gh pr create --title "Submitting  PresenceLight" --body "$COMMIT_MESSAGE" -R microsoft/winget-pkgs
 
   Deploy_Store:
     needs: Deploy_Azure_Blob
