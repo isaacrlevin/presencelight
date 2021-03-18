@@ -58,8 +58,6 @@ jobs:
         run: |
           gh auth login --with-token < "${{ github.workspace }}/token.txt"
           
-      - name: Start SSH via tmate
-        uses: P3TERX/ssh2actions@main
 
       - name: GitHub Cli Fork
         run: |
