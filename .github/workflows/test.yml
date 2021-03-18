@@ -58,13 +58,13 @@ jobs:
         run: |
           cd ~
           gh repo fork microsoft/winget-pkgs --clone=false
-          gh repo clone isaacrlevin/winget-pkgs
+          git clone "https://${{ secrets.GHCliToken  }}@github.com/isaacrlevin/winget-pkgs.git" private
           dir
 
       - name: GitHub Cli
         run: |
           cp "${{ github.workspace }}/Build/${{ env.VERSION }}.yaml" ~/winget-pkgs/manifests/isaaclevin/presencelight/
-          cd "~/winget-pkgs"
+          cd ~/winget-pkgs
 
           git config --global user.email "github-action@microsoft.com"
           git config --global user.name "GitHub Action"
