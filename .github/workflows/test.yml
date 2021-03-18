@@ -52,7 +52,7 @@ jobs:
 
       - name: GitHub Cli Auth
         run: |
-          gh auth login --with-token < "${{ github.workspace }}/token.txt"
+          gh auth login --with-token < "${{ github.workspace }}/token.txt"  
           
       - name: GitHub Cli Fork
         run: |
@@ -63,8 +63,7 @@ jobs:
 
       - name: GitHub Cli
         run: |
-          cp "${{ github.workspace }}/Build/${{ env.VERSION }}.yaml" "~/winget-pkgs/manifests/isaaclevin/presencelight"
-
+          cp "${{ github.workspace }}/Build/${{ env.VERSION }}.yaml" ~/winget-pkgs/manifests/isaaclevin/presencelight/
           cd "~/winget-pkgs"
 
           git config --global user.email "github-action@microsoft.com"
