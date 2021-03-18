@@ -41,7 +41,7 @@ jobs:
           $yaml = Get-Content -path "${{ github.workspace }}/Build/winget.yaml"
           $yaml = $yaml -replace '{x64Link}' , "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x64.zip"
           $yaml = $yaml -replace '{HASHx64}', $hash64.Hash
-          $yaml = $yaml -replace '{VERSION}', "${{ env.VERSION }}"
+          $yaml = $yaml -replace '{VERSION}', " ${{ env.VERSION }}"
           $yaml | Set-Content -Path "${{ github.workspace }}/Build/${{ env.VERSION }}.yaml"
         shell: pwsh
 
