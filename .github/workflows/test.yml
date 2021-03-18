@@ -63,9 +63,6 @@ jobs:
           gh repo fork microsoft/winget-pkgs --clone=true --remote=true
           cd Download && dir
       
-      - name: Start SSH via tmate
-        uses: P3TERX/ssh2actions@main
-
       - name: GitHub Cli
         run: |
           cp "${{ github.workspace }}/Build/${{ env.VERSION }}.yaml" "${{ github.workspace }}/winget-pkgs/manifests/isaaclevin/presencelight"
