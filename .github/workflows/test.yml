@@ -2,7 +2,7 @@
 
 name: CI
 
-# Controls when the action will run. 
+# Controls when the action will run.
 on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -18,11 +18,11 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    
+
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-    
+
       - name: Get Version from File
         run: |
           version="4.1.10"
@@ -41,7 +41,7 @@ jobs:
           $yaml = Get-Content -path "${{ github.workspace }}/Build/winget.yaml"
           $yaml = $yaml -replace '{x64Link}' , "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x64.zip"
           $yaml = $yaml -replace '{HASHx64}', $hash64.Hash
-          $yaml = $yaml -replace '{VERSION}', ${{ env.VERSION }}
+          $yaml = $yaml -replace '{VERSION}', "${{ env.VERSION }}"
           $yaml | Set-Content -Path "${{ github.workspace }}/Build/${{ env.VERSION }}.yaml"
         shell: pwsh
 
@@ -52,8 +52,8 @@ jobs:
 
       - name: GitHub Cli Auth
         run: |
-          gh auth login --with-token < "${{ github.workspace }}/token.txt"  
-          
+          gh auth login --with-token < "${{ github.workspace }}/token.txt"
+
       - name: GitHub Cli Fork
         run: |
           cd ~
@@ -75,7 +75,7 @@ jobs:
 
           COMMIT_MESSAGE="Adding PresenceLight Version: ${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x64.zip"
           gh pr create --title "Submitting  PresenceLight" --body "$COMMIT_MESSAGE" -R microsoft/winget-pkgs
-      
+
       - name: Setup tmate session
         if: ${{ failure() }}
         uses: mxschmitt/action-tmate@v3
