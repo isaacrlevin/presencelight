@@ -58,7 +58,7 @@ jobs:
         run: |
           cd ~
           gh repo fork microsoft/winget-pkgs --clone=false
-          git clone "https://${{ secrets.GHCliToken  }}@github.com/isaacrlevin/winget-pkgs.git" private
+          git clone "https://${{ secrets.GHCliToken  }}@github.com/isaacrlevin/winget-pkgs.git"
           dir
 
       - name: GitHub Cli
