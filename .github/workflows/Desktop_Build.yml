@@ -518,9 +518,15 @@ jobs:
         with:
           fetch-depth: 0
 
+      - uses: actions/download-artifact@v2
+        name: Download Chocolatey Artifacts
+        with:
+          name: Chocolatey
+          path: "${{ github.workspace }}/Chocolatey"
+
       - name: Get Version from File
         run: |
-          version=$(<"${{ github.workspace }}/Build/version.txt")
+          version=$(<"${{ github.workspace }}/Chocolatey/version.txt")
           echo "VERSION=$version" >> $GITHUB_ENV
         shell: bash
 
