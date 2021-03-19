@@ -195,6 +195,5 @@ namespace PresenceLight
             // Stop execution because callbacks to the UI thread will likely cause another cascading font error.
             new AutoResetEvent(false).WaitOne();
         }
-
     }
 }
