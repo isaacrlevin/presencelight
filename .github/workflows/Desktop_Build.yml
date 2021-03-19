@@ -535,12 +535,12 @@ jobs:
           # Hash the Zip Files
           mkdir "${{ github.workspace }}/Download"
 
-          Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.Package_${{ env.VERSION }}.0_x64_bundle.appxupload" -OutFile "${{ github.workspace }}/Download/PresenceLight.Package_${{ env.VERSION }}.0_x64_bundle.appxupload"
-          $hash64=Get-Filehash ${{ github.workspace }}/Download/PresenceLight.Package_${{ env.VERSION }}.0_x64_bundle.appxupload
+          Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.Package_${{ env.VERSION }}.0_x64.appxbundle" -OutFile "${{ github.workspace }}/Download/PresenceLight.Package_${{ env.VERSION }}.0_x64.appxbundle"
+          $hash64=Get-Filehash ${{ github.workspace }}/Download/PresenceLight.Package_${{ env.VERSION }}.0_x64.appxbundle
 
           # Update winget.yaml
           $yaml = Get-Content -path "${{ github.workspace }}/Build/winget.yaml"
-          $yaml = $yaml -replace '{x64Link}' , "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.Package_${{ env.VERSION }}.0_x64_bundle.appxupload"
+          $yaml = $yaml -replace '{x64Link}' , "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.Package_${{ env.VERSION }}.0_x64.appxbundle"
           $yaml = $yaml -replace '{HASHx64}', $hash64.Hash
           $yaml = $yaml -replace '{VERSION}', " ${{ env.VERSION }}"
           $yaml | Set-Content -Path "${{ github.workspace }}/Build/${{ env.VERSION }}.yaml"
@@ -574,7 +574,7 @@ jobs:
           git commit -m "Submitting  PresenceLight version ${{ env.VERSION }}.yaml"
           git push
 
-          COMMIT_MESSAGE="Adding PresenceLight Version: ${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.Package_${{ env.VERSION }}.0_x64_bundle.appxupload"
+          COMMIT_MESSAGE="Adding PresenceLight Version: ${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.Package_${{ env.VERSION }}.0_x64.appxbundle"
           gh pr create --title "Submitting  PresenceLight" --body "$COMMIT_MESSAGE" -R microsoft/winget-pkgs
 
   Deploy_Store:
