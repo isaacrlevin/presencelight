@@ -7,7 +7,7 @@
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              xmlns:local="clr-namespace:PresenceLight.Controls"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="800" d:DesignWidth="800">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="50"/>
@@ -98,8 +98,9 @@
         <RadioButton Grid.Column="2" Grid.Row="5" GroupName="IconType" x:Name="Transparent" Margin="0,0,0,0" Content="Transparent" HorizontalAlignment="Left" VerticalAlignment="Top" />
         <RadioButton Grid.Column="2" Grid.Row="5" GroupName="IconType" x:Name="White" Margin="0,20,0,0" Content="White" HorizontalAlignment="Left"  VerticalAlignment="Top"/>
 
-        <CheckBox x:Name="cbSendDiagnosticData" VerticalAlignment="Bottom" IsChecked="{Binding SendDiagnosticData}" Grid.Row="5" Content="Send Diagnostic Data" Grid.Column="1" HorizontalAlignment="Left" Margin="0,0,0,0" />
-
+        <CheckBox x:Name="cbSendDiagnosticData" VerticalAlignment="Center" IsChecked="{Binding SendDiagnosticData}" Grid.Row="5" Content="Send Diagnostic Data" Grid.Column="1" HorizontalAlignment="Left" Margin="0,20,0,0" />
+        <CheckBox x:Name="cbStartMinimized" VerticalAlignment="Center" IsChecked="{Binding StartMinimized}" Grid.Row="5" Content="Start Minimized" Grid.Column="1" HorizontalAlignment="Left" Margin="0,60,0,0" />
+        
         <Button Grid.Column="0" Grid.Row="6" Height="45" x:Name="btnSettings" Width="170" Content="Save" Click="SaveSettings_Click" Grid.ColumnSpan="4" />
         <Label Grid.Column="0"  HorizontalAlignment="Center" Grid.Row="7" x:Name="lblSettingSaved" Visibility="Collapsed" Content="Settings Updated" Foreground="Green" Grid.ColumnSpan="4"/>
     </Grid>

@@ -98,6 +98,11 @@ namespace PresenceLight
                 var tbContext = landingPage.notificationIcon.DataContext;
                 DataContext = Config;
                 landingPage.notificationIcon.DataContext = tbContext;
+
+                if (Config.StartMinimized)
+                {
+                    this.Hide();
+                }
             });
         }, TaskScheduler.Current);
         }
