@@ -431,7 +431,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: "/home/runner/work/presencelight/presencelight/ReleaseSigned/PresenceLight.Package_4.1.27.0_Test/PresenceLight.Package_${{ env.VERSION }}.0_x64.appxbundle"
+          asset_path: "/home/runner/work/presencelight/presencelight/ReleaseSigned/PresenceLight.Package_${{ env.VERSION }}.0_Test/PresenceLight.Package_${{ env.VERSION }}.0_x64.appxbundle"
           asset_name: "PresenceLight.Package_${{ env.VERSION }}.0_x64.appxbundle"
           asset_content_type: application/zip
 
