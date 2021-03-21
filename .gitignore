@@ -394,3 +394,4 @@ Build/StorePublish/temp.zip
 /src/DesktopClient/PresenceLight/Properties/launchSettings.json
 /src/PresenceLight.Worker/config/
 logs/
+/src/config

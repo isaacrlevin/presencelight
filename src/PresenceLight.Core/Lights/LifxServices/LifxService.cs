@@ -12,13 +12,13 @@ namespace PresenceLight.Core
         private BaseConfig _options;
         private LifxCloudClient _client;
         private readonly ILogger<LIFXService> _logger;
-        private readonly IWorkingHoursService _workingHoursService;
+        MediatR.IMediator _mediator;
 
-        public LIFXService(Microsoft.Extensions.Options.IOptionsMonitor<BaseConfig> optionsAccessor, ILogger<LIFXService> logger, IWorkingHoursService workingHoursService)
+        public LIFXService(Microsoft.Extensions.Options.IOptionsMonitor<BaseConfig> optionsAccessor, MediatR.IMediator mediator, ILogger<LIFXService> logger)
         {
-            _workingHoursService = workingHoursService;
             _logger = logger;
             _options = optionsAccessor.CurrentValue;
+            _mediator = mediator;
         }
 
         public void Initialize(BaseConfig options)
@@ -45,7 +45,7 @@ namespace PresenceLight.Core
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error Getting Lights"  );
+                _logger.LogError(e, "Error Getting Lights");
                 throw;
             }
         }
@@ -77,7 +77,8 @@ namespace PresenceLight.Core
         {
             if (string.IsNullOrEmpty(lightId))
             {
-                throw new ArgumentNullException(nameof(lightId),"Selected LIFX Light Not Specified") ;
+                _logger.LogInformation("Selected LIFX Light Not Specified");
+                return;
             }
 
             Selector selector = null;
@@ -216,37 +217,37 @@ namespace PresenceLight.Core
                         break;
                 }
 
-                    if (color.Length == 9 && color.Contains("#"))
+                if (color.Length == 9 && color.Contains("#"))
+                {
+                    color = $"#{color.Substring(3)}";
+                }
+
+
+                color = color.Replace("#", "");
+
+                switch (color.Length)
+                {
+
+                    case var length when color.Length == 6:
+                        // Do Nothing
+                        break;
+                    case var length when color.Length > 6:
+                        // Get last 6 characters
+                        color = color.Substring(color.Length - 6);
+                        break;
+                    default:
+                        throw new ArgumentException("Supplied Color had an issue");
+                }
+
+                if (availability == "Off")
+                {
+                    _logger.LogInformation($"Turning LIFX Light {lightId} Off - LIFXService:SetColor");
+                    var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
                     {
-                        color = $"#{color.Substring(3)}";
-                    }
-
-
-                    color = color.Replace("#", "");
-
-                    switch (color.Length)
-                    {
-
-                        case var length when color.Length == 6:
-                            // Do Nothing
-                            break;
-                        case var length when color.Length > 6:
-                            // Get last 6 characters
-                            color = color.Substring(color.Length - 6);
-                            break;
-                        default:
-                            throw new ArgumentException("Supplied Color had an issue");
-                    }
-
-                    if (availability == "Off")
-                    {
-                        _logger.LogInformation($"Turning LIFX Light {lightId} Off - LIFXService:SetColor");
-                        var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
-                        {
-                            Power = PowerState.Off
-                        });
-                        return;
-                    }
+                        Power = PowerState.Off
+                    });
+                    return;
+                }
 
 
                 if (_options.LightSettings.UseDefaultBrightness)
@@ -296,7 +297,7 @@ namespace PresenceLight.Core
             }
             catch (Exception e)
             {
-             _logger.LogError(e,"Error Occured Setting Color");
+                _logger.LogError(e, "Error Occured Setting Color");
                 throw;
             }
         }

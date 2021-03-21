@@ -22,6 +22,8 @@ using Microsoft.ApplicationInsights.AspNetCore;
 using Microsoft.Extensions.Options;
 using Microsoft.ApplicationInsights.SnapshotCollector;
 using PresenceLight.Worker.Services;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using IdentityModel;
 
 namespace PresenceLight.Worker
 {
@@ -65,7 +67,64 @@ namespace PresenceLight.Worker
             services.AddControllersWithViews()
                 .AddMicrosoftIdentityUI();
 
+            var userAuthService = new UserAuthService(Configuration);
+            services.AddSingleton(userAuthService);
+
+            services.AddOptions<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme)
+                 .Configure<IServiceProvider>((options, serviceProvider) =>
+                 {
+                     options.ResponseType = OpenIdConnectResponseType.Code;
+                     options.UsePkce = false;
+                     options.Authority = $"{Configuration["AzureAd:Instance"]}common/v2.0";
+
+                     options.Scope.Add("offline_access");
+                     options.Scope.Add("User.Read");
+
+                     options.TokenValidationParameters = new TokenValidationParameters
+                     {
+                         // Azure ID tokens give name in "name"
+                         NameClaimType = "name",
+                         ValidateIssuer = false
+                     };
+
+                     options.Events = new OpenIdConnectEvents
+                     {
+                         OnAuthenticationFailed = async context =>
+                         {
+                             context.Response.Redirect("/Error");
+                             context.HandleResponse();
+                         },
+
+                         OnAuthorizationCodeReceived = async context =>
+                     {
+
+                         context.HandleCodeRedemption();
+
+                         var idToken = await userAuthService
+                           .AddUserToTokenCache(context.ProtocolMessage.Code);
+
+                         context.HandleCodeRedemption(null, idToken);
+                     },
+                         OnRedirectToIdentityProviderForSignOut = async context =>
+                                              {
+                                                  await userAuthService.SignOut();
+                                              }
+                     };
+                 });
+
             services.AddHttpClient();
+
+            services.AddHttpContextAccessor();
+
+            services.Configure<BaseConfig>(Configuration);
+            services.AddSingleton<SettingsService>();
+
+            services.AddOptions();
+            services.AddSingleton<AppState>();
+            services.AddPresenceServices();
+            services.AddBlazoredModal();
+
+            services.AddHostedService<Worker>();
 
             services.AddControllersWithViews(options =>
             {
@@ -81,22 +140,10 @@ namespace PresenceLight.Worker
                 .AddMicrosoftIdentityConsentHandler();
 
             services.AddBlazorise(options =>
-            {
-                options.ChangeTextOnKeyPress = true;
-            }).AddBootstrapProviders()
-              .AddFontAwesomeIcons();
-
-            services.AddHttpContextAccessor();
-
-            services.Configure<BaseConfig>(Configuration);
-            services.AddSingleton<SettingsService>();
-
-            services.AddOptions();
-            services.AddSingleton<AppState>();
-            services.AddPresenceServices();
-            services.AddBlazoredModal();
-
-            services.AddHostedService<Worker>();
+        {
+            options.ChangeTextOnKeyPress = true;
+        }).AddBootstrapProviders()
+        .AddFontAwesomeIcons();
 
             services.AddApplicationInsightsTelemetry(options =>
             {
@@ -105,13 +152,7 @@ namespace PresenceLight.Worker
                 options.EnableDependencyTrackingTelemetryModule = false;
                 options.EnableAdaptiveSampling = false;
             });
-
-
-
-            // Configure SnapshotCollector from application settings
             services.Configure<SnapshotCollectorConfiguration>(Configuration.GetSection(nameof(SnapshotCollectorConfiguration)));
-
-            // Add SnapshotCollector telemetry processor.
             services.AddSingleton<ITelemetryProcessorFactory>(sp => new SnapshotCollectorTelemetryProcessorFactory(sp));
 
         }
@@ -143,10 +184,6 @@ namespace PresenceLight.Worker
 
             app.UseAuthentication();
             app.UseAuthorization();
-
-            app.ApplicationServices
-                .UseBootstrapProviders()
-                .UseFontAwesomeIcons();
 
             app.UseEndpoints(endpoints =>
             {

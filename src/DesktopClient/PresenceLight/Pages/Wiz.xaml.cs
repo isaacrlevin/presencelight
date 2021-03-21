@@ -43,7 +43,7 @@ namespace PresenceLight.Pages
 
             InitializeComponent();
         }
-   
+
         private void cbIsWizEnabledChanged(object sender, RoutedEventArgs e)
         {
             if (SettingsHandlerBase.Config.LightSettings.Wiz.IsEnabled)
@@ -54,12 +54,26 @@ namespace PresenceLight.Pages
             {
                 pnlWiz.Visibility = Visibility.Collapsed;
             }
+
+            if (SettingsHandlerBase.Config.LightSettings.UseDefaultBrightness)
+            {
+                WizBrightness.IsEnabled = false;
+                WizBrightnessNum.IsEnabled = false;
+                wizBrightnessText.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                WizBrightness.IsEnabled = true;
+                WizBrightnessNum.IsEnabled = true;
+                wizBrightnessText.Visibility = Visibility.Collapsed;
+            }
+
             SettingsHandlerBase.SyncOptions();
             e.Handled = true;
         }
         #region Wiz Panel
 
- 
+
         private async void FindWizs_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -173,7 +187,7 @@ namespace PresenceLight.Pages
             {
                 btnWiz.IsEnabled = false;
                 await _mediator.Send(new SaveSettingsCommand()).ConfigureAwait(true);
-                
+
                 CheckWiz();
                 lblWizSaved.Visibility = Visibility.Visible;
                 btnWiz.IsEnabled = true;

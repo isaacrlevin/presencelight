@@ -13,6 +13,7 @@ using LifxCloud.NET.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -35,13 +36,14 @@ namespace PresenceLight.Worker.Controllers
 
         public AlexaController(IOptionsMonitor<BaseConfig> optionsAccessor,
                       ILogger<AlexaController> logger,
-                      AppState appState,
-                      MediatR.IMediator mediator )
+                      AppState appState, IServiceScopeFactory _scopeFactory )
         {
             Config = optionsAccessor.CurrentValue;
            
             _appState = appState;
-            _mediator = mediator;
+            var _scope = _scopeFactory.CreateScope();
+            var ServiceProvider = _scope.ServiceProvider;
+            _mediator = ServiceProvider.GetService<MediatR.IMediator>();
             _logger = logger;
         }
 
@@ -50,6 +52,9 @@ namespace PresenceLight.Worker.Controllers
         [HttpPost]
         public async Task<ActionResult> ProcessAlexaRequest([FromBody] SkillRequest request)
         {
+            string availability = "";
+            string activity = "";
+
             using (Serilog.Context.LogContext.PushProperty("Request", JsonConvert.SerializeObject(request)))
             {
                 var requestType = request.GetRequestType();
@@ -69,32 +74,70 @@ namespace PresenceLight.Worker.Controllers
 
                     if (intentRequest.Intent.Name == "Teams")
                     {
+                        _logger.LogDebug("Set Light Mode: Graph");
                         _appState.SetLightMode("Graph");
-                        response = ResponseBuilder.Tell("Presence Light set to Teams!");
+                        availability = _appState.Presence.Availability;
+                        activity = _appState.Presence.Activity;
+
                     }
-                    else if (intentRequest.Intent.Name == "Custom")
+                    else
                     {
+                        _logger.LogDebug("Set Light Mode: Custom");
+                        _logger.LogDebug("Set Custom Color: Offline");
                         _appState.SetLightMode("Custom");
-                        _appState.SetCustomColor("#FFFFFF");
-                        response = ResponseBuilder.Tell("Presence Light set to custom!");
+                        _appState.SetCustomColor("Offline");
+                        availability = _appState.CustomColor;
+                        activity = _appState.CustomColor;
                     }
 
-                    if (_appState.LightMode == "Custom")
+                    if (Config.LightSettings.Hue.IsEnabled && !Config.LightSettings.Hue.UseRemoteApi && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedItemId))
                     {
-                        if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedItemId))
+                        await _mediator.Send(new Core.HueServices.SetColorCommand()
                         {
-                            await _mediator.Send(new Core.HueServices.SetColorCommand()
-                            {
-                                Availability = _appState.CustomColor,
-                                Activity = "",
-                                LightID = Config.LightSettings.Hue.SelectedItemId
-                            });
-                        }
+                            Availability = availability,
+                            Activity = activity,
+                            LightID = Config.LightSettings.Hue.SelectedItemId
+                        }).ConfigureAwait(true);
+                    }
 
-                        if (Config.LightSettings.LIFX.IsEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
+                    if (Config.LightSettings.Hue.IsEnabled && Config.LightSettings.Hue.UseRemoteApi && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedItemId))
+                    {
+                        await _mediator.Send(new Core.RemoteHueServices.SetColorCommand
                         {
-                            await _mediator.Send(new Core.LifxServices.SetColorCommand() { Availability = _appState.CustomColor, Activity = "", LightId = Config.LightSettings.LIFX.SelectedItemId });
-                        }
+                            Availability = availability,
+                            LightId = Config.LightSettings.Hue.SelectedItemId,
+                            BridgeId = Config.LightSettings.Hue.RemoteBridgeId
+                        }).ConfigureAwait(true);
+                    }
+
+                    if (Config.LightSettings.LIFX.IsEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey) && !string.IsNullOrWhiteSpace(Config.LightSettings.LIFX.SelectedItemId))
+                    {
+                        await _mediator.Send(new Core.LifxServices.SetColorCommand()
+                        {
+                            Availability = availability,
+                            Activity = activity,
+                            LightId = Config.LightSettings.LIFX.SelectedItemId
+                        }).ConfigureAwait(true);
+                    }
+
+                    if (Config.LightSettings.Wiz.IsEnabled && !string.IsNullOrWhiteSpace(Config.LightSettings.Wiz.SelectedItemId))
+                    {
+                        await _mediator.Send(new Core.WizServices.SetColorCommand()
+                        {
+                            Availability = availability,
+                            Activity = activity,
+                            LightID = Config.LightSettings.Wiz.SelectedItemId
+                        }).ConfigureAwait(true);
+                    }
+
+                    if (Config.LightSettings.Yeelight.IsEnabled && !string.IsNullOrWhiteSpace(Config.LightSettings.Yeelight.SelectedItemId))
+                    {
+                        await _mediator.Send(new Core.YeelightServices.SetColorCommand()
+                        {
+                            Availability = availability,
+                            Activity = activity,
+                            LightId = Config.LightSettings.Yeelight.SelectedItemId
+                        }).ConfigureAwait(true);
                     }
                 }
 

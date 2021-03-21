@@ -189,6 +189,7 @@ namespace PresenceLight.Pages
         private async Task InteractWithLights()
         {
             bool previousWorkingHours = false;
+            string previousLightMode = string.Empty;
             while (true)
             {
                 try
@@ -223,16 +224,18 @@ namespace PresenceLight.Pages
                                 // check to see if working hours have passed
                                 if (previousWorkingHours)
                                 {
+                                    previousLightMode = LightMode;
                                     switch (SettingsHandlerBase.Config.LightSettings.HoursPassedStatus)
                                     {
-                                        case "Keep":
-                                            break;
                                         case "White":
+                                            LightMode = "Manual";
                                             newColor = "Offline";
                                             break;
                                         case "Off":
+                                            LightMode = "Manual";
                                             newColor = "Off";
                                             break;
+                                        case "Keep":
                                         default:
                                             break;
                                     }
@@ -246,6 +249,12 @@ namespace PresenceLight.Pages
                     {
                         switch (LightMode)
                         {
+                            case "Manual":
+                                // No need to check presence... if it's after hours, we just want to action upon it... 
+                                await _parentWindow._mediator.Send(new SetColorCommand { Activity = _parentWindow.presence.Activity, Color = newColor }).ConfigureAwait(true);
+                                //Reset the light mode so that we don't potentially mess something up.
+                                LightMode = previousLightMode;
+                                break;
                             case "Graph":
                                 _parentWindow._logger.LogInformation("PresenceLight Running in Teams Mode");
                                 _parentWindow.presence = await _parentWindow._mediator.Send(new Core.GraphServices.GetPresenceCommand());

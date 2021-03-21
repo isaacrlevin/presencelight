@@ -59,88 +59,83 @@ namespace PresenceLight.Core
         {
             if (string.IsNullOrEmpty(lightId))
             {
-                throw new ArgumentOutOfRangeException("Wiz Selected Light Id Invalid");
+                _logger.LogInformation("Selected Wiz Light Not Specified");
+                return;
             }
 
             try
             {
-                bool useWorkingHours = await _mediator.Send(new WorkingHoursServices.UseWorkingHoursCommand());
-                bool IsInWorkingHours = await _mediator.Send(new WorkingHoursServices.IsInWorkingHoursCommand());
+                var o = Handle(_options.LightSettings.Wiz.UseActivityStatus ? activity : availability, lightId);
 
-                if (!useWorkingHours || (useWorkingHours && IsInWorkingHours))
+                if (o.returnFunc)
                 {
-                    var o = Handle(_options.LightSettings.Wiz.UseActivityStatus ? activity : availability, lightId);
+                    return;
+                }
 
-                    if (o.returnFunc)
-                    {
-                        return;
-                    }
+                var color = o.color.Replace("#", "");
+                var command = o.command;
+                var message = "";
+                switch (color.Length)
+                {
+                    case var length when color.Length == 6:
+                        // Do Nothing
+                        break;
+                    case var length when color.Length > 6:
+                        // Get last 6 characters
+                        color = color.Substring(color.Length - 6);
+                        break;
+                    default:
+                        throw new ArgumentException("Supplied Color had an issue");
+                }
 
-                    var color = o.color.Replace("#", "");
-                    var command = o.command;
-                    var message = "";
-                    switch (color.Length)
-                    {
-                        case var length when color.Length == 6:
-                            // Do Nothing
-                            break;
-                        case var length when color.Length > 6:
-                            // Get last 6 characters
-                            color = color.Substring(color.Length - 6);
-                            break;
-                        default:
-                            throw new ArgumentException("Supplied Color had an issue");
-                    }
+                var rgb = new RGBColor(color);
 
-                    var rgb = new RGBColor(color);
+                command.R = Convert.ToInt32(rgb.R);
+                command.B = Convert.ToInt32(rgb.B);
+                command.G = Convert.ToInt32(rgb.G);
 
-                    command.R = Convert.ToInt32(rgb.R);
-                    command.B = Convert.ToInt32(rgb.B);
-                    command.G = Convert.ToInt32(rgb.G);
+                if (availability == "Off")
+                {
+                    command.State = false;
 
-                    if (availability == "Off")
+
+                    UpdateLight(command, lightId);
+                    message = $"Turning Wiz Light {lightId} Off";
+                    _logger.LogInformation(message);
+                    return;
+                }
+
+                if (_options.LightSettings.UseDefaultBrightness)
+                {
+                    if (_options.LightSettings.DefaultBrightness == 0)
                     {
                         command.State = false;
-
-
-                        UpdateLight(command, lightId);
-                        message = $"Turning Wiz Light {lightId} Off";
-                        _logger.LogInformation(message);
-                        return;
-                    }
-
-                    if (_options.LightSettings.UseDefaultBrightness)
-                    {
-                        if (_options.LightSettings.DefaultBrightness == 0)
-                        {
-                            command.State = false;
-                        }
-                        else
-                        {
-                            command.State = true;
-                            command.Dimming = _options.LightSettings.DefaultBrightness;
-                            command.Speed = 0;
-                        }
                     }
                     else
                     {
-                        if (_options.LightSettings.Wiz.Brightness == 0)
-                        {
-                            command.State = false;
-                        }
-                        else
-                        {
-                            command.State = true;
-                            command.Dimming = _options.LightSettings.Wiz.Brightness;
-                            command.Speed = 0;
-                        }
+                        command.State = true;
+                        command.Dimming = _options.LightSettings.DefaultBrightness;
+                        command.Speed = 0;
                     }
-
-                    UpdateLight(command, lightId);
-
-                    message = $"Setting Wiz Light {lightId} to {color}";
-                    _logger.LogInformation(message);
                 }
+                else
+                {
+                    if (_options.LightSettings.Wiz.Brightness == 0)
+                    {
+                        command.State = false;
+                    }
+                    else
+                    {
+                        command.State = true;
+                        command.Dimming = _options.LightSettings.Wiz.Brightness;
+                        command.Speed = 0;
+                    }
+                }
+
+                UpdateLight(command, lightId);
+
+                message = $"Setting Wiz Light {lightId} to {color}";
+                _logger.LogInformation(message);
             }
             catch (Exception e)
             {
@@ -222,7 +217,6 @@ namespace PresenceLight.Core
             }
             return (color, command, false);
         }
-
         private WizResult UpdateLight(WizParams wizParams, string lightId)
         {
             WizSocket socket = new WizSocket();

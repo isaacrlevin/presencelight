@@ -6,7 +6,7 @@
     <OutputType>WinExe</OutputType>
     <AssemblyName>PresenceLight</AssemblyName>
     <Title>PresenceLight</Title>
-    <Description>PresenceLight is a solution to broadcast your Microsoft Teams presence to a Phillips Hue or LIFX light bulb. There are other solutions that do something similar, but they require a tethered solution (plugging a light into a computer via USB). What PresenceLight does is leverage the Presence Api, which is available in Microsoft Graph, allowing to retrieve your presence without having to be tethered. This could potentially allow someone to update the light bulb from a remote machine they do not use.</Description>
+    <Description>PresenceLight is a solution to broadcast your Microsoft Teams presence to a Philips Hue or LIFX light bulb. There are other solutions that do something similar, but they require a tethered solution (plugging a light into a computer via USB). What PresenceLight does is leverage the Presence Api, which is available in Microsoft Graph, allowing to retrieve your presence without having to be tethered. This could potentially allow someone to update the light bulb from a remote machine they do not use.</Description>
     <RootNamespace>PresenceLight</RootNamespace>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <TieredCompilationQuickJitForLoops>true</TieredCompilationQuickJitForLoops>
@@ -36,7 +36,7 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
     <PackageReference Include="Microsoft.Graph.Beta" Version="0.35.0-preview" />
     <PackageReference Include="Microsoft.Graph.Core" Version="2.0.0-preview.3" />
-    <PackageReference Include="Microsoft.Identity.Client" Version="4.26.0" />
+    <PackageReference Include="Microsoft.Identity.Client" Version="4.27.0" />
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.705.50" />
     <PackageReference Include="ModernWpfUI" Version="0.9.3" />
     <PackageReference Include="ModernWpfUI.MahApps" Version="0.9.3" />

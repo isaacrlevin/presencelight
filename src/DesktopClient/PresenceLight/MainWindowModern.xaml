@@ -72,7 +72,7 @@
 
                 <ui:NavigationViewItem Content="Configure Lights" Tag="ConfigureLightsDropDown">
                     <ui:NavigationViewItem.MenuItems>
-                        <ui:NavigationViewItem Content="Phillips Hue" Tag="{x:Type pages:PhillipsHue }">
+                        <ui:NavigationViewItem Content="Philips Hue" Tag="{x:Type pages:PhilipsHue }">
                             <ui:NavigationViewItem.Icon>
                                 <ui:FontIcon Glyph="&#xE82F;" />
                             </ui:NavigationViewItem.Icon>

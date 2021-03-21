@@ -36,6 +36,8 @@ namespace PresenceLight.Pages
             installedDate.Text = ThisAppInfo.GetInstallationDate();
             RuntimeVersionInfo.Text = ThisAppInfo.GetDotNetRuntimeInfo();
         }
+        public event EventHandler<RoutedEventArgs>? onSettingsLinkClick;
+        public event EventHandler<RoutedEventArgs>? onUpdateClick;
 
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
@@ -44,6 +46,27 @@ namespace PresenceLight.Pages
             {
                 handler(this, e);
             }
+        }
+
+
+
+        private void SettingsClicked(object sender, RoutedEventArgs e)
+        {
+            var handler = onSettingsLinkClick;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
+        private async void UpdateClick(object sender, RoutedEventArgs e)
+        {
+            var handler = onUpdateClick;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+            await Task.CompletedTask;
         }
     }
 }

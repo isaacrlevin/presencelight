@@ -1,4 +1,4 @@
-﻿<ui:Page x:Class="PresenceLight.Pages.PhillipsHue"
+﻿<ui:Page x:Class="PresenceLight.Pages.PhilipsHue"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -10,7 +10,7 @@
           xmlns:gif="http://wpfanimatedgif.codeplex.com"
     mc:Ignorable="d" 
     d:DesignHeight="450" d:DesignWidth="600"
-    Title="PhillipsHue">
+    Title="PhilipsHue">
 
     <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
         <Grid>
@@ -26,7 +26,7 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <Grid Grid.Column="1" Grid.ColumnSpan="1">
-                <CheckBox x:Name="cbIsPhillipsEnabled" IsChecked="{Binding LightSettings.Hue.IsEnabled}" Content="Connect to Phillips Hue" Grid.Column="1" Grid.ColumnSpan="4" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbIsPhillipsEnabledChanged" Checked="cbIsPhillipsEnabledChanged" />
+                <CheckBox x:Name="cbIsPhilipsEnabled" IsChecked="{Binding LightSettings.Hue.IsEnabled}" Content="Connect to Philips Hue" Grid.Column="1" Grid.ColumnSpan="4" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbIsPhilipsEnabledChanged" Checked="cbIsPhilipsEnabledChanged" />
             </Grid>
             <Grid x:Name="pnlHueApi" Grid.Column="2" Grid.ColumnSpan="2">
                 <Grid.ColumnDefinitions>
@@ -39,7 +39,7 @@
                 <CheckBox x:Name="cbUseRemoteHueApi" IsChecked="{Binding LightSettings.Hue.UseRemoteApi}" Content="Use Remote Api" Grid.Column="0" HorizontalAlignment="Center" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbUseRemoteApiChanged" Checked="cbUseRemoteApiChanged" />
                 <Button VerticalAlignment="Center" x:Name="remoteHueButton" HorizontalAlignment="Left" Grid.Column="1" Width="150" Content="Login to Hue Cloud" Click="HueApiKey_Get" Margin="0,15,0,0"/>
             </Grid>
-            <Grid x:Name="pnlPhillips"  Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3">
+            <Grid x:Name="pnlPhilips"  Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
@@ -110,9 +110,10 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="40"/>
                         </Grid.RowDefinitions>
-                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Brightness"  Grid.ColumnSpan="3" Grid.Row="0" />
+                        <Label Grid.Column="0" x:Name="hueBrightnessText"  VerticalAlignment="Bottom" Foreground="Red" Content="Default Brightness enabled"  Grid.ColumnSpan="3" Grid.Row="0" />
+                        <Label Grid.Column="0" VerticalAlignment="Top" Content="Brightness"  Grid.ColumnSpan="3" Grid.Row="0" />
                         <Slider Grid.Column="1" VerticalAlignment="Center" Width="180"  HorizontalAlignment="Center" x:Name = "hueBrightness" Value="{Binding LightSettings.Hue.Brightness}" IsSnapToTickEnabled="True"  Minimum = "0" Maximum = "100" TickFrequency = "10" TickPlacement = "BottomRight"  Grid.Row="0" />
-                        <TextBox Grid.Column="2" VerticalAlignment="Center" Text="{Binding ElementName=hueBrightness, Path=Value, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="20" TextAlignment="Center" Width="40" Grid.Row="0" />
+                        <TextBox Grid.Column="2" VerticalAlignment="Center" x:Name="hueBrightnessNum" Text="{Binding ElementName=hueBrightness, Path=Value, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="20" TextAlignment="Center" Width="40" Grid.Row="0" />
                     </Grid>
 
                     <Grid Grid.Column="0" Grid.Row="2">

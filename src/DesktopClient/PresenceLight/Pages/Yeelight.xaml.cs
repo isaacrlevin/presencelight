@@ -37,6 +37,19 @@ namespace PresenceLight.Pages
              InitializeComponent();
             pnlYeelight.Visibility = SettingsHandlerBase.Config.LightSettings.Yeelight.IsEnabled ? Visibility.Visible : Visibility.Collapsed;
 
+            if (SettingsHandlerBase.Config.LightSettings.UseDefaultBrightness)
+            {
+                yeelightBrightness.IsEnabled = false;
+                yeelightBrightnessNum.IsEnabled = false;
+                yeelightBrightnessText.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                yeelightBrightness.IsEnabled = true;
+                yeelightBrightnessNum.IsEnabled = true;
+                yeelightBrightnessText.Visibility = Visibility.Collapsed;
+            }
+
             CheckYeelight();
         }
 

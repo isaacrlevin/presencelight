@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.IO;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Security.Authentication;
 using System.Threading.Tasks;
 
@@ -13,7 +15,7 @@ using Microsoft.Extensions.Hosting;
 using PresenceLight.Core;
 
 using Serilog;
- 
+
 
 namespace PresenceLight.Worker
 {
@@ -26,8 +28,8 @@ namespace PresenceLight.Worker
 
         public static async Task Main(string[] args)
         {
-            
-         
+
+
             try
             {
                 var builder = CreateHostBuilder(args).Build();
@@ -67,7 +69,7 @@ namespace PresenceLight.Worker
         {
             IConfigurationBuilder configBuilderForMain = new ConfigurationBuilder();
             ConfigureConfiguration(configBuilderForMain);
-     
+
             IConfiguration configForMain = configBuilderForMain.Build();
 
             var telemetryConfiguration = TelemetryConfiguration.CreateDefault();
@@ -75,90 +77,100 @@ namespace PresenceLight.Worker
 
             Log.Logger = new LoggerConfiguration()
                  .ReadFrom.Configuration(configForMain)
-                 .WriteTo.PresenceEventsLogSink( )
+                 .WriteTo.PresenceEventsLogSink()
                  .WriteTo.ApplicationInsights(telemetryConfiguration, TelemetryConverter.Traces, Serilog.Events.LogEventLevel.Error)
                  .Enrich.FromLogContext()
                  .CreateLogger();
 
-          
 
-            return Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
+            var builder = Host.CreateDefaultBuilder(args);
+            if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
+                && Convert.ToBoolean(configForMain["RunSystemD"]))
+            {
+                builder.UseSystemd();
+            }
+            builder.ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder
+                .ConfigureAppConfiguration((hostingContext, config) =>
+                 {
+                     config.Sources.Clear();
+
+                     var env = hostingContext.HostingEnvironment;
+
+                     ConfigureConfiguration(config);
+
+                     if (args != null)
+                     {
+                         config.AddCommandLine(args);
+                     }
+                 })
+                //.ConfigureKestrel(options =>
+                //{
+                //    //if (Convert.ToBoolean(configForMain["DeployedToServer"]))
+                //    //{
+                //    //    if (string.IsNullOrEmpty(configForMain["ServerIP"]) || configForMain["ServerIP"] != "192.168.86.27")
+                //    //    {
+                //    //        throw new ArgumentException("Supplied Server Ip Address is not configured or it is not in list of redirect Uris for Azure Active Directory");
+                //    //    }
+                       
+                   
+                //    //    options.Listen(System.Net.IPAddress.Parse(configForMain["ServerIP"]), 5001, listenOptions =>
+                //    //    {
+                //    //        var envCertPath = Environment.GetEnvironmentVariable("ASPNETCORE_Kestrel__Certificates__Default__Path");
+                //    //        if (string.IsNullOrEmpty(envCertPath))
+                //    //        {
+                //    //            // Cert Env Not provided, use appsettings
+                //    //            //assumes cert is at same level as exe
+                //    //            listenOptions.UseHttps(configForMain["Certificate:Name"], configForMain["Certificate:Password"]);
+                //    //        }
+                //    //        else
+                //    //        { }
+                //    //    });
+                        
+                //    //    options.Listen(System.Net.IPAddress.Parse(configForMain["ServerIP"]), 5000, listenOptions =>
+                //    //    {
+                //    //    });
+                //    //}
+                //    //else
+                //    //{
+                        
+                //    //    options.ListenLocalhost(5001, listenOptions =>
+                //    //    {
+                //    //        var envCertPath = Environment.GetEnvironmentVariable("ASPNETCORE_Kestrel__Certificates__Default__Path");
+                //    //        if (string.IsNullOrEmpty(envCertPath) && !string.IsNullOrWhiteSpace(configForMain["Certificate:Name"]) && !string.IsNullOrWhiteSpace(configForMain["Certificate:Password"]))
+                //    //        {
+                //    //        // Cert Env Not provided, use appsettings
+                //    //        //assumes cert is at same level as exe
+                //    //        listenOptions.UseHttps(configForMain["Certificate:Name"], configForMain["Certificate:Password"]);
+                //    //        }
+                //    //        else
+                //    //        { }
+                //    //    });
+                        
+                //    //    options.ListenLocalhost(5000, listenOptions =>
+                //    //    {
+                //    //    });
+                //    //}
+
+                //    //if (Convert.ToBoolean(configForMain["DeployedToContainer"]))
+                //    //{
+                //    //    options.ConfigureHttpsDefaults(listenOptions =>
+                //    //    {
+                //    //        listenOptions.SslProtocols = SslProtocols.Tls12;
+                //    //    });
+                //    //}
+                //})
+                .UseContentRoot(Directory.GetCurrentDirectory())
+                .ConfigureLogging(setup =>
                 {
-                    webBuilder
-                     .ConfigureAppConfiguration((hostingContext, config) =>
-                     {
-                         config.Sources.Clear();
+                    setup.AddSerilog(Log.Logger);
+                })
+                .UseStartup<Startup>();
 
-                         var env = hostingContext.HostingEnvironment;
-
-                         ConfigureConfiguration(config);
-                  
-                         if (args != null)
-                         {
-                             config.AddCommandLine(args);
-                         }
-                     })
-                    .ConfigureKestrel(options =>
-                     {
-                         if (Convert.ToBoolean(configForMain["DeployedToServer"]))
-                         {
-                             if (string.IsNullOrEmpty(configForMain["ServerIP"]) || configForMain["ServerIP"] != "192.168.86.27")
-                             {
-                                 throw new ArgumentException("Supplied Server Ip Address is not configured or it is not in list of redirect Uris for Azure Active Directory");
-                             }
-
-                             options.Listen(System.Net.IPAddress.Parse(configForMain["ServerIP"]), 5001, listenOptions =>
-                             {
-                                 var envCertPath = Environment.GetEnvironmentVariable("ASPNETCORE_Kestrel__Certificates__Default__Path");
-                                 if (string.IsNullOrEmpty(envCertPath))
-                                 {
-                                     // Cert Env Not provided, use appsettings
-                                     //assumes cert is at same level as exe
-                                     listenOptions.UseHttps(configForMain["Certificate:Name"], configForMain["Certificate:Password"]);
-                                 }
-                                 else
-                                 { }
-                             });
-
-                             options.ListenLocalhost(5000, listenOptions =>
-                             {
-                             });
-                         }
-                         else
-                         {
-                             options.ListenLocalhost(5001, listenOptions =>
-                             {
-                                 var envCertPath = Environment.GetEnvironmentVariable("ASPNETCORE_Kestrel__Certificates__Default__Path");
-                                 if (string.IsNullOrEmpty(envCertPath) && !string.IsNullOrWhiteSpace(configForMain["Certificate:Name"]) && !string.IsNullOrWhiteSpace(configForMain["Certificate:Password"]))
-                                 {
-                                     // Cert Env Not provided, use appsettings
-                                     //assumes cert is at same level as exe
-                                     listenOptions.UseHttps(configForMain["Certificate:Name"], configForMain["Certificate:Password"]);
-                                 }
-                                 else
-                                 { }
-                             });
-
-                             options.ListenLocalhost(5000, listenOptions =>
-                             {
-                             });
-                         }
-                         if (Convert.ToBoolean(configForMain["DeployedToContainer"]))
-                         {
-                             options.ConfigureHttpsDefaults(listenOptions =>
-                             {
-                                 listenOptions.SslProtocols = SslProtocols.Tls12;
-                             });
-                         }
-                     })
-                    .UseContentRoot(Directory.GetCurrentDirectory())
-                    .ConfigureLogging(setup => {
-                        setup.AddSerilog(Log.Logger);
-                    })
-                    .UseStartup<Startup>();
-                  
-                }).UseSerilog();
+            })
+            .UseSerilog();
+            return builder;
         }
     }
 }

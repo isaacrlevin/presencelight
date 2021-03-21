@@ -18,14 +18,14 @@ namespace PresenceLight.Pages
     /// <summary>
     /// Interaction logic forxaml
     /// </summary>
-    public partial class PhillipsHue 
+    public partial class PhilipsHue 
     {
         public bool previousRemoteFlag;
 
         private MediatR.IMediator _mediator;
 
         ILogger _logger;
-        public PhillipsHue()
+        public PhilipsHue()
         {
             _mediator = App.ServiceProvider.GetRequiredService<MediatR.IMediator>();
 
@@ -33,35 +33,49 @@ namespace PresenceLight.Pages
 
             InitializeComponent();
           
-            cbIsPhillipsEnabled.IsChecked = SettingsHandlerBase.Config.LightSettings.Hue.IsEnabled;
+            cbIsPhilipsEnabled.IsChecked = SettingsHandlerBase.Config.LightSettings.Hue.IsEnabled;
 
             if (SettingsHandlerBase.Config.LightSettings.Hue.IsEnabled)
             {
 
-                pnlPhillips.Visibility = Visibility.Visible;
+                pnlPhilips.Visibility = Visibility.Visible;
                 pnlHueApi.Visibility = Visibility.Visible;
                 SettingsHandlerBase.SyncOptions();
             }
             else
             {
-                pnlPhillips.Visibility = Visibility.Collapsed;
+                pnlPhilips.Visibility = Visibility.Collapsed;
                 pnlHueApi.Visibility = Visibility.Collapsed;
             }
+
+            if (SettingsHandlerBase.Config.LightSettings.UseDefaultBrightness)
+            {
+                hueBrightness.IsEnabled = false;
+                hueBrightnessNum.IsEnabled = false;
+                hueBrightnessText.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                hueBrightness.IsEnabled = true;
+                hueBrightnessNum.IsEnabled = true;
+                hueBrightnessText.Visibility = Visibility.Collapsed;
+            }
+
             CheckHue(true);
         }
 
         #region Hue Panel
 
-        private void cbIsPhillipsEnabledChanged(object sender, RoutedEventArgs e)
+        private void cbIsPhilipsEnabledChanged(object sender, RoutedEventArgs e)
         {
             if (SettingsHandlerBase.Config.LightSettings.Hue.IsEnabled)
             {
-                pnlPhillips.Visibility = Visibility.Visible;
+                pnlPhilips.Visibility = Visibility.Visible;
                 pnlHueApi.Visibility = Visibility.Visible;
             }
             else
             {
-                pnlPhillips.Visibility = Visibility.Collapsed;
+                pnlPhilips.Visibility = Visibility.Collapsed;
                 pnlHueApi.Visibility = Visibility.Collapsed;
             }
 
@@ -232,7 +246,7 @@ namespace PresenceLight.Pages
             var parentWindow = Application.Current.Windows.OfType<MainWindowModern>().First();
             MessageBoxHelper.PrepToCenterMessageBoxOnForm(parentWindow);
 
-            MessageBox.Show("Please press the sync button on your Phillips Hue Bridge");
+            MessageBox.Show("Please press the sync button on your Philips Hue Bridge");
 
             SolidColorBrush fontBrush = new SolidColorBrush();
 

@@ -50,6 +50,21 @@ namespace PresenceLight.Pages
                 getTokenLink.Visibility = Visibility.Collapsed;
                 pnlLIFX.Visibility = Visibility.Collapsed;
             }
+
+            if (SettingsHandlerBase.Config.LightSettings.UseDefaultBrightness)
+            {
+                lifxBrightness.IsEnabled = false;
+                lifxBrightnessNum.IsEnabled = false;
+                lifxBrightnessText.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                lifxBrightness.IsEnabled = true;
+                lifxBrightnessNum.IsEnabled = true;
+                lifxBrightnessText.Visibility = Visibility.Collapsed;
+            }
+            
+
             CheckLIFX();
         }
 
@@ -180,6 +195,17 @@ namespace PresenceLight.Pages
                         lblLIFXMessage.Text = "Connected to LIFX Cloud";
                         fontBrush.Color = "#009933".MapColor();
                         lblLIFXMessage.Foreground = fontBrush;
+
+                        if (SettingsHandlerBase.Config.LightSettings.LIFX.UseActivityStatus)
+                        {
+                            pnlLIFXAvailableStatuses.Visibility = Visibility.Collapsed;
+                            pnlLIFXActivityStatuses.Visibility = Visibility.Visible;
+                        }
+                        else
+                        {
+                            pnlLIFXAvailableStatuses.Visibility = Visibility.Visible;
+                            pnlLIFXActivityStatuses.Visibility = Visibility.Collapsed;
+                        }
                     }
                 }
                 else

@@ -47,89 +47,44 @@ namespace PresenceLight.Core
         {
             if (string.IsNullOrEmpty(lightId))
             {
-                throw new ArgumentOutOfRangeException("Hue Selected Light Id Invalid");
+                _logger.LogInformation("Selected Hue Light Not Specified");
+                return;
             }
 
             try
             {
-                bool useWorkingHours = await _mediator.Send(new WorkingHoursServices.UseWorkingHoursCommand());
-                bool IsInWorkingHours = await _mediator.Send(new WorkingHoursServices.IsInWorkingHoursCommand());
+                _client = new LocalHueClient(_options.LightSettings.Hue.HueIpAddress);
+                _client.Initialize(_options.LightSettings.Hue.HueApiKey);
 
-                if (!useWorkingHours || (useWorkingHours && IsInWorkingHours))
+                var o = await Handle(_options.LightSettings.Hue.UseActivityStatus ? activity : availability, lightId);
+
+                if (o.returnFunc)
                 {
-                    _client = new LocalHueClient(_options.LightSettings.Hue.HueIpAddress);
-                    _client.Initialize(_options.LightSettings.Hue.HueApiKey);
+                    return;
+                }
 
-                    var o = await Handle(_options.LightSettings.Hue.UseActivityStatus ? activity : availability, lightId);
+                var color = o.color.Replace("#", "");
+                var command = o.command;
+                var message = "";
+                switch (color.Length)
+                {
+                    case var length when color.Length == 6:
+                        // Do Nothing
+                        break;
+                    case var length when color.Length > 6:
+                        // Get last 6 characters
+                        color = color.Substring(color.Length - 6);
+                        break;
+                    default:
+                        throw new ArgumentException("Supplied Color had an issue");
+                }
 
-                    if (o.returnFunc)
-                    {
-                        return;
-                    }
-
-                    var color = o.color.Replace("#", "");
-                    var command = o.command;
-                    var message = "";
-                    switch (color.Length)
-                    {
-                        case var length when color.Length == 6:
-                            // Do Nothing
-                            break;
-                        case var length when color.Length > 6:
-                            // Get last 6 characters
-                            color = color.Substring(color.Length - 6);
-                            break;
-                        default:
-                            throw new ArgumentException("Supplied Color had an issue");
-                    }
-
-                    command.SetColor(new RGBColor(color));
+                command.SetColor(new RGBColor(color));
 
 
-                    if (availability == "Off")
-                    {
-                        command.On = false;
-
-                        if (lightId.Contains("group_id:"))
-                        {
-                            await _client.SendGroupCommandAsync(command, lightId.Replace("group_id:", ""));
-                        }
-                        else
-                        {
-                            await _client.SendCommandAsync(command, new List<string> { lightId.Replace("id:", "") });
-                        }
-
-                        message = $"Turning Hue Light {lightId} Off";
-                        _logger.LogInformation(message);
-                        return;
-                    }
-
-                    if (_options.LightSettings.UseDefaultBrightness)
-                    {
-                        if (_options.LightSettings.DefaultBrightness == 0)
-                        {
-                            command.On = false;
-                        }
-                        else
-                        {
-                            command.On = true;
-                            command.Brightness = Convert.ToByte(((Convert.ToDouble(_options.LightSettings.DefaultBrightness) / 100) * 254));
-                            command.TransitionTime = new TimeSpan(0);
-                        }
-                    }
-                    else
-                    {
-                        if (_options.LightSettings.Hue.Brightness == 0)
-                        {
-                            command.On = false;
-                        }
-                        else
-                        {
-                            command.On = true;
-                            command.Brightness = Convert.ToByte(((Convert.ToDouble(_options.LightSettings.Hue.Brightness) / 100) * 254));
-                            command.TransitionTime = new TimeSpan(0);
-                        }
-                    }
+                if (availability == "Off")
+                {
+                    command.On = false;
 
                     if (lightId.Contains("group_id:"))
                     {
@@ -140,9 +95,49 @@ namespace PresenceLight.Core
                         await _client.SendCommandAsync(command, new List<string> { lightId.Replace("id:", "") });
                     }
 
-                    message = $"Setting Hue Light {lightId} to {color}";
+                    message = $"Turning Hue Light {lightId} Off";
                     _logger.LogInformation(message);
+                    return;
                 }
+
+                if (_options.LightSettings.UseDefaultBrightness)
+                {
+                    if (_options.LightSettings.DefaultBrightness == 0)
+                    {
+                        command.On = false;
+                    }
+                    else
+                    {
+                        command.On = true;
+                        command.Brightness = Convert.ToByte(((Convert.ToDouble(_options.LightSettings.DefaultBrightness) / 100) * 254));
+                        command.TransitionTime = new TimeSpan(0);
+                    }
+                }
+                else
+                {
+                    if (_options.LightSettings.Hue.Brightness == 0)
+                    {
+                        command.On = false;
+                    }
+                    else
+                    {
+                        command.On = true;
+                        command.Brightness = Convert.ToByte(((Convert.ToDouble(_options.LightSettings.Hue.Brightness) / 100) * 254));
+                        command.TransitionTime = new TimeSpan(0);
+                    }
+                }
+
+                if (lightId.Contains("group_id:"))
+                {
+                    await _client.SendGroupCommandAsync(command, lightId.Replace("group_id:", ""));
+                }
+                else
+                {
+                    await _client.SendCommandAsync(command, new List<string> { lightId.Replace("id:", "") });
+                }
+
+                message = $"Setting Hue Light {lightId} to {color}";
+                _logger.LogInformation(message);
             }
             catch (Exception e)
             {

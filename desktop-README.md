@@ -3,14 +3,16 @@
 
 ![.github/workflows/Desktop_Build.yml](https://github.com/isaacrlevin/presencelight/workflows/.github/workflows/Desktop_Build.yml/badge.svg)
 
-### WPF Installs
+## Versions
 
-| Release Channel | Install Type | Build Number | Link |
-|--- | ------------ | ---- | --- |
-| Nightly | App Installer | [![Nightly build number](https://presencelight.blob.core.windows.net/nightly/ci_badge.svg)](https://presencelight.blob.core.windows.net/nightly/index.html)| [Install Link](https://presencelight.blob.core.windows.net/nightly/index.html)
-| Microsoft Store | App Installer | [![Stable build number](https://presencelight.blob.core.windows.net/store/stable_badge.svg)](https://www.microsoft.com/en-us/p/presencelight/9nffkd8gznl7)| [![Install](https://github.com/isaacrlevin/PresenceLight/raw/main/static/store.svg)](https://www.microsoft.com/en-us/p/presencelight/9nffkd8gznl7)
-| Chocolatey | Standalone exe | [![Stable build number](https://presencelight.blob.core.windows.net/store/stable_badge.svg)](https://www.microsoft.com/en-us/p/presencelight/9nffkd8gznl7)| [Packge Page](https://chocolatey.org/packages/PresenceLight/)
-| GitHub Releases | Standalone exe |  [![Stable build number](https://presencelight.blob.core.windows.net/store/stable_badge.svg)](https://www.microsoft.com/en-us/p/presencelight/9nffkd8gznl7)| [Release Page](https://github.com/isaacrlevin/presencelight/releases)
+| Desktop Stable | Desktop Nightly |
+|--- | ------------ |
+| [![Stable build number](https://presencelight.blob.core.windows.net/store/stable_badge.svg)](https://www.microsoft.com/en-us/p/presencelight/9nffkd8gznl7) | [![Nightly build number](https://presencelight.blob.core.windows.net/nightly/ci_badge.svg)](https://presencelight.blob.core.windows.net/nightly/index.html)  |
+### Desktop Installs
+
+| Nightly | Microsoft Store | Chocolatey | GitHub Releases  |
+| ------- | --------------- |--------------- | ---------------  |
+| [<img src="https://github.com/isaacrlevin/PresenceLight/raw/main/Icon.png" width="100">](https://presencelight.blob.core.windows.net/nightly/index.html)| [<img src="https://github.com/isaacrlevin/PresenceLight/raw/main/static/store.svg" width="100">](https://www.microsoft.com/en-us/p/presencelight/9nffkd8gznl7) | [<img src="https://chocolatey.org/content/images/global-shared/logo-square.svg" width="100">](https://chocolatey.org/packages/PresenceLight/) | [<img src="https://user-images.githubusercontent.com/8878502/110871471-55fe7c00-8283-11eb-8ce4-afeeaf62458a.png" width="100">](https://user-images.githubusercontent.com/8878502/110871316-061fb500-8283-11eb-8ad6-db529a86eab0.png) |
 
 ## Desktop App Setup
 
@@ -19,7 +21,7 @@
 In order for the desktop app to work, you need to be running Windows 10, version 1903 (19H1), as well as provide the following steps.
 
 - Install App via the desired build link above
-- Hue Only- Obtain the IP Address for your Phillips Hue Bridge
+- Hue Only- Obtain the IP Address for your Philips Hue Bridge
 - LIFX Only - Obtain a LIFX Developer Token from [here](https://cloud.lifx.com/settings)
 
 
@@ -61,11 +63,11 @@ You can change the icon type in the settings pane.
 
 After you change and save, the icon will update in the icon tray.
 
-## Wire Up Phillips Light
+## Wire Up Philips Light
 
-To connect PresenceLight to Phillips Hue, you can do it 1 of 2 ways
+To connect PresenceLight to Philips Hue, you can do it 1 of 2 ways
 
- - Obtain the IP Address of your Phillips Hue Bridge (if you have it)
+ - Obtain the IP Address of your Philips Hue Bridge (if you have it)
  - Ask PresenceLight to find it for you (may no work in certain network configurations)
 
  ![Hue Settings](https://github.com/isaacrlevin/PresenceLight/raw/main/static/hue-settings.png)

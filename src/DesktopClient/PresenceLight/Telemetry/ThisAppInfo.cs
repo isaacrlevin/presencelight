@@ -61,7 +61,7 @@ namespace PresenceLight
             {
                settingsPath = System.AppContext.BaseDirectory;
             }
-            return $"{settingsPath}{settingsFileName}";
+            return Path.Combine(settingsPath, settingsFileName);
         }
 
         internal static string GetPackageVersion()
