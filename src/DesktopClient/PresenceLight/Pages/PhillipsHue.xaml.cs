@@ -54,8 +54,6 @@ namespace PresenceLight.Pages
 
         private void cbIsPhillipsEnabledChanged(object sender, RoutedEventArgs e)
         {
-            SettingsHandlerBase.Config.LightSettings.Hue.IsEnabled = (sender as CheckBox)?.IsChecked == true;
-
             if (SettingsHandlerBase.Config.LightSettings.Hue.IsEnabled)
             {
                 pnlPhillips.Visibility = Visibility.Visible;

@@ -41,8 +41,7 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="10" />
                     <RowDefinition Height="50" />
-                    <RowDefinition Height="50" />
-                    <RowDefinition Height="60"/>
+                    <RowDefinition Height="50" />                    
                     <RowDefinition Height="60"/>
                     <RowDefinition Height="*" />
                     <RowDefinition Height="100" />
@@ -65,7 +64,7 @@
                 </Label>
 
                 
-                <Grid x:Name="pnlLIFXData"   Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="3" Margin="0,0,0,0">
+                <Grid x:Name="pnlLIFXData"   Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="3" Margin="0,0,0,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
@@ -88,7 +87,7 @@
                         </Grid.RowDefinitions>
 
                         <Label Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" x:Name="lifxItemType"  VerticalAlignment="Top" Margin="0,0,0,0" Content=""  Grid.RowSpan="2" />
-                        <ComboBox Grid.Row="2" Grid.Column="1" x:Name="ddlLIFXLights" DisplayMemberPath="Name" SelectionChanged="ddlLIFXLights_SelectionChanged"  HorizontalAlignment="Center" VerticalAlignment="Top" Width="150" Margin="0,11,0,0" Grid.RowSpan="2"/>
+                        <ComboBox Grid.Row="2" Grid.Column="1" x:Name="ddlLIFXLights" DisplayMemberPath="Label" SelectionChanged="ddlLIFXLights_SelectionChanged"  HorizontalAlignment="Center" VerticalAlignment="Top" Width="150" Margin="0,11,0,0" Grid.RowSpan="2"/>
 
                     </Grid>
 
@@ -241,7 +240,7 @@
                     </Grid>
                 </Grid>
 
-                <Image Grid.Row="5" Grid.Column="1" x:Name="imgLIFXLoading" Visibility="Collapsed" gif:ImageBehavior.AnimatedSource="../Icons/loading.gif" Width="75" Margin="70,42,69,215" Grid.RowSpan="4"  />
+                <Image Grid.Row="4" Grid.Column="1" x:Name="imgLIFXLoading" Visibility="Collapsed" gif:ImageBehavior.AnimatedSource="../Icons/loading.gif" Width="75" Margin="70,42,69,215" Grid.RowSpan="4"  />
                 <Button Grid.Row="6" VerticalAlignment="Center" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Center" x:Name="btnLIFX" Height="45" Width="170" Content="Save"  Click="SaveLIFX_Click" />
                 <Label Grid.Row="6"  VerticalAlignment="Top" Grid.Column="0" Grid.ColumnSpan="3" x:Name="lblLIFXSaved" HorizontalAlignment="Center" Visibility="Visible" Content="Settings Updated" Foreground="Green" Margin="0,0,0,0" />
             </Grid>

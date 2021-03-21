@@ -44,10 +44,15 @@ namespace PresenceLight.Pages
 
         private void cbIsYeelightEnabledChanged(object sender, RoutedEventArgs e)
         {
-            pnlYeelight.Visibility = (SettingsHandlerBase.Config.LightSettings.Yeelight.IsEnabled = ((sender as CheckBox)?.IsChecked == true))
-                ? Visibility.Visible
-                : Visibility.Collapsed;
-            
+            if (SettingsHandlerBase.Config.LightSettings.Yeelight.IsEnabled)
+            {
+                pnlYeelight.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                pnlYeelight.Visibility = Visibility.Collapsed;
+            }
+
             SettingsHandlerBase.SyncOptions();
             e.Handled = true;
         }

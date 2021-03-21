@@ -311,21 +311,21 @@ namespace PresenceLight.Pages
 
         private async void cbSyncLights(object sender, RoutedEventArgs e)
         {
-            if (!SettingsHandlerBase.Config.LightSettings.SyncLights)
-            {
-                await _parentWindow._mediator.Send(new SetColorCommand { Color = "Off" }).ConfigureAwait(true);
+            //if (!SettingsHandlerBase.Config.LightSettings.SyncLights)
+           // {
+                //await _parentWindow._mediator.Send(new SetColorCommand { Color = "Off" }).ConfigureAwait(true);
 
                 //var landingPage = System.Windows.Application.Current.Windows.OfType<Pages.ProfilePage>().First();
 
                 //landingPage.turnOffButton.Visibility = Visibility.Collapsed;
                 //landingPage.turnOnButton.Visibility = Visibility.Visible;
-            }
+            //}
 
-            SettingsHandlerBase.SyncOptions();
-            if (!await _parentWindow._mediator.Send(new SaveSettingsCommand()).ConfigureAwait(true))
-            {
-                _logger.LogDebug("Settings Not Saved Properly");
-            }
+            //SettingsHandlerBase.SyncOptions();
+            //if (!await _parentWindow._mediator.Send(new SaveSettingsCommand()).ConfigureAwait(true))
+            //{
+            //    _logger.LogDebug("Settings Not Saved Properly");
+            //}
             e.Handled = true;
         }
 

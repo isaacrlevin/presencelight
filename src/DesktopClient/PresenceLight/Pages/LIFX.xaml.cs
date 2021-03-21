@@ -19,7 +19,7 @@ namespace PresenceLight.Pages
     /// <summary>
     /// Interaction logic for LIFX.xaml
     /// </summary>
-    public partial class LIFX 
+    public partial class LIFX
     {
         LIFXOAuthHelper _lifxOAuthHelper;
         private MediatR.IMediator _mediator;
@@ -147,6 +147,17 @@ namespace PresenceLight.Pages
                                     }
                                 }
                             }
+                        }
+
+                        if (ddlLIFXLights.SelectedItem != null)
+                        {
+                            btnGetLIFXLights.IsEnabled = true;
+                            btnGetLIFXGroups.IsEnabled = true;
+
+                            pnlLIFXData.Visibility = Visibility.Visible;
+                            lblLIFXMessage.Text = "Connected to LIFX Cloud";
+                            fontBrush.Color = "#009933".MapColor();
+                            lblLIFXMessage.Foreground = fontBrush;
                         }
 
                         if (SettingsHandlerBase.Config.LightSettings.LIFX.UseActivityStatus)
@@ -298,9 +309,6 @@ namespace PresenceLight.Pages
 
         private void cbIsLIFXEnabledChanged(object sender, RoutedEventArgs e)
         {
-            SettingsHandlerBase.Config.LightSettings.LIFX.IsEnabled = (sender as CheckBox)?.IsChecked == true;
-
-
             if (SettingsHandlerBase.Config.LightSettings.LIFX.IsEnabled)
             {
                 getTokenLink.Visibility = Visibility.Visible;

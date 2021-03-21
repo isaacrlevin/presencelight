@@ -28,7 +28,7 @@ namespace PresenceLight.Pages
     /// Interaction logic for CustomApiPage.xaml
     /// </summary>
     [ContentProperty("Content")]
-    public partial class CustomApiPage 
+    public partial class CustomApiPage
     {
         private MediatR.IMediator _mediator;
 
@@ -87,10 +87,14 @@ namespace PresenceLight.Pages
         }
         private void cbIsCustomApiEnabledChanged(object sender, RoutedEventArgs e)
         {
-             
-            pnlCustomApi.Visibility = (SettingsHandlerBase.Config.LightSettings.CustomApi.IsEnabled = (sender as CheckBox)?.IsChecked ?? false)
-                ? Visibility.Visible
-                : Visibility.Collapsed;
+            if (SettingsHandlerBase.Config.LightSettings.CustomApi.IsEnabled)
+            {
+                pnlCustomApi.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                pnlCustomApi.Visibility = Visibility.Collapsed;
+            }
 
             SettingsHandlerBase.SyncOptions();
 
