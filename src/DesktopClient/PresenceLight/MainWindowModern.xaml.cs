@@ -82,10 +82,7 @@ namespace PresenceLight
 
             this.Dispatcher.Invoke(() =>
             {
-
-                //var tbContext = landingPage.notificationIcon.DataContext;
                 DataContext = SettingsHandlerBase.Config;
-                //landingPage.notificationIcon.DataContext = tbContext;
 
                 switch (SettingsHandlerBase.Config.Theme)
                 {
@@ -112,8 +109,6 @@ namespace PresenceLight
                 UpdateAppTitle();
             };
 
-            //while (true)
-            //{ }
 
         }
 
@@ -265,6 +260,126 @@ namespace PresenceLight
         private Type? GetPageType(NavigationViewItem item)
         {
             return item.Tag as Type;
+        }
+
+        private async void OnExitClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(SettingsHandlerBase.Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(SettingsHandlerBase.Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(SettingsHandlerBase.Config.LightSettings.Hue.SelectedItemId))
+                {
+                    if (SettingsHandlerBase.Config.LightSettings.Hue.UseRemoteApi)
+                    {
+                        await _mediator.Send(new Core.RemoteHueServices.SetColorCommand
+                        {
+                            Availability = "Off",
+                            LightId = SettingsHandlerBase.Config.LightSettings.Hue.SelectedItemId,
+                            BridgeId = SettingsHandlerBase.Config.LightSettings.Hue.RemoteBridgeId
+                        }).ConfigureAwait(true);
+
+                    }
+                    else
+                    {
+                        await _mediator.Send(new Core.HueServices.SetColorCommand() { Availability = "Off", LightID = SettingsHandlerBase.Config.LightSettings.Hue.SelectedItemId, Activity = "" }).ConfigureAwait(true);
+
+                    }
+                }
+
+                if (SettingsHandlerBase.Config.LightSettings.LIFX.IsEnabled && !string.IsNullOrEmpty(SettingsHandlerBase.Config.LightSettings.LIFX.LIFXApiKey))
+                {
+                    await _mediator.Send(new PresenceLight.Core.LifxServices.SetColorCommand { Activity = "", Availability = "Off", LightId = SettingsHandlerBase.Config.LightSettings.LIFX.SelectedItemId }).ConfigureAwait(true);
+
+                }
+                await _mediator.Send(new SaveSettingsCommand()).ConfigureAwait(true);
+                System.Windows.Application.Current.Shutdown();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error Occured");
+                _diagClient.TrackException(ex);
+            }
+            _logger.LogInformation("PresenceLight Exiting");
+        }
+
+        private void OnOpenClick(object sender, RoutedEventArgs e)
+        {
+            Show();
+            WindowState = lastWindowState;
+        }
+
+        private void OnNotifyIconDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                this.Show();
+                this.WindowState = this.lastWindowState;
+            }
+        }
+
+        private void OnTurnOnSyncClick(object sender, RoutedEventArgs e)
+        {
+            LightMode = "Graph";
+
+            turnOffButton.Visibility = Visibility.Visible;
+            turnOnButton.Visibility = Visibility.Collapsed;
+
+            WindowState = lastWindowState;
+            _logger.LogInformation("Turning On PresenceLight Sync");
+        }
+
+        private async void OnTurnOffSyncClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                LightMode = "Custom";
+
+                if (!string.IsNullOrEmpty(SettingsHandlerBase.Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(SettingsHandlerBase.Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(SettingsHandlerBase.Config.LightSettings.Hue.SelectedItemId))
+                {
+                    if (SettingsHandlerBase.Config.LightSettings.Hue.UseRemoteApi)
+                    {
+                        await _mediator.Send(new Core.RemoteHueServices.SetColorCommand
+                        {
+                            Availability = "Off",
+                            LightId = SettingsHandlerBase.Config.LightSettings.Hue.SelectedItemId,
+                            BridgeId = SettingsHandlerBase.Config.LightSettings.Hue.RemoteBridgeId
+                        }).ConfigureAwait(true);
+
+                    }
+                    else
+                    {
+                        await _mediator.Send(new Core.HueServices.SetColorCommand() { Availability = "Off", LightID = SettingsHandlerBase.Config.LightSettings.Hue.SelectedItemId, Activity = "" }).ConfigureAwait(true);
+
+                    }
+                }
+
+                if (SettingsHandlerBase.Config.LightSettings.LIFX.IsEnabled && !string.IsNullOrEmpty(SettingsHandlerBase.Config.LightSettings.LIFX.LIFXApiKey))
+                {
+                    await _mediator.Send(new Core.LifxServices.SetColorCommand { Activity = "", Availability = "Off", LightId = SettingsHandlerBase.Config.LightSettings.LIFX.SelectedItemId }).ConfigureAwait(true);
+
+                }
+
+                turnOffButton.Visibility = Visibility.Collapsed;
+                turnOnButton.Visibility = Visibility.Visible;
+
+                notificationIcon.Text = PresenceConstants.Inactive;
+                notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(string.Empty, IconConstants.Inactive)));
+
+                WindowState = lastWindowState;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error Occured");
+                _diagClient.TrackException(ex);
+            }
+            _logger.LogInformation("Turning Off PresenceLight Sync");
+        }
+
+        private async void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            e.Cancel = true;
+            await _mediator.Send(new SaveSettingsCommand()).ConfigureAwait(true);
+            this.Hide();
+
         }
     }
 }

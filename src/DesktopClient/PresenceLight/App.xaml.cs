@@ -78,7 +78,7 @@ namespace PresenceLight
             IServiceCollection services = new ServiceCollection();
             services.AddOptions();
 
-            var assemblies = AppDomain.CurrentDomain.GetAssemblies().Where(a=> a.FullName.Contains("PresenceLight")).ToArray();
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies().Where(a => a.FullName.Contains("PresenceLight")).ToArray();
 
             //Need to tell MediatR what Assemblies to look in for Command Event Handlers
             services.AddMediatR(assemblies);
@@ -134,7 +134,15 @@ namespace PresenceLight
 
 
             var mainWindow = ServiceProvider.GetRequiredService<MainWindowModern>();
-            mainWindow.Show();
+
+            if (Convert.ToBoolean(Configuration?["StartMinimized"], CultureInfo.InvariantCulture))
+            {
+                mainWindow.Hide();
+            }
+            else
+            {
+                mainWindow.Show();
+            }
         }
 
 

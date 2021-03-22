@@ -5,7 +5,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:ui="http://schemas.modernwpf.com/2019"
     xmlns:gif="http://wpfanimatedgif.codeplex.com" 
-    xmlns:l="clr-namespace:PresenceLight"
     xmlns:local="clr-namespace:PresenceLight"
     mc:Ignorable="d" 
     d:DesignHeight="450" d:DesignWidth="800"
@@ -74,17 +73,7 @@
             <Grid Grid.Column="1" Grid.Row="1" x:Name="loadingPanel" Visibility="Collapsed">
                 <Image gif:ImageBehavior.AnimatedSource="../Icons/loading.gif" Width="100" />
                 <Label HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-150,0,0" Content="If you are adding new lights, this may take up to a minute" />
-            </Grid>
-            <l:NotifyIcon x:Name="notificationIcon"  >
-                <l:NotifyIcon.ContextMenu>
-                    <ContextMenu>
-                        <MenuItem Header="Open" Click="OnOpenClick" />
-                        <MenuItem Header="Turn Off Sync" x:Name="turnOffButton" Click="OnTurnOffSyncClick" />
-                        <MenuItem Header="Turn On Sync" x:Name="turnOnButton" Click="OnTurnOnSyncClick" />
-                        <MenuItem Header="Exit" Click="OnExitClick" />
-                    </ContextMenu>
-                </l:NotifyIcon.ContextMenu>
-            </l:NotifyIcon>
+            </Grid>            
         </Grid>
     </ScrollViewer>
 </ui:Page>

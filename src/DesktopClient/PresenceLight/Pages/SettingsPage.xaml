@@ -106,7 +106,7 @@
             <RadioButton Grid.Column="2" Unchecked="OnThemeToggle" Checked="OnThemeToggle" Grid.Row="6" Grid.ColumnSpan="3" GroupName="Themes" x:Name="themeDark" Margin="0,35,0,0" Content="Dark" HorizontalAlignment="Left" VerticalAlignment="Top" />
             <RadioButton Grid.Column="2" Unchecked="OnThemeToggle" Checked="OnThemeToggle" Grid.Row="6" Grid.ColumnSpan="3" GroupName="Themes" x:Name="themeDefault" Margin="0,60,0,0" Content="Use default setting" HorizontalAlignment="Left"  VerticalAlignment="Top"/>
 
-            <CheckBox x:Name="cbSendDiagnosticData" VerticalAlignment="Top" IsChecked="{Binding SendDiagnosticData}" Grid.Row="7" Content="Send Diagnostic Data" Grid.Column="1" HorizontalAlignment="Left" Margin="0,0,0,0" />
+            <CheckBox x:Name="cbStartMinimized" VerticalAlignment="Top" IsChecked="{Binding StartMinimized}" Grid.Row="7" Content="Start Minimized" Grid.Column="1" HorizontalAlignment="Left" Margin="0,0,0,0" />
 
 
             <Button Grid.Column="0" Margin="0,100,0,50" HorizontalAlignment="Center" Grid.Row="7" Height="45" x:Name="btnSettings" Width="170" Content="Save" Click="SaveSettings_Click" Grid.ColumnSpan="4" />

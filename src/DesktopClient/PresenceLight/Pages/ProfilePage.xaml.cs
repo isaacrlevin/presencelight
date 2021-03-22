@@ -35,12 +35,11 @@ namespace PresenceLight.Pages
         public static string LightMode { get; set; }
         public ProfilePage()
         {
-            //_mediator = App.ServiceProvider.GetRequiredService<MediatR.IMediator>();
             _parentWindow = System.Windows.Application.Current.Windows.OfType<MainWindowModern>().First();
             InitializeComponent();
 
-            notificationIcon.Text = PresenceConstants.Inactive;
-            notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(String.Empty, IconConstants.Inactive)));
+            _parentWindow.notificationIcon.Text = PresenceConstants.Inactive;
+            _parentWindow.notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(String.Empty, IconConstants.Inactive)));
 
             if (_parentWindow.presence != null && _parentWindow.profile != null)
             {
@@ -60,14 +59,9 @@ namespace PresenceLight.Pages
                 dataPanel.Visibility = Visibility.Visible;
 
 
-                turnOffButton.Visibility = Visibility.Visible;
-                turnOnButton.Visibility = Visibility.Collapsed;
+                _parentWindow.turnOffButton.Visibility = Visibility.Visible;
+                _parentWindow.turnOnButton.Visibility = Visibility.Collapsed;
             }
-            //else
-            //{
-            //    Start();
-            //}
-
         }
 
         protected override void Start()
@@ -173,8 +167,8 @@ namespace PresenceLight.Pages
                 await _parentWindow._mediator.Send(new SaveSettingsCommand()).ConfigureAwait(true);
 
 
-                turnOffButton.Visibility = Visibility.Visible;
-                turnOnButton.Visibility = Visibility.Collapsed;
+                _parentWindow.turnOffButton.Visibility = Visibility.Visible;
+                _parentWindow.turnOnButton.Visibility = Visibility.Collapsed;
 
                 await InteractWithLights().ConfigureAwait(true);
             }
@@ -321,6 +315,7 @@ namespace PresenceLight.Pages
                 }
             }
         }
+
         public void MapUI(Presence presence, User? profile, BitmapImage? profileImageBit)
         {
             try
@@ -333,37 +328,37 @@ namespace PresenceLight.Pages
                     case "Available":
                         image = new BitmapImage(new Uri(IconConstants.GetIcon(SettingsHandlerBase.Config.IconType, IconConstants.Available)));
                         color = "#009933".MapColor();
-                        notificationIcon.Text = PresenceConstants.Available;
+                        _parentWindow.notificationIcon.Text = PresenceConstants.Available;
                         break;
                     case "Busy":
                         image = new BitmapImage(new Uri(IconConstants.GetIcon(SettingsHandlerBase.Config.IconType, IconConstants.Busy)));
                         color = "#ff3300".MapColor();
-                        notificationIcon.Text = PresenceConstants.Busy;
+                        _parentWindow.notificationIcon.Text = PresenceConstants.Busy;
                         break;
                     case "BeRightBack":
                         image = new BitmapImage(new Uri(IconConstants.GetIcon(SettingsHandlerBase.Config.IconType, IconConstants.BeRightBack)));
                         color = "#ffff00".MapColor();
-                        notificationIcon.Text = PresenceConstants.BeRightBack;
+                        _parentWindow.notificationIcon.Text = PresenceConstants.BeRightBack;
                         break;
                     case "Away":
                         image = new BitmapImage(new Uri(IconConstants.GetIcon(SettingsHandlerBase.Config.IconType, IconConstants.Away)));
                         color = "#ffff00".MapColor();
-                        notificationIcon.Text = PresenceConstants.Away;
+                        _parentWindow.notificationIcon.Text = PresenceConstants.Away;
                         break;
                     case "DoNotDisturb":
                         image = new BitmapImage(new Uri(IconConstants.GetIcon(SettingsHandlerBase.Config.IconType, IconConstants.DoNotDisturb)));
                         color = "#B03CDE".MapColor();
-                        notificationIcon.Text = PresenceConstants.DoNotDisturb;
+                        _parentWindow.notificationIcon.Text = PresenceConstants.DoNotDisturb;
                         break;
                     case "OutOfOffice":
                         image = new BitmapImage(new Uri(IconConstants.GetIcon(SettingsHandlerBase.Config.IconType, IconConstants.OutOfOffice)));
                         color = "#800080".MapColor();
-                        notificationIcon.Text = PresenceConstants.OutOfOffice;
+                        _parentWindow.notificationIcon.Text = PresenceConstants.OutOfOffice;
                         break;
                     default:
                         image = new BitmapImage(new Uri(IconConstants.GetIcon(string.Empty, IconConstants.Inactive)));
                         color = "#FFFFFF".MapColor();
-                        notificationIcon.Text = PresenceConstants.Inactive;
+                        _parentWindow.notificationIcon.Text = PresenceConstants.Inactive;
                         break;
                 }
 
@@ -372,7 +367,7 @@ namespace PresenceLight.Pages
                     profileImage.Source = profileImageBit;
                 }
 
-                notificationIcon.Icon = image;
+                _parentWindow.notificationIcon.Icon = image;
                 mySolidColorBrush.Color = color;
                 status.Fill = mySolidColorBrush;
                 status.StrokeThickness = 1;
@@ -393,6 +388,7 @@ namespace PresenceLight.Pages
                 throw;
             }
         }
+
         public async void CheckAAD()
         {
             try
@@ -437,8 +433,8 @@ namespace PresenceLight.Pages
                     signInPanel.Visibility = Visibility.Visible;
                     dataPanel.Visibility = Visibility.Collapsed;
 
-                    notificationIcon.Text = PresenceConstants.Inactive;
-                    notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(string.Empty, IconConstants.Inactive)));
+                    _parentWindow.notificationIcon.Text = PresenceConstants.Inactive;
+                    _parentWindow.notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(string.Empty, IconConstants.Inactive)));
 
                     if (SettingsHandlerBase.Config.LightSettings.Hue.IsEnabled && !string.IsNullOrEmpty(SettingsHandlerBase.Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(SettingsHandlerBase.Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(SettingsHandlerBase.Config.LightSettings.Hue.SelectedItemId))
                     {
@@ -476,107 +472,6 @@ namespace PresenceLight.Pages
 
         }
         #endregion
-        private async void OnExitClick(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                if (!string.IsNullOrEmpty(SettingsHandlerBase.Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(SettingsHandlerBase.Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(SettingsHandlerBase.Config.LightSettings.Hue.SelectedItemId))
-                {
-                    if (SettingsHandlerBase.Config.LightSettings.Hue.UseRemoteApi)
-                    {
-                        await _parentWindow._mediator.Send(new Core.RemoteHueServices.SetColorCommand
-                        {
-                            Availability = "Off",
-                            LightId = SettingsHandlerBase.Config.LightSettings.Hue.SelectedItemId,
-                            BridgeId = SettingsHandlerBase.Config.LightSettings.Hue.RemoteBridgeId
-                        }).ConfigureAwait(true);
 
-                    }
-                    else
-                    {
-                        await _parentWindow._mediator.Send(new Core.HueServices.SetColorCommand() { Availability = "Off", LightID = SettingsHandlerBase.Config.LightSettings.Hue.SelectedItemId, Activity = "" }).ConfigureAwait(true);
-
-                    }
-                }
-
-                if (SettingsHandlerBase.Config.LightSettings.LIFX.IsEnabled && !string.IsNullOrEmpty(SettingsHandlerBase.Config.LightSettings.LIFX.LIFXApiKey))
-                {
-                    await _parentWindow._mediator.Send(new PresenceLight.Core.LifxServices.SetColorCommand { Activity = "", Availability = "Off", LightId = SettingsHandlerBase.Config.LightSettings.LIFX.SelectedItemId }).ConfigureAwait(true);
-
-                }
-                await _parentWindow._mediator.Send(new SaveSettingsCommand()).ConfigureAwait(true);
-                System.Windows.Application.Current.Shutdown();
-            }
-            catch (Exception ex)
-            {
-                _parentWindow._logger.LogError(ex, "Error Occured");
-                _parentWindow._diagClient.TrackException(ex);
-            }
-            _parentWindow._logger.LogInformation("PresenceLight Exiting");
-        }
-
-        private void OnOpenClick(object sender, RoutedEventArgs e)
-        {
-            _parentWindow.Show();
-            _parentWindow.WindowState = _parentWindow.lastWindowState;
-        }
-
-        private void OnTurnOnSyncClick(object sender, RoutedEventArgs e)
-        {
-            LightMode = "Graph";
-
-            turnOffButton.Visibility = Visibility.Visible;
-            turnOnButton.Visibility = Visibility.Collapsed;
-
-            _parentWindow.WindowState = _parentWindow.lastWindowState;
-            _parentWindow._logger.LogInformation("Turning On PresenceLight Sync");
-        }
-
-        private async void OnTurnOffSyncClick(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                LightMode = "Custom";
-
-                if (!string.IsNullOrEmpty(SettingsHandlerBase.Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(SettingsHandlerBase.Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(SettingsHandlerBase.Config.LightSettings.Hue.SelectedItemId))
-                {
-                    if (SettingsHandlerBase.Config.LightSettings.Hue.UseRemoteApi)
-                    {
-                        await _parentWindow._mediator.Send(new Core.RemoteHueServices.SetColorCommand
-                        {
-                            Availability = "Off",
-                            LightId = SettingsHandlerBase.Config.LightSettings.Hue.SelectedItemId,
-                            BridgeId = SettingsHandlerBase.Config.LightSettings.Hue.RemoteBridgeId
-                        }).ConfigureAwait(true);
-
-                    }
-                    else
-                    {
-                        await _parentWindow._mediator.Send(new Core.HueServices.SetColorCommand() { Availability = "Off", LightID = SettingsHandlerBase.Config.LightSettings.Hue.SelectedItemId, Activity = "" }).ConfigureAwait(true);
-
-                    }
-                }
-
-                if (SettingsHandlerBase.Config.LightSettings.LIFX.IsEnabled && !string.IsNullOrEmpty(SettingsHandlerBase.Config.LightSettings.LIFX.LIFXApiKey))
-                {
-                    await _parentWindow._mediator.Send(new Core.LifxServices.SetColorCommand { Activity = "", Availability = "Off", LightId = SettingsHandlerBase.Config.LightSettings.LIFX.SelectedItemId }).ConfigureAwait(true);
-
-                }
-
-                turnOffButton.Visibility = Visibility.Collapsed;
-                turnOnButton.Visibility = Visibility.Visible;
-
-                notificationIcon.Text = PresenceConstants.Inactive;
-                notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(string.Empty, IconConstants.Inactive)));
-
-                _parentWindow.WindowState = _parentWindow.lastWindowState;
-            }
-            catch (Exception ex)
-            {
-                _parentWindow._logger.LogError(ex, "Error Occured");
-                _parentWindow._diagClient.TrackException(ex);
-            }
-            _parentWindow._logger.LogInformation("Turning Off PresenceLight Sync");
-        }
     }
 }

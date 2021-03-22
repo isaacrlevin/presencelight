@@ -4,9 +4,11 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:ui="http://schemas.modernwpf.com/2019"
+        xmlns:l="clr-namespace:PresenceLight"
         xmlns:pages="clr-namespace:PresenceLight.Pages"
         mc:Ignorable="d"
         Title="PresenceLight"
+        Closing="Window_Closing"
         Width="1100"
         Height="768"
         MinWidth="500"
@@ -23,6 +25,16 @@
     </Window.Resources>
 
     <Grid>
+        <l:NotifyIcon x:Name="notificationIcon" MouseDoubleClick="OnNotifyIconDoubleClick">
+            <l:NotifyIcon.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Open" Click="OnOpenClick" />
+                    <MenuItem Header="Turn Off Sync" x:Name="turnOffButton" Click="OnTurnOffSyncClick" />
+                    <MenuItem Header="Turn On Sync" x:Name="turnOnButton" Click="OnTurnOnSyncClick" />
+                    <MenuItem Header="Exit" Click="OnExitClick" />
+                </ContextMenu>
+            </l:NotifyIcon.ContextMenu>
+        </l:NotifyIcon>
         <Grid
             x:Name="AppTitleBar"
             VerticalAlignment="Top"
@@ -103,7 +115,7 @@
                         </ui:NavigationViewItem>
                     </ui:NavigationViewItem.MenuItems>
                 </ui:NavigationViewItem>
-                
+
                 <ui:NavigationViewItem Content="Logs" Tag="{x:Type pages:LogsPage }">
                     <ui:NavigationViewItem.Icon>
                         <ui:FontIcon FontFamily="Wingdings" Glyph="&#x0032;" />
