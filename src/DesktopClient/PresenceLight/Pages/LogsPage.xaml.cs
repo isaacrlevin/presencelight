@@ -1,62 +1,40 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
 using System.Collections.ObjectModel;
 using System.IO;
-
 using System.Windows.Threading;
-
-using Microsoft.Extensions.Configuration;
-
 using PresenceLight.Core;
-
-using Serilog.Events;
-
 
 namespace PresenceLight.Pages
 {
 
     public partial class LogsPage
     {
+        MainWindowModern parentWindow;
         public LogsPage()
         {
             InitializeComponent();
+
+            parentWindow = Application.Current.Windows.OfType<MainWindowModern>().First();
+
             LogFilePath = App.Configuration?["Serilog:WriteTo:1:Args:Path"] ?? "";
             dgLogFiles.DataContext = LogFiles;
-            dgLiveLogs.DataContext = _events;
-            PresenceEventsLogSink.PresenceEventsLogHandler += Handler;
+            dgLiveLogs.DataContext = parentWindow._events;
             InitializeFileWatcher();
         }
 
-        ObservableCollection<LogEvent> _events = new();
         ObservableCollection<FileInfo> LogFiles = new();
 
         static object logsLockObject = new();
         public string? LogFilePath { get; set; }
         private System.IO.FileSystemWatcher? _watcher;
-        private Queue<Serilog.Events.LogEvent> _logs = new(25);
         private void DG_Hyperlink_Click(object sender, RoutedEventArgs e)
         {
             var hyperlink = e.OriginalSource as Hyperlink;
-
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
             var filename = (FileInfo)hyperlink.DataContext;
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
-
             ExploreFile(filename.FullName);
-
         }
 
         static bool ExploreFile(string filePath)
@@ -70,16 +48,6 @@ namespace PresenceLight.Pages
             System.Diagnostics.Process.Start("explorer.exe", string.Format("/select,\"{0}\"", filePath));
             return true;
         }
-
-        private void Handler(object? sender, Serilog.Events.LogEvent e)
-        {
-
-            _logs.Enqueue(e);
-
-            UpdateCollection(e);
-
-        }
-
 
         bool fileWatcherInitialized = false;
 
@@ -115,12 +83,10 @@ namespace PresenceLight.Pages
             _watcher.Changed += Watcher_Changed;
 
             _watcher.EnableRaisingEvents = true;
-
         }
 
         private void Watcher_Changed(object sender, System.IO.FileSystemEventArgs e)
         {
-
             UpdateCollection(e);
         }
 
@@ -184,35 +150,6 @@ namespace PresenceLight.Pages
                      }));
             }
 
-        }
-        private void UpdateCollection(LogEvent e)
-        {
-            if (Application.Current.Dispatcher.CheckAccess())
-            {
-                lock (logsLockObject)
-                {
-
-                    _events.Add(e);
-                    if (_events.Count > MaxRowCount)
-                    {
-                        var oldEvents = _events.OrderByDescending(a => a.Timestamp).Skip(MaxRowCount).ToArray();
-                        oldEvents.ToList().ForEach(oe =>
-                        {
-                            _events.Remove(oe);
-                        });
-                    }
-
-                }
-            }
-            else
-            {
-                Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background,
-                     new Action(() =>
-                     {
-                         UpdateCollection(e);
-                     }));
-
-            }
-        }
+        }      
     }
 }

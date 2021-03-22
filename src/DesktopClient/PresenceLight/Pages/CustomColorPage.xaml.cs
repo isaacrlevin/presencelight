@@ -67,11 +67,11 @@ namespace PresenceLight.Pages
              
                 await _mediator.Send(new SetColorCommand {  Color =  color}).ConfigureAwait(true);
 
-                parentWindow._logger.LogInformation(color);
+                _logger.LogInformation(color);
             }
             catch (Exception ex)
             {
-                parentWindow._logger.LogError(ex, "Error occured Setting Theme Color");
+                _logger.LogError(ex, "Error occured Setting Theme Color");
                 _diagClient.TrackException(ex);
             }
         }
@@ -94,12 +94,12 @@ namespace PresenceLight.Pages
                          
                     }
 
-                    parentWindow._logger.LogInformation(color);
+                    _logger.LogInformation(color);
                 }
             }
             catch (Exception ex)
             {
-                parentWindow._logger.LogError(ex, "Error occured Setting Custom Color");
+                _logger.LogError(ex, "Error occured Setting Custom Color");
                 _diagClient.TrackException(ex);
             }
         }

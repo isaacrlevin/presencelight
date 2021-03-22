@@ -1,37 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
-
 using ModernWpf.Controls;
 using ModernWpf.Navigation;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.Graph;
-using Microsoft.Identity.Client;
 
-using PresenceLight.Core;
 using PresenceLight.Graph;
 using PresenceLight.Services;
 using PresenceLight.Telemetry;
-
-using Media = System.Windows.Media;
-using System.Reflection;
 using PresenceLight.Pages;
 using ModernWpf;
 using System.IO;
+using System.Windows.Threading;
+using Application = System.Windows.Application;
+using Serilog.Events;
+using System.Collections.ObjectModel;
+using System.Collections.Generic;
+using PresenceLight.Core;
+using System.Windows.Input;
+using System.Windows.Media.Imaging;
 
 namespace PresenceLight
 {
@@ -43,32 +32,37 @@ namespace PresenceLight
 
         public string LightMode;
 
+        public ObservableCollection<LogEvent> _events = new();
+        private Queue<Serilog.Events.LogEvent> _logs = new(25);
+
+        static object logsLockObject = new();
+
         public Presence presence { get; set; }
         public DateTime settingsLastSaved = DateTime.MinValue;
         public MediatR.IMediator _mediator;
         public LIFXOAuthHelper _lIFXOAuthHelper;
-        public DiagnosticsClient _diagClient;
         public readonly IGraphService _graphservice;
         public IWorkingHoursService _workingHoursService;
         public WindowState lastWindowState;
-        public readonly ILogger<MainWindowModern> _logger;
+        private readonly ILogger<MainWindowModern> _logger;
+        private DiagnosticsClient _diagClient;
 
         public User? profile { get; set; }
 
         public Stream? photo { get; set; }
 
         public MainWindowModern(IGraphService graphService,
-                          IWorkingHoursService workingHoursService,
-                          MediatR.IMediator mediator,
-                          LIFXOAuthHelper lifxOAuthHelper,
-
-
-          DiagnosticsClient diagClient,
-        ILogger<MainWindowModern> logger)
+                                IWorkingHoursService workingHoursService,
+                                MediatR.IMediator mediator,
+                                LIFXOAuthHelper lifxOAuthHelper,
+                                DiagnosticsClient diagClient,
+                                ILogger<MainWindowModern> logger)
         {
             _logger = logger;
             InitializeComponent();
             System.Windows.Application.Current.SessionEnding += new SessionEndingCancelEventHandler(Current_SessionEnding);
+
+            PresenceEventsLogSink.PresenceEventsLogHandler += Handler;
 
             _diagClient = diagClient;
 
@@ -380,6 +374,44 @@ namespace PresenceLight
             await _mediator.Send(new SaveSettingsCommand()).ConfigureAwait(true);
             this.Hide();
 
+        }
+
+        private void Handler(object? sender, Serilog.Events.LogEvent e)
+        {
+            _logs.Enqueue(e);
+            UpdateCollection(e);
+        }
+
+
+
+        private void UpdateCollection(LogEvent e)
+        {
+            if (Application.Current.Dispatcher.CheckAccess())
+            {
+                lock (logsLockObject)
+                {
+
+                    _events.Add(e);
+                    //if (_events.Count > MaxRowCount)
+                    //{
+                    var oldEvents = _events.OrderByDescending(a => a.Timestamp).ToArray();//.Skip(MaxRowCount).ToArray();
+                    oldEvents.ToList().ForEach(oe =>
+                    {
+                        _events.Remove(oe);
+                    });
+                    //}
+
+                }
+            }
+            else
+            {
+                Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background,
+                     new Action(() =>
+                     {
+                         UpdateCollection(e);
+                     }));
+
+            }
         }
     }
 }

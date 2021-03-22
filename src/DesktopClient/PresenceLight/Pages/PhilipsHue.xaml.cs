@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 
 using PresenceLight.Core;
 using PresenceLight.Services;
+using PresenceLight.Telemetry;
 
 using Q42.HueApi;
 
@@ -18,21 +19,21 @@ namespace PresenceLight.Pages
     /// <summary>
     /// Interaction logic forxaml
     /// </summary>
-    public partial class PhilipsHue 
+    public partial class PhilipsHue
     {
         public bool previousRemoteFlag;
-
+        public DiagnosticsClient _diagClient;
         private MediatR.IMediator _mediator;
 
         ILogger _logger;
         public PhilipsHue()
         {
             _mediator = App.ServiceProvider.GetRequiredService<MediatR.IMediator>();
-
-            _logger = App.ServiceProvider.GetRequiredService<ILogger<Yeelight>>();
+            _logger = App.ServiceProvider.GetRequiredService<ILogger<PhilipsHue>>();
+            _diagClient = App.ServiceProvider.GetRequiredService<DiagnosticsClient>();
 
             InitializeComponent();
-          
+
             cbIsPhilipsEnabled.IsChecked = SettingsHandlerBase.Config.LightSettings.Hue.IsEnabled;
 
             if (SettingsHandlerBase.Config.LightSettings.Hue.IsEnabled)
@@ -196,8 +197,7 @@ namespace PresenceLight.Pages
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error Occured Getting Hue Api Key");
-                //TODO:  Revisit this if serilog is insufficient
-                //_diagClient.TrackException(ex);
+                _diagClient.TrackException(ex);
             }
         }
 
@@ -222,8 +222,7 @@ namespace PresenceLight.Pages
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error Occured Finding Hue Bridge");
-                //TODO:  Revisit this if serilog is insufficient
-                //_diagClient.TrackException(ex);
+                _diagClient.TrackException(ex);
             }
         }
 
@@ -271,8 +270,7 @@ namespace PresenceLight.Pages
             }
             catch (Exception ex)
             {
-                //TODO:  Revisit this if serilog is insufficient
-                //_diagClient.TrackException(ex);
+                _diagClient.TrackException(ex);
                 _logger.LogError(ex, "Error Occurred Registering Hue Bridge");
                 lblHueMessage.Text = "Error Occured registering bridge, please try again";
                 fontBrush.Color = "#ff3300".MapColor();
@@ -334,8 +332,7 @@ namespace PresenceLight.Pages
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error Occured Saving Hue Settings");
-                //TODO:  Revisit this if serilog is insufficient
-                //_diagClient.TrackException(ex);
+                _diagClient.TrackException(ex);
             }
         }
 
@@ -386,8 +383,7 @@ namespace PresenceLight.Pages
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Error Getting Hue Lights");
-                    //TODO:  Revisit this if serilog is insufficient
-                    //_diagClient.TrackException(ex);
+                    _diagClient.TrackException(ex);
                     lblHueMessage.Visibility = Visibility.Visible;
                     pnlHueData.Visibility = Visibility.Collapsed;
                     lblHueMessage.Text = "Error Occured Connecting to Hue, please try again";
@@ -534,9 +530,7 @@ namespace PresenceLight.Pages
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error Occured Checking Hue Lights");
-
-                //TODO:  Revisit this if serilog is insufficient
-                //_diagClient.TrackException(ex);
+                _diagClient.TrackException(ex);
             }
         }
 

@@ -30,12 +30,15 @@ namespace PresenceLight.Pages
     public partial class ProfilePage
     {
         private MainWindowModern _parentWindow;
-
+        public DiagnosticsClient _diagClient;
+        ILogger _logger;
         private DateTime settingsLastSaved = DateTime.MinValue;
         public static string LightMode { get; set; }
         public ProfilePage()
         {
             _parentWindow = System.Windows.Application.Current.Windows.OfType<MainWindowModern>().First();
+            _logger = App.ServiceProvider.GetRequiredService<ILogger<ProfilePage>>();
+            _diagClient = App.ServiceProvider.GetRequiredService<DiagnosticsClient>();
             InitializeComponent();
 
             _parentWindow.notificationIcon.Text = PresenceConstants.Inactive;
@@ -175,8 +178,8 @@ namespace PresenceLight.Pages
 
             catch (Exception e)
             {
-                _parentWindow._logger.LogError(e, "Error occured");
-                _parentWindow._diagClient.TrackException(e);
+                _logger.LogError(e, "Error occured");
+                _diagClient.TrackException(e);
             }
         }
 
@@ -250,7 +253,7 @@ namespace PresenceLight.Pages
                                 LightMode = previousLightMode;
                                 break;
                             case "Graph":
-                                _parentWindow._logger.LogInformation("PresenceLight Running in Teams Mode");
+                                _logger.LogInformation("PresenceLight Running in Teams Mode");
                                 _parentWindow.presence = await _parentWindow._mediator.Send(new Core.GraphServices.GetPresenceCommand());
 
                                 if (newColor == string.Empty)
@@ -272,7 +275,7 @@ namespace PresenceLight.Pages
                                 MapUI(_parentWindow.presence, null, null);
                                 break;
                             case "Theme":
-                                _parentWindow._logger.LogInformation("PresenceLight Running in Theme Mode");
+                                _logger.LogInformation("PresenceLight Running in Theme Mode");
                                 try
                                 {
                                     var theme = ((SolidColorBrush)SystemParameters.WindowGlassBrush).Color;
@@ -299,8 +302,8 @@ namespace PresenceLight.Pages
                                 }
                                 catch (Exception ex)
                                 {
-                                    _parentWindow._logger.LogError(ex, "Error Occured");
-                                    _parentWindow._diagClient.TrackException(ex);
+                                    _logger.LogError(ex, "Error Occured");
+                                    _diagClient.TrackException(ex);
                                 }
                                 break;
                             default:
@@ -310,8 +313,8 @@ namespace PresenceLight.Pages
                 }
                 catch (Exception e)
                 {
-                    _parentWindow._logger.LogError(e, "Error Occurred");
-                    _parentWindow._diagClient.TrackException(e);
+                    _logger.LogError(e, "Error Occurred");
+                    _diagClient.TrackException(e);
                 }
             }
         }
@@ -383,8 +386,8 @@ namespace PresenceLight.Pages
             }
             catch (Exception e)
             {
-                _parentWindow._logger.LogError(e, "Error Occurred");
-                _parentWindow._diagClient.TrackException(e);
+                _logger.LogError(e, "Error Occurred");
+                _diagClient.TrackException(e);
                 throw;
             }
         }
@@ -413,14 +416,14 @@ namespace PresenceLight.Pages
             }
             catch (Exception e)
             {
-                _parentWindow._logger.LogError(e, "Error occured Checking Azure Active Directory");
-                _parentWindow._diagClient.TrackException(e);
+                _logger.LogError(e, "Error occured Checking Azure Active Directory");
+                _diagClient.TrackException(e);
             }
         }
 
         private async void SignOutButton_Click(object sender, RoutedEventArgs e)
         {
-            _parentWindow._logger.LogInformation("Signing out of Graph PresenceLight Sync");
+            _logger.LogInformation("Signing out of Graph PresenceLight Sync");
 
             LightMode = "Graph";
             var accounts = await WPFAuthorizationProvider.Application.GetAccountsAsync().ConfigureAwait(true);

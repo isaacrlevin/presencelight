@@ -31,12 +31,12 @@ namespace PresenceLight.Pages
     public partial class CustomApiPage
     {
         private MediatR.IMediator _mediator;
-
+        public DiagnosticsClient _diagClient;
         ILogger _logger;
         public CustomApiPage()
         {
             _mediator = App.ServiceProvider.GetRequiredService<MediatR.IMediator>();
-
+            _diagClient = App.ServiceProvider.GetRequiredService<DiagnosticsClient>();
             _logger = App.ServiceProvider.GetRequiredService<ILogger<CustomApiPage>>();
 
             InitializeComponent();
@@ -81,8 +81,7 @@ namespace PresenceLight.Pages
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error Occured Saving Custom Api Settings");
-                //TODO: Revisit if Telemtry isnt working through serilog
-                //_diagClient.TrackException(ex);
+                _diagClient.TrackException(ex);
             }
         }
         private void cbIsCustomApiEnabledChanged(object sender, RoutedEventArgs e)
@@ -97,7 +96,6 @@ namespace PresenceLight.Pages
             }
 
             SettingsHandlerBase.SyncOptions();
-
             e.Handled = true;
         }
 

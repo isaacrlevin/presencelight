@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging;
 using PresenceLight.Core;
 using PresenceLight.Core.LifxServices;
 using PresenceLight.Services;
+using PresenceLight.Telemetry;
 
 namespace PresenceLight.Pages
 {
@@ -23,14 +24,13 @@ namespace PresenceLight.Pages
     {
         LIFXOAuthHelper _lifxOAuthHelper;
         private MediatR.IMediator _mediator;
-
+        public DiagnosticsClient _diagClient;
         ILogger _logger;
         public LIFX()
         {
             _mediator = App.ServiceProvider.GetRequiredService<MediatR.IMediator>();
-
             _logger = App.ServiceProvider.GetRequiredService<ILogger<LIFX>>();
-
+            _diagClient = App.ServiceProvider.GetRequiredService<DiagnosticsClient>();
 
             _lifxOAuthHelper = App.ServiceProvider.GetRequiredService<LIFXOAuthHelper>();
             InitializeComponent();
@@ -96,8 +96,7 @@ namespace PresenceLight.Pages
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occured Getting LIFX Token");
-                //TODO: Readdress if Serilog doesnt send telemetry
-                //_diagClient.TrackException(ex);
+                _diagClient.TrackException(ex);
             }
         }
 
@@ -113,8 +112,7 @@ namespace PresenceLight.Pages
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occured Saving LIFX Settings");
-                //TODO:  Come back to this if Serilog is not sufficient
-                //_diagClient.TrackException(ex);
+                _diagClient.TrackException(ex);
             }
         }
 
@@ -216,8 +214,7 @@ namespace PresenceLight.Pages
             }
             catch (Exception ex)
             {
-                //TODO:  Come back to this if Serilog is not sufficient
-                //_diagClient.TrackException(ex);
+                _diagClient.TrackException(ex);
                 _logger.LogError(ex, "Error occured Checking LIFX");
                 lblLIFXMessage.Text = "Error Occured Connecting to LIFX, please try again";
                 fontBrush.Color = "#ff3300".MapColor();
@@ -297,8 +294,7 @@ namespace PresenceLight.Pages
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Error Getting LIFX Lights");
-                    //TODO:  Come back to this if Serilog is not sufficient
-                    //_diagClient.TrackException(ex);
+                    _diagClient.TrackException(ex);
                     lblLIFXMessage.Visibility = Visibility.Visible;
                     pnlLIFXData.Visibility = Visibility.Collapsed;
                     lblLIFXMessage.Text = "Error Occured Connecting to LIFX, please try again";

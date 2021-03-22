@@ -22,7 +22,6 @@ namespace PresenceLight.Pages
         {
             _diagClient = App.ServiceProvider.GetRequiredService<DiagnosticsClient>();
             _logger = App.ServiceProvider.GetRequiredService<ILogger<SettingsPage>>();
-
             _parentWindow = Application.Current.Windows.OfType<MainWindowModern>().First();
 
             InitializeComponent();
@@ -115,35 +114,6 @@ namespace PresenceLight.Pages
                 _ => null,
             };
         }
-
-
-        //private async Task LoadSettings()
-        //{
-        //    try
-        //    {
-        //        bool useWorkingHours = await parentWindow._mediator.Send(new Core.WorkingHoursServices.UseWorkingHoursCommand());
-        //        bool IsInWorkingHours = await parentWindow._mediator.Send(new Core.WorkingHoursServices.IsInWorkingHoursCommand());
-
-        //        if (useWorkingHours)
-        //        {
-        //            pnlWorkingHours.Visibility = Visibility.Visible;
-
-        //            SettingsHandlerBase.SyncOptions();
-        //        }
-        //        else
-        //        {
-        //            pnlWorkingHours.Visibility = Visibility.Collapsed;
-        //            SettingsHandlerBase.SyncOptions();
-        //        }
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        _logger.LogError(e, "Error occured Loading Settings");
-
-        //        _diagClient.TrackException(e);
-        //    }
-        //}
-
         private async void SaveSettings_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -245,13 +215,6 @@ namespace PresenceLight.Pages
             {
                 SettingsHandlerBase.SyncOptions();
 
-                //landingPage.configErrorPanel.Visibility = Visibility.Hidden;
-
-                //if (landingPage.dataPanel.Visibility != Visibility.Visible)
-                //{
-                //    landingPage.signInPanel.Visibility = Visibility.Visible;
-                //}
-
                 if (!await _parentWindow._mediator.Send(new Core.GraphServices.GetIsInitializedCommand()))
                 {
                     await _parentWindow._mediator.Send(new Core.GraphServices.InitializeCommand()
@@ -311,21 +274,6 @@ namespace PresenceLight.Pages
 
         private async void cbSyncLights(object sender, RoutedEventArgs e)
         {
-            //if (!SettingsHandlerBase.Config.LightSettings.SyncLights)
-           // {
-                //await _parentWindow._mediator.Send(new SetColorCommand { Color = "Off" }).ConfigureAwait(true);
-
-                //var landingPage = System.Windows.Application.Current.Windows.OfType<Pages.ProfilePage>().First();
-
-                //landingPage.turnOffButton.Visibility = Visibility.Collapsed;
-                //landingPage.turnOnButton.Visibility = Visibility.Visible;
-            //}
-
-            //SettingsHandlerBase.SyncOptions();
-            //if (!await _parentWindow._mediator.Send(new SaveSettingsCommand()).ConfigureAwait(true))
-            //{
-            //    _logger.LogDebug("Settings Not Saved Properly");
-            //}
             e.Handled = true;
         }
 
@@ -376,7 +324,6 @@ namespace PresenceLight.Pages
 
         private void time_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-
             if (SettingsHandlerBase.Config.LightSettings.WorkingHoursStartTimeAsDate.HasValue)
             {
                 SettingsHandlerBase.Config.LightSettings.WorkingHoursStartTime = SettingsHandlerBase.Config.LightSettings.WorkingHoursStartTimeAsDate.HasValue ? SettingsHandlerBase.Config.LightSettings.WorkingHoursStartTimeAsDate.Value.TimeOfDay.ToString() : string.Empty;
