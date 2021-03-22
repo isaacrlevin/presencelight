@@ -1,4 +1,5 @@
 ﻿@page "/hue"
+@using PresenceLight.Core.PubSub;
 
 @inject PresenceLight.Worker.Services.SettingsService SettingsService
 
@@ -128,7 +129,7 @@
         {
             SettingsService.SaveSettings(Config.CurrentValue);
 
-            _mediator.Send(new Core.HueServices.InitializeCommand() { Request = Config.CurrentValue }).Wait();
+            _mediator.Publish(new InitializeNotification(Config.CurrentValue)).Wait();
 
             message = "Settings Saved";
             settingsSaved = true;

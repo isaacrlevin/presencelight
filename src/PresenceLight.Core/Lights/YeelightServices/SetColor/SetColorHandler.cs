@@ -1,22 +1,25 @@
-﻿using MediatR;
+﻿using Microsoft.Extensions.Options;
+
+using PresenceLight.Core.Lights;
 
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace PresenceLight.Core.YeelightServices
 {
-    internal class SetColorHandler : IRequestHandler<SetColorCommand, Unit>
+    internal class SetColorHandler : ColorHandlerBase<Yeelight>
     {
-        IYeelightService _service;
-        public SetColorHandler(IYeelightService service)
+        private readonly IYeelightService _service;
+
+        public SetColorHandler(IYeelightService service, IOptionsMonitor<BaseConfig> optionsAccessor)
+            : base(optionsAccessor, baseConfig => baseConfig.LightSettings.Yeelight, c => c.IsEnabled)
         {
             _service = service;
         }
 
-        public async Task<Unit> Handle(SetColorCommand command, CancellationToken cancellationToken)
+        protected override async Task SetColor(string availability, string activity, CancellationToken cancellationToken)
         {
-            await _service.SetColor(command.Availability, command.Activity, command.LightId);
-            return default;
+            await _service.SetColor(availability, activity, Config.SelectedItemId);
         }
     }
 }

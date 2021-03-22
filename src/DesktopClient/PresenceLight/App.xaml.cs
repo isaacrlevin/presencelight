@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 
 using MediatR;
@@ -15,9 +16,12 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
 using PresenceLight.Core;
+using PresenceLight.Core.CustomApiServices;
+using PresenceLight.Core.PubSub;
 using PresenceLight.Graph;
 using PresenceLight.Services;
 using PresenceLight.Telemetry;
+using PresenceLight.ViewModels;
 
 using Serilog;
 
@@ -67,14 +71,10 @@ namespace PresenceLight
 #endif
             Log.Logger = loggerConfig.CreateLogger();
             Log.Debug("Starting PresenceLight");
-
-
         }
 
-
-        private void ContinueStartup()
+        private async Task ContinueStartup()
         {
-
             IServiceCollection services = new ServiceCollection();
             services.AddOptions();
 
@@ -108,11 +108,9 @@ namespace PresenceLight
 
             services.AddSingleton<LIFXOAuthHelper>();
             services.AddSingleton<ThisAppInfo>();
-            services.AddSingleton<ColorService>();
             services.AddTransient<DiagnosticsClient>();
+            services.AddSingleton<CustomApiVm>();
             services.AddSingleton<MainWindowModern>();
-
-
 
             if (Convert.ToBoolean(Configuration?["IsAppPackaged"], CultureInfo.InvariantCulture))
             {
@@ -123,15 +121,15 @@ namespace PresenceLight
                 services.AddSingleton<ISettingsService, StandaloneSettingsService>();
             }
 
-
-
-
             ServiceProvider = services.BuildServiceProvider();
             SettingsHandlerBase.Options = ServiceProvider.GetRequiredService<IOptionsMonitor<BaseConfig>>().CurrentValue;
             SettingsHandlerBase.Config = ServiceProvider.GetRequiredService<IOptionsMonitor<BaseConfig>>().CurrentValue;
             SettingsHandlerBase.Config.LightSettings.WorkingHoursStartTimeAsDate = string.IsNullOrEmpty(SettingsHandlerBase.Config.LightSettings.WorkingHoursStartTime) ? null : DateTime.Parse(SettingsHandlerBase.Config.LightSettings.WorkingHoursStartTime, null);
             SettingsHandlerBase.Config.LightSettings.WorkingHoursEndTimeAsDate = string.IsNullOrEmpty(SettingsHandlerBase.Config.LightSettings.WorkingHoursEndTime) ? null : DateTime.Parse(SettingsHandlerBase.Config.LightSettings.WorkingHoursEndTime, null);
 
+            var mediator = ServiceProvider.GetRequiredService<IMediator>();
+            await mediator.Send(new LoadSettingsCommand());
+            await mediator.Publish(new InitializeNotification(SettingsHandlerBase.Config));
 
             var mainWindow = ServiceProvider.GetRequiredService<MainWindowModern>();
 
@@ -154,7 +152,7 @@ namespace PresenceLight
 
                 try
                 {
-                    ContinueStartup();
+                    await ContinueStartup();
                 }
                 catch (Exception ex) when (IsCriticalFontLoadFailure(ex))
                 {

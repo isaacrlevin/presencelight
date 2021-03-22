@@ -2,7 +2,9 @@
 {
     public class CustomApiSetting
     {
-        public string? Method { get; set; }
-        public string? Uri { get; set; }
+        public string? Availability { get; set; }
+        public string? Activity { get; set; }
+        public string Method { get; set; }
+        public string Uri { get; set; }
     }
 }

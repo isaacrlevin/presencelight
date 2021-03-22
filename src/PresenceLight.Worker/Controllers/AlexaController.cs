@@ -92,52 +92,7 @@ namespace PresenceLight.Worker.Controllers
 
                     if (Config.LightSettings.Hue.IsEnabled && !Config.LightSettings.Hue.UseRemoteApi && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedItemId))
                     {
-                        await _mediator.Send(new Core.HueServices.SetColorCommand()
-                        {
-                            Availability = availability,
-                            Activity = activity,
-                            LightID = Config.LightSettings.Hue.SelectedItemId
-                        }).ConfigureAwait(true);
-                    }
-
-                    if (Config.LightSettings.Hue.IsEnabled && Config.LightSettings.Hue.UseRemoteApi && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedItemId))
-                    {
-                        await _mediator.Send(new Core.RemoteHueServices.SetColorCommand
-                        {
-                            Availability = availability,
-                            LightId = Config.LightSettings.Hue.SelectedItemId,
-                            BridgeId = Config.LightSettings.Hue.RemoteBridgeId
-                        }).ConfigureAwait(true);
-                    }
-
-                    if (Config.LightSettings.LIFX.IsEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey) && !string.IsNullOrWhiteSpace(Config.LightSettings.LIFX.SelectedItemId))
-                    {
-                        await _mediator.Send(new Core.LifxServices.SetColorCommand()
-                        {
-                            Availability = availability,
-                            Activity = activity,
-                            LightId = Config.LightSettings.LIFX.SelectedItemId
-                        }).ConfigureAwait(true);
-                    }
-
-                    if (Config.LightSettings.Wiz.IsEnabled && !string.IsNullOrWhiteSpace(Config.LightSettings.Wiz.SelectedItemId))
-                    {
-                        await _mediator.Send(new Core.WizServices.SetColorCommand()
-                        {
-                            Availability = availability,
-                            Activity = activity,
-                            LightID = Config.LightSettings.Wiz.SelectedItemId
-                        }).ConfigureAwait(true);
-                    }
-
-                    if (Config.LightSettings.Yeelight.IsEnabled && !string.IsNullOrWhiteSpace(Config.LightSettings.Yeelight.SelectedItemId))
-                    {
-                        await _mediator.Send(new Core.YeelightServices.SetColorCommand()
-                        {
-                            Availability = availability,
-                            Activity = activity,
-                            LightId = Config.LightSettings.Yeelight.SelectedItemId
-                        }).ConfigureAwait(true);
+                        await _mediator.Publish(new SetColorNotification(_appState.CustomColor));
                     }
                 }
 

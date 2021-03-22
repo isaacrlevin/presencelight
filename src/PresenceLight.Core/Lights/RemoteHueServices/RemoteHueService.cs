@@ -12,6 +12,8 @@ using System.Diagnostics;
 using System.Net.Sockets;
 using System.Net;
 using Microsoft.Extensions.Logging;
+using MediatR;
+using PresenceLight.Core.PubSub;
 
 namespace PresenceLight.Core
 {
@@ -20,9 +22,9 @@ namespace PresenceLight.Core
         Task SetColor(string availability, string lightId, string bridgeId);
         Task<(string bridgeId, string apiKey, string bridgeIp)> RegisterBridge();
         Task<IEnumerable<Light>> GetLights();
-        void Initialize(BaseConfig options);
     }
-    public class RemoteHueService : IRemoteHueService
+
+    public class RemoteHueService : IRemoteHueService, INotificationHandler<InitializeNotification>
     {
         private BaseConfig _options;
         private RemoteHueClient _client;
@@ -35,19 +37,23 @@ namespace PresenceLight.Core
             _mediator = mediator;
             _logger = logger;
             _options = optionsAccessor.CurrentValue;
-            if (!string.IsNullOrWhiteSpace(_options.LightSettings.Hue.RemoteHueClientId))
-            {
-                _authClient = new RemoteAuthenticationClient(_options.LightSettings.Hue.RemoteHueClientId, _options.LightSettings.Hue.RemoteHueClientSecret, _options.LightSettings.Hue.RemoteHueClientAppName);
-            }
-            else
-            {
-                _logger.LogWarning("Remote Hue Client Id is empty");
-            }
+            TryInitializeClient();
         }
 
-        public void Initialize(BaseConfig options)
+        public Task Handle(InitializeNotification notification, CancellationToken cancellationToken)
         {
-            _options = options;
+            _options = notification.Config;
+            TryInitializeClient();
+            return Task.CompletedTask;
+        }
+
+        private void TryInitializeClient()
+        {
+            if (string.IsNullOrWhiteSpace(_options.LightSettings.Hue.RemoteHueClientId))
+            {
+                return;
+            }
+            
             _authClient = new RemoteAuthenticationClient(_options.LightSettings.Hue.RemoteHueClientId, _options.LightSettings.Hue.RemoteHueClientSecret, _options.LightSettings.Hue.RemoteHueClientAppName);
         }
 

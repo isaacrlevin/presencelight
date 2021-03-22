@@ -17,6 +17,7 @@ using System.Windows.Shapes;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
+using PresenceLight.Core;
 using PresenceLight.Services;
 using PresenceLight.Telemetry;
 
@@ -65,7 +66,7 @@ namespace PresenceLight.Pages
                 lblTheme.Visibility = Visibility.Visible;
 
              
-                await _mediator.Send(new SetColorCommand {  Color =  color}).ConfigureAwait(true);
+                await _mediator.Publish(new SetColorNotification(color)).ConfigureAwait(true);
 
                 _logger.LogInformation(color);
             }
@@ -90,7 +91,7 @@ namespace PresenceLight.Pages
 
                     if (parentWindow.LightMode == "Custom")
                     {
-                        await _mediator.Send(new SetColorCommand {   Color =  color }).ConfigureAwait(true);
+                        await _mediator.Publish(new SetColorNotification(color)).ConfigureAwait(true);
                          
                     }
 

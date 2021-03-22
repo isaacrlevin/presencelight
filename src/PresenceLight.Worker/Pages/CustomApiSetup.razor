@@ -1,8 +1,8 @@
 ﻿@page "/customapi"
-@using PresenceLight.Core.Initialize;
- 
+@using PresenceLight.Core.PubSub;
+
 @inject PresenceLight.Worker.Services.SettingsService SettingsService
- 
+
 @inject AppState appState
 @inject IModalService Modal
 @inject IOptionsMonitor<BaseConfig> Config
@@ -32,7 +32,7 @@
 
                                 <div class="form-group row">
 
-                                    <label class="col-sm-3 col-form-label" for="@lab">@Helpers.HumanifyText(customApiSetting.Name.Replace("CustomApi","")):</label>
+                                    <label class="col-sm-3 col-form-label" for="@lab">@Helpers.HumanifyText(customApiSetting.Name.Replace("CustomApi", "")):</label>
 
                                     @foreach (var setting in customApiSettingValue.GetType().GetProperties())
                                     {
@@ -85,15 +85,15 @@
         try
         {
             SettingsService.SaveSettings(Config.CurrentValue);
-            _mediator.Send(new InitializeCommand { Request = Config.CurrentValue});
-            
+            _mediator.Publish(new InitializeNotification(Config.CurrentValue));
+
             message = "Settings Saved";
             settingsSaved = true;
         }
         catch (Exception e)
         {
             _logger.LogError(e, "Error Occured Saving Custom Api Settings");
-            throw ;
+            throw;
         }
     }
 

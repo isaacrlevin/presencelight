@@ -8,7 +8,7 @@ using System.Windows.Media;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-using PresenceLight.Core;
+using PresenceLight.Core.PubSub;
 using PresenceLight.Services;
 using PresenceLight.Telemetry;
 
@@ -315,15 +315,7 @@ namespace PresenceLight.Pages
             {
                 btnHue.IsEnabled = false;
                 await _mediator.Send(new SaveSettingsCommand()).ConfigureAwait(true);
-
-                if (SettingsHandlerBase.Config.LightSettings.Hue.UseRemoteApi)
-                {
-                    await _mediator.Send(new Core.RemoteHueServices.InitializeCommand { Options = SettingsHandlerBase.Config });
-                }
-                else
-                {
-                    await _mediator.Send(new Core.HueServices.InitializeCommand { Request = SettingsHandlerBase.Config });
-                }
+                await _mediator.Publish(new InitializeNotification(SettingsHandlerBase.Config));
 
                 CheckHue(false);
                 lblHueSaved.Visibility = Visibility.Visible;

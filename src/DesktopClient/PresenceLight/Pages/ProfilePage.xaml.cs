@@ -1,18 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -34,6 +26,7 @@ namespace PresenceLight.Pages
         ILogger _logger;
         private DateTime settingsLastSaved = DateTime.MinValue;
         public static string LightMode { get; set; }
+
         public ProfilePage()
         {
             _parentWindow = System.Windows.Application.Current.Windows.OfType<MainWindowModern>().First();
@@ -73,8 +66,8 @@ namespace PresenceLight.Pages
             CallGraph().ConfigureAwait(true);
             base.Start();
         }
-        #region Profile Panel
 
+        #region Profile Panel
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
             var url = e.Uri.AbsoluteUri;
@@ -123,7 +116,7 @@ namespace PresenceLight.Pages
                     {
                         if (LightMode == "Graph")
                         {
-                            await _parentWindow._mediator.Send(new SetColorCommand { Color = "Off" }).ConfigureAwait(true);
+                            await _parentWindow._mediator.Publish(new SetColorNotification("Off")).ConfigureAwait(true);
                         }
                     }
                     else
@@ -133,7 +126,7 @@ namespace PresenceLight.Pages
                         {
                             if (LightMode == "Graph")
                             {
-                                await _parentWindow._mediator.Send(new Services.SetColorCommand { Activity = _parentWindow.presence.Activity, Color = _parentWindow.presence.Availability }).ConfigureAwait(true);
+                                await _parentWindow._mediator.Publish(new SetColorNotification(_parentWindow.presence)).ConfigureAwait(true);
                             }
                         }
                         else
@@ -147,13 +140,13 @@ namespace PresenceLight.Pages
                                     {
 
                                         case "White":
-                                            await _parentWindow._mediator.Send(new SetColorCommand { Activity = _parentWindow.presence.Activity, Color = "Offline" }).ConfigureAwait(true);
+                                            await _parentWindow._mediator.Publish(new SetColorNotification("Offline", _parentWindow.presence.Activity)).ConfigureAwait(true);
                                             break;
                                         case "Off":
-                                            await _parentWindow._mediator.Send(new SetColorCommand { Activity = _parentWindow.presence.Activity, Color = "Off" }).ConfigureAwait(true);
+                                            await _parentWindow._mediator.Publish(new SetColorNotification("Off", _parentWindow.presence.Activity)).ConfigureAwait(true);
                                             break;
                                         default:
-                                            await _parentWindow._mediator.Send(new SetColorCommand { Activity = _parentWindow.presence.Activity, Color = _parentWindow.presence.Availability }).ConfigureAwait(true);
+                                            await _parentWindow._mediator.Publish(new SetColorNotification(_parentWindow.presence.Activity)).ConfigureAwait(true);
                                             break;
                                     }
                                 }
@@ -248,7 +241,7 @@ namespace PresenceLight.Pages
                         {
                             case "Manual":
                                 // No need to check presence... if it's after hours, we just want to action upon it... 
-                                await _parentWindow._mediator.Send(new SetColorCommand { Activity = _parentWindow.presence.Activity, Color = newColor }).ConfigureAwait(true);
+                                await _parentWindow._mediator.Publish(new SetColorNotification(newColor, _parentWindow.presence.Activity)).ConfigureAwait(true);
                                 //Reset the light mode so that we don't potentially mess something up.
                                 LightMode = previousLightMode;
                                 break;
@@ -258,11 +251,11 @@ namespace PresenceLight.Pages
 
                                 if (newColor == string.Empty)
                                 {
-                                    await _parentWindow._mediator.Send(new SetColorCommand { Activity = _parentWindow.presence.Activity, Color = _parentWindow.presence.Availability }).ConfigureAwait(true);
+                                    await _parentWindow._mediator.Publish(new SetColorNotification(_parentWindow.presence)).ConfigureAwait(true);
                                 }
                                 else
                                 {
-                                    await _parentWindow._mediator.Send(new SetColorCommand { Activity = _parentWindow.presence.Activity, Color = newColor }).ConfigureAwait(true);
+                                    await _parentWindow._mediator.Publish(new SetColorNotification(newColor, _parentWindow.presence.Activity)).ConfigureAwait(true);
                                 }
 
                                 if (DateTime.Now.AddMinutes(-5) > settingsLastSaved)
@@ -290,7 +283,7 @@ namespace PresenceLight.Pages
 
                                     if (LightMode == "Theme")
                                     {
-                                        await _parentWindow._mediator.Send(new SetColorCommand { Color = color }).ConfigureAwait(true);
+                                        await _parentWindow._mediator.Publish(new SetColorNotification(color)).ConfigureAwait(true);
                                     }
 
                                     if (DateTime.Now.Minute % 5 == 0)
@@ -439,30 +432,7 @@ namespace PresenceLight.Pages
                     _parentWindow.notificationIcon.Text = PresenceConstants.Inactive;
                     _parentWindow.notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(string.Empty, IconConstants.Inactive)));
 
-                    if (SettingsHandlerBase.Config.LightSettings.Hue.IsEnabled && !string.IsNullOrEmpty(SettingsHandlerBase.Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(SettingsHandlerBase.Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(SettingsHandlerBase.Config.LightSettings.Hue.SelectedItemId))
-                    {
-                        if (SettingsHandlerBase.Config.LightSettings.Hue.UseRemoteApi)
-                        {
-                            await _parentWindow._mediator.Send(new Core.RemoteHueServices.SetColorCommand
-                            {
-                                Availability = "Off",
-                                LightId = SettingsHandlerBase.Config.LightSettings.Hue.SelectedItemId,
-                                BridgeId = SettingsHandlerBase.Config.LightSettings.Hue.RemoteBridgeId
-                            }).ConfigureAwait(true);
-                        }
-                        else
-                        {
-                            await _parentWindow._mediator.Send(new Core.HueServices.SetColorCommand() { Availability = "Off", LightID = SettingsHandlerBase.Config.LightSettings.Hue.SelectedItemId, Activity = "" }).ConfigureAwait(true);
-
-                        }
-                    }
-
-                    if (LightMode == "Graph")
-                    {
-                        await _parentWindow._mediator.Send(new SetColorCommand { Color = "Off" }).ConfigureAwait(true);
-
-
-                    }
+                    await _parentWindow._mediator.Publish(new SetColorNotification("Off", "Off")).ConfigureAwait(true);
                 }
                 catch (MsalException)
                 {
