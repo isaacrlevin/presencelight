@@ -24,7 +24,7 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
     <PackageReference Include="Microsoft.Graph.Beta" Version="0.35.0-preview" />
-    <PackageReference Include="Microsoft.Identity.Client" Version="4.27.0" />
+    <PackageReference Include="Microsoft.Identity.Client" Version="4.28.0" />
     <PackageReference Include="Polly" Version="7.2.1" />
 	<PackageReference Include="OpenWiz" Version="1.1.0" />
     <PackageReference Include="Q42.HueApi" Version="3.17.0" />
@@ -37,6 +37,6 @@
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="4.1.0" />
     <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="5.0.0" />
-    <PackageReference Include="YeelightAPI" Version="1.10.1" />
+    <PackageReference Include="YeelightAPI" Version="1.10.2" />
   </ItemGroup>
 </Project>
