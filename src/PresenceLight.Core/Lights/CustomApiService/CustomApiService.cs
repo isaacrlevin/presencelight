@@ -175,7 +175,7 @@ namespace PresenceLight.Core
             return result;
         }
 
-        static Stack<string> _lastUriCalled = new Stack<string>(2);
+        static Stack<string> _lastUriCalled = new Stack<string>(1);
         private async Task<string> PerformWebRequest(string method, string uri, string result, CancellationToken cancellationToken)
         {
             if (_lastUriCalled.Contains($"{method}|{uri}"))
@@ -210,7 +210,7 @@ namespace PresenceLight.Core
                         string message = $"Sending {method} method to {uri}";
 
                         _logger.LogInformation(message);
-
+                        _lastUriCalled.TryPop(out string res);
                         _lastUriCalled.Push($"{method}|{uri}");
 
                         using (Serilog.Context.LogContext.PushProperty("result", result))
