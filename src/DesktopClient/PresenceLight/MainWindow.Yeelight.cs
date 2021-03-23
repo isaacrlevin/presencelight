@@ -126,7 +126,7 @@ namespace PresenceLight
 
         private void cbYeelightIsDisabledChange(object sender, RoutedEventArgs e)
         {
-            var userControl = (PresenceLight.Controls.PhilipsHue)this.FindName("yeelight");
+            var userControl = (PresenceLight.Controls.Yeelight)this.FindName("yeelight");
 
             CheckBox cb = e.Source as CheckBox ?? throw new ArgumentException("Check Box Not Found");
             var cbName = cb.Name.Replace("Disabled", "Colour");
