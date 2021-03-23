@@ -20,7 +20,7 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
     <link href="css/site.css" rel="stylesheet" />
     <link href="_content/Blazorise/blazorise.css" rel="stylesheet" />
-
+    <link href="_content/Blazorise.DataGrid/blazorise.datagrid.css" rel="stylesheet" />
 </head>
 <body>
     <app>
@@ -32,6 +32,7 @@
 
     <script src="_content/Blazorise/blazorise.js"></script>
     <script src="_content/Blazorise.Bootstrap/blazorise.bootstrap.js"></script>
+    <script src="_content/Blazorise.DataGrid/blazorise.datagrid.js"></script>
     <link href="_content/BlazorPro.Spinkit/spinkit.min.css" rel="stylesheet" />
 
     <div id="blazor-error-ui">
@@ -54,8 +55,8 @@
                 'currentColor',
                 'hex',
                 ['fields', { space: 'RGB', limit: 255 }],
-                ['fields', {space: 'HSLA', limit: 100}],
-                ['fields', {space: 'CMYKA', limit: 100}]
+                ['fields', { space: 'HSLA', limit: 100 }],
+                ['fields', { space: 'CMYKA', limit: 100 }]
             ]).on('change', function (c) {
                 joe = c.hex();
             });
