@@ -130,7 +130,7 @@
     {
         try
         {
-            appState.SetYeelightLights(await _mediator.Send(new Core.YeelightServices.GetLightCommand()));
+            appState.SetYeelightLights(await _mediator.Send(new Core.YeelightServices.FindLightsCommand()));
 
             if (string.IsNullOrEmpty(Config.CurrentValue.LightSettings.Yeelight.SelectedItemId) && appState.YeelightLights.Count() > 0)
             {

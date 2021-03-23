@@ -213,6 +213,8 @@ namespace PresenceLight.Core
                         _lastUriCalled.TryPop(out string res);
                         _lastUriCalled.Push($"{method}|{uri}");
 
+                        _lastUriCalled.Push($"{method}|{uri}");
+
                         using (Serilog.Context.LogContext.PushProperty("result", result))
                             _logger.LogDebug(message + " Results");
                     }

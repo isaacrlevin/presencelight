@@ -1,0 +1,136 @@
+﻿<Window x:Class="PresenceLight.MainWindowModern"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ui="http://schemas.modernwpf.com/2019"
+        xmlns:l="clr-namespace:PresenceLight"
+        xmlns:pages="clr-namespace:PresenceLight.Pages"
+        mc:Ignorable="d"
+        Title="PresenceLight"
+        Closing="Window_Closing"
+        Width="1100"
+        Height="768"
+        MinWidth="500"
+        MinHeight="500"
+        WindowStartupLocation="CenterScreen"
+        ui:WindowHelper.UseModernWindowStyle="True"
+        ui:TitleBar.ExtendViewIntoTitleBar="True">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+
+        <DataTemplate x:Key="NavigationViewHeaderTemplate">
+            <TextBlock Text="{Binding}" Margin="12,32,0,0" />
+        </DataTemplate>
+    </Window.Resources>
+
+    <Grid>
+        <l:NotifyIcon x:Name="notificationIcon" MouseDoubleClick="OnNotifyIconDoubleClick">
+            <l:NotifyIcon.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Open" Click="OnOpenClick" />
+                    <MenuItem Header="Turn Off Sync" x:Name="turnOffButton" Click="OnTurnOffSyncClick" />
+                    <MenuItem Header="Turn On Sync" x:Name="turnOnButton" Click="OnTurnOnSyncClick" />
+                    <MenuItem Header="Exit" Click="OnExitClick" />
+                </ContextMenu>
+            </l:NotifyIcon.ContextMenu>
+        </l:NotifyIcon>
+        <Grid
+            x:Name="AppTitleBar"
+            VerticalAlignment="Top"
+            Height="{Binding ElementName=NavView, Path=CompactPaneLength}"
+            Canvas.ZIndex="1"
+            Visibility="{Binding ElementName=Window, Path=(ui:TitleBar.ExtendViewIntoTitleBar), Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto" MinWidth="{Binding ElementName=Window, Path=(ui:TitleBar.SystemOverlayRightInset)}" />
+            </Grid.ColumnDefinitions>
+            <TextBlock
+                x:Name="AppTitle"
+                Text="{Binding ElementName=Window, Path=Title}"
+                VerticalAlignment="Center"
+                Style="{StaticResource CaptionTextBlockStyle}" />
+        </Grid>
+
+        <ui:NavigationView
+            x:Name="NavView"
+            AlwaysShowHeader="True"
+            Header="{Binding SelectedItem.Content, RelativeSource={RelativeSource Self}, FallbackValue=' '}"
+            HeaderTemplate="{StaticResource NavigationViewHeaderTemplate}"
+            IsBackButtonVisible="Visible"
+            IsTitleBarAutoPaddingEnabled="False"
+            IsPaneOpen="True"
+            OpenPaneLength="240"
+            IsBackEnabled="{Binding ElementName=ContentFrame, Path=CanGoBack}"
+            BackRequested="NavView_BackRequested"
+            ItemInvoked="NavView_ItemInvoked"
+            PaneOpening="NavView_PaneOpening"
+            PaneClosing="NavView_PaneClosing"
+            DisplayModeChanged="NavView_DisplayModeChanged">
+
+            <ui:NavigationView.MenuItems>
+                <ui:NavigationViewItem Content="Profile" Tag="{x:Type pages:ProfilePage }">
+                    <ui:NavigationViewItem.Icon>
+                        <ui:FontIcon Glyph="&#xE13D;" />
+                    </ui:NavigationViewItem.Icon>
+                </ui:NavigationViewItem>
+
+                <ui:NavigationViewItem Content="Custom Color" Tag="{x:Type pages:CustomColorPage }">
+                    <ui:NavigationViewItem.Icon>
+                        <ui:FontIcon Glyph="&#xE790;" />
+                    </ui:NavigationViewItem.Icon>
+                </ui:NavigationViewItem>
+
+
+                <ui:NavigationViewItem Content="Configure Lights" Tag="ConfigureLightsDropDown">
+                    <ui:NavigationViewItem.MenuItems>
+                        <ui:NavigationViewItem Content="Philips Hue" Tag="{x:Type pages:PhilipsHue }">
+                            <ui:NavigationViewItem.Icon>
+                                <ui:FontIcon Glyph="&#xE82F;" />
+                            </ui:NavigationViewItem.Icon>
+                        </ui:NavigationViewItem>
+
+                        <ui:NavigationViewItem Content="LIFX" Tag="{x:Type pages:LIFX }">
+                            <ui:NavigationViewItem.Icon>
+                                <ui:FontIcon Glyph="&#xE82F;" />
+                            </ui:NavigationViewItem.Icon>
+                        </ui:NavigationViewItem>
+
+                        <ui:NavigationViewItem Content="Yeelight" Tag="{x:Type pages:Yeelight }">
+                            <ui:NavigationViewItem.Icon>
+                                <ui:FontIcon Glyph="&#xE82F;" />
+                            </ui:NavigationViewItem.Icon>
+                        </ui:NavigationViewItem>
+
+                        <ui:NavigationViewItem Content="Wiz" Tag="{x:Type pages:Wiz }">
+                            <ui:NavigationViewItem.Icon>
+                                <ui:FontIcon Glyph="&#xE82F;" />
+                            </ui:NavigationViewItem.Icon>
+                        </ui:NavigationViewItem>
+
+                        <ui:NavigationViewItem Content="Custom Api" Tag="{x:Type pages:CustomApiPage }">
+                            <ui:NavigationViewItem.Icon>
+                                <ui:FontIcon Glyph="&#xE82F;" />
+                            </ui:NavigationViewItem.Icon>
+                        </ui:NavigationViewItem>
+                    </ui:NavigationViewItem.MenuItems>
+                </ui:NavigationViewItem>
+
+                <ui:NavigationViewItem Content="Logs" Tag="{x:Type pages:LogsPage }">
+                    <ui:NavigationViewItem.Icon>
+                        <ui:FontIcon FontFamily="Wingdings" Glyph="&#x0032;" />
+                    </ui:NavigationViewItem.Icon>
+                </ui:NavigationViewItem>
+
+                <ui:NavigationViewItem Content="About"  Tag="{x:Type pages:AboutPage }">
+                    <ui:NavigationViewItem.Icon>
+                        <ui:FontIcon Glyph="&#xE897;" />
+                    </ui:NavigationViewItem.Icon>
+                </ui:NavigationViewItem>
+
+            </ui:NavigationView.MenuItems>
+
+            <ui:Frame x:Name="ContentFrame" Navigated="ContentFrame_Navigated" />
+        </ui:NavigationView>
+    </Grid>
+</Window>

@@ -3,7 +3,7 @@ using YeelightAPI;
 
 namespace PresenceLight.Core.YeelightServices
 {
-    public class GetLightCommand : IRequest<DeviceGroup>
+    public class FindLightsCommand : IRequest<DeviceGroup>
     {
     }
 }

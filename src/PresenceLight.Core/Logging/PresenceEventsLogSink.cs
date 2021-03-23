@@ -26,6 +26,7 @@ namespace PresenceLight.Core
       
         public static EventHandler<LogEvent> PresenceEventsLogHandler;
     }
+
     public class test {
         public test() {
             PresenceEventsLogSink.PresenceEventsLogHandler += Handler;

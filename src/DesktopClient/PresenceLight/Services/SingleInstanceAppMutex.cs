@@ -11,7 +11,7 @@ namespace PresenceLight.Services
 {
     class SingleInstanceAppMutex
     {
-        private static Mutex s_mutex;
+        private static Mutex? s_mutex;
 
         public static bool TakeExclusivity()
         {

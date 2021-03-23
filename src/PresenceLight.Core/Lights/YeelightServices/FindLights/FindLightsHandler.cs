@@ -7,7 +7,7 @@ using YeelightAPI;
 
 namespace PresenceLight.Core.YeelightServices
 {
-    internal class GetLightsHandler : IRequestHandler<GetLightCommand, DeviceGroup>
+    internal class GetLightsHandler : IRequestHandler<FindLightsCommand, DeviceGroup>
     {
         IYeelightService _service;
         public GetLightsHandler(IYeelightService service)
@@ -15,7 +15,7 @@ namespace PresenceLight.Core.YeelightServices
             _service = service;
         }
 
-        public async Task<DeviceGroup> Handle(GetLightCommand command, CancellationToken cancellationToken)
+        public async Task<DeviceGroup> Handle(FindLightsCommand command, CancellationToken cancellationToken)
         {
             return await _service.FindLights();
         }

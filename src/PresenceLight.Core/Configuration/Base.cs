@@ -10,6 +10,7 @@ namespace PresenceLight.Core
 {
     public class BaseConfig
     {
+        public string Theme { get; set; }
         public bool SendDiagnosticData { get; set; }
         public bool StartMinimized { get; set; }
         public string? IconType { get; set; }

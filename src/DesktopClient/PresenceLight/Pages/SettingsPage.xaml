@@ -1,0 +1,117 @@
+﻿<ui:Page x:Class="PresenceLight.Pages.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:ui="http://schemas.modernwpf.com/2019"
+    xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+    xmlns:local="clr-namespace:PresenceLight"
+    mc:Ignorable="d" 
+    d:DesignHeight="1000" d:DesignWidth="600"
+    Title="SettingsPage">
+    <Page.Resources>
+        <local:AppThemeConverter x:Key="AppThemeConverter" />
+    </Page.Resources>
+
+    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+        <Grid Margin="24,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="50"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="100" />
+                <RowDefinition Height="100" />
+                <RowDefinition Height="100" />
+                <RowDefinition Height="60" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <CheckBox x:Name="cbLightSyncEnabled" FontWeight="Bold" IsChecked="{Binding LightSettings.SyncLights}" Grid.Row="1" Content="Light Sync Enabled" Grid.Column="1" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Unchecked="cbSyncLights" Checked="cbSyncLights" />
+            <CheckBox x:Name="cbUseWorkingHours" FontWeight="Bold" Grid.Row="1" IsChecked="{Binding LightSettings.UseWorkingHours}" Content="Configure Working Hours" Grid.Column="2" Grid.ColumnSpan="4" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Unchecked="cbUseWorkingHoursChanged" Checked="cbUseWorkingHoursChanged" />
+
+            <Grid  Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" Grid.ColumnSpan="2" x:Name="pnlWorkingHours" Margin="0,50,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+  
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50" />
+                    <RowDefinition Height="50" />
+                    <RowDefinition Height="50" />
+                    <RowDefinition Height="50" />
+                    <RowDefinition Height="50" />
+                    <RowDefinition Height="100" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+
+
+                <Label FontWeight="Bold" Grid.Row="0" Grid.Column="0" Margin="0,0,0,0" Content="Light Syncing Schedule (Working Hours)"  Grid.ColumnSpan="2" />                
+                <ui:SimpleTimePicker Grid.Row="0" HorizontalAlignment="Left"  Margin="0,0,0,0" Grid.Column="2" Grid.ColumnSpan="4"  SourceMinutes="{x:Static mah:TimePicker.IntervalOf15}"/>
+                <ui:SimpleTimePicker Grid.Row="1" Margin="0,0,0,0" Grid.Column="2" Grid.ColumnSpan="4"  SourceMinutes="{x:Static mah:TimePicker.IntervalOf15}"/>
+
+                <Label Grid.Column="0" Grid.Row="2" FontWeight="Bold" Content="Working Days"  Grid.ColumnSpan="2" />
+                <CheckBox Grid.Column="0" x:Name="Monday" Grid.Row="3" Content="Monday" />
+                <CheckBox Grid.Column="0" HorizontalAlignment="Center" x:Name="Tuesday" Grid.Row="3" Content="Tuesday" />
+                <CheckBox Grid.Column="0" HorizontalAlignment="Right" x:Name="Wednesday" Grid.Row="3" Content="Wednesday" />
+                <CheckBox Grid.Column="3" x:Name="Sunday" Grid.Row="3" Content="Sunday" Grid.RowSpan="2" />
+                <CheckBox Grid.Column="0" x:Name="Thursday" Grid.Row="4" Content="Thursday" />
+                <CheckBox Grid.Column="0" HorizontalAlignment="Center" x:Name="Friday" Grid.Row="4" Content="Friday" />
+                <CheckBox Grid.Column="0" HorizontalAlignment="Right" x:Name="Saturday" Grid.Row="4" Content="Saturday" />
+
+
+                <Label FontWeight="Bold" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,10,0,0" Grid.Row="5" Content="Light Status When After Hours Are Reached" />
+                <RadioButton Grid.Column="2" Grid.Row="5" GroupName="HoursPassedStatus" x:Name="HourStatusOff" Margin="0,10,0,0" Content="Turn Off Light" HorizontalAlignment="Left" VerticalAlignment="Top" />
+                <RadioButton Grid.Column="2" Grid.Row="5" GroupName="HoursPassedStatus" x:Name="HourStatusWhite" Margin="0,35,0,0" Content="Change Light Color to White" HorizontalAlignment="Left" VerticalAlignment="Top" />
+                <RadioButton Grid.Column="2" Grid.Row="5" GroupName="HoursPassedStatus" x:Name="HourStatusKeep" Margin="0,60,0,0" Content="Leave Color Alone" HorizontalAlignment="Left"  VerticalAlignment="Top"/>
+
+            </Grid>
+
+            <CheckBox x:Name="cbUseDefaultBrightness" Grid.Row="3" IsChecked="{Binding LightSettings.UseDefaultBrightness}" Content="Lights Use Same Brightness" Grid.Column="1" Grid.ColumnSpan="4" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Unchecked="cbUseDefaultBrightnessChanged" Checked="cbUseDefaultBrightnessChanged" />
+            <Grid Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="2" x:Name="pnlDefaultBrightness" Margin="0,20,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Label Grid.Column="0" Margin="0,30,0,0" Grid.Row="2" Content="Brightness"  Grid.ColumnSpan="3" />
+                <Slider Grid.Column="1" Margin="0,30,0,0" Grid.Row="2" Width="180"  HorizontalAlignment="Left" x:Name = "brightness" Value="{Binding LightSettings.DefaultBrightness}" IsSnapToTickEnabled="True"  Minimum = "0" Maximum = "100" TickFrequency = "10"  TickPlacement = "BottomRight" />
+                <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding ElementName=brightness, Path=Value, UpdateSourceTrigger=PropertyChanged}" Margin="0,30,60,0" HorizontalAlignment="Right" VerticalAlignment="Top" Height="20" TextAlignment="Left" Width="40" />
+            </Grid>
+
+            <Label Grid.Column="1" Grid.Row="4" Margin="0,10,0,0" Content="Presence and Theme Polling Interval"  Grid.ColumnSpan="3" />
+            <ui:NumberBox  Grid.Column="2" Margin="0,10,0,0" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Top" Width="230"
+                    x:Name="NumberBoxSpinButtonPlacementExample"
+                    Value="{Binding LightSettings.PollingInterval}" Maximum="5" Minimum="1"
+                    SpinButtonPlacementMode="Inline"
+                    SmallChange=".1" />
+
+            <Label Grid.Column="1" Margin="0,10,0,0" Grid.Row="5" Content="Icon Type" />
+            <RadioButton Grid.Column="2" Grid.Row="5" GroupName="IconType" x:Name="Transparent" Margin="0,0,0,0" Content="Transparent" HorizontalAlignment="Left" VerticalAlignment="Top" />
+            <RadioButton Grid.Column="2" Grid.Row="5" GroupName="IconType" x:Name="White" Margin="0,25,0,0" Content="White" HorizontalAlignment="Left"  VerticalAlignment="Top"/>
+
+            <Label Grid.Column="1" Margin="0,10,0,0" Grid.Row="6" Content="Theme" />
+
+            <RadioButton Grid.Column="2" Unchecked="OnThemeToggle" Checked="OnThemeToggle" Grid.Row="6" GroupName="Themes" x:Name="themeLight" Margin="0,10,0,0" Content="Light" HorizontalAlignment="Left" VerticalAlignment="Top" />
+            <RadioButton Grid.Column="2" Unchecked="OnThemeToggle" Checked="OnThemeToggle" Grid.Row="6" Grid.ColumnSpan="3" GroupName="Themes" x:Name="themeDark" Margin="0,35,0,0" Content="Dark" HorizontalAlignment="Left" VerticalAlignment="Top" />
+            <RadioButton Grid.Column="2" Unchecked="OnThemeToggle" Checked="OnThemeToggle" Grid.Row="6" Grid.ColumnSpan="3" GroupName="Themes" x:Name="themeDefault" Margin="0,60,0,0" Content="Use default setting" HorizontalAlignment="Left"  VerticalAlignment="Top"/>
+
+            <CheckBox x:Name="cbStartMinimized" VerticalAlignment="Top" IsChecked="{Binding StartMinimized}" Grid.Row="7" Content="Start Minimized" Grid.Column="1" HorizontalAlignment="Left" Margin="0,0,0,0" />
+
+
+            <Button Grid.Column="0" Margin="0,100,0,50" HorizontalAlignment="Center" Grid.Row="7" Height="45" x:Name="btnSettings" Width="170" Content="Save" Click="SaveSettings_Click" Grid.ColumnSpan="4" />
+            <Label Grid.Column="0"  Margin="0,50,0,50" HorizontalAlignment="Center" Grid.Row="8" x:Name="lblSettingSaved" Visibility="Collapsed" Content="Settings Updated" Foreground="Green" Grid.ColumnSpan="4"/>
+
+        </Grid>
+    </ScrollViewer>
+</ui:Page>

@@ -11,7 +11,7 @@ namespace PresenceLight.Graph
 {
     public class WPFAuthorizationProvider : MSGraph.IAuthenticationProvider
     {
-        public static IPublicClientApplication Application;
+        public static IPublicClientApplication Application = null;
         private readonly List<string> _scopes;
 
         public WPFAuthorizationProvider(IPublicClientApplication application, List<string> scopes)
@@ -22,7 +22,7 @@ namespace PresenceLight.Graph
 
         public async Task AuthenticateRequestAsync(HttpRequestMessage request)
         {
-            AuthenticationResult authResult = null;
+            AuthenticationResult? authResult = null ;
 
             var accounts = await Application.GetAccountsAsync().ConfigureAwait(true);
             var firstAccount = accounts.FirstOrDefault();
