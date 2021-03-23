@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using MediatR;
 
 using PresenceLight.Core.CustomApiServices;
+using PresenceLight.Core.PubSub;
 
 namespace PresenceLight.ViewModels
 {

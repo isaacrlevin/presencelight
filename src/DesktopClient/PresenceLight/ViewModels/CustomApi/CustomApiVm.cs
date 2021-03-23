@@ -21,46 +21,13 @@ namespace PresenceLight.ViewModels
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public static List<string> ApiMethods { get; } = new List<string>
-        {
-            "",
-            "GET",
-            "POST",
-            "DELETE"
-        };
-
-        public static List<string> AvailabilityStates { get; } = new List<string>
-        {
-            "",
-            "Available",
-            "Busy",
-            "BeRightBack",
-            "Away",
-            "DoNotDisturb",
-            "AvailableIdle",
-            "Offline",
-            "Off",
-        };
-
-        public static List<string> ActivityStates { get; } = new List<string>
-        {
-            "",
-            "Available",
-            "Presenting",
-            "InACall",
-            "InAMeeting",
-            "Busy",
-            "Away",
-            "BeRightBack",
-            "DoNotDisturb",
-            "Idle",
-            "Offline",
-            "Off",
-        };
-
         public ICommand SaveCommand { get; }
-        public ObservableCollection<ApiItem> SubscribedItems { get; } = new ObservableCollection<ApiItem>();
-        public bool IsEnabled { get; set; }        
+        public List<CustomApiSetting> SubscribedItems => Config.Subscriptions;
+        public bool IsEnabled
+        {
+            get => Config.IsEnabled;
+            set => Config.IsEnabled = value;
+        }
         public string LastResponse { get; set; } = string.Empty;
         public bool IsSuccessfulResponse { get; set; } = true;
         public bool IsSaving { get; set; }
@@ -73,8 +40,6 @@ namespace PresenceLight.ViewModels
             _logger = logger;
 
             SaveCommand = new RelayCommand(SaveSettings, CanSaveSettings);
-
-            LoadSettings(SettingsHandlerBase.Config.LightSettings.CustomApi);
         }
 
         public void UpdateLastResponse(CustomApiResponse response)
@@ -86,13 +51,10 @@ namespace PresenceLight.ViewModels
             }
         }
 
-        private void LoadSettings(CustomApi config)
+        public void Refresh()
         {
-            IsEnabled = config.IsEnabled;
-            foreach (CustomApiSetting setting in config.Subscriptions)
-            {
-                SubscribedItems.Add(ApiItem.FromSetting(setting));
-            }
+            PropertyChanged.Raise(this, nameof(IsEnabled));
+            PropertyChanged.Raise(this, nameof(SubscribedItems));
         }
 
         private bool CanSaveSettings(object? _) => !IsSaving;
@@ -103,8 +65,6 @@ namespace PresenceLight.ViewModels
             {
                 IsSaving = true;
                 SettingsSavedMessage = string.Empty;
-
-                SettingsHandlerBase.Config.LightSettings.CustomApi = SerializeConfig();
 
                 await _mediator.Send(new SaveSettingsCommand()).ConfigureAwait(true);
 
@@ -121,11 +81,5 @@ namespace PresenceLight.ViewModels
                 IsSaving = false;
             }
         }
-
-        private CustomApi SerializeConfig() => new CustomApi
-        {
-            IsEnabled = IsEnabled,
-            Subscriptions = SubscribedItems.Where(x => x.IsValid).Select(x => x.ToSetting()).ToList()
-        };
     }
 }

@@ -23,50 +23,13 @@
                     <br />
                     @if (Config.CurrentValue.LightSettings.CustomApi.IsEnabled)
                         {
-                            List<string> methods = new List<string>
-                            {
-                                "",
-                                "GET",
-                                "POST",
-                                "DELETE"
-                            };
-
-                            List<string> availabilityStates = new List<string>
-                            {
-                                "",
-                                "Available",
-                                "Busy",
-                                "BeRightBack",
-                                "Away",
-                                "DoNotDisturb",
-                                "AvailableIdle",
-                                "Offline",
-                                "Off",
-                            };
-
-                            List<string> activityStates = new List<string>
-                            {
-                                "",
-                                "Available",
-                                "Presenting",
-                                "InACall",
-                                "InAMeeting",
-                                "Busy",
-                                "Away",
-                                "BeRightBack",
-                                "DoNotDisturb",
-                                "Idle",
-                                "Offline",
-                                "Off",
-                            };
-
                         <DataGrid TItem="CustomApiSetting" Editable="true" UseInternalEditing="true" EditMode="DataGridEditMode.Inline"
                                   Data="@Config.CurrentValue.LightSettings.CustomApi.Subscriptions">
                             <DataGridCommandColumn TItem="CustomApiSetting" />
                             <DataGridSelectColumn TItem="CustomApiSetting" Field="@nameof(CustomApiSetting.Availability)" Caption="Availability" Sortable="false" Editable="true">
                                 <EditTemplate>
                                     <select class="form-control" value="@context.Item.Availability" @onchange="@(v => context.CellValue = v.Value.ToString())">
-                                        @foreach (string item in availabilityStates)
+                                        @foreach (string item in PresenceLight.Core.AvailabilityState.AllStates)
                                         {
                                             <option value="@item">@item</option>
                                         }
@@ -76,7 +39,7 @@
                             <DataGridSelectColumn TItem="CustomApiSetting" Field="@nameof(CustomApiSetting.Activity)" Caption="Activity" Sortable="false" Editable="true">
                                 <EditTemplate>
                                     <select class="form-control" value="@context.Item.Activity" @onchange="@(v => context.CellValue = v.Value.ToString())">
-                                        @foreach (string item in activityStates)
+                                        @foreach (string item in PresenceLight.Core.ActivityState.AllStates)
                                         {
                                             <option value="@item">@item</option>
                                         }
@@ -86,7 +49,7 @@
                             <DataGridSelectColumn TItem="CustomApiSetting" Field="@nameof(CustomApiSetting.Method)" Caption="Method" Sortable="false" Editable="true">
                                 <EditTemplate>
                                     <select class="form-control" value="@context.Item.Method" @onchange="@(v => context.CellValue = v.Value.ToString())">
-                                        @foreach (string item in methods)
+                                        @foreach (string item in PresenceLight.Core.CustomApiHttpMethod.AllMethods)
                                         {
                                             <option value="@item">@item</option>
                                         }
