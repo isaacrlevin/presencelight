@@ -246,57 +246,6 @@ namespace PresenceLight.Worker
             try
             {
                 await _mediator.Publish(new SetColorNotification(color, activity));
-
-                // TODO:
-                //if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedItemId))
-                //{
-                //    if (Config.LightSettings.Hue.UseRemoteApi)
-                //    {
-                //        if (!string.IsNullOrEmpty(Config.LightSettings.Hue.RemoteBridgeId))
-                //        {
-                //            await _mediator.Send(new Core.RemoteHueServices.SetColorCommand
-                //            {
-                //                Availability = color,
-                //                LightId = Config.LightSettings.Hue.SelectedItemId,
-                //                BridgeId = Config.LightSettings.Hue.RemoteBridgeId
-                //            }).ConfigureAwait(true);
-                //        }
-                //    }
-                //    else
-                //    {
-                //        await _mediator.Send(new Core.HueServices.SetColorCommand() { Activity = activity, Availability = color, LightID = Config.LightSettings.Hue.SelectedItemId }).ConfigureAwait(true);
-
-                //    }
-                //}
-
-                //if (Config.LightSettings.LIFX.IsEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
-                //{
-                //    await _mediator.Send(new Core.LifxServices.SetColorCommand() { Availability = color, Activity = activity, LightId = Config.LightSettings.LIFX.SelectedItemId }).ConfigureAwait(true);
-                //}
-
-                //if (Config.LightSettings.Yeelight.IsEnabled && !string.IsNullOrEmpty(Config.LightSettings.Yeelight.SelectedItemId))
-                //{
-                //    await _mediator.Send(new PresenceLight.Core.YeelightServices.SetColorCommand { Activity = activity, Availability = color, LightId = Config.LightSettings.Yeelight.SelectedItemId }).ConfigureAwait(true);
-                //}
-
-                //if (Config.LightSettings.CustomApi.IsEnabled)
-                //{
-                //    var response = await _mediator.Send(new SetColorCommand
-                //    {
-                //        Activity = activity,
-                //        Availability = color
-                //    });
-                //}
-
-                //if (Config.LightSettings.Wiz.IsEnabled)
-                //{
-                //    await _mediator.Send(new Core.WizServices.SetColorCommand
-                //    {
-                //        Activity = activity,
-                //        Availability = color,
-                //        LightID = Config.LightSettings.Wiz.SelectedItemId
-                //    });
-                //}
             }
             catch (Exception e)
             {
