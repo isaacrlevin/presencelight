@@ -1,22 +1,32 @@
-﻿using MediatR;
+﻿using Microsoft.Extensions.Options;
+
+using PresenceLight.Core.Lights;
 
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace PresenceLight.Core.RemoteHueServices
 {
-    internal class SetColorHandler : IRequestHandler<SetColorCommand, Unit>
+    internal class SetColorHandler : ColorHandlerBase<Hue>
     {
-        readonly IRemoteHueService _service;
-        public SetColorHandler(IRemoteHueService service)
+        private readonly IRemoteHueService _service;
+
+        public SetColorHandler(IRemoteHueService service, IOptionsMonitor<BaseConfig> optionsAccessor)
+            : base(optionsAccessor, baseConfig => baseConfig.LightSettings.Hue, IsEnabled)
         {
             _service = service;
         }
 
-        public async Task<Unit> Handle(SetColorCommand command, CancellationToken cancellationToken)
+        protected override async Task SetColor(string availability, string activity, CancellationToken cancellationToken)
         {
-            await _service.SetColor(command.Availability, command.LightId, command.BridgeId);
-            return default;
+            await _service.SetColor(availability, Config.SelectedItemId, Config.RemoteBridgeId);
         }
+
+        private static bool IsEnabled(Hue config) =>
+            config.IsEnabled &&
+            !string.IsNullOrEmpty(config.HueApiKey) &&
+            !string.IsNullOrEmpty(config.HueIpAddress) &&
+            !string.IsNullOrEmpty(config.SelectedItemId) &&
+            config.UseRemoteApi;
     }
 }

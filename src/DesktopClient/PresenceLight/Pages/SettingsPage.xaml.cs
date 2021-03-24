@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using PresenceLight.Services;
 using PresenceLight.Telemetry;
 using ModernWpf;
+using PresenceLight.Core;
 using System.Windows.Controls;
 using PresenceLight.Core.Configuration;
 using LogLevel = PresenceLight.Core.Configuration.LogLevel;

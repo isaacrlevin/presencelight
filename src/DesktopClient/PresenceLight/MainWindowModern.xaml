@@ -40,14 +40,14 @@
             VerticalAlignment="Top"
             Height="{Binding ElementName=NavView, Path=CompactPaneLength}"
             Canvas.ZIndex="1"
-            Visibility="{Binding ElementName=Window, Path=(ui:TitleBar.ExtendViewIntoTitleBar), Converter={StaticResource BooleanToVisibilityConverter}}">
+            Visibility="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=(ui:TitleBar.ExtendViewIntoTitleBar), Converter={StaticResource BooleanToVisibilityConverter}}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
-                <ColumnDefinition Width="Auto" MinWidth="{Binding ElementName=Window, Path=(ui:TitleBar.SystemOverlayRightInset)}" />
+                <ColumnDefinition Width="Auto" MinWidth="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=(ui:TitleBar.SystemOverlayRightInset)}" />
             </Grid.ColumnDefinitions>
             <TextBlock
                 x:Name="AppTitle"
-                Text="{Binding ElementName=Window, Path=Title}"
+                Text="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=Title}"
                 VerticalAlignment="Center"
                 Style="{StaticResource CaptionTextBlockStyle}" />
         </Grid>

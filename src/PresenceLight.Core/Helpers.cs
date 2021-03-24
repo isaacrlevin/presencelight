@@ -117,7 +117,6 @@ namespace PresenceLight.Core
 
                         while (objList.MoveNext())
                         {
-                            objList.MoveNext();
                             ReadPropertiesRecursive(objList.Current);
                         }
                     }

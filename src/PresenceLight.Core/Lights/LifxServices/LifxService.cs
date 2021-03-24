@@ -4,10 +4,13 @@ using LifxCloud.NET.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using MediatR;
+using System.Threading;
+using PresenceLight.Core.PubSub;
 
 namespace PresenceLight.Core
 {
-    public class LIFXService
+    public class LIFXService : INotificationHandler<InitializeNotification>
     {
         private BaseConfig _options;
         private LifxCloudClient _client;
@@ -21,9 +24,10 @@ namespace PresenceLight.Core
             _mediator = mediator;
         }
 
-        public void Initialize(BaseConfig options)
+        public Task Handle(InitializeNotification notification, CancellationToken cancellationToken)
         {
-            _options = options;
+            _options = notification.Config;
+            return Task.CompletedTask;
         }
 
         public async Task<List<Light>> GetAllLights(string apiKey = null)

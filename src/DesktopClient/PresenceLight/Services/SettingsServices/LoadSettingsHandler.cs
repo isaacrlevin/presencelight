@@ -13,9 +13,9 @@ namespace PresenceLight.Services
     internal class LoadSettingsHandler : SettingsHandlerBase, IRequestHandler<LoadSettingsCommand, Unit>
     {
         ISettingsService _service;
+
         public LoadSettingsHandler(ISettingsService settingsService) : base()
         {
-
             _service = settingsService;
         }
 

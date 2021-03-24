@@ -4,8 +4,12 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
+using MediatR;
+
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+
+using PresenceLight.Core.PubSub;
 
 using Q42.HueApi;
 using Q42.HueApi.ColorConverters;
@@ -23,9 +27,9 @@ namespace PresenceLight.Core
 
         Task<IEnumerable<Group>> GetGroups();
         Task<string> FindBridge();
-        void Initialize(BaseConfig options);
     }
-    public class HueService : IHueService
+
+    public class HueService : IHueService, INotificationHandler<InitializeNotification>
     {
         private BaseConfig _options;
         private LocalHueClient _client;
@@ -38,9 +42,10 @@ namespace PresenceLight.Core
             _options = optionsAccessor.CurrentValue;
         }
 
-        public void Initialize(BaseConfig options)
+        public Task Handle(InitializeNotification notification, CancellationToken cancellationToken)
         {
-            _options = options;
+            _options = notification.Config;
+            return Task.CompletedTask;
         }
 
         public async Task SetColor(string availability, string activity, string lightId)

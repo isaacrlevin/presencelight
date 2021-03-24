@@ -3,201 +3,74 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-       xmlns:ui="http://schemas.modernwpf.com/2019"
+      xmlns:ui="http://schemas.modernwpf.com/2019"
       xmlns:local="clr-namespace:PresenceLight.Pages"
+      xmlns:vm="clr-namespace:PresenceLight.ViewModels"
+      xmlns:core="clr-namespace:PresenceLight.Core;assembly=PresenceLight.Core"
+      d:DataContext="{d:DesignInstance Type=vm:CustomApiVm}"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="CustomApiPage">
-    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="50"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="50"/>
-            </Grid.ColumnDefinitions>
+    <ui:Page.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </ui:Page.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="50"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="50"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="5" />
+            <RowDefinition Height="50" />
+            <RowDefinition Height="5" />
+            <RowDefinition Height="50" />
+            <RowDefinition Height="50" />
+        </Grid.RowDefinitions>
+
+        <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding IsEnabled, Mode=TwoWay}" Content="Enable Custom API calls" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Center" />
+
+        <Grid Grid.Row="1" Grid.Column="1" Visibility="{Binding IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="50" />
+                <RowDefinition Height="5" />
                 <RowDefinition Height="*" />
+                <RowDefinition Height="5" />
+                <RowDefinition Height="50" />
+                <RowDefinition Height="5" />
             </Grid.RowDefinitions>
-            <Grid Grid.Column="1" Grid.ColumnSpan="4">
-                <CheckBox x:Name="cbIsCustomApiEnabled" IsChecked="{Binding LightSettings.CustomApi.IsEnabled}" Content="Enable Custom API calls" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbIsCustomApiEnabledChanged" Checked="cbIsCustomApiEnabledChanged" Grid.Column="1" Grid.ColumnSpan="4" />
-            </Grid>
-            <Grid x:Name="pnlCustomApi" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="7.343"/>
-                    <ColumnDefinition Width="132.657"/>
-                    <ColumnDefinition Width="100"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="30"/>
-                    <RowDefinition Height="35" />
-                    <RowDefinition Height="35" />
-                    <RowDefinition Height="35" />
-                    <RowDefinition Height="35" />
-                    <RowDefinition Height="35" />
-                    <RowDefinition Height="35" />
-                    <RowDefinition Height="35" />
-                    <RowDefinition Height="35" />
-                    <RowDefinition Height="35" />
-                    <RowDefinition Height="35" />
-                    <RowDefinition Height="35" />
-                    <RowDefinition Height="35" />
-                    <RowDefinition Height="35" />
-                    <RowDefinition Height="35" />
-                    <RowDefinition Height="35" />
-                    <RowDefinition Height="35" />
-                    <RowDefinition Height="35" />
-                    <RowDefinition Height="35" />
-                    <RowDefinition Height="35" />
-                    <RowDefinition Height="35" />
-                    <RowDefinition Height="45" />
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                <Label x:Name="customApiPreseneceHeader" Content="Presence State" VerticalAlignment="Center" HorizontalAlignment="Left" FontWeight="Bold" Grid.Column="1" Margin="15,0,0,0"/>
-                <Label x:Name="customApiMethodHeader" Content="API Method" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold"/>
-                <Label x:Name="customApiUriHeader" Content="API URI" Margin="10,0,0,0" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Left" FontWeight="Bold"/>
 
-                <Label x:Name="customApiAvailableLabel" Content="Available:" Margin="3,0,0,0" Grid.Row="1" VerticalAlignment="Center" Grid.Column="1"/>
-                <ComboBox x:Name="customApiAvailableMethod" Grid.Row="1" VerticalAlignment="Center" Width="72" Grid.Column="2" Margin="10,0,0,0" SelectionChanged="customApiMethod_SelectionChanged" SelectedValuePath="Content" Text="{Binding LightSettings.CustomApi.CustomApiAvailable.Method}">
-                    <ComboBoxItem Content="GET"></ComboBoxItem>
-                    <ComboBoxItem Content="POST"></ComboBoxItem>
-                </ComboBox>
-                <TextBox x:Name="customApiAvailableUri" Grid.Row="1" TextWrapping="Wrap" VerticalAlignment="Center" Text="{Binding LightSettings.CustomApi.CustomApiAvailable.Uri}" Grid.Column="3" Margin="10,0,14,0"/>
+            <DataGrid Grid.Row="2" ItemsSource="{Binding SubscribedItems}" AutoGenerateColumns="False" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                <DataGrid.Columns>
+                    <DataGridComboBoxColumn Header="Availability" ItemsSource="{Binding Path=(core:AvailabilityState.AllStates)}" SelectedItemBinding="{Binding Availability, Mode=TwoWay}" Width="120"/>
+                    <DataGridComboBoxColumn Header="Activity" ItemsSource="{Binding Path=(core:ActivityState.AllStates)}" SelectedItemBinding="{Binding Activity, Mode=TwoWay}" Width="120"/>
+                    <DataGridComboBoxColumn Header="Method" ItemsSource="{Binding Path=(core:CustomApiHttpMethod.AllMethods)}" SelectedItemBinding="{Binding Method, Mode=TwoWay}" Width="120"/>
+                    <DataGridTextColumn Header="Url" Binding="{Binding Uri, Mode=TwoWay}" Width="*"/>
+                </DataGrid.Columns>
+            </DataGrid>
 
-                <Label x:Name="customApiBusyLabel" Content="Busy:" Margin="3,0,0,0" Grid.Row="2" VerticalAlignment="Center" Grid.Column="1"/>
-                <ComboBox x:Name="customApiBusyMethod" Grid.Row="2" VerticalAlignment="Center" Width="72" Grid.Column="2" Margin="10,0,0,0" SelectionChanged="customApiMethod_SelectionChanged" SelectedValuePath="Content" Text="{Binding LightSettings.CustomApi.CustomApiBusy.Method}">
-                    <ComboBoxItem Content="GET"></ComboBoxItem>
-                    <ComboBoxItem Content="POST"></ComboBoxItem>
-                </ComboBox>
-                <TextBox x:Name="customApiBusyUri" Grid.Row="2" TextWrapping="Wrap" VerticalAlignment="Center" Text="{Binding LightSettings.CustomApi.CustomApiBusy.Uri}" Grid.Column="3" Margin="10,0,14,0"/>
-
-                <Label x:Name="customApiBeRightBackLabel" Content="Be Right Back:" Margin="3,0,0,0" Grid.Row="3" VerticalAlignment="Center" Grid.Column="1"/>
-                <ComboBox x:Name="customApiBeRightBackMethod" Grid.Row="3" VerticalAlignment="Center" Width="72" Grid.Column="2" Margin="10,0,0,0" SelectionChanged="customApiMethod_SelectionChanged" SelectedValuePath="Content" Text="{Binding LightSettings.CustomApi.CustomApiBeRightBack.Method}">
-                    <ComboBoxItem Content="GET"></ComboBoxItem>
-                    <ComboBoxItem Content="POST"></ComboBoxItem>
-                </ComboBox>
-                <TextBox x:Name="customApiBeRightBackUri" Grid.Row="3" TextWrapping="Wrap" VerticalAlignment="Center" Text="{Binding LightSettings.CustomApi.CustomApiBeRightBack.Uri}" Grid.Column="3" Margin="10,0,14,0"/>
-
-                <Label x:Name="customApiAwayLabel" Content="Away:" Margin="3,0,0,0" Grid.Row="4" VerticalAlignment="Center" Grid.Column="1"/>
-                <ComboBox x:Name="customApiAwayMethod" Grid.Row="4" VerticalAlignment="Center" Width="72" Grid.Column="2" Margin="10,0,0,0" SelectionChanged="customApiMethod_SelectionChanged" SelectedValuePath="Content" Text="{Binding LightSettings.CustomApi.CustomApiAway.Method}">
-                    <ComboBoxItem Content="GET"></ComboBoxItem>
-                    <ComboBoxItem Content="POST"></ComboBoxItem>
-                </ComboBox>
-                <TextBox x:Name="customApiAwayUri" Grid.Row="4" TextWrapping="Wrap" VerticalAlignment="Center" Text="{Binding LightSettings.CustomApi.CustomApiAway.Uri}" Grid.Column="3" Margin="10,0,14,0"/>
-
-                <Label x:Name="customApiDoNotDisturbLabel" Content="Do Not Disturb:" Margin="3,0,0,0" Grid.Row="5" VerticalAlignment="Center" Grid.Column="1"/>
-                <ComboBox x:Name="customApiDoNotDisturbMethod" Grid.Row="5" VerticalAlignment="Center" Width="72" Grid.Column="2" Margin="10,0,0,0" SelectionChanged="customApiMethod_SelectionChanged" SelectedValuePath="Content" Text="{Binding LightSettings.CustomApi.CustomApiDoNotDisturb.Method}">
-                    <ComboBoxItem Content="GET"></ComboBoxItem>
-                    <ComboBoxItem Content="POST"></ComboBoxItem>
-                </ComboBox>
-                <TextBox x:Name="customApiDoNotDisturbUri" Grid.Row="5" TextWrapping="Wrap" VerticalAlignment="Center" Text="{Binding LightSettings.CustomApi.CustomApiDoNotDisturb.Uri}" Grid.Column="3" Margin="10,0,14,0"/>
-
-                <Label x:Name="customApiAvailableIdleLabel" Content="AvailableIdle:" Margin="3,0,0,0" Grid.Row="6" VerticalAlignment="Center" Grid.Column="1"/>
-                <ComboBox x:Name="customApiAvailableIdleMethod" Grid.Row="6" VerticalAlignment="Center" Width="72" Grid.Column="2" Margin="10,0,0,0" SelectionChanged="customApiMethod_SelectionChanged" SelectedValuePath="Content" Text="{Binding LightSettings.CustomApi.CustomApiAvailableIdle.Method}">
-                    <ComboBoxItem Content="GET"></ComboBoxItem>
-                    <ComboBoxItem Content="POST"></ComboBoxItem>
-                </ComboBox>
-                <TextBox x:Name="customApiAvailableIdleUri" Grid.Row="6" TextWrapping="Wrap" VerticalAlignment="Center" Text="{Binding LightSettings.CustomApi.CustomApiAvailableIdle.Uri}" Grid.Column="3" Margin="10,0,14,0"/>
-
-                <Label x:Name="customApiOfflineLabel" Content="Offline:" Margin="3,0,0,0" Grid.Row="7" VerticalAlignment="Center" Grid.Column="1"/>
-                <ComboBox x:Name="customApiOfflineMethod" Grid.Row="7" VerticalAlignment="Center" Width="72" Grid.Column="2" Margin="10,0,0,0" SelectionChanged="customApiMethod_SelectionChanged" SelectedValuePath="Content" Text="{Binding LightSettings.CustomApi.CustomApiOffline.Method}">
-                    <ComboBoxItem Content="GET"></ComboBoxItem>
-                    <ComboBoxItem Content="POST"></ComboBoxItem>
-                </ComboBox>
-                <TextBox x:Name="customApiOfflineUri" Grid.Row="7" TextWrapping="Wrap" VerticalAlignment="Center" Text="{Binding LightSettings.CustomApi.CustomApiOffline.Uri}" Grid.Column="3" Margin="10,0,14,0"/>
-
-                <Label x:Name="customApiOffLabel" Content="Off:" Margin="3,0,0,0" Grid.Row="8" VerticalAlignment="Center" Grid.Column="1"/>
-                <ComboBox x:Name="customApiOffMethod" Grid.Row="8" VerticalAlignment="Center" Width="72" Grid.Column="2" Margin="10,0,0,0" SelectionChanged="customApiMethod_SelectionChanged" SelectedValuePath="Content" Text="{Binding LightSettings.CustomApi.CustomApiActivityPresenting.Method}">
-                    <ComboBoxItem Content="GET"></ComboBoxItem>
-                    <ComboBoxItem Content="POST"></ComboBoxItem>
-                </ComboBox>
-                <TextBox x:Name="customApiOffUri" Grid.Row="8" TextWrapping="Wrap" VerticalAlignment="Center" Text="{Binding LightSettings.CustomApi.CustomApiOff.Uri}" Grid.Column="3" Margin="10,0,14,0"/>
-
-                <Label x:Name="customApiActivityAvailableLabel" Content="Activity Available:" Margin="3,0,0,0" Grid.Row="9" VerticalAlignment="Center" Grid.Column="1"/>
-                <ComboBox x:Name="customApiActivityAvailableMethod" Grid.Row="9" VerticalAlignment="Center" Width="72" Grid.Column="2" Margin="10,0,0,0" SelectionChanged="customApiMethod_SelectionChanged" SelectedValuePath="Content" Text="{Binding LightSettings.CustomApi.CustomApiActivityAvailable.Method}">
-                    <ComboBoxItem Content="GET"></ComboBoxItem>
-                    <ComboBoxItem Content="POST"></ComboBoxItem>
-                </ComboBox>
-                <TextBox x:Name="customApiActivityAvailableUri" Grid.Row="9" TextWrapping="Wrap" VerticalAlignment="Center" Text="{Binding LightSettings.CustomApi.CustomApiActivityAvailable.Uri}" Grid.Column="3" Margin="10,0,14,0"/>
-
-                <Label x:Name="customApiActivityPresentingLabel" Content="Activity Presenting:" Margin="3,0,0,0" Grid.Row="10" VerticalAlignment="Center" Grid.Column="1"/>
-                <ComboBox x:Name="customApiActivityPresentingMethod" Grid.Row="10" VerticalAlignment="Center" Width="72" Grid.Column="2" Margin="10,0,0,0" SelectionChanged="customApiMethod_SelectionChanged" SelectedValuePath="Content" Text="{Binding LightSettings.CustomApi.CustomApiActivityPresenting.Method}">
-                    <ComboBoxItem Content="GET"></ComboBoxItem>
-                    <ComboBoxItem Content="POST"></ComboBoxItem>
-                </ComboBox>
-                <TextBox x:Name="customApiActivityPresentingUri" Grid.Row="10" TextWrapping="Wrap" VerticalAlignment="Center" Text="{Binding LightSettings.CustomApi.CustomApiActivityPresenting.Uri}" Grid.Column="3" Margin="10,0,14,0"/>
-
-                <Label x:Name="customApiActivityInACallLabel" Content="Activity InACall:" Margin="3,0,0,0" Grid.Row="11" VerticalAlignment="Center" Grid.Column="1" />
-                <ComboBox x:Name="customApiActivityInACallMethod" Grid.Row="11" VerticalAlignment="Center" Width="72" Grid.Column="2" Margin="10,0,0,0" SelectionChanged="customApiMethod_SelectionChanged" SelectedValuePath="Content" Text="{Binding LightSettings.CustomApi.CustomApiActivityInACall.Method}">
-                    <ComboBoxItem Content="GET"></ComboBoxItem>
-                    <ComboBoxItem Content="POST"></ComboBoxItem>
-                </ComboBox>
-                <TextBox x:Name="customApiActivityInACallUri" Grid.Row="11" TextWrapping="Wrap" VerticalAlignment="Center" Text="{Binding LightSettings.CustomApi.CustomApiActivityInACall.Uri}" Grid.Column="3" Margin="10,0,14,0"/>
-
-                <Label x:Name="customApiActivityInAMeetingLabel" Content="Activity InAMeeting:" Margin="3,0,0,0" Grid.Row="12" VerticalAlignment="Center" Grid.Column="1"/>
-                <ComboBox x:Name="customApiActivityInAMeetingMethod" Grid.Row="12" VerticalAlignment="Center" Width="72" Grid.Column="2" Margin="10,0,0,0" SelectionChanged="customApiMethod_SelectionChanged" SelectedValuePath="Content" Text="{Binding LightSettings.CustomApi.CustomApiActivityInAMeeting.Method}">
-                    <ComboBoxItem Content="GET"></ComboBoxItem>
-                    <ComboBoxItem Content="POST"></ComboBoxItem>
-                </ComboBox>
-                <TextBox x:Name="customApiActivityInAMeetingUri" Grid.Row="12" TextWrapping="Wrap" VerticalAlignment="Center" Text="{Binding LightSettings.CustomApi.CustomApiActivityInAMeeting.Uri}" Grid.Column="3" Margin="10,0,14,0"/>
-
-                <Label x:Name="customApiActivityBusyLabel" Content="Activity Busy:" Margin="3,0,0,0" Grid.Row="13" VerticalAlignment="Center" Grid.Column="1"/>
-                <ComboBox x:Name="customApiActivityBusyMethod" Grid.Row="13" VerticalAlignment="Center" Width="72" Grid.Column="2" Margin="10,0,0,0" SelectionChanged="customApiMethod_SelectionChanged" SelectedValuePath="Content" Text="{Binding LightSettings.CustomApi.CustomApiActivityBusy.Method}">
-                    <ComboBoxItem Content="GET"></ComboBoxItem>
-                    <ComboBoxItem Content="POST"></ComboBoxItem>
-                </ComboBox>
-                <TextBox x:Name="customApiActivityBusyUri" Grid.Row="13" TextWrapping="Wrap" VerticalAlignment="Center" Text="{Binding LightSettings.CustomApi.CustomApiActivityBusy.Uri}" Grid.Column="3" Margin="10,0,14,0"/>
-
-                <Label x:Name="customApiActivityAwayLabel" Content="Activity Away:" Margin="3,0,0,0" Grid.Row="14" VerticalAlignment="Center" Grid.Column="1"/>
-                <ComboBox x:Name="customApiActivityAwayMethod" Grid.Row="14" VerticalAlignment="Center" Width="72" Grid.Column="2" Margin="10,0,0,0" SelectionChanged="customApiMethod_SelectionChanged" SelectedValuePath="Content" Text="{Binding LightSettings.CustomApi.CustomApiActivityAway.Method}">
-                    <ComboBoxItem Content="GET"></ComboBoxItem>
-                    <ComboBoxItem Content="POST"></ComboBoxItem>
-                </ComboBox>
-                <TextBox x:Name="customApiActivityAwayUri" Grid.Row="14" TextWrapping="Wrap" VerticalAlignment="Center" Text="{Binding LightSettings.CustomApi.CustomApiActivityAway.Uri}" Grid.Column="3" Margin="10,0,14,0"/>
-
-                <Label x:Name="customApiActivityBeRightBackLabel" Content="Activity BeRightBack:" Margin="3,0,0,0" Grid.Row="15" VerticalAlignment="Center" Grid.Column="1"/>
-                <ComboBox x:Name="customApiActivityBeRightBackMethod" Grid.Row="15" VerticalAlignment="Center" Width="72" Grid.Column="2" Margin="10,0,0,0" SelectionChanged="customApiMethod_SelectionChanged" SelectedValuePath="Content" Text="{Binding LightSettings.CustomApi.CustomApiActivityBeRightBack.Method}">
-                    <ComboBoxItem Content="GET"></ComboBoxItem>
-                    <ComboBoxItem Content="POST"></ComboBoxItem>
-                </ComboBox>
-                <TextBox x:Name="customApiActivityBeRightBackUri" Grid.Row="15" TextWrapping="Wrap" VerticalAlignment="Center" Text="{Binding LightSettings.CustomApi.CustomApiActivityBeRightBack.Uri}" Grid.Column="3" Margin="10,0,14,0"/>
-
-                <Label x:Name="customApiActivityDoNotDisturbLabel" Content="Activity DoNotDisturb:" Margin="3,0,0,0" Grid.Row="16" VerticalAlignment="Center" Grid.Column="1"/>
-                <ComboBox x:Name="customApiActivityDoNotDisturbMethod" Grid.Row="16" VerticalAlignment="Center" Width="72" Grid.Column="2" Margin="10,0,0,0" SelectionChanged="customApiMethod_SelectionChanged" SelectedValuePath="Content" Text="{Binding LightSettings.CustomApi.CustomApiActivityDoNotDisturb.Method}">
-                    <ComboBoxItem Content="GET"></ComboBoxItem>
-                    <ComboBoxItem Content="POST"></ComboBoxItem>
-                </ComboBox>
-                <TextBox x:Name="customApiActivityDoNotDisturbUri" Grid.Row="16" TextWrapping="Wrap" VerticalAlignment="Center" Text="{Binding LightSettings.CustomApi.CustomApiActivityDoNotDisturb.Uri}" Grid.Column="3" Margin="10,0,14,0"/>
-
-                <Label x:Name="customApiActivityIdleLabel" Content="Activity Idle:" Margin="3,0,0,0" Grid.Row="17" VerticalAlignment="Center" Grid.Column="1"/>
-                <ComboBox x:Name="customApiActivityIdleMethod" Grid.Row="17" VerticalAlignment="Center" Width="72" Grid.Column="2" Margin="10,0,0,0" SelectionChanged="customApiMethod_SelectionChanged" SelectedValuePath="Content" Text="{Binding LightSettings.CustomApi.CustomApiActivityIdle.Method}">
-                    <ComboBoxItem Content="GET"></ComboBoxItem>
-                    <ComboBoxItem Content="POST"></ComboBoxItem>
-                </ComboBox>
-                <TextBox x:Name="customApiActivityIdleUri" Grid.Row="17" TextWrapping="Wrap" VerticalAlignment="Center" Text="{Binding LightSettings.CustomApi.CustomApiActivityIdle.Uri}" Grid.Column="3" Margin="10,0,14,0"/>
-
-                <Label x:Name="customApiActivityOfflineLabel" Content="Activity Offline:" Margin="3,0,0,0" Grid.Row="18" VerticalAlignment="Center" Grid.Column="1"/>
-                <ComboBox x:Name="customApiActivityOfflineMethod" Grid.Row="18" VerticalAlignment="Center" Width="72" Grid.Column="2" Margin="10,0,0,0" SelectionChanged="customApiMethod_SelectionChanged" SelectedValuePath="Content" Text="{Binding LightSettings.CustomApi.CustomApiActivityOffline.Method}">
-                    <ComboBoxItem Content="GET"></ComboBoxItem>
-                    <ComboBoxItem Content="POST"></ComboBoxItem>
-                </ComboBox>
-                <TextBox x:Name="customApiActivityOfflineUri" Grid.Row="18" TextWrapping="Wrap" VerticalAlignment="Center" Text="{Binding LightSettings.CustomApi.CustomApiActivityOffline.Uri}" Grid.Column="3" Margin="10,0,14,0"/>
-
-                <Label x:Name="customApiActivityOffLabel" Content="Activity Off:" Margin="3,0,0,0" Grid.Row="19" VerticalAlignment="Center" Grid.Column="1"/>
-                <ComboBox x:Name="customApiActivityOffMethod" Grid.Row="19" VerticalAlignment="Center" Width="72" Grid.Column="2" Margin="10,0,0,0" SelectionChanged="customApiMethod_SelectionChanged" SelectedValuePath="Content" Text="{Binding LightSettings.CustomApi.CustomApiActivityOff.Method}">
-                    <ComboBoxItem Content="GET"></ComboBoxItem>
-                    <ComboBoxItem Content="POST"></ComboBoxItem>
-                </ComboBox>
-                <TextBox x:Name="customApiActivityOffUri" Grid.Row="19" TextWrapping="Wrap" VerticalAlignment="Center" Text="{Binding LightSettings.CustomApi.CustomApiActivityOff.Uri}" Grid.Column="3" Margin="10,0,14,0"/>
-                <Label x:Name="lblCustomApiLastResponse" Content="Last Response:" Margin="3,0,0,0" Grid.Row="20" VerticalAlignment="Center" Grid.Column="1"/>
-                <Label x:Name="customApiLastResponse" Grid.Row="20" VerticalAlignment="Center" Grid.Column="2" Grid.ColumnSpan="2" Margin="10,0,14,0"/>
-
-                <Button x:Name="btnCustomApiSettingsSave" Content="Save" Grid.Row="21" Grid.Column="3" Height="40" Width="132" Click="btnApiSettingsSave_Click" Margin="28,0,0,0"/>
-                <Label Grid.Row="22" Grid.RowSpan="1" Grid.Column="3" VerticalAlignment="Top" x:Name="lblCustomApiSaved" HorizontalAlignment="Left" Visibility="Collapsed" Content="Settings Saved" Foreground="Green" Margin="94,7,0,0"/>
-            </Grid>
+            <StackPanel Grid.Row="4" Orientation="Vertical" >
+                <TextBlock Text="Last response:" VerticalAlignment="Center" />
+                <TextBlock Text="{Binding LastResponse}" VerticalAlignment="Center" >
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                            <Style.Setters>
+                                <Setter Property="Foreground" Value="Green" />
+                            </Style.Setters>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsSuccessfulResponse}" Value="False">
+                                    <Setter Property="Foreground" Value="Red" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </StackPanel>
         </Grid>
-    </ScrollViewer>
+
+        <Button Grid.Row="3" Grid.Column="1" Content="Save" HorizontalAlignment="Center" VerticalAlignment="Center" Height="40" Width="132" Command="{Binding SaveCommand}"/>
+        <Label Grid.Row="5" Grid.Column="1" VerticalAlignment="Center" x:Name="lblCustomApiSaved" HorizontalAlignment="Center" Content="{Binding SettingsSavedMessage}" Foreground="Green" Margin="5"/>
+    </Grid>
 </ui:Page>

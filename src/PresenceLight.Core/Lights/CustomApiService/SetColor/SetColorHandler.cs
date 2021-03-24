@@ -1,22 +1,30 @@
 ﻿using MediatR;
-using PresenceLight.Core;
-using System;
+
+using Microsoft.Extensions.Options;
+
+using PresenceLight.Core.Lights;
+
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace PresenceLight.Core.CustomApiServices
 {
-    internal class SetColorHandler : IRequestHandler<SetColorCommand, string>
+    internal class SetColorHandler : ColorHandlerBase<CustomApi>
     {
         readonly ICustomApiService _service;
-        public SetColorHandler(ICustomApiService service)
+        private readonly IMediator _mediator;
+
+        public SetColorHandler(ICustomApiService service, IMediator mediator, IOptionsMonitor<BaseConfig> optionsAccessor)
+            : base(optionsAccessor, baseConfig => baseConfig.LightSettings.CustomApi, c => c.IsEnabled)
         {
             _service = service;
+            _mediator = mediator;
         }
 
-        public async Task<string> Handle(SetColorCommand command, CancellationToken cancellationToken)
+        protected override async Task SetColor(string availability, string activity, CancellationToken cancellationToken)
         {
-            return await _service.SetColor(command.Availability, command.Activity, cancellationToken);
+            CustomApiResponse response = await _service.SetColor(availability, activity, cancellationToken);
+            await _mediator.Publish(new CustomApiResponseNotification(response));
         }
     }
 }

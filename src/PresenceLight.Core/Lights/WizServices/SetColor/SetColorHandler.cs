@@ -1,22 +1,25 @@
-﻿using MediatR;
+﻿using Microsoft.Extensions.Options;
+
+using PresenceLight.Core.Lights;
 
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace PresenceLight.Core.WizServices.WizService
 {
-    public class SetColorHandler : IRequestHandler<SetColorCommand, Unit>
+    internal class SetColorHandler : ColorHandlerBase<Wiz>
     {
-        IWizService _service;
-        public SetColorHandler(IWizService hueService)
+        private readonly IWizService _service;
+
+        public SetColorHandler(IWizService service, IOptionsMonitor<BaseConfig> optionsAccessor)
+            : base(optionsAccessor, baseConfig => baseConfig.LightSettings.Wiz, c => c.IsEnabled)
         {
-            _service = hueService;
+            _service = service;
         }
 
-        public  async Task<Unit> Handle(SetColorCommand command, CancellationToken cancellationToken)
+        protected override async Task SetColor(string availability, string activity, CancellationToken cancellationToken)
         {
-            await _service.SetColor(command.Availability, command.Activity, command.LightID);
-            return default;
+            await _service.SetColor(availability, activity, Config.SelectedItemId);
         }
     }
 }
