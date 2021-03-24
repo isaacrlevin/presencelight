@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 
 using Microsoft.Extensions.DependencyInjection;
 
+using PresenceLight.Core;
+using PresenceLight.Core.WizServices;
 using PresenceLight.ViewModels;
 
 namespace PresenceLight
@@ -35,17 +38,58 @@ namespace PresenceLight
 
             image.Freeze();
             return image;
-
         }
 
         public static void AddViewModels(this IServiceCollection services)
         {
-            services.AddSingleton<CustomApiVm>();
+            var allTypes = Assembly.GetExecutingAssembly().GetTypes();
+            Type[] viewModels = allTypes.Where(x => !x.IsAbstract && x.IsAssignableTo(typeof(IBaseVm))).ToArray();
+
+            foreach (Type type in viewModels)
+            {
+                services.AddSingleton(type);
+            }
+
             services.AddSingleton<IEnumerable<IRefreshable>>(x =>
-                new List<IRefreshable>
+            {
+                var refreshables = new List<IRefreshable>();
+
+                foreach (Type type in viewModels)
                 {
-                    x.GetRequiredService<CustomApiVm>(),
-                });
+                    refreshables.Add((IRefreshable)x.GetRequiredService(type));
+                }
+
+                return refreshables;
+            });
+        }
+
+        public static void AddMockLightServices(this IServiceCollection services)
+        {
+            services.AddSingleton<IWorkingHoursService, WorkingHoursService>();
+            services.AddSingleton<GraphWrapper>();
+            services.AddSingleton<IHueService, HueService>();
+            services.AddSingleton<IRemoteHueService, RemoteHueService>();
+            services.AddSingleton<LIFXService>();
+            services.AddSingleton<IYeelightService, YeelightService>();
+            services.AddSingleton<ICustomApiService, CustomApiService>();
+            services.AddSingleton<IWizService, MockWizService>();
+        }
+
+        internal class MockWizService : IWizService
+        {
+            private static readonly IEnumerable<WizLight> Lights = new WizLight []
+                {
+                    new WizLight { LightName = "Light1", MacAddress = "address1" },
+                    new WizLight { LightName = "Light2", MacAddress = "address2" },
+                    new WizLight { LightName = "Light3", MacAddress = "address3" }
+                };
+
+            public Task<IEnumerable<WizLight>> GetLights() => Task.FromResult(Lights);
+
+            public Task SetColor(string availability, string activity, string lightId)
+            {
+                return Task.CompletedTask;
+            }
         }
     }
 }

@@ -104,7 +104,14 @@ namespace PresenceLight
 
             services.AddSingleton<IGraphService, GraphService>();
 
-            services.AddPresenceServices();
+            if (Convert.ToBoolean(Configuration?["MockServices"], CultureInfo.InvariantCulture))
+            {
+                services.AddMockLightServices();
+            }
+            else
+            {
+                services.AddPresenceServices();
+            }
 
             services.AddSingleton<LIFXOAuthHelper>();
             services.AddSingleton<ThisAppInfo>();

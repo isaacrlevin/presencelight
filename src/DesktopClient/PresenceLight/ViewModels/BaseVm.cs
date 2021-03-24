@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 using MediatR;
@@ -12,7 +13,11 @@ using PresenceLight.Services;
 
 namespace PresenceLight.ViewModels
 {
-    public abstract class BaseVm<T, TSubscription> : INotifyPropertyChanged, IRefreshable
+    public interface IBaseVm
+    {
+    }
+
+    public abstract class BaseVm<T, TSubscription> : INotifyPropertyChanged, IRefreshable, IBaseVm
         where T: Subscriber<TSubscription>
         where TSubscription: Subscription
     {
@@ -48,10 +53,14 @@ namespace PresenceLight.ViewModels
             SaveCommand = new RelayCommand(SaveSettings, CanSaveSettings);
         }
 
-        public virtual void Refresh()
+        protected void RaisePropertyChanged(string property) => PropertyChanged.Raise(this, property);
+
+        public virtual Task Refresh()
         {
-            PropertyChanged.Raise(this, nameof(IsEnabled));
-            PropertyChanged.Raise(this, nameof(SubscribedItems));
+            RaisePropertyChanged(nameof(IsEnabled));
+            RaisePropertyChanged(nameof(SubscribedItems));
+
+            return Task.CompletedTask;
         }
 
         private bool CanSaveSettings(object? _) => !IsSaving;
@@ -62,6 +71,7 @@ namespace PresenceLight.ViewModels
             {
                 IsSaving = true;
                 SettingsSavedMessage = string.Empty;
+                CommandManager.InvalidateRequerySuggested();
 
                 await Mediator.Send(new SaveSettingsCommand()).ConfigureAwait(true);
 
@@ -76,6 +86,7 @@ namespace PresenceLight.ViewModels
             finally
             {
                 IsSaving = false;
+                CommandManager.InvalidateRequerySuggested();
             }
         }
     }

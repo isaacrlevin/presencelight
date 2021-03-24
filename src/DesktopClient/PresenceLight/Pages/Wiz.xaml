@@ -6,9 +6,13 @@
              xmlns:ui="http://schemas.modernwpf.com/2019"
              xmlns:gif="http://wpfanimatedgif.codeplex.com"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:core="clr-namespace:PresenceLight.Core;assembly=PresenceLight.Core"
              xmlns:local="clr-namespace:PresenceLight.Pages"
              mc:Ignorable="d" 
              d:DesignHeight="950" d:DesignWidth="800">
+    <ui:Page.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </ui:Page.Resources>
     <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
         <Grid>
             <Grid>
@@ -24,9 +28,9 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <Grid Grid.Column="1" Grid.ColumnSpan="4">
-                    <CheckBox x:Name="cbIsWizEnabled" IsChecked="{Binding LightSettings.Wiz.IsEnabled}" Content="Connect to Wiz" Grid.Column="1" Grid.ColumnSpan="4" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbIsWizEnabledChanged"  Checked="cbIsWizEnabledChanged" />
+                    <CheckBox IsChecked="{Binding IsEnabled}" Content="Connect to Wiz" Grid.Column="1" Grid.ColumnSpan="4" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top" />
                 </Grid>
-                <Grid x:Name="pnlWiz"  Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3">
+                <Grid Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3" Visibility="{Binding IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
@@ -38,9 +42,9 @@
                         <RowDefinition Height="*" />
                         <RowDefinition Height="150" />
                     </Grid.RowDefinitions>
-                    <Button Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center" Grid.Column="1" Height="40" Width="120" Content="Find Wiz Lights" Click="FindWizs_Click"/>
+                    <Button Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center" Grid.Column="1" Height="40" Width="120" Content="Find Wiz Lights" Command="{Binding RefreshCommand}"/>
 
-                    <Grid x:Name="pnlWizData"   Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="3" Margin="0,0,0,0">
+                    <Grid Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="3" Margin="0,0,0,0" Visibility="{Binding IsDataVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
@@ -51,7 +55,7 @@
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
 
-                        <Grid x:Name="pnlWizLights"   Grid.Column="0" Grid.Row="0" Margin="0,0,0,0" Grid.RowSpan="4">
+                        <Grid Grid.Column="0" Grid.Row="0" Margin="0,0,0,0" Grid.RowSpan="4" Visibility="{Binding IsDataVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
@@ -61,8 +65,7 @@
                                 <RowDefinition Height="100"/>
                             </Grid.RowDefinitions>
 
-                            <ComboBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" DisplayMemberPath="LightName" SelectedValuePath="MacAddress"  x:Name="ddlWizLights" Visibility="Visible" SelectionChanged="ddlWizLights_SelectionChanged"  HorizontalAlignment="Center" VerticalAlignment="Top"  Width="150" />
-
+                            <ComboBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" ItemsSource="{Binding Lights}" SelectedValue="{Binding Config.SelectedItemId}" DisplayMemberPath="LightName" SelectedValuePath="MacAddress" Visibility="Visible" HorizontalAlignment="Center" VerticalAlignment="Top"  Width="150" />
                         </Grid>
 
                         <Grid x:Name="pnlWizBrightness"  Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" Margin="0,0,0,88" Grid.RowSpan="4">
@@ -81,10 +84,25 @@
                         </Grid>
 
                         <Grid Grid.Column="0" Grid.Row="2">
-                            <CheckBox IsChecked="{Binding LightSettings.Wiz.UseActivityStatus}" Content="Use Activity Status" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Center" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbUseWizActivityStatus" Checked="cbUseWizActivityStatus" />
+                            <CheckBox IsChecked="{Binding Config.UseActivityStatus}" Content="Use Activity Status" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Center" Margin="0,20,0,0" VerticalAlignment="Top" />
                         </Grid>
 
-                        <Grid x:Name="pnlWizAvailableStatuses" Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="3" Margin="0,20,0,0">
+                        <DataGrid Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="3" ItemsSource="{Binding SubscribedItems}" AutoGenerateColumns="False" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                            <DataGrid.Columns>
+                                <DataGridComboBoxColumn Header="Availability" ItemsSource="{Binding Path=(core:AvailabilityState.AllStates)}" SelectedItemBinding="{Binding Availability, Mode=TwoWay}" Width="120"/>
+                                <DataGridComboBoxColumn Header="Activity" ItemsSource="{Binding Path=(core:ActivityState.AllStates)}" SelectedItemBinding="{Binding Activity, Mode=TwoWay}" Width="120"/>
+                                <DataGridTemplateColumn Header="Color" Width="120" >
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <xctk:ColorPicker SelectedColor="{Binding Colour}" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="100" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridCheckBoxColumn Header="Disabled" Binding="{Binding Disabled}" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <!--<Grid x:Name="pnlWizAvailableStatuses" Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="3" Margin="0,20,0,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
@@ -212,11 +230,11 @@
                             <CheckBox x:Name="wizActivityUrgentInterruptionsOnlyDisabled" IsChecked="{Binding LightSettings.Wiz.Statuses.ActivityUrgentInterruptionsOnlyStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="14" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbWizIsDisabledChange" Checked="cbWizIsDisabledChange" />
                             <CheckBox x:Name="wizActivityOffDisabled" IsChecked="{Binding LightSettings.Wiz.Statuses.ActivityOffStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="15" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbWizIsDisabledChange" Checked="cbWizIsDisabledChange" />
 
-                        </Grid>
+                        </Grid>-->
 
                     </Grid>
                     <Image Grid.Row="4" Grid.Column="1" x:Name="imgWizLoading" Visibility="Collapsed" gif:ImageBehavior.AnimatedSource="../Icons/loading.gif" Width="75" Margin="70,42,69,215" Grid.RowSpan="4"  />
-                    <Button Grid.Row="5" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="0" Grid.ColumnSpan="3" x:Name="btnWiz" Height="45" Width="170" Content="Save"  Click="SaveWiz_Click" />
+                    <Button Grid.Row="5" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="0" Grid.ColumnSpan="3" Height="45" Width="170" Content="Save" Command="{Binding SaveCommand}" />
                     <Label Grid.Row="5"  VerticalAlignment="Top" Grid.Column="0" Grid.ColumnSpan="3" x:Name="lblWizSaved" HorizontalAlignment="Center" Visibility="Visible" Content="Settings Updated" Foreground="Green" Margin="0,0,0,0" Grid.RowSpan="2" />
 
                 </Grid>

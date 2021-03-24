@@ -18,14 +18,12 @@ namespace PresenceLight.ViewModels
             _refreshables = refreshables.ToArray();
         }
 
-        public Task Handle(InitializeNotification notification, CancellationToken cancellationToken)
+        public async Task Handle(InitializeNotification notification, CancellationToken cancellationToken)
         {
             foreach (var refreshable in _refreshables)
             {
-                refreshable.Refresh();
+                await refreshable.Refresh();
             }
-
-            return Task.CompletedTask;
         }
     }
 }
