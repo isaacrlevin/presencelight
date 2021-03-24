@@ -589,9 +589,7 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error Occurred");
-                _diagClient.TrackException(e);
-                throw;
+                return null;
             }
         }
 
