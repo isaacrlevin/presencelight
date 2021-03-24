@@ -71,6 +71,6 @@
         </Grid>
 
         <Button Grid.Row="3" Grid.Column="1" Content="Save" HorizontalAlignment="Center" VerticalAlignment="Center" Height="40" Width="132" Command="{Binding SaveCommand}"/>
-        <Label Grid.Row="5" Grid.Column="1" VerticalAlignment="Center" x:Name="lblCustomApiSaved" HorizontalAlignment="Center" Content="{Binding SettingsSavedMessage}" Foreground="Green" Margin="5"/>
+        <Label Grid.Row="5" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Content="{Binding SettingsSavedMessage}" Foreground="Green" Margin="5"/>
     </Grid>
 </ui:Page>

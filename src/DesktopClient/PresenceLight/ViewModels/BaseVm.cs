@@ -13,11 +13,12 @@ using PresenceLight.Services;
 
 namespace PresenceLight.ViewModels
 {
-    public interface IBaseVm
+    public interface IViewModel
     {
+        Task Refresh();
     }
 
-    public abstract class BaseVm<T, TSubscription> : INotifyPropertyChanged, IRefreshable, IBaseVm
+    public abstract class BaseVm<T, TSubscription> : INotifyPropertyChanged, IViewModel
         where T: Subscriber<TSubscription>
         where TSubscription: Subscription
     {
@@ -71,7 +72,6 @@ namespace PresenceLight.ViewModels
             {
                 IsSaving = true;
                 SettingsSavedMessage = string.Empty;
-                CommandManager.InvalidateRequerySuggested();
 
                 await Mediator.Send(new SaveSettingsCommand()).ConfigureAwait(true);
 
@@ -86,7 +86,6 @@ namespace PresenceLight.ViewModels
             finally
             {
                 IsSaving = false;
-                CommandManager.InvalidateRequerySuggested();
             }
         }
     }

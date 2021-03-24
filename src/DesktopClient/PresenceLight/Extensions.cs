@@ -43,20 +43,20 @@ namespace PresenceLight
         public static void AddViewModels(this IServiceCollection services)
         {
             var allTypes = Assembly.GetExecutingAssembly().GetTypes();
-            Type[] viewModels = allTypes.Where(x => !x.IsAbstract && x.IsAssignableTo(typeof(IBaseVm))).ToArray();
+            Type[] viewModels = allTypes.Where(x => !x.IsAbstract && x.IsAssignableTo(typeof(IViewModel))).ToArray();
 
             foreach (Type type in viewModels)
             {
                 services.AddSingleton(type);
             }
 
-            services.AddSingleton<IEnumerable<IRefreshable>>(x =>
+            services.AddSingleton<IEnumerable<IViewModel>>(x =>
             {
-                var refreshables = new List<IRefreshable>();
+                var refreshables = new List<IViewModel>();
 
                 foreach (Type type in viewModels)
                 {
-                    refreshables.Add((IRefreshable)x.GetRequiredService(type));
+                    refreshables.Add((IViewModel)x.GetRequiredService(type));
                 }
 
                 return refreshables;
@@ -84,7 +84,11 @@ namespace PresenceLight
                     new WizLight { LightName = "Light3", MacAddress = "address3" }
                 };
 
-            public Task<IEnumerable<WizLight>> GetLights() => Task.FromResult(Lights);
+            public async Task<IEnumerable<WizLight>> GetLights()
+            {
+                await Task.Delay(1000).ConfigureAwait(true);
+                return Lights;
+            }
 
             public Task SetColor(string availability, string activity, string lightId)
             {

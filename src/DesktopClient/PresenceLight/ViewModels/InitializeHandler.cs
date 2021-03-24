@@ -11,18 +11,18 @@ namespace PresenceLight.ViewModels
 {
     public class InitializeHandler : INotificationHandler<InitializeNotification>
     {
-        private readonly IRefreshable[] _refreshables;
+        private readonly IViewModel[] _viewModels;
 
-        public InitializeHandler(IEnumerable<IRefreshable> refreshables)
+        public InitializeHandler(IEnumerable<IViewModel> viewModels)
         {
-            _refreshables = refreshables.ToArray();
+            _viewModels = viewModels.ToArray();
         }
 
         public async Task Handle(InitializeNotification notification, CancellationToken cancellationToken)
         {
-            foreach (var refreshable in _refreshables)
+            foreach (IViewModel? vm in _viewModels)
             {
-                await refreshable.Refresh();
+                await vm.Refresh();
             }
         }
     }
