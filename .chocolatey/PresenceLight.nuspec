@@ -17,6 +17,12 @@
     <description>
       PresenceLight is a solution to broadcast your various statuses to a Phillips Hue or LIFX light bulb.
       Some statuses you can broadcast are: your availability in Microsoft Teams, your current Windows 10 theme, and a theme or color of your choosing.
+
+      ## Package Parameters
+
+      - x86: Force x86 installation of PresenceLight
+      - x64: Force x64 installation of PresenceLight (default)
+      - InstallDir: Change installation directory of PresenceLight. Default is "$env:APPDATA\PresenceLight"
     </description>
     <summary>Broadcasts colors to various Smart Lights</summary>
     <releaseNotes>https://github.com/isaacrlevin/PresenceLight/releases</releaseNotes>
