@@ -7,6 +7,6 @@ namespace PresenceLight.Core
     {
         public bool IsEnabled { get; set; }
 
-        public List<CustomApiSubscription> Subscriptions { get; set; } = new List<CustomApiSubscription>();
+        public List<TSubscription> Subscriptions { get; set; } = new List<TSubscription>();
     }
 }

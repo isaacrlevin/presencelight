@@ -6,6 +6,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 
+using Microsoft.Extensions.DependencyInjection;
+
+using PresenceLight.ViewModels;
+
 namespace PresenceLight
 {
     public static class Extensions
@@ -32,6 +36,16 @@ namespace PresenceLight
             image.Freeze();
             return image;
 
+        }
+
+        public static void AddViewModels(this IServiceCollection services)
+        {
+            services.AddSingleton<CustomApiVm>();
+            services.AddSingleton<IEnumerable<IRefreshable>>(x =>
+                new List<IRefreshable>
+                {
+                    x.GetRequiredService<CustomApiVm>(),
+                });
         }
     }
 }

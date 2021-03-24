@@ -109,7 +109,7 @@ namespace PresenceLight
             services.AddSingleton<LIFXOAuthHelper>();
             services.AddSingleton<ThisAppInfo>();
             services.AddTransient<DiagnosticsClient>();
-            services.AddSingleton<CustomApiVm>();
+            services.AddViewModels();
             services.AddSingleton<MainWindowModern>();
 
             if (Convert.ToBoolean(Configuration?["IsAppPackaged"], CultureInfo.InvariantCulture))
