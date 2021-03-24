@@ -14,6 +14,8 @@ namespace PresenceLight.Core
         public bool SendDiagnosticData { get; set; }
         public bool StartMinimized { get; set; }
         public string? IconType { get; set; }
+
+        public string LogLevel { get; set; }
         public LightSettings LightSettings { get; set; }
     }
 }

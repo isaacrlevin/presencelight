@@ -29,7 +29,7 @@
                 <RowDefinition Height="100" />
                 <RowDefinition Height="100" />
                 <RowDefinition Height="60" />
-                <RowDefinition Height="*" />
+                <RowDefinition Height="100" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
@@ -39,7 +39,7 @@
             <Grid  Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" Grid.ColumnSpan="2" x:Name="pnlWorkingHours" Margin="0,50,0,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
-  
+
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
@@ -54,7 +54,7 @@
 
 
 
-                <Label FontWeight="Bold" Grid.Row="0" Grid.Column="0" Margin="0,0,0,0" Content="Light Syncing Schedule (Working Hours)"  Grid.ColumnSpan="2" />                
+                <Label FontWeight="Bold" Grid.Row="0" Grid.Column="0" Margin="0,0,0,0" Content="Light Syncing Schedule (Working Hours)"  Grid.ColumnSpan="2" />
                 <ui:SimpleTimePicker Grid.Row="0" HorizontalAlignment="Left"  Margin="0,0,0,0" Grid.Column="2" Grid.ColumnSpan="4"  SourceMinutes="{x:Static mah:TimePicker.IntervalOf15}"/>
                 <ui:SimpleTimePicker Grid.Row="1" Margin="0,0,0,0" Grid.Column="2" Grid.ColumnSpan="4"  SourceMinutes="{x:Static mah:TimePicker.IntervalOf15}"/>
 
@@ -108,9 +108,12 @@
 
             <CheckBox x:Name="cbStartMinimized" VerticalAlignment="Top" IsChecked="{Binding StartMinimized}" Grid.Row="7" Content="Start Minimized" Grid.Column="1" HorizontalAlignment="Left" Margin="0,0,0,0" />
 
+            <Label Grid.Column="1" Margin="0,50,0,0" Grid.Row="7" Content="Log Level" />
 
-            <Button Grid.Column="0" Margin="0,100,0,50" HorizontalAlignment="Center" Grid.Row="7" Height="45" x:Name="btnSettings" Width="170" Content="Save" Click="SaveSettings_Click" Grid.ColumnSpan="4" />
-            <Label Grid.Column="0"  Margin="0,50,0,50" HorizontalAlignment="Center" Grid.Row="8" x:Name="lblSettingSaved" Visibility="Collapsed" Content="Settings Updated" Foreground="Green" Grid.ColumnSpan="4"/>
+            <ComboBox Grid.Row="7" Grid.Column="2" DisplayMemberPath="Label" Margin="0,50,0,0" HorizontalAlignment="Left" x:Name="ddlLogLevel"  />
+
+            <Button Grid.Column="0" Margin="0,150,0,50" HorizontalAlignment="Center" Grid.Row="7" Height="45" x:Name="btnSettings" Width="170" Content="Save" Click="SaveSettings_Click" Grid.ColumnSpan="4" />
+            <Label Grid.Column="0"  Margin="0,100,0,50" HorizontalAlignment="Center" Grid.Row="8" x:Name="lblSettingSaved" Visibility="Collapsed" Content="Settings Updated" Foreground="Green" Grid.ColumnSpan="4"/>
 
         </Grid>
     </ScrollViewer>

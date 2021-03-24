@@ -7,6 +7,9 @@ using Microsoft.Extensions.Logging;
 using PresenceLight.Services;
 using PresenceLight.Telemetry;
 using ModernWpf;
+using System.Windows.Controls;
+using PresenceLight.Core.Configuration;
+using LogLevel = PresenceLight.Core.Configuration.LogLevel;
 
 namespace PresenceLight.Pages
 {
@@ -18,13 +21,27 @@ namespace PresenceLight.Pages
         private MainWindowModern _parentWindow;
         private DiagnosticsClient _diagClient;
         private ILogger _logger;
+
         public SettingsPage()
         {
             _diagClient = App.ServiceProvider.GetRequiredService<DiagnosticsClient>();
             _logger = App.ServiceProvider.GetRequiredService<ILogger<SettingsPage>>();
             _parentWindow = Application.Current.Windows.OfType<MainWindowModern>().First();
-
             InitializeComponent();
+
+            ddlLogLevel.ItemsSource = LogLevel.GetAll();
+
+
+
+            foreach (var item in ddlLogLevel.Items)
+            {
+                var log = (LogLevel)item;
+                if (log.Label == SettingsHandlerBase.Config.LogLevel)
+                {
+                    ddlLogLevel.SelectedItem = item;
+                }
+            }
+
 
             if (SettingsHandlerBase.Config.LightSettings.UseWorkingHours)
             {
@@ -119,6 +136,15 @@ namespace PresenceLight.Pages
             try
             {
                 btnSettings.IsEnabled = false;
+
+                foreach (var item in ddlLogLevel.ItemsSource)
+                {
+                    var log = (LogLevel)item;
+                    if (log.Label == ((LogLevel)ddlLogLevel.SelectedItem).Label)
+                    {
+                        SettingsHandlerBase.Config.LogLevel = log.Label;
+                    }
+                }
 
                 if (Transparent.IsChecked == true)
                 {
@@ -336,6 +362,11 @@ namespace PresenceLight.Pages
 
             SettingsHandlerBase.SyncOptions();
             e.Handled = true;
+        }
+
+        private void ddlLogLevel_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+     
         }
     }
 }
