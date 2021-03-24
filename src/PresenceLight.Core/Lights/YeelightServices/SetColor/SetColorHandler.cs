@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace PresenceLight.Core.YeelightServices
 {
-    internal class SetColorHandler : ColorHandlerBase<Yeelight>
+    internal class SetColorHandler : ColorHandlerBase<Yeelight, ColorSubscription>
     {
         private readonly IYeelightService _service;
 

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace PresenceLight.Core.WizServices.WizService
 {
-    internal class SetColorHandler : ColorHandlerBase<Wiz>
+    internal class SetColorHandler : ColorHandlerBase<Wiz, ColorSubscription>
     {
         private readonly IWizService _service;
 

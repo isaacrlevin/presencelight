@@ -8,16 +8,17 @@ using System.Threading.Tasks;
 
 namespace PresenceLight.Core.Lights
 {
-    internal abstract class ColorHandlerBase<TConfig> : INotificationHandler<SetColorNotification>
-        where TConfig : BaseLight
+    internal abstract class ColorHandlerBase<T, TSubscription> : INotificationHandler<SetColorNotification>
+        where T : Subscriber<TSubscription>
+        where TSubscription: Subscription
     {
         private readonly IOptionsMonitor<BaseConfig> _optionsAccessor;
-        private readonly Func<BaseConfig, TConfig> _configSelector;
-        private readonly Func<TConfig, bool> _enablerFunc;
+        private readonly Func<BaseConfig, T> _configSelector;
+        private readonly Func<T, bool> _enablerFunc;
 
-        protected TConfig Config => _configSelector(_optionsAccessor.CurrentValue);
+        protected T Config => _configSelector(_optionsAccessor.CurrentValue);
 
-        public ColorHandlerBase(IOptionsMonitor<BaseConfig> optionsAccessor, Func<BaseConfig, TConfig> configSelector, Func<TConfig, bool> enablerFunc)
+        public ColorHandlerBase(IOptionsMonitor<BaseConfig> optionsAccessor, Func<BaseConfig, T> configSelector, Func<T, bool> enablerFunc)
         {
             _optionsAccessor = optionsAccessor;
             _configSelector = configSelector;

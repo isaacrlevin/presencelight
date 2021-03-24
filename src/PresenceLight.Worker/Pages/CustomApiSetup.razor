@@ -23,10 +23,10 @@
                     <br />
                     @if (Config.CurrentValue.LightSettings.CustomApi.IsEnabled)
                         {
-                        <DataGrid TItem="CustomApiSetting" Editable="true" UseInternalEditing="true" EditMode="DataGridEditMode.Inline"
+                        <DataGrid TItem="CustomApiSubscription" Editable="true" UseInternalEditing="true" EditMode="DataGridEditMode.Inline"
                                   Data="@Config.CurrentValue.LightSettings.CustomApi.Subscriptions">
-                            <DataGridCommandColumn TItem="CustomApiSetting" />
-                            <DataGridSelectColumn TItem="CustomApiSetting" Field="@nameof(CustomApiSetting.Availability)" Caption="Availability" Sortable="false" Editable="true">
+                            <DataGridCommandColumn TItem="CustomApiSubscription" />
+                            <DataGridSelectColumn TItem="CustomApiSubscription" Field="@nameof(CustomApiSubscription.Availability)" Caption="Availability" Sortable="false" Editable="true">
                                 <EditTemplate>
                                     <select class="form-control" value="@context.Item.Availability" @onchange="@(v => context.CellValue = v.Value.ToString())">
                                         @foreach (string item in PresenceLight.Core.AvailabilityState.AllStates)
@@ -36,7 +36,7 @@
                                     </select>
                                 </EditTemplate>
                             </DataGridSelectColumn>
-                            <DataGridSelectColumn TItem="CustomApiSetting" Field="@nameof(CustomApiSetting.Activity)" Caption="Activity" Sortable="false" Editable="true">
+                            <DataGridSelectColumn TItem="CustomApiSubscription" Field="@nameof(CustomApiSubscription.Activity)" Caption="Activity" Sortable="false" Editable="true">
                                 <EditTemplate>
                                     <select class="form-control" value="@context.Item.Activity" @onchange="@(v => context.CellValue = v.Value.ToString())">
                                         @foreach (string item in PresenceLight.Core.ActivityState.AllStates)
@@ -46,7 +46,7 @@
                                     </select>
                                 </EditTemplate>
                             </DataGridSelectColumn>
-                            <DataGridSelectColumn TItem="CustomApiSetting" Field="@nameof(CustomApiSetting.Method)" Caption="Method" Sortable="false" Editable="true">
+                            <DataGridSelectColumn TItem="CustomApiSubscription" Field="@nameof(CustomApiSubscription.Method)" Caption="Method" Sortable="false" Editable="true">
                                 <EditTemplate>
                                     <select class="form-control" value="@context.Item.Method" @onchange="@(v => context.CellValue = v.Value.ToString())">
                                         @foreach (string item in PresenceLight.Core.CustomApiHttpMethod.AllMethods)
@@ -56,7 +56,7 @@
                                     </select>
                                 </EditTemplate>
                             </DataGridSelectColumn>
-                            <DataGridColumn TItem="CustomApiSetting" Field="@nameof(CustomApiSetting.Uri)" Caption="Url" Sortable="false" Editable="true" />
+                            <DataGridColumn TItem="CustomApiSubscription" Field="@nameof(CustomApiSubscription.Uri)" Caption="Url" Sortable="false" Editable="true" />
                         </DataGrid>
 
                             <br />

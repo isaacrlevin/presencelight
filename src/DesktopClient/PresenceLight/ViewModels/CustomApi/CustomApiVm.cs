@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
 using System.Windows.Input;
 
 using MediatR;
@@ -22,7 +20,7 @@ namespace PresenceLight.ViewModels
         public event PropertyChangedEventHandler? PropertyChanged;
 
         public ICommand SaveCommand { get; }
-        public List<CustomApiSetting> SubscribedItems => Config.Subscriptions;
+        public List<CustomApiSubscription> SubscribedItems => Config.Subscriptions;
         public bool IsEnabled
         {
             get => Config.IsEnabled;

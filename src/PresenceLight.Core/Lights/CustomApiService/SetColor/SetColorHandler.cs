@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace PresenceLight.Core.CustomApiServices
 {
-    internal class SetColorHandler : ColorHandlerBase<CustomApi>
+    internal class SetColorHandler : ColorHandlerBase<CustomApi, CustomApiSubscription>
     {
         readonly ICustomApiService _service;
         private readonly IMediator _mediator;

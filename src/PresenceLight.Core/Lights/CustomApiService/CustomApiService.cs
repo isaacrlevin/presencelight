@@ -53,7 +53,7 @@ namespace PresenceLight.Core
                 // If we are outside of working hours we should signal that we are off
                 // availability = activity = availability;
 
-                CustomApiSetting setting = FindSetting(availability, activity);
+                CustomApiSubscription setting = FindSetting(availability, activity);
                 if (setting == null)
                 {
                     return CustomApiResponse.None;
@@ -67,10 +67,10 @@ namespace PresenceLight.Core
             }
         }
 
-        private CustomApiSetting? FindSetting(string availability, string? activity)
+        private CustomApiSubscription? FindSetting(string availability, string? activity)
         {
             // Try to find exact match
-            CustomApiSetting setting = FindValidSetting(s => s.Availability == availability && s.Activity == activity);
+            CustomApiSubscription setting = FindValidSetting(s => s.Availability == availability && s.Activity == activity);
             if (setting != null)
             {
                 return setting;
@@ -100,9 +100,9 @@ namespace PresenceLight.Core
             return null;
         }
 
-        private CustomApiSetting? FindValidSetting(Predicate<CustomApiSetting> predicate)
+        private CustomApiSubscription? FindValidSetting(Predicate<CustomApiSubscription> predicate)
         {
-            Predicate<CustomApiSetting> extendedPredicate = s => predicate(s) && !string.IsNullOrWhiteSpace(s.Method) && !string.IsNullOrWhiteSpace(s.Uri);
+            Predicate<CustomApiSubscription> extendedPredicate = s => predicate(s) && !string.IsNullOrWhiteSpace(s.Method) && !string.IsNullOrWhiteSpace(s.Uri);
             return _options.LightSettings.CustomApi.Subscriptions.FirstOrDefault(s => extendedPredicate(s));
         }
 
