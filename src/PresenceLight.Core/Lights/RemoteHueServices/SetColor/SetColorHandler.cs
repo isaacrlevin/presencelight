@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace PresenceLight.Core.RemoteHueServices
 {
-    internal class SetColorHandler : ColorHandlerBase<Hue>
+    internal class SetColorHandler : ColorHandlerBase<Hue, ColorSubscription>
     {
         private readonly IRemoteHueService _service;
 

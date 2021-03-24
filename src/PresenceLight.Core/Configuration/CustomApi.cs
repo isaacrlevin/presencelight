@@ -1,11 +1,7 @@
-﻿using System.Collections.Generic;
-
-namespace PresenceLight.Core
+﻿namespace PresenceLight.Core
 {
-    public class CustomApi : BaseLight
+    public class CustomApi : Subscriber<CustomApiSubscription>
     {
-        public double CustomApiTimeout { get; set; }
-
-        public List<CustomApiSetting> Subscriptions { get; set; } = new List<CustomApiSetting>();
+        public double CustomApiTimeout { get; set; }        
     }
 }

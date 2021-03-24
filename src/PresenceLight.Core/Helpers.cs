@@ -80,10 +80,14 @@ namespace PresenceLight.Core
                     {
                         if (property.Name == "Colour")
                         {
-                            var uncleanColor = property.GetValue(obj).ToString();
+                            string uncleanColor = property.GetValue(obj)?.ToString();
+                            if (uncleanColor == null)
+                            {
+                                continue;
+                            }
                             uncleanColor = uncleanColor.Replace("#", "");
 
-                            string cleanColor = "";
+                            string cleanColor = ""; 
                             switch (uncleanColor.Length)
                             {
                                 case var length when uncleanColor.Length == 6:

@@ -22,6 +22,8 @@ using PresenceLight.Core;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using PresenceLight.Core.PubSub;
+using ModernWpf.Media.Animation;
+using System.Collections;
 
 namespace PresenceLight
 {
@@ -30,7 +32,6 @@ namespace PresenceLight
     /// </summary>
     public partial class MainWindowModern : Window
     {
-
         public string LightMode;
 
         public ObservableCollection<LogEvent> _events = new();
@@ -103,10 +104,7 @@ namespace PresenceLight
             {
                 UpdateAppTitle();
             };
-
-
         }
-
 
         void UpdateAppTitle()
         {
@@ -181,8 +179,36 @@ namespace PresenceLight
             }
             else
             {
-                NavView.SelectedItem = NavView.MenuItems.OfType<NavigationViewItem>().FirstOrDefault(x => GetPageType(x) == e.SourcePageType());
+                NavView.SelectedItem = FindPage(e.SourcePageType());
             }
+
+            NavView.Header = (NavView.SelectedItem as NavigationViewItem)?.Content?.ToString() ?? NavView.Header;
+        }
+
+        private NavigationViewItem? FindPage(Type pageType) => FindPage(NavView.MenuItems, pageType);
+
+        private NavigationViewItem? FindPage(IEnumerable menuItems, Type pageType)
+        {
+            if (menuItems == null)
+            {
+                return null;
+            }
+
+            foreach (NavigationViewItem item in menuItems.OfType<NavigationViewItem>())
+            {
+                if (GetPageType(item) == pageType)
+                {
+                    return item;
+                }
+
+                NavigationViewItem? fromChild = FindPage(item.MenuItems, pageType);
+                if (fromChild != null)
+                {
+                    return fromChild;
+                }
+            }
+
+            return null;
         }
 
         private void UpdateAppTitleMargin(NavigationView sender)
@@ -207,9 +233,9 @@ namespace PresenceLight
             if (item is NavigationViewItem menuItem)
             {
                 var pageType = GetPageType(menuItem);
-                if (pageType != null && ContentFrame.CurrentSourcePageType != pageType)
+                if (pageType != null)
                 {
-                    ContentFrame.Navigate(pageType);
+                    Navigate(pageType);
                 }
             }
         }

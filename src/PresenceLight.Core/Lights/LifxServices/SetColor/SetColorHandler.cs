@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace PresenceLight.Core.LifxServices
 {
-    internal class SetColorHandler : ColorHandlerBase<LIFX>
+    internal class SetColorHandler : ColorHandlerBase<LIFX, ColorSubscription>
     {
         private readonly LIFXService _service;
 

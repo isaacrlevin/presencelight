@@ -10,5 +10,17 @@ namespace PresenceLight.Core.WizServices
     {
         public string LightName { get; set; }
         public string MacAddress { get; set; }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is WizLight light &&
+                   LightName == light.LightName &&
+                   MacAddress == light.MacAddress;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(LightName, MacAddress);
+        }
     }
 }

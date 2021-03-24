@@ -65,7 +65,8 @@ namespace PresenceLight.Core
 
             try
             {
-                var o = Handle(_options.LightSettings.Wiz.UseActivityStatus ? activity : availability, lightId);
+                var subscription = FindSetting(availability, activity);
+                var o = Handle(subscription, lightId);
 
                 if (o.returnFunc)
                 {
@@ -175,47 +176,71 @@ namespace PresenceLight.Core
             return homeIds;
         }
 
-        private (string color, WizParams command, bool returnFunc) Handle(string presence, string lightId)
+        // TODO: Once all setting pages use the new subscription model, consolidate this to the ColorHandlerBase and pass TSubscription instead of (string,string)
+        private ColorSubscription? FindSetting(string availability, string? activity)
         {
-            var props = _options.LightSettings.Hue.Statuses.GetType().GetProperties().ToList();
-
-            if (_options.LightSettings.Hue.UseActivityStatus)
+            // Try to find exact match
+            ColorSubscription setting = FindValidSetting(s => s.Availability == availability && s.Activity == activity);
+            if (setting != null)
             {
-                props = props.Where(a => a.Name.ToLower().StartsWith("activity")).ToList();
-            }
-            else
-            {
-                props = props.Where(a => a.Name.ToLower().StartsWith("availability")).ToList();
+                return setting;
             }
 
+            // Try to find exact activity
+            setting = FindValidSetting(s => s.Activity == activity);
+            if (setting != null)
+            {
+                return setting;
+            }
+
+            // Try to find exact availability
+            setting = FindValidSetting(s => s.Availability == availability);
+            if (setting != null)
+            {
+                return setting;
+            }
+
+            // Try to find first default
+            setting = FindValidSetting(s => string.IsNullOrWhiteSpace(s.Availability) && string.IsNullOrWhiteSpace(s.Activity));
+            if (setting != null)
+            {
+                return setting;
+            }
+
+            return null;
+        }
+
+        private ColorSubscription? FindValidSetting(Predicate<ColorSubscription> predicate)
+        {
+            Predicate<ColorSubscription> validatedPredicate = s => predicate(s) && s.IsValid();
+            return _options.LightSettings.Wiz.Subscriptions.FirstOrDefault(s => validatedPredicate(s));
+        }
+
+        private (string color, WizParams command, bool returnFunc) Handle(ColorSubscription subscription, string lightId)
+        {
             string color = "";
             string message;
 
             var command = new WizParams();
-
-            foreach (var prop in props)
+            if (subscription == null)
             {
-                if (presence == prop.Name.Replace("Status", "").Replace("Availability", "").Replace("Activity", ""))
-                {
-                    var value = (AvailabilityStatus)prop.GetValue(_options.LightSettings.Hue.Statuses);
-
-                    if (!value.Disabled)
-                    {
-                        command.State = true;
-                        color = value.Colour;
-                        return (color, command, false);
-                    }
-                    else
-                    {
-                        command.State = false;
-                        UpdateLight(command, lightId);
-                        message = $"Turning Hue Light {lightId} Off";
-                        _logger.LogInformation(message);
-                        return (color, command, true);
-                    }
-                }
+                return (color, command, true);
             }
-            return (color, command, false);
+
+            if (!subscription.Disabled)
+            {
+                command.State = true;
+                color = subscription.Colour;
+                return (color, command, false);
+            }
+            else
+            {
+                command.State = false;
+                UpdateLight(command, lightId);
+                message = $"Turning Hue Light {lightId} Off";
+                _logger.LogInformation(message);
+                return (color, command, true);
+            }
         }
         private WizResult UpdateLight(WizParams wizParams, string lightId)
         {
