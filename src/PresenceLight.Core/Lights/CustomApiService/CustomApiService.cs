@@ -102,8 +102,8 @@ namespace PresenceLight.Core
 
         private CustomApiSubscription? FindValidSetting(Predicate<CustomApiSubscription> predicate)
         {
-            Predicate<CustomApiSubscription> extendedPredicate = s => predicate(s) && !string.IsNullOrWhiteSpace(s.Method) && !string.IsNullOrWhiteSpace(s.Uri);
-            return _options.LightSettings.CustomApi.Subscriptions.FirstOrDefault(s => extendedPredicate(s));
+            Predicate<CustomApiSubscription> validatedPredicate = s => predicate(s) && s.IsValid();
+            return _options.LightSettings.CustomApi.Subscriptions.FirstOrDefault(s => validatedPredicate(s));
         }
 
         private async Task<CustomApiResponse> PerformWebRequest(string method, string uri, CancellationToken cancellationToken)
