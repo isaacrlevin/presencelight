@@ -47,19 +47,24 @@ namespace PresenceLight.Core
                 return;
             }
 
-            var device = this.deviceGroup.FirstOrDefault(x => x.Id == lightId);
+            var o = await Handle(_options.LightSettings.Yeelight.UseActivityStatus ? activity : availability, lightId);
 
-            if (device == null)
+            if (o.returnFunc)
+            {
+                return;
+            }
+
+            if (o.device == null)
             {
                 message = $"Yeelight Device {lightId} Not Found";
                 _logger.LogError(message);
                 throw new ArgumentOutOfRangeException(nameof(lightId), message);
             }
 
-            device.OnNotificationReceived += Device_OnNotificationReceived;
-            device.OnError += Device_OnError;
+            o.device.OnNotificationReceived += Device_OnNotificationReceived;
+            o.device.OnError += Device_OnError;
 
-            if (!await device.Connect())
+            if (!await o.device.Connect())
             {
                 message = $"Unable to Connect to Yeelight Device {lightId}";
                 _logger.LogError(message);
@@ -68,118 +73,10 @@ namespace PresenceLight.Core
 
             try
             {
-                string color = "";
-
-                if (_options.LightSettings.Yeelight.UseActivityStatus)
-                { }
-                else
-                {
-                    switch (availability)
-                    {
-                        case "Available":
-                            if (!_options.LightSettings.Yeelight.Statuses.AvailabilityAvailableStatus.Disabled)
-                            {
-
-                                color = _options.LightSettings.Yeelight.Statuses.AvailabilityAvailableStatus.Colour;
-                            }
-                            else
-                            {
-                                message = $"Turning Yeelight Light {lightId} Off";
-                                _logger.LogInformation(message);
-                                await device.SetPower(false);
-                                return;
-                            }
-                            break;
-                        case "Busy":
-                            if (!_options.LightSettings.Yeelight.Statuses.AvailabilityBusyStatus.Disabled)
-                            {
-                                color = _options.LightSettings.Yeelight.Statuses.AvailabilityBusyStatus.Colour;
-                            }
-                            else
-                            {
-                                message = $"Turning Yeelight Light {lightId} Off";
-                                _logger.LogInformation(message);
-                                await device.SetPower(false);
-                                return;
-                            }
-                            break;
-                        case "BeRightBack":
-                            if (!_options.LightSettings.Yeelight.Statuses.AvailabilityBeRightBackStatus.Disabled)
-                            {
-                                color = _options.LightSettings.Yeelight.Statuses.AvailabilityBeRightBackStatus.Colour;
-                            }
-                            else
-                            {
-                                message = $"Turning Yeelight Light {lightId} Off";
-                                _logger.LogInformation(message);
-                                await device.SetPower(false);
-                                return;
-                            }
-                            break;
-                        case "Away":
-                            if (!_options.LightSettings.Yeelight.Statuses.AvailabilityAwayStatus.Disabled)
-                            {
-                                color = _options.LightSettings.Yeelight.Statuses.AvailabilityAwayStatus.Colour;
-                            }
-                            else
-                            {
-                                message = $"Turning Yeelight Light {lightId} Off";
-                                _logger.LogInformation(message);
-                                await device.SetPower(false);
-                                return;
-                            }
-                            break;
-                        case "DoNotDisturb":
-                            if (!_options.LightSettings.Yeelight.Statuses.AvailabilityDoNotDisturbStatus.Disabled)
-                            {
-                                color = _options.LightSettings.Yeelight.Statuses.AvailabilityDoNotDisturbStatus.Colour;
-                            }
-                            else
-                            {
-                                message = $"Turning Yeelight Light {lightId} Off";
-                                _logger.LogInformation(message);
-                                await device.SetPower(false);
-                                return;
-                            }
-                            break;
-                        case "Offline":
-                            if (!_options.LightSettings.Yeelight.Statuses.AvailabilityOfflineStatus.Disabled)
-                            {
-                                color = _options.LightSettings.Yeelight.Statuses.AvailabilityOfflineStatus.Colour;
-                            }
-                            else
-                            {
-                                message = $"Turning Yeelight Light {lightId} Off";
-                                _logger.LogInformation(message);
-                                await device.SetPower(false);
-                                return;
-                            }
-                            break;
-                        case "Off":
-                            if (!_options.LightSettings.Yeelight.Statuses.AvailabilityOffStatus.Disabled)
-                            {
-                                color = _options.LightSettings.Yeelight.Statuses.AvailabilityOffStatus.Colour;
-                            }
-                            else
-                            {
-                                message = $"Turning Yeelight Light {lightId} Off";
-                                _logger.LogInformation(message);
-                                await device.SetPower(false);
-                                return;
-                            }
-                            break;
-                        default:
-                            color = availability;
-                            break;
-                    }
-                }
-
-
-                color = color.Replace("#", "");
+                var color = o.color.Replace("#", "");
 
                 switch (color.Length)
                 {
-
                     case var length when color.Length == 6:
                         // Do Nothing
                         break;
@@ -195,29 +92,29 @@ namespace PresenceLight.Core
                 {
                     if (_options.LightSettings.DefaultBrightness == 0)
                     {
-                        await device.TurnOff();
+                        await o.device.TurnOff();
                     }
                     else
                     {
-                        await device.TurnOn();
-                        await device.SetBrightness(Convert.ToInt32(_options.LightSettings.DefaultBrightness));
+                        await o.device.TurnOn();
+                        await o.device.SetBrightness(Convert.ToInt32(_options.LightSettings.DefaultBrightness));
                     }
                 }
                 else
                 {
                     if (_options.LightSettings.Hue.Brightness == 0)
                     {
-                        await device.TurnOff();
+                        await o.device.TurnOff();
                     }
                     else
                     {
-                        await device.TurnOn();
-                        await device.SetBrightness(Convert.ToInt32(_options.LightSettings.Yeelight.Brightness));
+                        await o.device.TurnOn();
+                        await o.device.SetBrightness(Convert.ToInt32(_options.LightSettings.Yeelight.Brightness));
                     }
                 }
 
                 var rgb = new RGBColor(color);
-                await device.SetRGBColor((int)rgb.R, (int)rgb.G, (int)rgb.B);
+                await o.device.SetRGBColor((int)rgb.R, (int)rgb.G, (int)rgb.B);
                 return;
             }
             catch (Exception e)
@@ -249,6 +146,52 @@ namespace PresenceLight.Core
                 _logger.LogError(e, "Error Occured Finding Lights");
                 throw;
             }
+        }
+
+        private async Task<(string color, Device device, bool returnFunc)> Handle(string presence, string lightId)
+        {
+            var props = _options.LightSettings.Yeelight.Statuses.GetType().GetProperties().ToList();
+
+            if (_options.LightSettings.Yeelight.UseActivityStatus)
+            {
+                props = props.Where(a => a.Name.ToLower().StartsWith("activity")).ToList();
+            }
+            else
+            {
+                props = props.Where(a => a.Name.ToLower().StartsWith("availability")).ToList();
+            }
+
+            string color = "";
+            string message;
+            var device = this.deviceGroup.FirstOrDefault(x => x.Id == lightId);
+
+            device.OnNotificationReceived += Device_OnNotificationReceived;
+            device.OnError += Device_OnError;
+
+            await device.Connect();
+            foreach (var prop in props)
+            {
+                if (presence == prop.Name.Replace("Status", "").Replace("Availability", "").Replace("Activity", ""))
+                {
+                    var value = (AvailabilityStatus)prop.GetValue(_options.LightSettings.Yeelight.Statuses);
+
+                    if (!value.Disabled)
+                    {
+                        await device.TurnOn();
+                        color = value.Colour;
+                        return (color, device, false);
+                    }
+                    else
+                    {
+                        await device.TurnOff();
+
+                        message = $"Turning Yeelight Light {lightId} Off";
+                        _logger.LogInformation(message);
+                        return (color, device, true);
+                    }
+                }
+            }
+            return (color, device, false);
         }
     }
 }
