@@ -42,6 +42,35 @@ namespace PresenceLight.Pages
             parentWindow = System.Windows.Application.Current.Windows.OfType<MainWindowModern>().First();
 
             InitializeComponent();
+
+
+
+            if (SettingsHandlerBase.Config.LightSettings.Wiz.IsEnabled)
+            {
+                pnlWiz.Visibility = Visibility.Visible;
+                cbIsWizEnabled.IsChecked = true;
+                SettingsHandlerBase.SyncOptions();
+            }
+            else
+            {
+                pnlWiz.Visibility = Visibility.Collapsed;
+            }
+
+            if (SettingsHandlerBase.Config.LightSettings.UseDefaultBrightness)
+            {
+                WizBrightness.IsEnabled = false;
+                WizBrightnessNum.IsEnabled = false;
+                wizBrightnessText.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                WizBrightness.IsEnabled = true;
+                WizBrightnessNum.IsEnabled = true;
+                wizBrightnessText.Visibility = Visibility.Collapsed;
+            }
+
+
+            CheckWiz();
         }
 
         private void cbIsWizEnabledChanged(object sender, RoutedEventArgs e)
