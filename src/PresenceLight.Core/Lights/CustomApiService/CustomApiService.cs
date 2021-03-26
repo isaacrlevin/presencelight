@@ -49,9 +49,6 @@ namespace PresenceLight.Core
 
         public async Task<string> SetColor(string availability, string? activity, CancellationToken cancellationToken = default)
         {
-            // If we are outside of working hours we should signal that we are off
-            availability = activity = availability;
-
             string result = await SetAvailability(availability, cancellationToken);
             result += await SetActivity(activity, cancellationToken);
             return result;
