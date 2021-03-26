@@ -6,9 +6,7 @@ COPY PresenceLight.Worker/. ./PresenceLight.Worker/
 COPY PresenceLight.Core/. ./PresenceLight.Core/
 
 WORKDIR /source/PresenceLight.Worker
-RUN dotnet publish -c release -o /app
-
-
+RUN dotnet publish -c release -o /app /p:Version={VERSION}
 
 # final stage/image
 FROM mcr.microsoft.com/dotnet/aspnet:5.0
