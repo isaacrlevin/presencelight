@@ -405,15 +405,15 @@ jobs:
       - name: Update Docker Files
         run: |
           $dockerFileLatest = Get-Content -path "${{ github.workspace }}/src/DockerFiles/Dockerfile" -Raw
-          $dockerFileLatest = $dockerFileLatest -replace '{VERSION}', ${{ env.VERSION }}
+          $dockerFileLatest = $dockerFileLatest -replace '{VERSION}', "${{ env.VERSION }} "
           $dockerFileLatest | Set-Content -Path "${{ github.workspace }}/src/DockerFiles/Dockerfile"
 
           $dockerFile32 = Get-Content -path "${{ github.workspace }}/src/DockerFiles/Dockerfile.debian-arm32" -Raw
-          $dockerFile32 = $dockerFile32 -replace '{VERSION}', ${{ env.VERSION }}
+          $dockerFile32 = $dockerFile32 -replace '{VERSION}', "${{ env.VERSION }} "
           $dockerFile32 | Set-Content -Path "${{ github.workspace }}/src/DockerFiles/Dockerfile.debian-arm32"
 
           $dockerFile64 = Get-Content -path "${{ github.workspace }}/src/DockerFiles/Dockerfile.debian-arm32" -Raw
-          $dockerFile64 = $dockerFile64 -replace '{VERSION}', ${{ env.VERSION }}
+          $dockerFile64 = $dockerFile64 -replace '{VERSION}', "${{ env.VERSION }} "
           $dockerFile64 | Set-Content -Path "${{ github.workspace }}/src/DockerFiles/Dockerfile.debian-arm32"
         shell: pwsh
         if: ${{ success() && github.event_name != 'pull_request' }}
