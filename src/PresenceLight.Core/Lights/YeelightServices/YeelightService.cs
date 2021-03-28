@@ -9,6 +9,7 @@ using YeelightAPI;
 using System.Drawing;
 using Q42.HueApi.ColorConverters;
 using Microsoft.Extensions.Logging;
+using System.Net.NetworkInformation;
 
 namespace PresenceLight.Core
 {
@@ -39,6 +40,11 @@ namespace PresenceLight.Core
 
         public async Task SetColor(string availability, string activity, string lightId)
         {
+            if (this.deviceGroup == null)
+            {
+               await FindLights();
+            }
+
             string message = "";
 
             if (string.IsNullOrEmpty(lightId))
@@ -217,7 +223,7 @@ namespace PresenceLight.Core
                 }
 
                 var rgb = new RGBColor(color);
-                await device.SetRGBColor((int)rgb.R, (int)rgb.G, (int)rgb.B);
+                await device.SetRGBColor((int)(rgb.R * 255), (int)(rgb.G * 255), (int)(rgb.B * 255));
                 return;
             }
             catch (Exception e)

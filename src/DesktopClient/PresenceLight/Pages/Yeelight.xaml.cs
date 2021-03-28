@@ -114,8 +114,10 @@ namespace PresenceLight.Pages
         {
             try
             {
-                
+                imgYeelightLoading.Visibility = Visibility.Visible;
                 pnlYeelightData.Visibility = Visibility.Collapsed;
+                lblYeelightSaved.Visibility = Visibility.Collapsed;
+
                 if (SettingsHandlerBase.Config != null)
                 {
                     SettingsHandlerBase.SyncOptions();
@@ -144,6 +146,8 @@ namespace PresenceLight.Pages
                         pnlYeelightActivityStatuses.Visibility = Visibility.Collapsed;
                     }
                 }
+
+                imgYeelightLoading.Visibility = Visibility.Visible;
             }
             catch (Exception e)
             {
