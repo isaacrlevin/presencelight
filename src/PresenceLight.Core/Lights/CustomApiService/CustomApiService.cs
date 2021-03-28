@@ -162,13 +162,46 @@ namespace PresenceLight.Core
 
         private async Task<string> SetAvailability(string availability, CancellationToken cancellationToken)
         {
-            string result = await CallCustomApiForAvailabilityChanged(this, availability, cancellationToken);
+            string result = string.Empty;
+            if (availability != _currentAvailability)
+            {
+                result = await CallCustomApiForAvailabilityChanged(this, availability, cancellationToken);
+                if (!cancellationToken.IsCancellationRequested)
+                {
+                    _currentAvailability = availability;
+                }
+                else
+                {
+                    // operation was cancelled
+                }
+                    
+            }
+            else
+            {
+                // availability did not change: don't spam call the api
+            }
             return result;
         }
 
         private async Task<string> SetActivity(string activity, CancellationToken cancellationToken)
         {
-            string result = await CallCustomApiForActivityChanged(this, activity, cancellationToken);
+            string result = string.Empty;
+            if (activity != _currentActivity)
+            {
+                result = await CallCustomApiForActivityChanged(this, activity, cancellationToken);
+                if (!cancellationToken.IsCancellationRequested)
+                {
+                    _currentActivity = activity;
+                }
+                else
+                {
+                    // operation was cancelled
+                }
+            }
+            else
+            {
+                // activity did not change: don't spam call the api
+            }
             return result;
         }
 
