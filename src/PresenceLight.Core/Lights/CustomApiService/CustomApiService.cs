@@ -166,7 +166,7 @@ namespace PresenceLight.Core
             if (availability != _currentAvailability)
             {
                 result = await CallCustomApiForAvailabilityChanged(this, availability, cancellationToken);
-                if (!cancellationToken.CancellationRequested)
+                if (!cancellationToken.IsCancellationRequested)
                 {
                     _currentAvailability = availability;
                 }
@@ -189,7 +189,7 @@ namespace PresenceLight.Core
             if (activity != _currentActivity)
             {
                 result = await CallCustomApiForActivityChanged(this, activity, cancellationToken);
-                if (!cancellationToken.CancellationRequested)
+                if (!cancellationToken.IsCancellationRequested)
                 {
                     _currentActivity = activity;
                 }
