@@ -49,7 +49,7 @@ namespace PresenceLight.Core
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error Getting Lights");
+                _logger.LogError(_options, e, "Error Getting Lights");
                 throw;
             }
         }
@@ -72,7 +72,7 @@ namespace PresenceLight.Core
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error Getting Groups");
+                _logger.LogError(_options, e, "Error Getting Groups");
                 throw;
             }
         }
@@ -81,7 +81,7 @@ namespace PresenceLight.Core
         {
             if (string.IsNullOrEmpty(lightId))
             {
-                _logger.LogInformation("Selected LIFX Light Not Specified");
+                _logger.LogInformation(_options, "Selected LIFX Light Not Specified");
                 return;
             }
 
@@ -118,7 +118,7 @@ namespace PresenceLight.Core
                         }
                         else
                         {
-                            _logger.LogInformation($"Turning LIFX Light {lightId} Off - LIFXService:SetColor");
+                            _logger.LogInformation(_options, $"Turning LIFX Light {lightId} Off - LIFXService:SetColor");
                             var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
                             {
                                 Power = PowerState.Off
@@ -133,7 +133,7 @@ namespace PresenceLight.Core
                         }
                         else
                         {
-                            _logger.LogInformation($"Turning LIFX Light {lightId} Off - LIFXService:SetColor");
+                            _logger.LogInformation(_options, $"Turning LIFX Light {lightId} Off - LIFXService:SetColor");
                             var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
                             {
                                 Power = PowerState.Off
@@ -148,7 +148,7 @@ namespace PresenceLight.Core
                         }
                         else
                         {
-                            _logger.LogInformation($"Turning LIFX Light {lightId} Off - LIFXService:SetColor");
+                            _logger.LogInformation(_options, $"Turning LIFX Light {lightId} Off - LIFXService:SetColor");
                             var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
                             {
                                 Power = PowerState.Off
@@ -163,7 +163,7 @@ namespace PresenceLight.Core
                         }
                         else
                         {
-                            _logger.LogInformation($"Turning LIFX Light {lightId} Off - LIFXService:SetColor");
+                            _logger.LogInformation(_options, $"Turning LIFX Light {lightId} Off - LIFXService:SetColor");
                             var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
                             {
                                 Power = PowerState.Off
@@ -178,7 +178,7 @@ namespace PresenceLight.Core
                         }
                         else
                         {
-                            _logger.LogInformation($"Turning LIFX Light {lightId} Off - LIFXService:SetColor");
+                            _logger.LogInformation(_options, $"Turning LIFX Light {lightId} Off - LIFXService:SetColor");
                             var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
                             {
                                 Power = PowerState.Off
@@ -193,7 +193,7 @@ namespace PresenceLight.Core
                         }
                         else
                         {
-                            _logger.LogInformation($"Turning LIFX Light {lightId} Off - LIFXService:SetColor");
+                            _logger.LogInformation(_options, $"Turning LIFX Light {lightId} Off - LIFXService:SetColor");
                             var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
                             {
                                 Power = PowerState.Off
@@ -208,7 +208,7 @@ namespace PresenceLight.Core
                         }
                         else
                         {
-                            _logger.LogInformation($"Turning LIFX Light {lightId} Off - LIFXService:SetColor");
+                            _logger.LogInformation(_options, $"Turning LIFX Light {lightId} Off - LIFXService:SetColor");
                             var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
                             {
                                 Power = PowerState.Off
@@ -245,7 +245,7 @@ namespace PresenceLight.Core
 
                 if (availability == "Off")
                 {
-                    _logger.LogInformation($"Turning LIFX Light {lightId} Off - LIFXService:SetColor");
+                    _logger.LogInformation(_options, $"Turning LIFX Light {lightId} Off - LIFXService:SetColor");
                     var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
                     {
                         Power = PowerState.Off
@@ -258,7 +258,7 @@ namespace PresenceLight.Core
                 {
                     if (_options.LightSettings.DefaultBrightness == 0)
                     {
-                        _logger.LogInformation($"Turning LIFX Light {lightId} Off - LIFXService:SetColor");
+                        _logger.LogInformation(_options, $"Turning LIFX Light {lightId} Off - LIFXService:SetColor");
                         var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
                         {
                             Power = PowerState.Off
@@ -267,7 +267,7 @@ namespace PresenceLight.Core
                     else
                     {
                         string message = $"Setting LIFX Light {lightId} to {color}";
-                        _logger.LogInformation(message);
+                        _logger.LogInformation(_options, message);
                         var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
                         {
                             Brightness = Convert.ToDouble(_options.LightSettings.DefaultBrightness) / 100,
@@ -280,7 +280,7 @@ namespace PresenceLight.Core
                 {
                     if (_options.LightSettings.LIFX.Brightness == 0)
                     {
-                        _logger.LogInformation($"Turning LIFX Light {lightId} Off - LIFXService:SetColor");
+                        _logger.LogInformation(_options, $"Turning LIFX Light {lightId} Off - LIFXService:SetColor");
                         var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
                         {
                             Power = PowerState.Off
@@ -289,7 +289,7 @@ namespace PresenceLight.Core
                     else
                     {
                         string message = $"Setting LIFX Light {lightId} to {color}";
-                        _logger.LogInformation(message);
+                        _logger.LogInformation(_options, message);
                         var result = await _client.SetState(selector, new LifxCloud.NET.Models.SetStateRequest
                         {
                             Brightness = Convert.ToDouble(_options.LightSettings.LIFX.Brightness) / 100,
@@ -301,7 +301,7 @@ namespace PresenceLight.Core
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error Occured Setting Color");
+                _logger.LogError(_options, e, "Error Occured Setting Color");
                 throw;
             }
         }

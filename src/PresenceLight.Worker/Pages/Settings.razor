@@ -181,7 +181,7 @@
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Error Occured Saving Settings");
+            _logger.LogError(Config, e, "Error Occured Saving Settings");
             throw;
         }
     }

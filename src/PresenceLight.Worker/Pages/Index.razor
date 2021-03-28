@@ -60,7 +60,7 @@
             catch (Exception ex)
             {
 
-            _logger.LogError(ex,"Error Occured loading Index");
+            _logger.LogError(Config, ex,"Error Occured loading Index");
             appState.SetLightMode("");
             appState.SetUserAuthentication(false);
             ConsentHandler.HandleException(ex);

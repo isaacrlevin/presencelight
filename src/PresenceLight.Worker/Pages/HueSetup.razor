@@ -136,7 +136,7 @@
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Error Occured Saving Hue Settings");
+            _logger.LogError(Config, e, "Error Occured Saving Hue Settings");
             throw;
         }
     }
@@ -157,7 +157,7 @@
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error Occured Getting Hue Api Key");
+            _logger.LogError(Config, ex, "Error Occured Getting Hue Api Key");
         }
     }
 
@@ -211,7 +211,7 @@
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error Occured Registering Hue Bridge");
+                _logger.LogError(Config, ex, "Error Occured Registering Hue Bridge");
                 hueMessage = "Error Occured registering bridge, please try again";
                 showHueMessage = true;
                 hueMessageClass = "text-danger";
@@ -235,7 +235,7 @@
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e, "Error Occured Getting Hue Lights");
+                    _logger.LogError(Config, e, "Error Occured Getting Hue Lights");
                     throw;
                 }
                 Config.CurrentValue.LightSettings.Hue.HueIpAddress = tempConfig.LightSettings.Hue.HueIpAddress;
@@ -247,7 +247,7 @@
 
             else
             {
-                _logger.LogError("Hue Api Key not configured");
+                _logger.LogError(Config, "Hue Api Key not configured");
                 hueMessage = "Api Key Not Created, please try again and ensure you press the sync button on your bridge";
                 showHueMessage = true;
                 hueMessageClass = "text-danger";
@@ -300,7 +300,7 @@
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error Occured Getting Hue Lights");
+                _logger.LogError(Config, e, "Error Occured Getting Hue Lights");
                 showHueMessage = true;
                 hueMessage = "Error Occured Connecting to Hue, please try again";
                 hueMessageClass = "text-danger";
@@ -345,7 +345,7 @@
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Error Occured loading Hue Setup");
+            _logger.LogError(Config, e, "Error Occured loading Hue Setup");
             throw;
         }
     }

@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.Graph;
 
 using Polly;
@@ -20,13 +21,13 @@ namespace PresenceLight.Core
         private readonly ILogger<GraphWrapper> _logger;
         private GraphServiceClient _graphServiceClient;
         internal AsyncRetryPolicy _retryPolicy;
-
+        private BaseConfig _options;
         public bool IsInitialized { get; set; }
 
-        public GraphWrapper(ILogger<GraphWrapper> logger)
+        public GraphWrapper(IOptionsMonitor<BaseConfig> optionsAccessor, ILogger<GraphWrapper> logger)
         {
             _logger = logger;
-
+            _options = optionsAccessor.CurrentValue;
             _retryPolicy = Policy
                       .Handle<Exception>()
                       .WaitAndRetryAsync(2, retryAttempt =>
@@ -66,7 +67,7 @@ namespace PresenceLight.Core
         private async Task<(User User, Presence Presence)> GetBatchContent(CancellationToken token)
         {
 
-            _logger.LogInformation("Getting Graph Data: Profle, Image, Presence");
+            _logger.LogInformation(_options, "Getting Graph Data: Profle, Image, Presence");
             try
             {
                 IUserRequest userRequest = _graphServiceClient.Me.Request();
@@ -86,7 +87,7 @@ namespace PresenceLight.Core
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error Occured Getting Batch Content");
+                _logger.LogError(_options, e, "Error Occured Getting Batch Content");
                 throw;
             }
 

@@ -92,7 +92,7 @@
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Error Occured Saving Custom Api Settings");
+            _logger.LogError(Config, e, "Error Occured Saving Custom Api Settings");
             throw;
         }
     }
@@ -108,7 +108,7 @@
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Error Occured loading Hue Setup");
+            _logger.LogError(Config, e, "Error Occured loading Hue Setup");
             throw;
         }
         await Task.CompletedTask;

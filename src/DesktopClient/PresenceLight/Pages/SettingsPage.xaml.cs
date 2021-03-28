@@ -180,7 +180,7 @@ namespace PresenceLight.Pages
                 SettingsHandlerBase.SyncOptions();
                 if (!await _parentWindow._mediator.Send(new SaveSettingsCommand()).ConfigureAwait(true))
                 {
-                    _logger.LogDebug("Settings Not Saved Properly");
+                    _logger.LogDebug(SettingsHandlerBase.Config, "Settings Not Saved Properly");
                 }
 
                 lblSettingSaved.Visibility = Visibility.Visible;
@@ -188,7 +188,7 @@ namespace PresenceLight.Pages
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occured Saving Settings");
+                _logger.LogError(SettingsHandlerBase.Config, ex, "Error occured Saving Settings");
                 _diagClient.TrackException(ex);
 
             }
@@ -253,7 +253,7 @@ namespace PresenceLight.Pages
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error occured Checking Azure Active Directory");
+                _logger.LogError(SettingsHandlerBase.Config, e, "Error occured Checking Azure Active Directory");
                 _diagClient.TrackException(e);
             }
         }
@@ -318,7 +318,7 @@ namespace PresenceLight.Pages
             SettingsHandlerBase.SyncOptions();
             if (!await _parentWindow._mediator.Send(new SaveSettingsCommand()).ConfigureAwait(true))
             {
-                _logger.LogDebug("Settings Not Saved Properly");
+                _logger.LogDebug(SettingsHandlerBase.Config, "Settings Not Saved Properly");
             }
             e.Handled = true;
         }

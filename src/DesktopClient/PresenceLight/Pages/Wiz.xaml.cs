@@ -126,7 +126,7 @@ namespace PresenceLight.Pages
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occured Finding Wiz");
+                _logger.LogError(SettingsHandlerBase.Config, ex, "Error occured Finding Wiz");
                 _diagClient.TrackException(ex);
             }
         }
@@ -179,7 +179,7 @@ namespace PresenceLight.Pages
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error occured Checking Wiz");
+                _logger.LogError(SettingsHandlerBase.Config, e, "Error occured Checking Wiz");
                 _diagClient.TrackException(e);
             }
         }
@@ -223,7 +223,7 @@ namespace PresenceLight.Pages
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error Occured Saving Wiz Settings");
+                _logger.LogError(SettingsHandlerBase.Config, ex, "Error Occured Saving Wiz Settings");
                 _diagClient.TrackException(ex);
             }
         }

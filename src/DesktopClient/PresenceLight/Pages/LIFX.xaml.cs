@@ -95,7 +95,7 @@ namespace PresenceLight.Pages
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occured Getting LIFX Token");
+                _logger.LogError(SettingsHandlerBase.Config, ex, "Error occured Getting LIFX Token");
                 _diagClient.TrackException(ex);
             }
         }
@@ -111,7 +111,7 @@ namespace PresenceLight.Pages
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occured Saving LIFX Settings");
+                _logger.LogError(SettingsHandlerBase.Config, ex, "Error occured Saving LIFX Settings");
                 _diagClient.TrackException(ex);
             }
         }
@@ -215,7 +215,7 @@ namespace PresenceLight.Pages
             catch (Exception ex)
             {
                 _diagClient.TrackException(ex);
-                _logger.LogError(ex, "Error occured Checking LIFX");
+                _logger.LogError(SettingsHandlerBase.Config, ex, "Error occured Checking LIFX");
                 lblLIFXMessage.Text = "Error Occured Connecting to LIFX, please try again";
                 fontBrush.Color = "#ff3300".MapColor();
                 lblLIFXMessage.Foreground = fontBrush;
@@ -293,7 +293,7 @@ namespace PresenceLight.Pages
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Error Getting LIFX Lights");
+                    _logger.LogError(SettingsHandlerBase.Config, ex, "Error Getting LIFX Lights");
                     _diagClient.TrackException(ex);
                     lblLIFXMessage.Visibility = Visibility.Visible;
                     pnlLIFXData.Visibility = Visibility.Collapsed;

@@ -138,11 +138,11 @@ namespace PresenceLight
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error Occured");
+                _logger.LogError(SettingsHandlerBase.Config, ex, "Error Occured");
                 _diagClient.TrackException(ex);
             }
 
-            _logger.LogInformation("PresenceLight Session Ending");
+            _logger.LogInformation(SettingsHandlerBase.Config, "PresenceLight Session Ending");
         }
 
         private void NavView_PaneOpening(NavigationView sender, object args)
@@ -264,10 +264,10 @@ namespace PresenceLight
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error Occured");
+                _logger.LogError(SettingsHandlerBase.Config, ex, "Error Occured");
                 _diagClient.TrackException(ex);
             }
-            _logger.LogInformation("PresenceLight Exiting");
+            _logger.LogInformation(SettingsHandlerBase.Config, "PresenceLight Exiting");
         }
 
         private void OnOpenClick(object sender, RoutedEventArgs e)
@@ -293,7 +293,7 @@ namespace PresenceLight
             turnOnButton.Visibility = Visibility.Collapsed;
 
             WindowState = lastWindowState;
-            _logger.LogInformation("Turning On PresenceLight Sync");
+            _logger.LogInformation(SettingsHandlerBase.Config, "Turning On PresenceLight Sync");
         }
 
         private async void OnTurnOffSyncClick(object sender, RoutedEventArgs e)
@@ -314,10 +314,10 @@ namespace PresenceLight
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error Occured");
+                _logger.LogError(SettingsHandlerBase.Config, ex, "Error Occured");
                 _diagClient.TrackException(ex);
             }
-            _logger.LogInformation("Turning Off PresenceLight Sync");
+            _logger.LogInformation(SettingsHandlerBase.Config, "Turning Off PresenceLight Sync");
         }
 
         private async void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)

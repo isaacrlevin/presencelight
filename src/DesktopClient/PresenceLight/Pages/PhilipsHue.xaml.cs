@@ -196,7 +196,7 @@ namespace PresenceLight.Pages
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error Occured Getting Hue Api Key");
+                _logger.LogError(SettingsHandlerBase.Config, ex, "Error Occured Getting Hue Api Key");
                 _diagClient.TrackException(ex);
             }
         }
@@ -221,7 +221,7 @@ namespace PresenceLight.Pages
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error Occured Finding Hue Bridge");
+                _logger.LogError(SettingsHandlerBase.Config, ex, "Error Occured Finding Hue Bridge");
                 _diagClient.TrackException(ex);
             }
         }
@@ -271,7 +271,7 @@ namespace PresenceLight.Pages
             catch (Exception ex)
             {
                 _diagClient.TrackException(ex);
-                _logger.LogError(ex, "Error Occurred Registering Hue Bridge");
+                _logger.LogError(SettingsHandlerBase.Config, ex, "Error Occurred Registering Hue Bridge");
                 lblHueMessage.Text = "Error Occured registering bridge, please try again";
                 fontBrush.Color = "#ff3300".MapColor();
                 lblHueMessage.Foreground = fontBrush;
@@ -323,7 +323,7 @@ namespace PresenceLight.Pages
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error Occured Saving Hue Settings");
+                _logger.LogError(SettingsHandlerBase.Config, ex, "Error Occured Saving Hue Settings");
                 _diagClient.TrackException(ex);
             }
         }
@@ -374,7 +374,7 @@ namespace PresenceLight.Pages
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Error Getting Hue Lights");
+                    _logger.LogError(SettingsHandlerBase.Config, ex, "Error Getting Hue Lights");
                     _diagClient.TrackException(ex);
                     lblHueMessage.Visibility = Visibility.Visible;
                     pnlHueData.Visibility = Visibility.Collapsed;
@@ -521,7 +521,7 @@ namespace PresenceLight.Pages
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error Occured Checking Hue Lights");
+                _logger.LogError(SettingsHandlerBase.Config, ex, "Error Occured Checking Hue Lights");
                 _diagClient.TrackException(ex);
             }
         }

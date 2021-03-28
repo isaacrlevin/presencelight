@@ -16,6 +16,11 @@ namespace PresenceLight.Core
         public string? IconType { get; set; }
 
         public string LogLevel { get; set; }
+
+        public bool LogInfo { get => (string.IsNullOrEmpty(LogLevel) || LogLevel == "None" || LogLevel == "Error" ) ? false : true; }
+
+        public bool LogError { get => (string.IsNullOrEmpty(LogLevel) || LogLevel == "None") ? false : true; }
+
         public LightSettings LightSettings { get; set; }
     }
 }

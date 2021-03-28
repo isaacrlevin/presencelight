@@ -68,11 +68,11 @@ namespace PresenceLight.Pages
              
                 await _mediator.Publish(new SetColorNotification(color)).ConfigureAwait(true);
 
-                _logger.LogInformation(color);
+                _logger.LogInformation(SettingsHandlerBase.Config, color);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occured Setting Theme Color");
+                _logger.LogError(SettingsHandlerBase.Config, ex, "Error occured Setting Theme Color");
                 _diagClient.TrackException(ex);
             }
         }
@@ -95,12 +95,12 @@ namespace PresenceLight.Pages
                          
                     }
 
-                    _logger.LogInformation(color);
+                    _logger.LogInformation(SettingsHandlerBase.Config, color);
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occured Setting Custom Color");
+                _logger.LogError(SettingsHandlerBase.Config, ex, "Error occured Setting Custom Color");
                 _diagClient.TrackException(ex);
             }
         }

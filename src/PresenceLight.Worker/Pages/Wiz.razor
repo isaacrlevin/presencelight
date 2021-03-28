@@ -98,7 +98,7 @@
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Error Occured Saving Wiz Settings");
+            _logger.LogError(Config, e, "Error Occured Saving Wiz Settings");
             throw;
         }
     }
@@ -128,7 +128,7 @@
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Error Occured loading Wiz");
+            _logger.LogError(Config, e, "Error Occured loading Wiz");
             throw;
         }
         await Task.CompletedTask;
@@ -155,7 +155,7 @@
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error occured Finding Wiz");
+            _logger.LogError(Config, ex, "Error occured Finding Wiz");
             throw;
         }
     }

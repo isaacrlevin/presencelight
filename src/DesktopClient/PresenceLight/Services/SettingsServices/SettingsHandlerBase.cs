@@ -34,11 +34,17 @@ namespace PresenceLight.Services
 
                 if (property?.PropertyType == typeof(string) && value != null && string.IsNullOrEmpty(value.ToString()))
                 {
-                    property.SetValue(Options, $"{value}".Trim());
+                    if (property.Name != "LogInfo" && property.Name != "LogError")
+                    {
+                        property.SetValue(Options, $"{value}".Trim());
+                    }
                 }
                 else
                 {
-                    property?.SetValue(Options, value);
+                    if (property?.Name != "LogInfo" && property?.Name != "LogError")
+                    {
+                        property?.SetValue(Options, value);
+                    }
                 }
             }
         }

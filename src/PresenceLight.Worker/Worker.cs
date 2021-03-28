@@ -50,19 +50,19 @@ namespace PresenceLight.Worker
             {
                 if (await _userAuthService.IsUserAuthenticated())
                 {
-                    _logger.LogInformation("User is Authenticated, starting worker");
+                    _logger.LogInformation(Config, "User is Authenticated, starting worker");
                     try
                     {
                         await Run();
                     }
                     catch (Exception e)
                     {
-                        _logger.LogError(e, "Exception occured restarting worker");
+                        _logger.LogError(Config, e, "Exception occured restarting worker");
                     }
                 }
                 else
                 {
-                    _logger.LogInformation("User is Not Authenticated, restarting worker");
+                    _logger.LogInformation(Config, "User is Not Authenticated, restarting worker");
                 }
                 await Task.Delay(1000, stoppingToken);
             }
@@ -92,7 +92,7 @@ namespace PresenceLight.Worker
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Exception occured in running worker");
+                _logger.LogError(Config, e, "Exception occured in running worker");
                 throw;
             }
         }
@@ -161,7 +161,7 @@ namespace PresenceLight.Worker
                         switch (_appState.LightMode)
                         {
                             case "Graph":
-                                _logger.LogInformation("PresenceLight Running in Teams Mode");
+                                _logger.LogInformation(Config, "PresenceLight Running in Teams Mode");
                                 _appState.Presence = await System.Threading.Tasks.Task.Run(() => GetPresence()).ConfigureAwait(true);
 
                                 if (newColor == string.Empty)
@@ -180,7 +180,7 @@ namespace PresenceLight.Worker
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e, "Error Occured");
+                    _logger.LogError(Config, e, "Error Occured");
                 }
             }
         }
@@ -190,12 +190,12 @@ namespace PresenceLight.Worker
             try
             {
                 var me = await _graphClient.Me.Request().GetAsync();
-                _logger.LogInformation($"User is {me.DisplayName}");
+                _logger.LogInformation(Config, $"User is {me.DisplayName}");
                 return me;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Exception getting me");
+                _logger.LogError(Config, ex, "Exception getting me");
                 throw;
             }
         }
@@ -215,7 +215,7 @@ namespace PresenceLight.Worker
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Exception getting photo");
+                _logger.LogError(Config, ex, "Exception getting photo");
                 throw;
             }
         }
@@ -231,12 +231,12 @@ namespace PresenceLight.Worker
                  (?<=[^A-Z])(?=[A-Z]) |
                  (?<=[A-Za-z])(?=[^A-Za-z])", RegexOptions.IgnorePatternWhitespace);
 
-                _logger.LogInformation($"Presence is {presence.Availability}");
+                _logger.LogInformation(Config, $"Presence is {presence.Availability}");
                 return presence;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Exception getting presence");
+                _logger.LogError(Config, ex, "Exception getting presence");
                 throw;
             }
         }
@@ -249,7 +249,7 @@ namespace PresenceLight.Worker
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error Occured");
+                _logger.LogError(Config, e, "Error Occured");
             }
         }
     }

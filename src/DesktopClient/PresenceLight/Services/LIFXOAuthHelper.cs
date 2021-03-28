@@ -113,7 +113,7 @@ namespace PresenceLight.Services
             }
             catch (Exception e)
             {
-                _logger.LogError( "Error retrieving LIFX Token", e);
+                _logger.LogError(SettingsHandlerBase.Config, e, "Error retrieving LIFX Token");
                 throw;
             }
         }
@@ -175,11 +175,11 @@ namespace PresenceLight.Services
                         }
                     }
                 }
-                _logger.LogError(ex, "Error processing LIFX Token");
+                _logger.LogError(SettingsHandlerBase.Config, ex, "Error processing LIFX Token");
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error processing LIFX Token");
+                _logger.LogError(SettingsHandlerBase.Config, e, "Error processing LIFX Token");
             }
 
             return "";

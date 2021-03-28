@@ -59,7 +59,7 @@ namespace PresenceLight.Core
         {
             if (string.IsNullOrEmpty(lightId))
             {
-                _logger.LogInformation("Selected Wiz Light Not Specified");
+                _logger.LogInformation(_options, "Selected Wiz Light Not Specified");
                 return;
             }
 
@@ -101,7 +101,7 @@ namespace PresenceLight.Core
 
                     UpdateLight(command, lightId);
                     message = $"Turning Wiz Light {lightId} Off";
-                    _logger.LogInformation(message);
+                    _logger.LogInformation(_options, message);
                     return;
                 }
 
@@ -135,11 +135,11 @@ namespace PresenceLight.Core
                 UpdateLight(command, lightId);
 
                 message = $"Setting Wiz Light {lightId} to {color}";
-                _logger.LogInformation(message);
+                _logger.LogInformation(_options, message);
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error Occurred Setting Color");
+                _logger.LogError(_options, e, "Error Occurred Setting Color");
                 throw;
             }
         }
@@ -210,7 +210,7 @@ namespace PresenceLight.Core
                         command.State = false;
                         UpdateLight(command, lightId);
                         message = $"Turning Hue Light {lightId} Off";
-                        _logger.LogInformation(message);
+                        _logger.LogInformation(_options, message);
                         return (color, command, true);
                     }
                 }

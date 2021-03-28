@@ -72,7 +72,7 @@ namespace PresenceLight.ViewModels
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error Occured Saving Custom Api Settings");
+                _logger.LogError(SettingsHandlerBase.Config, ex, "Error Occured Saving Custom Api Settings");
                 //TODO: Revisit if Telemtry isnt working through serilog
                 //_diagClient.TrackException(ex);
             }

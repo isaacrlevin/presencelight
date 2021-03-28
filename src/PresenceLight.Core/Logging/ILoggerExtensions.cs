@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
 
+using PresenceLight.Core;
+
 /// <summary>
 /// This class is purposefully put without a namespace so that it overrides the existing ILogger extensions
 /// to allow the additional context properties and log messaging to be written to the logs.
@@ -18,6 +20,7 @@ public static class ILoggerExtensions
     /// Formats and writes a log message at the specified log level.
     /// Enhanced for PresenceLight with extended Context Logging</summary>
     /// <param name="logger">The Microsoft.Extensions.Logging.ILogger to write to.</param>
+    /// <param name="config">Ref to Config to determine LogLevel</param>
     /// <param name="logLevel">Entry will be written on this level.</param>
     /// <param name="eventId">The event id associated with the log.</param>
     /// <param name="exception">The exception to log.</param>
@@ -26,7 +29,7 @@ public static class ILoggerExtensions
     /// <param name="fileName">File name where occurring Note:  Injected!</param>
     /// <param name="lineNumber">LineNumber  where occurring Note:  Injected!</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
-    public static void Log(this ILogger logger,
+    public static void Log(this ILogger logger, BaseConfig config,
                                       LogLevel logLevel,
                                       EventId eventId,
                                       Exception exception,
@@ -47,11 +50,12 @@ public static class ILoggerExtensions
     }
 
 
- 
+
     /// <summary>
     /// Formats and writes a log message at the specified log level.
     /// Enhanced for PresenceLight with extended Context Logging</summary>
     /// <param name="logger">The Microsoft.Extensions.Logging.ILogger to write to.</param>
+    /// <param name="config">Ref to Config to determine LogLevel</param>
     /// <param name="logLevel">Entry will be written on this level.</param>
     /// <param name="eventId">The event id associated with the log.</param>
     /// <param name="message">Format string of the log message.</param>
@@ -59,7 +63,7 @@ public static class ILoggerExtensions
     /// <param name="fileName">File name where occurring Note:  Injected!</param>
     /// <param name="lineNumber">LineNumber  where occurring Note:  Injected!</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
-    public static void Log(this ILogger logger,
+    public static void Log(this ILogger logger, BaseConfig config,
                                     LogLevel logLevel,
                                     EventId eventId,
                                     string message,
@@ -82,6 +86,7 @@ public static class ILoggerExtensions
     /// Formats and writes a log message at the specified log level.
     /// Enhanced for PresenceLight with extended Context Logging</summary>
     /// <param name="logger">The Microsoft.Extensions.Logging.ILogger to write to.</param>
+    /// <param name="config">Ref to Config to determine LogLevel</param>
     /// <param name="logLevel">Entry will be written on this level.</param> 
     /// <param name="exception">The exception to log.</param>
     /// <param name="message">Format string of the log message.</param>
@@ -89,7 +94,7 @@ public static class ILoggerExtensions
     /// <param name="fileName">File name where occurring Note:  Injected!</param>
     /// <param name="lineNumber">LineNumber  where occurring Note:  Injected!</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
-    public static void Log(this ILogger logger,
+    public static void Log(this ILogger logger, BaseConfig config,
                                       LogLevel logLevel,
                                       Exception exception,
                                       string message,
@@ -102,7 +107,7 @@ public static class ILoggerExtensions
         using (Serilog.Context.LogContext.PushProperty("LineNumber", lineNumber))
         {
             message = $"{message} - {fileName.Split("\\").LastOrDefault().Replace(".cs", "")}:{memberName} Line: {lineNumber}";
-
+            
             logger.Log(logLevel, exception, message, args);
         }
     }
@@ -111,13 +116,14 @@ public static class ILoggerExtensions
     /// Formats and writes a log message at the specified log level.
     /// Enhanced for PresenceLight with extended Context Logging</summary>
     /// <param name="logger">The Microsoft.Extensions.Logging.ILogger to write to.</param>
+    /// <param name="config">Ref to Config to determine LogLevel</param>
     /// <param name="logLevel">Entry will be written on this level.</param>
     /// <param name="message">Format string of the log message.</param>
     /// <param name="memberName">Membername occurring Note:  Injected!</param>
     /// <param name="fileName">File name where occurring Note:  Injected!</param>
     /// <param name="lineNumber">LineNumber  where occurring Note:  Injected!</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
-    public static void Log(this ILogger logger,
+    public static void Log(this ILogger logger, BaseConfig config,
                                     LogLevel logLevel,
                                     string message,
                                     [CallerMemberName] string memberName = "",
@@ -139,6 +145,7 @@ public static class ILoggerExtensions
     /// Formats and writes a critical log message
     /// Enhanced for PresenceLight with extended Context Logging</summary>
     /// <param name="logger">The Microsoft.Extensions.Logging.ILogger to write to.</param>
+    /// <param name="config">Ref to Config to determine LogLevel</param>
     /// <param name="eventId">The event id associated with the log.</param>
     /// <param name="exception">The exception to log.</param>
     /// <param name="message">Format string of the log message.</param>
@@ -146,7 +153,7 @@ public static class ILoggerExtensions
     /// <param name="fileName">File name where occurring Note:  Injected!</param>
     /// <param name="lineNumber">LineNumber  where occurring Note:  Injected!</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
-    public static void LogCritical(this ILogger logger,
+    public static void LogCritical(this ILogger logger, BaseConfig config,
                                             EventId eventId,
                                             Exception exception,
                                             string message,
@@ -169,13 +176,14 @@ public static class ILoggerExtensions
     /// Formats and writes a critical log message
     /// Enhanced for PresenceLight with extended Context Logging</summary>
     /// <param name="logger">The Microsoft.Extensions.Logging.ILogger to write to.</param>
+    /// <param name="config">Ref to Config to determine LogLevel</param>
     /// <param name="eventId">The event id associated with the log.</param>
     /// <param name="message">Format string of the log message.</param>
     /// <param name="memberName">Membername occurring Note:  Injected!</param>
     /// <param name="fileName">File name where occurring Note:  Injected!</param>
     /// <param name="lineNumber">LineNumber  where occurring Note:  Injected!</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
-    public static void LogCritical(this ILogger logger,
+    public static void LogCritical(this ILogger logger, BaseConfig config,
                                             EventId eventId,
                                             string message,
                                             [CallerMemberName] string memberName = "",
@@ -197,13 +205,14 @@ public static class ILoggerExtensions
     /// Formats and writes a critical log message
     /// Enhanced for PresenceLight with extended Context Logging</summary>
     /// <param name="logger">The Microsoft.Extensions.Logging.ILogger to write to.</param>
+    /// <param name="config">Ref to Config to determine LogLevel</param>
     /// <param name="exception">The exception to log.</param>
     /// <param name="message">Format string of the log message.</param>
     /// <param name="memberName">Membername occurring Note:  Injected!</param>
     /// <param name="fileName">File name where occurring Note:  Injected!</param>
     /// <param name="lineNumber">LineNumber  where occurring Note:  Injected!</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
-    public static void LogCritical(this ILogger logger,
+    public static void LogCritical(this ILogger logger, BaseConfig config,
                                             Exception exception,
                                             string message,
                                             [CallerMemberName] string memberName = "",
@@ -226,12 +235,13 @@ public static class ILoggerExtensions
     /// Formats and writes a critical log message
     /// Enhanced for PresenceLight with extended Context Logging</summary>
     /// <param name="logger">The Microsoft.Extensions.Logging.ILogger to write to.</param>
+    /// <param name="config">Ref to Config to determine LogLevel</param>
     /// <param name="message">Format string of the log message.</param>
     /// <param name="memberName">Membername occurring Note:  Injected!</param>
     /// <param name="fileName">File name where occurring Note:  Injected!</param>
     /// <param name="lineNumber">LineNumber  where occurring Note:  Injected!</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
-    public static void LogCritical(this ILogger logger,
+    public static void LogCritical(this ILogger logger, BaseConfig config,
                                             string message,
                                             [CallerMemberName] string memberName = "",
                                             [CallerFilePath] string fileName = "",
@@ -252,6 +262,7 @@ public static class ILoggerExtensions
     /// Formats and writes a debug log message
     /// Enhanced for PresenceLight with extended Context Logging</summary>
     /// <param name="logger">The Microsoft.Extensions.Logging.ILogger to write to.</param>
+    /// <param name="config">Ref to Config to determine LogLevel</param>
     /// <param name="eventId">The event id associated with the log.</param>
     /// <param name="exception">The exception to log.</param>
     /// <param name="message">Format string of the log message.</param>
@@ -259,7 +270,7 @@ public static class ILoggerExtensions
     /// <param name="fileName">File name where occurring Note:  Injected!</param>
     /// <param name="lineNumber">LineNumber  where occurring Note:  Injected!</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
-    public static void LogDebug(this ILogger logger,
+    public static void LogDebug(this ILogger logger, BaseConfig config,
                                          EventId eventId,
                                          Exception exception,
                                          string message,
@@ -282,13 +293,14 @@ public static class ILoggerExtensions
     /// Formats and writes a debug log message
     /// Enhanced for PresenceLight with extended Context Logging</summary>
     /// <param name="logger">The Microsoft.Extensions.Logging.ILogger to write to.</param>
+    /// <param name="config">Ref to Config to determine LogLevel</param>
     /// <param name="eventId">The event id associated with the log.</param>
     /// <param name="message">Format string of the log message.</param>
     /// <param name="memberName">Membername occurring Note:  Injected!</param>
     /// <param name="fileName">File name where occurring Note:  Injected!</param>
     /// <param name="lineNumber">LineNumber  where occurring Note:  Injected!</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
-    public static void LogDebug(this ILogger logger,
+    public static void LogDebug(this ILogger logger, BaseConfig config,
                                          EventId eventId,
                                          string message,
                                          [CallerMemberName] string memberName = "",
@@ -310,13 +322,14 @@ public static class ILoggerExtensions
     /// Enhanced for PresenceLight with extended Context Logging
     /// </summary>
     /// <param name="logger">The Microsoft.Extensions.Logging.ILogger to write to.</param>
+    /// <param name="config">Ref to Config to determine LogLevel</param>
     /// <param name="exception">The exception to log.</param>
     /// <param name="message">Format string of the log message.</param>
     /// <param name="memberName">Membername occurring Note:  Injected!</param>
     /// <param name="fileName">File name where occurring Note:  Injected!</param>
     /// <param name="lineNumber">LineNumber  where occurring Note:  Injected!</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
-    public static void LogDebug(this ILogger logger,
+    public static void LogDebug(this ILogger logger, BaseConfig config,
                                      Exception exception,
                                      string message,
                                      [CallerMemberName] string memberName = "",
@@ -338,12 +351,13 @@ public static class ILoggerExtensions
     /// Formats and writes an error log message
     /// Enhanced for PresenceLight with extended Context Logging</summary>
     /// <param name="logger">The Microsoft.Extensions.Logging.ILogger to write to.</param>
+    /// <param name="config">Ref to Config to determine LogLevel</param>
     /// <param name="message">Format string of the log message.</param>
     /// <param name="memberName">Membername occurring Note:  Injected!</param>
     /// <param name="fileName">File name where occurring Note:  Injected!</param>
     /// <param name="lineNumber">LineNumber  where occurring Note:  Injected!</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
-    public static void LogDebug(this ILogger logger,
+    public static void LogDebug(this ILogger logger, BaseConfig config,
                                          string message,
                                          [CallerMemberName] string memberName = "",
                                          [CallerFilePath] string fileName = "",
@@ -364,25 +378,29 @@ public static class ILoggerExtensions
     /// Formats and writes an error  log message
     /// Enhanced for PresenceLight with extended Context Logging</summary>
     /// <param name="logger">The Microsoft.Extensions.Logging.ILogger to write to.</param>
+    /// <param name="config">Ref to Config to determine LogLevel</param>
     /// <param name="message">Format string of the log message.</param>
     /// <param name="memberName">Membername occurring Note:  Injected!</param>
     /// <param name="fileName">File name where occurring Note:  Injected!</param>
     /// <param name="lineNumber">LineNumber  where occurring Note:  Injected!</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
-    public static void LogError(this ILogger logger,
+    public static void LogError(this ILogger logger, BaseConfig config,
                                          string message,
                                          [CallerMemberName] string memberName = "",
                                          [CallerFilePath] string fileName = "",
                                          [CallerLineNumber] int lineNumber = 0,
                                          params object[] args)
     {
-        using (Serilog.Context.LogContext.PushProperty("MemberName", memberName))
-        using (Serilog.Context.LogContext.PushProperty("FilePath", fileName))
-        using (Serilog.Context.LogContext.PushProperty("LineNumber", lineNumber))
+        if (config.LogError)
         {
-            message = $"{message} - {fileName.Split("\\").LastOrDefault().Replace(".cs", "")}:{memberName} Line: {lineNumber}";
+            using (Serilog.Context.LogContext.PushProperty("MemberName", memberName))
+            using (Serilog.Context.LogContext.PushProperty("FilePath", fileName))
+            using (Serilog.Context.LogContext.PushProperty("LineNumber", lineNumber))
+            {
+                message = $"{message} - {fileName.Split("\\").LastOrDefault().Replace(".cs", "")}:{memberName} Line: {lineNumber}";
 
-            logger.LogError(message, args);
+                logger.LogError(message, args);
+            }
         }
     }
     //
@@ -408,13 +426,14 @@ public static class ILoggerExtensions
     /// Formats and writes an error  log message
     /// Enhanced for PresenceLight with extended Context Logging</summary>
     /// <param name="logger">The Microsoft.Extensions.Logging.ILogger to write to.</param>
+    /// <param name="config">Ref to Config to determine LogLevel</param>
     /// <param name="exception">The exception to log.</param>
     /// <param name="message">Format string of the log message.</param>
     /// <param name="memberName">Membername occurring Note:  Injected!</param>
     /// <param name="fileName">File name where occurring Note:  Injected!</param>
     /// <param name="lineNumber">LineNumber  where occurring Note:  Injected!</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
-    public static void LogError(this ILogger logger,
+    public static void LogError(this ILogger logger, BaseConfig config,
                                      Exception exception,
                                      string message,
                                      [CallerMemberName] string memberName = "",
@@ -422,13 +441,16 @@ public static class ILoggerExtensions
                                      [CallerLineNumber] int lineNumber = 0,
                                      params object[] args)
     {
-        using (Serilog.Context.LogContext.PushProperty("MemberName", memberName))
-        using (Serilog.Context.LogContext.PushProperty("FilePath", fileName))
-        using (Serilog.Context.LogContext.PushProperty("LineNumber", lineNumber))
+        if (config.LogError)
         {
-            message = $"{message} - {fileName.Split("\\").LastOrDefault().Replace(".cs", "")}:{memberName} Line: {lineNumber}";
+            using (Serilog.Context.LogContext.PushProperty("MemberName", memberName))
+            using (Serilog.Context.LogContext.PushProperty("FilePath", fileName))
+            using (Serilog.Context.LogContext.PushProperty("LineNumber", lineNumber))
+            {
+                message = $"{message} - {fileName.Split("\\").LastOrDefault().Replace(".cs", "")}:{memberName} Line: {lineNumber}";
 
-            logger.LogError(exception, message, args);
+                logger.LogError(exception, message, args);
+            }
         }
     }
 
@@ -436,13 +458,14 @@ public static class ILoggerExtensions
     /// Formats and writes an error  log message
     /// Enhanced for PresenceLight with extended Context Logging</summary>
     /// <param name="logger">The Microsoft.Extensions.Logging.ILogger to write to.</param>
+    /// <param name="config">Ref to Config to determine LogLevel</param>
     /// <param name="eventId">The event id associated with the log.</param>
     /// <param name="message">Format string of the log message.</param>
     /// <param name="memberName">Membername occurring Note:  Injected!</param>
     /// <param name="fileName">File name where occurring Note:  Injected!</param>
     /// <param name="lineNumber">LineNumber  where occurring Note:  Injected!</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
-    public static void LogError(this ILogger logger,
+    public static void LogError(this ILogger logger, BaseConfig config,
                                          EventId eventId,
                                          string message,
                                          [CallerMemberName] string memberName = "",
@@ -450,13 +473,16 @@ public static class ILoggerExtensions
                                          [CallerLineNumber] int lineNumber = 0,
                                          params object[] args)
     {
-        using (Serilog.Context.LogContext.PushProperty("MemberName", memberName))
-        using (Serilog.Context.LogContext.PushProperty("FilePath", fileName))
-        using (Serilog.Context.LogContext.PushProperty("LineNumber", lineNumber))
+        if (config.LogError)
         {
-            message = $"{message} - {fileName.Split("\\").LastOrDefault().Replace(".cs", "")}:{memberName} Line: {lineNumber}";
+            using (Serilog.Context.LogContext.PushProperty("MemberName", memberName))
+            using (Serilog.Context.LogContext.PushProperty("FilePath", fileName))
+            using (Serilog.Context.LogContext.PushProperty("LineNumber", lineNumber))
+            {
+                message = $"{message} - {fileName.Split("\\").LastOrDefault().Replace(".cs", "")}:{memberName} Line: {lineNumber}";
 
-            logger.LogError(eventId, message, args);
+                logger.LogError(eventId, message, args);
+            }
         }
     }
 
@@ -464,6 +490,7 @@ public static class ILoggerExtensions
     /// Formats and writes an error  log message
     /// Enhanced for PresenceLight with extended Context Logging</summary>
     /// <param name="logger">The Microsoft.Extensions.Logging.ILogger to write to.</param>
+    /// <param name="config">Ref to Config to determine LogLevel</param>
     /// <param name="eventId">The event id associated with the log.</param>
     /// <param name="exception">The exception to log.</param>
     /// <param name="message">Format string of the log message.</param>
@@ -471,7 +498,7 @@ public static class ILoggerExtensions
     /// <param name="fileName">File name where occurring Note:  Injected!</param>
     /// <param name="lineNumber">LineNumber  where occurring Note:  Injected!</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
-    public static void LogError(this ILogger logger,
+    public static void LogError(this ILogger logger, BaseConfig config,
                                          EventId eventId,
                                          Exception exception,
                                          string message,
@@ -480,13 +507,16 @@ public static class ILoggerExtensions
                                          [CallerLineNumber] int lineNumber = 0,
                                          params object[] args)
     {
-        using (Serilog.Context.LogContext.PushProperty("MemberName", memberName))
-        using (Serilog.Context.LogContext.PushProperty("FilePath", fileName))
-        using (Serilog.Context.LogContext.PushProperty("LineNumber", lineNumber))
+        if (config.LogError)
         {
-            message = $"{message} - {fileName.Split("\\").LastOrDefault().Replace(".cs", "")}:{memberName} Line: {lineNumber}";
+            using (Serilog.Context.LogContext.PushProperty("MemberName", memberName))
+            using (Serilog.Context.LogContext.PushProperty("FilePath", fileName))
+            using (Serilog.Context.LogContext.PushProperty("LineNumber", lineNumber))
+            {
+                message = $"{message} - {fileName.Split("\\").LastOrDefault().Replace(".cs", "")}:{memberName} Line: {lineNumber}";
 
-            logger.LogError(eventId, exception, message, args);
+                logger.LogError(eventId, exception, message, args);
+            }
         }
     }
 
@@ -494,6 +524,7 @@ public static class ILoggerExtensions
     /// Formats and writes an information log message
     /// Enhanced for PresenceLight with extended Context Logging</summary>
     /// <param name="logger">The Microsoft.Extensions.Logging.ILogger to write to.</param>
+    /// <param name="config">Ref to Config to determine LogLevel</param>
     /// <param name="eventId">The event id associated with the log.</param>
     /// <param name="exception">The exception to log.</param>
     /// <param name="message">Format string of the log message.</param>
@@ -501,7 +532,7 @@ public static class ILoggerExtensions
     /// <param name="fileName">File name where occurring Note:  Injected!</param>
     /// <param name="lineNumber">LineNumber  where occurring Note:  Injected!</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
-    public static void LogInformation(this ILogger logger,
+    public static void LogInformation(this ILogger logger, BaseConfig config,
                                                EventId eventId,
                                                Exception exception,
                                                string message,
@@ -510,13 +541,16 @@ public static class ILoggerExtensions
                                                [CallerLineNumber] int lineNumber = 0,
                                                params object[] args)
     {
-        using (Serilog.Context.LogContext.PushProperty("MemberName", memberName))
-        using (Serilog.Context.LogContext.PushProperty("FilePath", fileName))
-        using (Serilog.Context.LogContext.PushProperty("LineNumber", lineNumber))
+        if (config.LogInfo)
         {
-            message = $"{message} - {fileName.Split("\\").LastOrDefault().Replace(".cs", "")}:{memberName} Line: {lineNumber}";
+            using (Serilog.Context.LogContext.PushProperty("MemberName", memberName))
+            using (Serilog.Context.LogContext.PushProperty("FilePath", fileName))
+            using (Serilog.Context.LogContext.PushProperty("LineNumber", lineNumber))
+            {
+                message = $"{message} - {fileName.Split("\\").LastOrDefault().Replace(".cs", "")}:{memberName} Line: {lineNumber}";
 
-            logger.LogInformation(eventId, exception, message, args);
+                logger.LogInformation(eventId, exception, message, args);
+            }
         }
     }
 
@@ -524,13 +558,14 @@ public static class ILoggerExtensions
     /// Formats and writes an information log message
     /// Enhanced for PresenceLight with extended Context Logging</summary>
     /// <param name="logger">The Microsoft.Extensions.Logging.ILogger to write to.</param>
+    /// <param name="config">Ref to Config to determine LogLevel</param>
     /// <param name="eventId">The event id associated with the log.</param>
     /// <param name="message">Format string of the log message.</param>
     /// <param name="memberName">Membername occurring Note:  Injected!</param>
     /// <param name="fileName">File name where occurring Note:  Injected!</param>
     /// <param name="lineNumber">LineNumber  where occurring Note:  Injected!</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
-    public static void LogInformation(this ILogger logger,
+    public static void LogInformation(this ILogger logger, BaseConfig config,
                                                EventId eventId,
                                                string message,
                                                [CallerMemberName] string memberName = "",
@@ -538,13 +573,16 @@ public static class ILoggerExtensions
                                                [CallerLineNumber] int lineNumber = 0,
                                                params object[] args)
     {
-        using (Serilog.Context.LogContext.PushProperty("MemberName", memberName))
-        using (Serilog.Context.LogContext.PushProperty("FilePath", fileName))
-        using (Serilog.Context.LogContext.PushProperty("LineNumber", lineNumber))
+        if (config.LogInfo)
         {
-            message = $"{message} - {fileName.Split("\\").LastOrDefault().Replace(".cs", "")}:{memberName} Line: {lineNumber}";
+            using (Serilog.Context.LogContext.PushProperty("MemberName", memberName))
+            using (Serilog.Context.LogContext.PushProperty("FilePath", fileName))
+            using (Serilog.Context.LogContext.PushProperty("LineNumber", lineNumber))
+            {
+                message = $"{message} - {fileName.Split("\\").LastOrDefault().Replace(".cs", "")}:{memberName} Line: {lineNumber}";
 
-            logger.LogInformation(eventId, message, args);
+                logger.LogInformation(eventId, message, args);
+            }
         }
     }
 
@@ -552,13 +590,14 @@ public static class ILoggerExtensions
     /// Formats and writes an information log message
     /// Enhanced for PresenceLight with extended Context Logging</summary>
     /// <param name="logger">The Microsoft.Extensions.Logging.ILogger to write to.</param>
+    /// <param name="config">Ref to Config to determine LogLevel</param>
     /// <param name="exception">The exception to log.</param>
     /// <param name="message">Format string of the log message.</param>
     /// <param name="memberName">Membername occurring Note:  Injected!</param>
     /// <param name="fileName">File name where occurring Note:  Injected!</param>
     /// <param name="lineNumber">LineNumber  where occurring Note:  Injected!</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
-    public static void LogInformation(this ILogger logger,
+    public static void LogInformation(this ILogger logger, BaseConfig config,
                                                Exception exception,
                                                string message,
                                                [CallerMemberName] string memberName = "",
@@ -566,13 +605,16 @@ public static class ILoggerExtensions
                                                [CallerLineNumber] int lineNumber = 0,
                                                params object[] args)
     {
-        using (Serilog.Context.LogContext.PushProperty("MemberName", memberName))
-        using (Serilog.Context.LogContext.PushProperty("FilePath", fileName))
-        using (Serilog.Context.LogContext.PushProperty("LineNumber", lineNumber))
+        if (config.LogInfo)
         {
-            message = $"{message} - {fileName.Split("\\").LastOrDefault().Replace(".cs", "")}:{memberName} Line: {lineNumber}";
+            using (Serilog.Context.LogContext.PushProperty("MemberName", memberName))
+            using (Serilog.Context.LogContext.PushProperty("FilePath", fileName))
+            using (Serilog.Context.LogContext.PushProperty("LineNumber", lineNumber))
+            {
+                message = $"{message} - {fileName.Split("\\").LastOrDefault().Replace(".cs", "")}:{memberName} Line: {lineNumber}";
 
-            logger.LogInformation(exception, message, args);
+                logger.LogInformation(exception, message, args);
+            }
         }
     }
 
@@ -580,25 +622,29 @@ public static class ILoggerExtensions
     /// Formats and writes an information log message
     /// Enhanced for PresenceLight with extended Context Logging</summary>
     /// <param name="logger">The Microsoft.Extensions.Logging.ILogger to write to.</param>
+    /// <param name="config">Ref to Config to determine LogLevel</param>
     /// <param name="message">Format string of the log message.</param>
     /// <param name="memberName">Membername occurring Note:  Injected!</param>
     /// <param name="fileName">File name where occurring Note:  Injected!</param>
     /// <param name="lineNumber">LineNumber  where occurring Note:  Injected!</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
-    public static void LogInformation(this ILogger logger,
+    public static void LogInformation(this ILogger logger, BaseConfig config,
                                                string message,
                                                [CallerMemberName] string memberName = "",
                                                [CallerFilePath] string fileName = "",
                                                [CallerLineNumber] int lineNumber = 0,
                                                params object[] args)
     {
-        using (Serilog.Context.LogContext.PushProperty("MemberName", memberName))
-        using (Serilog.Context.LogContext.PushProperty("FilePath", fileName))
-        using (Serilog.Context.LogContext.PushProperty("LineNumber", lineNumber))
+        if (config.LogInfo)
         {
-            message = $"{message} - {fileName.Split("\\").LastOrDefault().Replace(".cs", "")}:{memberName} Line: {lineNumber}";
+            using (Serilog.Context.LogContext.PushProperty("MemberName", memberName))
+            using (Serilog.Context.LogContext.PushProperty("FilePath", fileName))
+            using (Serilog.Context.LogContext.PushProperty("LineNumber", lineNumber))
+            {
+                message = $"{message} - {fileName.Split("\\").LastOrDefault().Replace(".cs", "")}:{memberName} Line: {lineNumber}";
 
-            logger.LogInformation(message, args);
+                logger.LogInformation(message, args);
+            }
         }
     }
 
@@ -607,6 +653,7 @@ public static class ILoggerExtensions
     /// Formats and writes a trace log message
     /// Enhanced for PresenceLight with extended Context Logging</summary>
     /// <param name="logger">The Microsoft.Extensions.Logging.ILogger to write to.</param>
+    /// <param name="config">Ref to Config to determine LogLevel</param>
     /// <param name="eventId">The event id associated with the log.</param>
     /// <param name="exception">The exception to log.</param>
     /// <param name="message">Format string of the log message.</param>
@@ -614,7 +661,7 @@ public static class ILoggerExtensions
     /// <param name="fileName">File name where occurring Note:  Injected!</param>
     /// <param name="lineNumber">LineNumber  where occurring Note:  Injected!</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
-    public static void LogTrace(this ILogger logger,
+    public static void LogTrace(this ILogger logger, BaseConfig config,
                                          EventId eventId,
                                          Exception exception,
                                          string message,
@@ -637,13 +684,14 @@ public static class ILoggerExtensions
     /// Formats and writes a trace log message
     /// Enhanced for PresenceLight with extended Context Logging</summary>
     /// <param name="logger">The Microsoft.Extensions.Logging.ILogger to write to.</param>
+    /// <param name="config">Ref to Config to determine LogLevel</param>
     /// <param name="eventId">The event id associated with the log.</param>
     /// <param name="message">Format string of the log message.</param>
     /// <param name="memberName">Membername occurring Note:  Injected!</param>
     /// <param name="fileName">File name where occurring Note:  Injected!</param>
     /// <param name="lineNumber">LineNumber  where occurring Note:  Injected!</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
-    public static void LogTrace(this ILogger logger,
+    public static void LogTrace(this ILogger logger, BaseConfig config,
                                          EventId eventId,
                                          string message,
                                          [CallerMemberName] string memberName = "",
@@ -665,13 +713,14 @@ public static class ILoggerExtensions
     /// Formats and writes a trace log message
     /// Enhanced for PresenceLight with extended Context Logging</summary>
     /// <param name="logger">The Microsoft.Extensions.Logging.ILogger to write to.</param>
+    /// <param name="config">Ref to Config to determine LogLevel</param>
     /// <param name="exception">The exception to log.</param>
     /// <param name="message">Format string of the log message.</param>
     /// <param name="memberName">Membername occurring Note:  Injected!</param>
     /// <param name="fileName">File name where occurring Note:  Injected!</param>
     /// <param name="lineNumber">LineNumber  where occurring Note:  Injected!</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
-    public static void LogTrace(this ILogger logger,
+    public static void LogTrace(this ILogger logger, BaseConfig config,
                                          Exception exception,
                                          string message,
                                          [CallerMemberName] string memberName = "",
@@ -688,17 +737,18 @@ public static class ILoggerExtensions
             logger.LogTrace(exception, message, args);
         }
     }
-     
+
     /// <summary>
     /// Formats and writes a trace log message
     /// Enhanced for PresenceLight with extended Context Logging</summary>
     /// <param name="logger">The Microsoft.Extensions.Logging.ILogger to write to.</param>
+    /// <param name="config">Ref to Config to determine LogLevel</param>
     /// <param name="message">Format string of the log message.</param>
     /// <param name="memberName">Membername occurring Note:  Injected!</param>
     /// <param name="fileName">File name where occurring Note:  Injected!</param>
     /// <param name="lineNumber">LineNumber  where occurring Note:  Injected!</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
-    public static void LogTrace(this ILogger logger,
+    public static void LogTrace(this ILogger logger, BaseConfig config,
                                          string message,
                                          [CallerMemberName] string memberName = "",
                                          [CallerFilePath] string fileName = "",
@@ -715,11 +765,12 @@ public static class ILoggerExtensions
         }
     }
 
-     
+
     /// <summary>
     /// Formats and writes a warning log message
     /// Enhanced for PresenceLight with extended Context Logging</summary>
     /// <param name="logger">The Microsoft.Extensions.Logging.ILogger to write to.</param>
+    /// <param name="config">Ref to Config to determine LogLevel</param>
     /// <param name="eventId">The event id associated with the log.</param>
     /// <param name="exception">The exception to log.</param>
     /// <param name="message">Format string of the log message.</param>
@@ -727,7 +778,7 @@ public static class ILoggerExtensions
     /// <param name="fileName">File name where occurring Note:  Injected!</param>
     /// <param name="lineNumber">LineNumber  where occurring Note:  Injected!</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
-    public static void LogWarning(this ILogger logger,
+    public static void LogWarning(this ILogger logger, BaseConfig config,
                                        EventId eventId,
                                        Exception exception,
                                        string message,
@@ -745,18 +796,19 @@ public static class ILoggerExtensions
             logger.LogWarning(eventId, exception, message, args);
         }
     }
- 
+
     /// <summary>
     /// Formats and writes a warning log message
     /// Enhanced for PresenceLight with extended Context Logging</summary>
     /// <param name="logger">The Microsoft.Extensions.Logging.ILogger to write to.</param>
+    /// <param name="config">Ref to Config to determine LogLevel</param>
     /// <param name="eventId">The event id associated with the log.</param>
     /// <param name="message">Format string of the log message.</param>
     /// <param name="memberName">Membername occurring Note:  Injected!</param>
     /// <param name="fileName">File name where occurring Note:  Injected!</param>
     /// <param name="lineNumber">LineNumber  where occurring Note:  Injected!</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
-    public static void LogWarning(this ILogger logger,
+    public static void LogWarning(this ILogger logger, BaseConfig config,
                                        EventId eventId,
                                        string message,
                                        [CallerMemberName] string memberName = "",
@@ -777,13 +829,14 @@ public static class ILoggerExtensions
     /// Formats and writes a warning log message
     /// Enhanced for PresenceLight with extended Context Logging</summary>
     /// <param name="logger">The Microsoft.Extensions.Logging.ILogger to write to.</param>
-        /// <param name="exception">The exception to log.</param>
+    /// <param name="config">Ref to Config to determine LogLevel</param>
+    /// <param name="exception">The exception to log.</param>
     /// <param name="message">Format string of the log message.</param>
     /// <param name="memberName">Membername occurring Note:  Injected!</param>
     /// <param name="fileName">File name where occurring Note:  Injected!</param>
     /// <param name="lineNumber">LineNumber  where occurring Note:  Injected!</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
-    public static void LogWarning(this ILogger logger,
+    public static void LogWarning(this ILogger logger, BaseConfig config,
                                        Exception exception,
                                        string message,
                                        [CallerMemberName] string memberName = "",
@@ -800,23 +853,24 @@ public static class ILoggerExtensions
             logger.LogWarning(exception, message, args);
         }
     }
-    
+
     /// <summary>
     /// Formats and writes a warning log message
     /// Enhanced for PresenceLight with extended Context Logging</summary>
     /// <param name="logger">The Microsoft.Extensions.Logging.ILogger to write to.</param>
+    /// <param name="config">Ref to Config to determine LogLevel</param>
     /// <param name="message">Format string of the log message.</param>
     /// <param name="memberName">Membername occurring Note:  Injected!</param>
     /// <param name="fileName">File name where occurring Note:  Injected!</param>
     /// <param name="lineNumber">LineNumber  where occurring Note:  Injected!</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
-    public static void LogWarning(this ILogger logger,
+    public static void LogWarning(this ILogger logger, BaseConfig config,
                                        string message,
                                        [CallerMemberName] string memberName = "",
                                        [CallerFilePath] string fileName = "",
                                        [CallerLineNumber] int lineNumber = 0,
                                        params object[] args)
-    {
+    {        
         using (Serilog.Context.LogContext.PushProperty("MemberName", memberName))
         using (Serilog.Context.LogContext.PushProperty("FilePath", fileName))
         using (Serilog.Context.LogContext.PushProperty("LineNumber", lineNumber))

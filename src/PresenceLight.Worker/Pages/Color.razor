@@ -53,7 +53,7 @@
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Error Occured Setting Custom Color");
+            _logger.LogError(Config, e, "Error Occured Setting Custom Color");
             throw;
         }
     }

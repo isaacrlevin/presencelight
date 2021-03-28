@@ -127,7 +127,7 @@ namespace PresenceLight.Core
                         var request = new HttpRequestMessage(httpMethod, uri);
 
                         string message = $"Sending {method} method to {uri}";
-                        _logger.LogInformation(message);
+                        _logger.LogInformation(_options, message);
 
                         response = await _client.SendAsync(request, cancellationToken);
 
@@ -135,7 +135,7 @@ namespace PresenceLight.Core
 
                         using (Serilog.Context.LogContext.PushProperty("result", apiResponse.ToString()))
                         {
-                            _logger.LogDebug(message + " Results");
+                            _logger.LogDebug(_options, message + " Results");
                         }
 
                         if (apiResponse.IsSuccessful)
@@ -147,7 +147,7 @@ namespace PresenceLight.Core
                     }
                     catch (Exception e)
                     {
-                        _logger.LogError(e, "Error Performing Web Request");
+                        _logger.LogError(_options, e, "Error Performing Web Request");
                         return CustomApiResponse.Create(method, uri, e);
                     }
                 }

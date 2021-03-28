@@ -97,7 +97,7 @@
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Error Occured Saving Yeelight Settings");
+            _logger.LogError(Config, e, "Error Occured Saving Yeelight Settings");
             throw;
         }
     }
@@ -113,7 +113,7 @@
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Error Occured loading Yeelight");
+            _logger.LogError(Config, e, "Error Occured loading Yeelight");
             throw;
         }
         await Task.CompletedTask;
@@ -140,7 +140,7 @@
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error occured Finding YeeLights");
+            _logger.LogError(Config, ex, "Error occured Finding YeeLights");
             throw;
         }
     }

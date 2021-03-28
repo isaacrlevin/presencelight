@@ -59,7 +59,7 @@ namespace PresenceLight.Worker.Controllers
             {
                 var requestType = request.GetRequestType();
 
-                _logger.LogDebug($"Beginning Alexa Request: {requestType.Name}");
+                _logger.LogDebug(Config, $"Beginning Alexa Request: {requestType.Name}");
 
                 SkillResponse response = null;
 
@@ -74,7 +74,7 @@ namespace PresenceLight.Worker.Controllers
 
                     if (intentRequest.Intent.Name == "Teams")
                     {
-                        _logger.LogDebug("Set Light Mode: Graph");
+                        _logger.LogDebug(Config, "Set Light Mode: Graph");
                         _appState.SetLightMode("Graph");
                         availability = _appState.Presence.Availability;
                         activity = _appState.Presence.Activity;
@@ -82,8 +82,8 @@ namespace PresenceLight.Worker.Controllers
                     }
                     else
                     {
-                        _logger.LogDebug("Set Light Mode: Custom");
-                        _logger.LogDebug("Set Custom Color: Offline");
+                        _logger.LogDebug(Config, "Set Light Mode: Custom");
+                        _logger.LogDebug(Config, "Set Custom Color: Offline");
                         _appState.SetLightMode("Custom");
                         _appState.SetCustomColor("Offline");
                         availability = _appState.CustomColor;

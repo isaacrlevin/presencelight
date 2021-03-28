@@ -167,7 +167,7 @@ namespace PresenceLight.Pages
 
             catch (Exception e)
             {
-                _logger.LogError(e, "Error occured");
+                _logger.LogError(SettingsHandlerBase.Config, e, "Error occured");
                 _diagClient.TrackException(e);
             }
         }
@@ -243,7 +243,7 @@ namespace PresenceLight.Pages
                                 LightMode = previousLightMode;
                                 break;
                             case "Graph":
-                                _logger.LogInformation("PresenceLight Running in Teams Mode");
+                                _logger.LogInformation(SettingsHandlerBase.Config, "PresenceLight Running in Teams Mode");
                                 _parentWindow.presence = await _parentWindow._mediator.Send(new Core.GraphServices.GetPresenceCommand());
 
                                 if (newColor == string.Empty)
@@ -265,7 +265,7 @@ namespace PresenceLight.Pages
                                 MapUI(_parentWindow.presence, null, null);
                                 break;
                             case "Theme":
-                                _logger.LogInformation("PresenceLight Running in Theme Mode");
+                                _logger.LogInformation(SettingsHandlerBase.Config, "PresenceLight Running in Theme Mode");
                                 try
                                 {
                                     var theme = ((SolidColorBrush)SystemParameters.WindowGlassBrush).Color;
@@ -292,7 +292,7 @@ namespace PresenceLight.Pages
                                 }
                                 catch (Exception ex)
                                 {
-                                    _logger.LogError(ex, "Error Occured");
+                                    _logger.LogError(SettingsHandlerBase.Config, ex, "Error Occured");
                                     _diagClient.TrackException(ex);
                                 }
                                 break;
@@ -303,7 +303,7 @@ namespace PresenceLight.Pages
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e, "Error Occurred");
+                    _logger.LogError(SettingsHandlerBase.Config, e, "Error Occurred");
                     _diagClient.TrackException(e);
                 }
             }
@@ -376,7 +376,7 @@ namespace PresenceLight.Pages
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error Occurred");
+                _logger.LogError(SettingsHandlerBase.Config, e, "Error Occurred");
                 _diagClient.TrackException(e);
                 throw;
             }
@@ -406,7 +406,7 @@ namespace PresenceLight.Pages
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error occured Checking Azure Active Directory");
+                _logger.LogError(SettingsHandlerBase.Config, e, "Error occured Checking Azure Active Directory");
                 _diagClient.TrackException(e);
             }
         }
@@ -414,7 +414,7 @@ namespace PresenceLight.Pages
         private async void SignOutButton_Click(object sender, RoutedEventArgs e)
         {
             _parentWindow.loopRunning = false;
-            _logger.LogInformation("Signing out of Graph PresenceLight Sync");
+            _logger.LogInformation(SettingsHandlerBase.Config, "Signing out of Graph PresenceLight Sync");
 
             LightMode = "Graph";
             var accounts = await WPFAuthorizationProvider.Application.GetAccountsAsync().ConfigureAwait(true);

@@ -50,7 +50,7 @@ namespace PresenceLight.Services
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error Finding Settings File");
+                _logger.LogError(SettingsHandlerBase.Config, e, "Error Finding Settings File");
                 _diagClient.TrackException(e);
                 return false;
             }
@@ -65,7 +65,7 @@ namespace PresenceLight.Services
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error Loading Settings");
+                _logger.LogError(SettingsHandlerBase.Config, e, "Error Loading Settings");
                 _diagClient.TrackException(e);
                 return null;
             }
@@ -81,7 +81,7 @@ namespace PresenceLight.Services
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error saving Settings");
+                _logger.LogError(SettingsHandlerBase.Config, e, "Error saving Settings");
                 _diagClient.TrackException(e);
                 return false;
             }

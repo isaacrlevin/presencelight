@@ -94,7 +94,7 @@ namespace PresenceLight.Pages
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occured Finding YeeLights");
+                _logger.LogError(SettingsHandlerBase.Config, ex, "Error occured Finding YeeLights");
                 //TODO: Come back to this if necessary
                 //_diagClient.TrackException(ex);
             }
@@ -147,7 +147,7 @@ namespace PresenceLight.Pages
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error occured Checking YeeLight");
+                _logger.LogError(SettingsHandlerBase.Config, e, "Error occured Checking YeeLight");
 
                 //TODO:  Come back to this if necessary
                 //_diagClient.TrackException(e);
@@ -194,7 +194,7 @@ namespace PresenceLight.Pages
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error Occured Saving Yeelight Settings");
+                _logger.LogError(SettingsHandlerBase.Config, ex, "Error Occured Saving Yeelight Settings");
                 //TODO : COME BACK IF NECESSARY
                 //_diagClient.TrackException(ex);
             }

@@ -52,7 +52,7 @@ namespace PresenceLight.Core
         {
             if (string.IsNullOrEmpty(lightId))
             {
-                _logger.LogInformation("Selected Hue Light Not Specified");
+                _logger.LogInformation(_options, "Selected Hue Light Not Specified");
                 return;
             }
 
@@ -101,7 +101,7 @@ namespace PresenceLight.Core
                     }
 
                     message = $"Turning Hue Light {lightId} Off";
-                    _logger.LogInformation(message);
+                    _logger.LogInformation(_options, message);
                     return;
                 }
 
@@ -142,11 +142,11 @@ namespace PresenceLight.Core
                 }
 
                 message = $"Setting Hue Light {lightId} to {color}";
-                _logger.LogInformation(message);
+                _logger.LogInformation(_options, message);
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error Occurred Setting Color");
+                _logger.LogError(_options, e, "Error Occurred Setting Color");
                 throw;
             }
         }
@@ -167,7 +167,7 @@ namespace PresenceLight.Core
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e, "Error Occurred Registering Bridge");
+                    _logger.LogError(_options, e, "Error Occurred Registering Bridge");
                     return String.Empty;
                 }
             }
@@ -187,7 +187,7 @@ namespace PresenceLight.Core
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error Occurred Finding Bridge");
+                _logger.LogError(_options, e, "Error Occurred Finding Bridge");
                 return String.Empty;
             }
             return String.Empty;
@@ -214,7 +214,7 @@ namespace PresenceLight.Core
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error Occurred Getting Bridge", e);
+                _logger.LogError(_options, e, "Error Occurred Getting Bridge");
                 throw;
             }
         }
@@ -232,7 +232,7 @@ namespace PresenceLight.Core
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error Occurred Getting Bridge", e);
+                _logger.LogError(_options, e, "Error Occurred Getting Bridge");
                 throw;
             }
         }
@@ -279,7 +279,7 @@ namespace PresenceLight.Core
                             await _client.SendCommandAsync(command, new List<string> { lightId.Replace("id:", "") });
                         }
                         message = $"Turning Hue Light {lightId} Off";
-                        _logger.LogInformation(message);
+                        _logger.LogInformation(_options, message);
                         return (color, command, true);
                     }
                 }
