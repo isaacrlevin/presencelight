@@ -1,19 +1,18 @@
-Id: isaaclevin.presencelight
-Version: {VERSION}
-Name: PresenceLight
+PackageIdentifier: isaaclevin.presencelight
+PackageName: PresenceLight
+Moniker: presencelight
+PackageVersion: {VERSION}
 Publisher: Isaac Levin
+Author: Isaac Levin
 License: MIT
 LicenseUrl: https://github.com/isaacrlevin/presencelight/blob/main/LICENSE
-AppMoniker: PresenceLight
-Tags: teams
-      microsoftteams
-      lifx
-      hue
-      presence
-Description: PresenceLight is a solution to broadcast your various statuses to smart lights
-Homepage: https://github.com/isaacrlevin/presencelight
+ShortDescription: PresenceLight is a solution to broadcast your various statuses to smart lights
+PackageUrl: https://github.com/isaacrlevin/presencelight
 Installers:
-  - Arch: x64
-    Url: {x64Link}
-    Sha256: {HASHx64}
-    InstallerType: msix
+- Architecture: x64
+  InstallerUrl: {x64Link}
+  InstallerSha256: {HASHx64}
+  InstallerType: msix
+PackageLocale: en-US
+ManifestType: singleton
+ManifestVersion: 1.0.0
