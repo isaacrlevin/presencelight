@@ -165,29 +165,32 @@ namespace PresenceLight.Core
             string message;
             var device = this.deviceGroup.FirstOrDefault(x => x.Id == lightId);
 
-            device.OnNotificationReceived += Device_OnNotificationReceived;
-            device.OnError += Device_OnError;
-
-            await device.Connect();
-            foreach (var prop in props)
+            if (device != null)
             {
-                if (presence == prop.Name.Replace("Status", "").Replace("Availability", "").Replace("Activity", ""))
+                device.OnNotificationReceived += Device_OnNotificationReceived;
+                device.OnError += Device_OnError;
+
+                await device.Connect();
+                foreach (var prop in props)
                 {
-                    var value = (AvailabilityStatus)prop.GetValue(_options.LightSettings.Yeelight.Statuses);
-
-                    if (!value.Disabled)
+                    if (presence == prop.Name.Replace("Status", "").Replace("Availability", "").Replace("Activity", ""))
                     {
-                        await device.TurnOn();
-                        color = value.Colour;
-                        return (color, device, false);
-                    }
-                    else
-                    {
-                        await device.TurnOff();
+                        var value = (AvailabilityStatus)prop.GetValue(_options.LightSettings.Yeelight.Statuses);
 
-                        message = $"Turning Yeelight Light {lightId} Off";
-                        _logger.LogInformation(message);
-                        return (color, device, true);
+                        if (!value.Disabled)
+                        {
+                            await device.TurnOn();
+                            color = value.Colour;
+                            return (color, device, false);
+                        }
+                        else
+                        {
+                            await device.TurnOff();
+
+                            message = $"Turning Yeelight Light {lightId} Off";
+                            _logger.LogInformation(message);
+                            return (color, device, true);
+                        }
                     }
                 }
             }

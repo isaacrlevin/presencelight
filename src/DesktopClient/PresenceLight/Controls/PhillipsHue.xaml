@@ -19,6 +19,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="50" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="50" />
         </Grid.RowDefinitions>
         <Grid Grid.Column="1" Grid.ColumnSpan="1">
             <CheckBox x:Name="cbIsPhilipsEnabled" IsChecked="{Binding LightSettings.Hue.IsEnabled}" Content="Connect to Philips Hue" Grid.Column="1" Grid.ColumnSpan="4" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbIsPhilipsEnabledChanged" Checked="cbIsPhilipsEnabledChanged" />
@@ -240,8 +241,9 @@
             </Grid>
 
             <Image Grid.Row="5" Grid.Column="1" x:Name="imgHueLoading" Visibility="Collapsed" gif:ImageBehavior.AnimatedSource="../Icons/loading.gif" Width="75" Margin="70,42,69,215" Grid.RowSpan="4"  />
-            <Button Grid.Row="6" VerticalAlignment="Center" Grid.Column="1" x:Name="btnHue" Height="45" Width="170" Content="Save"  Click="SaveHue_Click" />
-            <Label Grid.Row="6"  VerticalAlignment="Top" Grid.Column="1" x:Name="lblHueSaved" HorizontalAlignment="Center" Visibility="Visible" Content="Settings Updated" Foreground="Green" Margin="0,0,0,0" Grid.RowSpan="2" />
+           
         </Grid>
+        <Button Grid.Row="3" VerticalAlignment="Center" Grid.Column="2" x:Name="btnHue" Height="45" Width="170" Content="Save"  Click="SaveHue_Click" />
+        <Label Grid.Row="3"  VerticalAlignment="Top" Grid.Column="2" x:Name="lblHueSaved" HorizontalAlignment="Center" Visibility="Visible" Content="Settings Updated" Foreground="Green" Margin="0,-30,0,0" Grid.RowSpan="2" />
     </Grid>
 </UserControl>

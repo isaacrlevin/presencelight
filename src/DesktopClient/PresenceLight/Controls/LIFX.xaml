@@ -20,6 +20,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="50" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="50" />
         </Grid.RowDefinitions>
         <Grid Grid.Column="1" Grid.ColumnSpan="4">
             <Grid.ColumnDefinitions>
@@ -242,8 +243,9 @@
                 </Grid>
             </Grid>
             <Image Grid.Row="4" Grid.Column="1" x:Name="imgLIFXLoading" Visibility="Collapsed" gif:ImageBehavior.AnimatedSource="../Icons/loading.gif" Width="75" Margin="70,42,69,215" Grid.RowSpan="4"  />
-            <Button Grid.Row="5" VerticalAlignment="Center" Grid.Column="1" x:Name="btnLIFX" Height="45" Width="170" Content="Save"  Click="SaveLIFX_Click" />
-            <Label Grid.Row="5" Grid.Column="1" x:Name="lblLIFXSaved" HorizontalAlignment="Center" Visibility="Visible" Content="Settings Updated" Foreground="Green" Margin="0,0,0,0" Grid.RowSpan="2" />
+           
         </Grid>
+        <Button Grid.Row="3" VerticalAlignment="Center" Grid.Column="2" x:Name="btnLIFX" Height="45" Width="170" Content="Save"  Click="SaveLIFX_Click" />
+        <Label Grid.Row="3" Grid.Column="2" x:Name="lblLIFXSaved" HorizontalAlignment="Center" Visibility="Visible" Content="Settings Updated" Foreground="Green" Margin="0,-30,0,0" />
     </Grid>
 </UserControl>
