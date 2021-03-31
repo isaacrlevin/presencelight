@@ -564,7 +564,8 @@ jobs:
 
       - name: GitHub Cli
         run: |
-          cp "${{ github.workspace }}/Build/${{ env.VERSION }}.yaml" ~/winget-pkgs/manifests/isaaclevin/presencelight/
+          mkdir -p "~/winget-pkgs/manifests/i/isaaclevin/presencelight/${{ env.VERSION }}"
+          cp "${{ github.workspace }}/Build/${{ env.VERSION }}.yaml" "~/winget-pkgs/manifests/i/isaaclevin/presencelight/${{ env.VERSION }}"
           cd ~/winget-pkgs
 
           git config --global user.email "github-action@microsoft.com"
@@ -575,7 +576,7 @@ jobs:
           git push
 
           COMMIT_MESSAGE="Adding PresenceLight Version: ${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.Package_${{ env.VERSION }}.0_x64.appxbundle"
-          gh pr create --title "Submitting  PresenceLight" --body "$COMMIT_MESSAGE" -R microsoft/winget-pkgs
+          gh pr create --title "Submitting  PresenceLight Version ${{ env.VERSION }}" --body "$COMMIT_MESSAGE" -R microsoft/winget-pkgs
 
   Deploy_Store:
     needs: Deploy_Azure_Blob
