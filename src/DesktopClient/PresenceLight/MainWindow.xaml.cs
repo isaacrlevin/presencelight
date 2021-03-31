@@ -750,6 +750,7 @@ namespace PresenceLight
                                 // check to see if working hours have passed
                                 if (previousWorkingHours)
                                 {
+                                    previousWorkingHours = false;
                                     previousLightMode = lightMode;
                                     switch (Config.LightSettings.HoursPassedStatus)
                                     {
