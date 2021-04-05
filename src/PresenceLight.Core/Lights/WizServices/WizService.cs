@@ -193,6 +193,14 @@ namespace PresenceLight.Core
 
             var command = new WizParams();
 
+            if (presence.Contains("#"))
+            {
+                // provided presence is actually a custom color
+                color = presence;
+                command.State = true;
+                return (color, command, false);
+            }
+
             foreach (var prop in props)
             {
                 if (presence == prop.Name.Replace("Status", "").Replace("Availability", "").Replace("Activity", ""))

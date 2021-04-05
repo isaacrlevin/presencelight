@@ -171,6 +171,15 @@ namespace PresenceLight.Core
                 device.OnError += Device_OnError;
 
                 await device.Connect();
+
+                if (presence.Contains("#"))
+                {
+                    // provided presence is actually a custom color
+                    color = presence;
+                    await device.TurnOn();
+                    return (color, device, false);
+                }
+
                 foreach (var prop in props)
                 {
                     if (presence == prop.Name.Replace("Status", "").Replace("Availability", "").Replace("Activity", ""))
