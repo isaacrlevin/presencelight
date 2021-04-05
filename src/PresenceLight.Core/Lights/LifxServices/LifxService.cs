@@ -193,6 +193,14 @@ namespace PresenceLight.Core
             string message;
             var command = new SetStateRequest();
 
+            if (presence.Contains("#"))
+            {
+                // provided presence is actually a custom color
+                color = presence;
+                command.Power = PowerState.On;
+                return (color, command, false);
+            }
+
             foreach (var prop in props)
             {
                 if (presence == prop.Name.Replace("Status", "").Replace("Availability", "").Replace("Activity", ""))
