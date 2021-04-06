@@ -88,6 +88,15 @@ namespace PresenceLight.Core
                         throw new ArgumentException("Supplied Color had an issue");
                 }
 
+                if (availability == "Off")
+                {
+                    await o.device.TurnOff();
+
+                    message = $"Turning Yeelight Light {lightId} Off";
+                    _logger.LogInformation(message);
+                    return;
+                }
+
                 if (_options.LightSettings.UseDefaultBrightness)
                 {
                     if (_options.LightSettings.DefaultBrightness == 0)
