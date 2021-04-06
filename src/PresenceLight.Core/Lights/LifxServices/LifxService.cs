@@ -133,6 +133,7 @@ namespace PresenceLight.Core
                 if (availability == "Off")
                 {
                     _logger.LogInformation($"Turning LIFX Light {lightId} Off - LIFXService:SetColor");
+                    command.Power = PowerState.Off;
                     var result = await _client.SetState(selector, command);
                     return;
                 }

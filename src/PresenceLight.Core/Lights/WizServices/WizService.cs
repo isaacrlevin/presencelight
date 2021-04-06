@@ -98,7 +98,6 @@ namespace PresenceLight.Core
                 {
                     command.State = false;
 
-
                     UpdateLight(command, lightId);
                     message = $"Turning Wiz Light {lightId} Off";
                     _logger.LogInformation(message);
