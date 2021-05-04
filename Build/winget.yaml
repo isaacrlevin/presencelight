@@ -1,0 +1,18 @@
+PackageIdentifier: isaaclevin.presencelight
+PackageName: PresenceLight
+Moniker: presencelight
+PackageVersion: {VERSION}
+Publisher: Isaac Levin
+Author: Isaac Levin
+License: MIT
+LicenseUrl: https://github.com/isaacrlevin/presencelight/blob/main/LICENSE
+ShortDescription: PresenceLight is a solution to broadcast your various statuses to smart lights
+PackageUrl: https://github.com/isaacrlevin/presencelight
+Installers:
+- Architecture: x64
+  InstallerUrl: {x64Link}
+  InstallerSha256: {HASHx64}
+  InstallerType: msix
+PackageLocale: en-US
+ManifestType: singleton
+ManifestVersion: 1.0.0

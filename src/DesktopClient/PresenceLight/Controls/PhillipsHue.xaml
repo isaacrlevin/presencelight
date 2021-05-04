@@ -1,0 +1,249 @@
+﻿<UserControl x:Class="PresenceLight.Controls.PhilipsHue"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:lc="clr-namespace:PresenceLight.Controls"
+             xmlns:gif="http://wpfanimatedgif.codeplex.com"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             mc:Ignorable="d" 
+             d:DesignHeight="500" d:DesignWidth="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="50"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="50"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="50" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Column="1" Grid.ColumnSpan="1">
+            <CheckBox x:Name="cbIsPhilipsEnabled" IsChecked="{Binding LightSettings.Hue.IsEnabled}" Content="Connect to Philips Hue" Grid.Column="1" Grid.ColumnSpan="4" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbIsPhilipsEnabledChanged" Checked="cbIsPhilipsEnabledChanged" />
+        </Grid>
+        <Grid x:Name="pnlHueApi" Grid.Column="2" Grid.ColumnSpan="2">
+            <CheckBox x:Name="cbUseRemoteHueApi" IsChecked="{Binding LightSettings.Hue.UseRemoteApi}" Content="Use Remote Api" Grid.Column="1" Grid.ColumnSpan="4" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbUseRemoteApiChanged" Checked="cbUseRemoteApiChanged" />
+            <Button Grid.Row="1" VerticalAlignment="Center" x:Name="remoteHueButton" HorizontalAlignment="Left" Grid.Column="1" Height="23" Width="120" Content="Login to Hue Cloud" Click="HueApiKey_Get" Grid.ColumnSpan="2" Margin="214,20,0,0"/>
+        </Grid>
+        <Grid x:Name="pnlPhilips"  Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="10" />
+                <RowDefinition Height="30" />
+                <RowDefinition Height="46" />
+                <RowDefinition Height="60"/>
+                <RowDefinition Height="60"/>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="100" />
+            </Grid.RowDefinitions>
+            <Label Grid.Row="1" Grid.Column="0"  Content="Hue Bridge IP Address" />
+            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding LightSettings.Hue.HueIpAddress}" x:Name="hueIpAddress" HorizontalAlignment="Center" Height="23"  TextWrapping="Wrap" VerticalAlignment="Center" Width="120" TextChanged="HueIpAddress_TextChanged"/>
+            <Button Grid.Row="1" VerticalAlignment="Center" x:Name="btnFindBridge" HorizontalAlignment="Left" Grid.Column="1" Height="23" Width="120" Content="Find Bridge" Click="FindBridge_Click" Grid.ColumnSpan="2" Margin="214,0,0,0"/>
+
+            <Button Grid.Row="2" Grid.Column="1" x:Name="btnRegister" Height="23" Width="120" HorizontalAlignment="Left" Content="Register Bridge"  Click=" RegisterBridge_Click" Grid.ColumnSpan="2" Margin="214,11,0,11"/>
+
+            <Label Grid.Row="3" VerticalAlignment="Top" Grid.Column="1" HorizontalAlignment="Center" Margin="0,0,0,0" >
+                <TextBlock  x:Name="lblHueMessage" TextWrapping="Wrap"   TextAlignment="Center">
+                </TextBlock>
+            </Label>
+
+            <Grid Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Row="2" Grid.Column="0" VerticalAlignment="Top" x:Name="btnGetHueLights" Click="CheckHue_Click" Height="45" Width="170" Content="Get Lights" />
+                <Button Grid.Row="2" Grid.Column="1" VerticalAlignment="Top" x:Name="btnGetHueGroups" Click="CheckHue_Click" Height="45" Width="170" Content="Get Groups" />
+            </Grid>
+
+            <Grid x:Name="pnlHueData"   Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="3" Margin="0,0,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="80"/>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Grid x:Name="pnlHueLights"   Grid.Column="0" Grid.Row="0" Margin="0,0,0,0" Grid.RowSpan="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="20"/>
+                        <RowDefinition Height="120"/>
+                    </Grid.RowDefinitions>
+
+                    <Label Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" x:Name="hueItemType"  VerticalAlignment="Top" Margin="0,0,0,0" Content=""  Grid.RowSpan="2" />
+                    <ComboBox Grid.Row="2" Grid.Column="1" x:Name="ddlHueLights" DisplayMemberPath="Name" SelectionChanged="ddlHueLights_SelectionChanged"  HorizontalAlignment="Center" VerticalAlignment="Top" Width="150" Margin="0,11,0,0" Grid.RowSpan="2"/>
+
+                </Grid>
+
+                <Grid x:Name="pnlHueBrightness"  Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" Margin="0,0,0,88" Grid.RowSpan="4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="40"/>
+                    </Grid.RowDefinitions>
+                    <Label Grid.Column="0" x:Name="hueBrightnessText"  VerticalAlignment="Bottom" Foreground="Red" Content="Default Brightness in Settings is enabled"  Grid.ColumnSpan="3" Grid.Row="0" />
+                    <Label Grid.Column="0" VerticalAlignment="Top" Content="Brightness"  Grid.ColumnSpan="3" Grid.Row="0" />
+                    <Slider Grid.Column="1" VerticalAlignment="Center" Width="180"  HorizontalAlignment="Center" x:Name = "hueBrightness" Value="{Binding LightSettings.Hue.Brightness}" IsSnapToTickEnabled="True"  Minimum = "0" Maximum = "100" TickFrequency = "10" TickPlacement = "BottomRight"  Grid.Row="0" />
+                    <TextBox Grid.Column="2" VerticalAlignment="Center" x:Name="hueBrightnessNum" Text="{Binding ElementName=hueBrightness, Path=Value, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="20" TextAlignment="Center" Width="40" Grid.Row="0" />
+                </Grid>
+
+                <Grid Grid.Column="0" Grid.Row="2">
+                    <CheckBox IsChecked="{Binding LightSettings.Hue.UseActivityStatus}" Content="Use Activity Status" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Center" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbUseHueActivityStatus" Checked="cbUseHueActivityStatus" />
+                </Grid>
+
+                <Grid x:Name="pnlHueAvailableStatuses" Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="3" Margin="0,20,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30" />
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                    </Grid.RowDefinitions>
+                    <Label Grid.Column="0" VerticalAlignment="Center" Content="Available Colour"  Grid.Row="0" />
+                    <Label Grid.Column="0" VerticalAlignment="Center" Content="Available Idle Colour"  Grid.Row="1" />
+                    <Label Grid.Column="0" VerticalAlignment="Center" Content="Away Colour" Grid.Row="2" />
+                    <Label Grid.Column="0" VerticalAlignment="Center" Content="Be Right Back Colour" Grid.Row="3" />
+                    <Label Grid.Column="0" VerticalAlignment="Center" Content="Busy Colour" Grid.Row="4" />
+                    <Label Grid.Column="0" VerticalAlignment="Center" Content="Busy Idle Colour" Grid.Row="5" />
+                    <Label Grid.Column="0" VerticalAlignment="Center" Content="Do Not Disturb Colour" Grid.Row="6"  />
+                    <Label Grid.Column="0" VerticalAlignment="Center" Content="Offline Colour" Grid.Row="7"/>
+                    <Label Grid.Column="0" VerticalAlignment="Center" Content="Presence Unknown Colour" Grid.Row="8"/>
+                    <Label Grid.Column="0" VerticalAlignment="Center" Content="Off Colour" Grid.Row="9" />
+
+                    <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Hue.Statuses.AvailabilityAvailableStatus.Colour}" x:Name="hueAvailabilityAvailableColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="0" />
+                    <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Hue.Statuses.AvailabilityAvailableIdleStatus.Colour}" x:Name="hueAvailabilityAvailableIdleColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="1" />
+                    <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Hue.Statuses.AvailabilityAwayStatus.Colour}" x:Name="hueAvailabilityAwayColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="2"/>
+                    <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Hue.Statuses.AvailabilityBeRightBackStatus.Colour}" x:Name="hueAvailabilityBeRightBackColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="3" />
+                    <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Hue.Statuses.AvailabilityBusyStatus.Colour}" x:Name="hueAvailabilityBusyColour" HorizontalAlignment="Center" Height="23"  VerticalAlignment="Center" Width="120" Grid.Row="4"/>
+                    <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Hue.Statuses.AvailabilityBusyIdleStatus.Colour}" x:Name="hueAvailabilityBusyIdleColour" HorizontalAlignment="Center" Height="23"  VerticalAlignment="Center" Width="120" Grid.Row="5"/>
+                    <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Hue.Statuses.AvailabilityDoNotDisturbStatus.Colour}" x:Name="hueAvailabilityDoNotDisturbColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="6" />
+                    <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Hue.Statuses.AvailabilityOfflineStatus.Colour}" x:Name="hueAvailabilityOfflineColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="7"/>
+                    <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Hue.Statuses.AvailabilityPresenceUnknownStatus.Colour}" x:Name="hueAvailabilityPresenceUnknownColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="8"/>
+                    <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Hue.Statuses.AvailabilityOffStatus.Colour}" x:Name="hueAvailabilityOffColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="9"/>
+
+                    <CheckBox x:Name="hueAvailabilityAvailableDisabled" IsChecked="{Binding LightSettings.Hue.Statuses.AvailabilityAvailableStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbHueIsDisabledChange" Checked="cbHueIsDisabledChange" />
+                    <CheckBox x:Name="hueAvailabilityAvailableIdleDisabled" IsChecked="{Binding LightSettings.Hue.Statuses.AvailabilityAvailableIdleStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbHueIsDisabledChange" Checked="cbHueIsDisabledChange" />
+                    <CheckBox x:Name="hueAvailabilityAwayDisabled" IsChecked="{Binding LightSettings.Hue.Statuses.AvailabilityAwayStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbHueIsDisabledChange" Checked="cbHueIsDisabledChange" />
+                    <CheckBox x:Name="hueAvailabilityBeRightBackDisabled" IsChecked="{Binding LightSettings.Hue.Statuses.AvailabilityBeRightBackStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="3" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbHueIsDisabledChange" Checked="cbHueIsDisabledChange" />
+                    <CheckBox x:Name="hueAvailabilityBusyDisabled" IsChecked="{Binding LightSettings.Hue.Statuses.AvailabilityBusyStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbHueIsDisabledChange" Checked="cbHueIsDisabledChange" />
+                    <CheckBox x:Name="hueAvailabilityBusyIdleDisabled" IsChecked="{Binding LightSettings.Hue.Statuses.AvailabilityBusyIdleStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="5" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbHueIsDisabledChange" Checked="cbHueIsDisabledChange" />
+                    <CheckBox x:Name="hueAvailabilityDoNotDisturbDisabled" IsChecked="{Binding LightSettings.Hue.Statuses.AvailabilityDoNotDisturbStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="6" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbHueIsDisabledChange" Checked="cbHueIsDisabledChange" />
+                    <CheckBox x:Name="hueAvailabilityOfflineDisabled" IsChecked="{Binding LightSettings.Hue.Statuses.AvailabilityOfflineStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="7" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbHueIsDisabledChange" Checked="cbHueIsDisabledChange" />
+                    <CheckBox x:Name="hueAvailabilityPresenceUnknownDisabled" IsChecked="{Binding LightSettings.Hue.Statuses.AvailabilityPresenceUnknownStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="8" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbHueIsDisabledChange" Checked="cbHueIsDisabledChange" />
+                    <CheckBox x:Name="hueAvailabilityOffDisabled" IsChecked="{Binding LightSettings.Hue.Statuses.AvailabilityOffStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="9" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbHueIsDisabledChange" Checked="cbHueIsDisabledChange" />
+
+                </Grid>
+
+                <Grid x:Name="pnlHueActivityStatuses"  Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="3" Margin="0,20,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30" />
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30" />
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                    </Grid.RowDefinitions>
+                    <Label Grid.Column="0" VerticalAlignment="Center" Content="Available Colour"  Grid.Row="0" />
+                    <Label Grid.Column="0" VerticalAlignment="Center" Content="Away Colour"  Grid.Row="1" />
+                    <Label Grid.Column="0" VerticalAlignment="Center" Content="Be Right Back Colour"  Grid.Row="2" />
+                    <Label Grid.Column="0" VerticalAlignment="Center" Content="Busy Colour"  Grid.Row="3" />
+                    <Label Grid.Column="0" VerticalAlignment="Center" Content="Do Not Disturb Colour"  Grid.Row="4" />
+                    <Label Grid.Column="0" VerticalAlignment="Center" Content="In A Call Colour"  Grid.Row="5" />
+                    <Label Grid.Column="0" VerticalAlignment="Center" Content="In A Conference Call Colour"  Grid.Row="6" />
+                    <Label Grid.Column="0" VerticalAlignment="Center" Content="Inactive Colour"  Grid.Row="7" />
+                    <Label Grid.Column="0" VerticalAlignment="Center" Content="In A Meeting Colour"  Grid.Row="8" />
+                    <Label Grid.Column="0" VerticalAlignment="Center" Content="Offline Colour"  Grid.Row="9" />
+                    <Label Grid.Column="0" VerticalAlignment="Center" Content="Off Work Colour"  Grid.Row="10" />
+                    <Label Grid.Column="0" VerticalAlignment="Center" Content="Out Of Office Colour"  Grid.Row="11" />
+                    <Label Grid.Column="0" VerticalAlignment="Center" Content="Presence Unknown Colour"  Grid.Row="12" />
+                    <Label Grid.Column="0" VerticalAlignment="Center" Content="Presenting Colour"  Grid.Row="13" />
+                    <Label Grid.Column="0" VerticalAlignment="Center" Content="Urgent Interruptions Only Colour"  Grid.Row="14" />
+                    <Label Grid.Column="0" VerticalAlignment="Center" Content="Off Colour"  Grid.Row="15" />
+
+                    <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Hue.Statuses.ActivityAvailableStatus.Colour}" x:Name="hueActivityAvailableColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="0" />
+                    <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Hue.Statuses.ActivityAwayStatus.Colour}" x:Name="hueActivityAwayColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="1" />
+                    <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Hue.Statuses.ActivityBeRightBackStatus.Colour}" x:Name="hueActivityBeRightBackColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="2" />
+                    <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Hue.Statuses.ActivityBusyStatus.Colour}" x:Name="hueActivityBusyColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="3" />
+                    <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Hue.Statuses.ActivityDoNotDisturbStatus.Colour}" x:Name="hueActivityDoNotDisturbColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="4" />
+                    <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Hue.Statuses.ActivityInACallStatus.Colour}" x:Name="hueActivityInACallColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="5" />
+                    <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Hue.Statuses.ActivityInAConferenceCallStatus.Colour}" x:Name="hueActivityInAConferenceCallColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="6" />
+                    <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Hue.Statuses.ActivityInactiveStatus.Colour}" x:Name="hueActivityInactiveColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="7" />
+                    <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Hue.Statuses.ActivityInAMeetingStatus.Colour}" x:Name="hueActivityInAMeetingColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="8" />
+                    <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Hue.Statuses.ActivityOfflineStatus.Colour}" x:Name="hueActivityOfflineColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="9" />
+                    <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Hue.Statuses.ActivityOffWorkStatus.Colour}" x:Name="hueActivityOffWorkColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="10" />
+                    <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Hue.Statuses.ActivityOutOfOfficeStatus.Colour}" x:Name="hueActivityOutOfOfficeColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="11" />
+                    <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Hue.Statuses.ActivityPresenceUnknownStatus.Colour}" x:Name="hueActivityPresenceUnknownColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="12" />
+                    <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Hue.Statuses.ActivityPresentingStatus.Colour}" x:Name="hueActivityPresentingColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="13" />
+                    <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Hue.Statuses.ActivityUrgentInterruptionsOnlyStatus.Colour}" x:Name="hueActivityUrgentInterruptionsOnlyColour" HorizontalAlignment="Center" Height="24" VerticalAlignment="Center" Width="120" Grid.Row="14" />
+                    <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Hue.Statuses.ActivityOffStatus.Colour}" x:Name="hueActivityOffColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="15" />
+
+                    <CheckBox x:Name="hueActivityAvailableDisabled" IsChecked="{Binding LightSettings.Hue.Statuses.ActivityAvailableStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbHueIsDisabledChange" Checked="cbHueIsDisabledChange" />
+                    <CheckBox x:Name="hueActivityAwayDisabled" IsChecked="{Binding LightSettings.Hue.Statuses.ActivityAwayStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbHueIsDisabledChange" Checked="cbHueIsDisabledChange" />
+                    <CheckBox x:Name="hueActivityBeRightBackDisabled" IsChecked="{Binding LightSettings.Hue.Statuses.ActivityBeRightBackStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbHueIsDisabledChange" Checked="cbHueIsDisabledChange" />
+                    <CheckBox x:Name="hueActivityBusyDisabled" IsChecked="{Binding LightSettings.Hue.Statuses.ActivityBusyStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="3" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbHueIsDisabledChange" Checked="cbHueIsDisabledChange" />
+                    <CheckBox x:Name="hueActivityDoNotDisturbDisabled" IsChecked="{Binding LightSettings.Hue.Statuses.ActivityDoNotDisturbStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbHueIsDisabledChange" Checked="cbHueIsDisabledChange" />
+                    <CheckBox x:Name="hueActivityInACallDisabled" IsChecked="{Binding LightSettings.Hue.Statuses.ActivityInACallStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="5" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbHueIsDisabledChange" Checked="cbHueIsDisabledChange" />
+                    <CheckBox x:Name="hueActivityInAConferenceCallDisabled" IsChecked="{Binding LightSettings.Hue.Statuses.ActivityInAConferenceCallStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="6" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbHueIsDisabledChange" Checked="cbHueIsDisabledChange" />
+                    <CheckBox x:Name="hueActivityInactiveDisabled" IsChecked="{Binding LightSettings.Hue.Statuses.ActivityInactiveStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="7" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbHueIsDisabledChange" Checked="cbHueIsDisabledChange" />
+                    <CheckBox x:Name="hueActivityInAMeetingDisabled" IsChecked="{Binding LightSettings.Hue.Statuses.ActivityInAMeetingStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="8" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbHueIsDisabledChange" Checked="cbHueIsDisabledChange" />
+                    <CheckBox x:Name="hueActivityOfflineDisabled" IsChecked="{Binding LightSettings.Hue.Statuses.ActivityOfflineStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="9" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbHueIsDisabledChange" Checked="cbHueIsDisabledChange" />
+                    <CheckBox x:Name="hueActivityOffWorkDisabled" IsChecked="{Binding LightSettings.Hue.Statuses.ActivityOffWorkStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="10" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbHueIsDisabledChange" Checked="cbHueIsDisabledChange" />
+                    <CheckBox x:Name="hueActivityOutOfOfficeDisabled" IsChecked="{Binding LightSettings.Hue.Statuses.ActivityOutOfOfficeStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="11" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbHueIsDisabledChange" Checked="cbHueIsDisabledChange" />
+                    <CheckBox x:Name="hueActivityPresenceUnknownDisabled" IsChecked="{Binding LightSettings.Hue.Statuses.ActivityPresenceUnknownStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="12" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbHueIsDisabledChange" Checked="cbHueIsDisabledChange" />
+                    <CheckBox x:Name="hueActivityPresentingDisabled" IsChecked="{Binding LightSettings.Hue.Statuses.ActivityPresentingStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="13" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbHueIsDisabledChange" Checked="cbHueIsDisabledChange" />
+                    <CheckBox x:Name="hueActivityUrgentInterruptionsOnlyDisabled" IsChecked="{Binding LightSettings.Hue.Statuses.ActivityUrgentInterruptionsOnlyStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="14" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbHueIsDisabledChange" Checked="cbHueIsDisabledChange" />
+                    <CheckBox x:Name="hueActivityOffDisabled" IsChecked="{Binding LightSettings.Hue.Statuses.ActivityOffStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="15" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbHueIsDisabledChange" Checked="cbHueIsDisabledChange" />
+
+                </Grid>
+            </Grid>
+
+            <Image Grid.Row="5" Grid.Column="1" x:Name="imgHueLoading" Visibility="Collapsed" gif:ImageBehavior.AnimatedSource="../Icons/loading.gif" Width="75" Margin="70,42,69,215" Grid.RowSpan="4"  />
+           
+        </Grid>
+        <Button Grid.Row="3" VerticalAlignment="Center" Grid.Column="2" x:Name="btnHue" Height="45" Width="170" Content="Save"  Click="SaveHue_Click" />
+        <Label Grid.Row="3"  VerticalAlignment="Top" Grid.Column="2" x:Name="lblHueSaved" HorizontalAlignment="Center" Visibility="Visible" Content="Settings Updated" Foreground="Green" Margin="0,-30,0,0" Grid.RowSpan="2" />
+    </Grid>
+</UserControl>

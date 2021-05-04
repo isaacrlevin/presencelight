@@ -1,0 +1,157 @@
+﻿@page "/yeelight"
+
+@inject PresenceLight.Worker.Services.SettingsService SettingsService
+
+@inject AppState appState
+@inject IOptionsMonitor<BaseConfig> Config
+@inject ILogger<CustomApiSetup> _logger;
+
+<div class="container text-body" style="overflow:hidden">
+    <div class="row">
+        <div class="container-fluid">
+            <div class="row-fluid">
+                <div>
+                    <h1>Configure Yeelight</h1>
+                    <br />
+                    <br />
+                    <div>
+                        <input type="checkbox" checked="@Config.CurrentValue.LightSettings.Yeelight.IsEnabled" @bind-value="@Config.CurrentValue.LightSettings.Yeelight.IsEnabled" /> Connect to Yeelight
+                    </div>
+                    <br />
+                    <br />
+                    @if (Config.CurrentValue.LightSettings.Yeelight.IsEnabled)
+                    {
+                        <div class="row">
+                            <div class="col-12">
+                                <button @onclick="GetYeeLights" class="btn btn-primary" type="submit">Find Yeelight's</button>
+                            </div>
+                        </div>
+
+                        <br />
+                        <br />
+                        @if (appState.YeelightLights != null)
+                        {
+                            <div class="form-group col-3 centering text-center">
+                                <select class="form-control" @onchange="OnChange">
+                                    <option disabled="disabled">Select</option>
+                                    @foreach (var light in appState.YeelightLights)
+                                    {
+                                        @if (Config.CurrentValue.LightSettings.Yeelight.SelectedItemId == light.Id)
+                                        {
+                                            <option selected="selected" value=@light.Id>@light.Name</option>
+                                        }
+                                        else
+                                        {
+                                            <option value=@light.Id>@light.Name</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        }
+
+                        <div class="row">
+                            <div class="col-4">
+                                <h5>Brightness</h5>
+                            </div>
+                            <div class="col-4">
+                                <Slider TValue="int" @bind-Value="@Config.CurrentValue.LightSettings.Yeelight.Brightness" Step="1" Min="0" Max="100" />
+                            </div>
+                            <div class="col-4">
+                                <input style="width:50px" @bind-value="@Config.CurrentValue.LightSettings.Yeelight.Brightness" type="text" />
+                            </div>
+                        </div>
+
+                        <br />
+                        <br />
+
+                        <Statuses Light="@Config.CurrentValue.LightSettings.Yeelight"></Statuses>
+
+                        <br />
+                        <br />
+
+                        <button class="btn btn-primary" @onclick="Save">Save Yeelight Settings</button>
+
+                        <br />
+                        <br />
+                        <div>
+                            @if (settingsSaved)
+                            {
+                                <span class="text-success">@message</span>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private void Save()
+    {
+        try
+        {
+            SettingsService.SaveSettings(Config.CurrentValue);
+            message = "Settings Saved";
+            settingsSaved = true;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error Occured Saving Yeelight Settings");
+            throw;
+        }
+    }
+
+    bool settingsSaved = false;
+    string message;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            appState.OnChange += RaiseStateHasChanged;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error Occured loading Yeelight");
+            throw;
+        }
+        await Task.CompletedTask;
+    }
+
+    private void OnChange(ChangeEventArgs e)
+    {
+        var light = e.Value.ToString();
+        Config.CurrentValue.LightSettings.Yeelight.SelectedItemId = light;
+        appState.SetYeelightLight(light);
+    }
+
+    public async Task GetYeeLights()
+    {
+        try
+        {
+            appState.SetYeelightLights(await _mediator.Send(new Core.YeelightServices.GetLightCommand()));
+
+            if (string.IsNullOrEmpty(Config.CurrentValue.LightSettings.Yeelight.SelectedItemId) && appState.YeelightLights.Count() > 0)
+            {
+                Config.CurrentValue.LightSettings.Yeelight.SelectedItemId = appState.YeelightLights.FirstOrDefault().Id;
+            }
+
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occured Finding YeeLights");
+            throw;
+        }
+    }
+
+    public void Dispose()
+    {
+        appState.OnChange -= RaiseStateHasChanged;
+    }
+
+    private void RaiseStateHasChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+}

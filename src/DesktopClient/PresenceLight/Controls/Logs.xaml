@@ -1,0 +1,42 @@
+﻿<UserControl x:Class="PresenceLight.Controls.Logs"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:PresenceLight.Controls"
+      
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <TabControl x:Name="tabLogs"  >
+            <TabItem Header="Live Logs" >
+                <DataGrid x:Name="dgLiveLogs" ItemsSource="{Binding}" AutoGenerateColumns="False" RowHeight="20">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Timestamp"  Binding="{Binding Timestamp}"/>
+                        <DataGridTextColumn Header="Level" Binding="{Binding Level}" />
+                        <DataGridTextColumn Header="Message" Binding="{Binding MessageTemplate}" />
+
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+            <TabItem Header="Log Files">
+                <DataGrid x:Name="dgLogFiles" ItemsSource="{Binding}" AutoGenerateColumns="False" RowHeight="20">
+                    <DataGrid.Columns>
+                        <DataGridHyperlinkColumn Header="FileName"  Binding="{Binding Name}" >
+                            <DataGridHyperlinkColumn.ElementStyle>
+                                <Style>
+                                    <EventSetter Event="Hyperlink.Click" Handler="DG_Hyperlink_Click"/>
+                                </Style>
+                            </DataGridHyperlinkColumn.ElementStyle>
+                        </DataGridHyperlinkColumn>
+                        <DataGridTextColumn Header="Size" Binding="{Binding Length}" />
+                        <DataGridTextColumn Header="Creation Time" Binding="{Binding CreationTime}" />
+                        <DataGridTextColumn Header="Last Access" Binding="{Binding LastAccessTime}" />
+
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+
+        </TabControl>
+    </Grid>
+</UserControl>

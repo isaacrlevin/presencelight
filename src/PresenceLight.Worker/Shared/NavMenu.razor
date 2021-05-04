@@ -9,33 +9,63 @@
     <ul class="nav flex-column">
         <li class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Teams Status
+                <span class="oi oi-person" aria-hidden="true"></span> Teams Status
             </NavLink>
         </li>
         <li class="nav-item px-3">
             <NavLink class="nav-link" href="color">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Set Light Colors
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="hue">
-                <span class="oi oi-plus" aria-hidden="true"></span> Configure Phillips Hue
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="lifx">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Configure LIFX
+                <span class="oi oi-droplet" aria-hidden="true"></span> Set Light Colors
             </NavLink>
         </li>
 
         <li class="nav-item px-3">
+            <NavLink class="nav-link" href="#" @onclick="ToggleExpand">
+                Configure Lights&nbsp;&nbsp;&nbsp;<span class="@expandClass"></span>
+            </NavLink>
+            @if (expandSubMenu)
+            {
+                <ul class="nav flex-column">
+                    <li class="nav-item px-3">
+                        <NavLink class="nav-link" href="hue">
+                            <span class="oi oi-lightbulb" aria-hidden="true"></span> Philips Hue
+                        </NavLink>
+                    </li>
+                    <li class="nav-item px-3">
+                        <NavLink class="nav-link" href="lifx">
+                            <span class="oi oi-lightbulb" aria-hidden="true"></span> LIFX
+                        </NavLink>
+                    </li>
+                    <li class="nav-item px-3">
+                        <NavLink class="nav-link" href="yeelight">
+                            <span class="oi oi-lightbulb" aria-hidden="true"></span> Yeelight
+                        </NavLink>
+                    </li>
+                    <li class="nav-item px-3">
+                        <NavLink class="nav-link" href="wiz">
+                            <span class="oi oi-lightbulb" aria-hidden="true"></span> Wiz
+                        </NavLink>
+                    </li>
+                    <li class="nav-item px-3">
+                        <NavLink class="nav-link" href="customapi">
+                            <span class="oi oi-lightbulb" aria-hidden="true"></span> Custom API Setup
+                        </NavLink>
+                    </li>
+                </ul>
+            }
+        </li>
+        <li class="nav-item px-3">
             <NavLink class="nav-link" href="settings">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Settings
+                <span class="oi oi-cog" aria-hidden="true"></span> Settings
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="logs">
+                <span class="oi oi-file" aria-hidden="true"></span> Logs
             </NavLink>
         </li>
         <li class="nav-item px-3">
             <NavLink class="nav-link" href="about">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> About
+                <span class="oi oi-info" aria-hidden="true"></span> About
             </NavLink>
         </li>
     </ul>
@@ -43,11 +73,26 @@
 
 @code {
     private bool collapseNavMenu = true;
-
+    private bool expandSubMenu;//add
+    private string expandClass = "oi oi-caret-bottom";
     private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+    }
+
+    private void ToggleExpand()
+    {
+        expandSubMenu = !expandSubMenu;
+
+        if (expandSubMenu)
+        {
+            expandClass = "oi oi-caret-top";
+        }
+        else
+        {
+            expandClass = "oi oi-caret-bottom";
+        }
     }
 }

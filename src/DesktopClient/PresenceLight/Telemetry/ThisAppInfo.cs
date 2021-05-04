@@ -35,6 +35,18 @@ namespace PresenceLight
             return $"{date.ToShortDateString()} {date.ToShortTimeString()}";
         }
 
+        internal static string GetAppInstallType()
+        {
+            if (Convert.ToBoolean(App.StaticConfig["IsAppPackaged"], CultureInfo.InvariantCulture))
+            {
+                return "AppPackage";
+            }
+            else
+            {
+                return "Standalone";
+            }
+        }
+
         internal static string GetSettingsLocation()
         {
             string settingsFileName = "settings.json";
@@ -49,7 +61,7 @@ namespace PresenceLight
             {
                settingsPath = System.AppContext.BaseDirectory;
             }
-            return $"{settingsPath}{settingsFileName}";
+            return Path.Combine(settingsPath, settingsFileName);
         }
 
         internal static string GetPackageVersion()
@@ -101,7 +113,6 @@ namespace PresenceLight
 
             try
             {
-
                 if (ApiInformation.IsMethodPresent("Windows.ApplicationModel.Package", "GetAppInstallerInfo"))
                 {
                     var aiUri = GetAppInstallerInfoUri(Package.Current);

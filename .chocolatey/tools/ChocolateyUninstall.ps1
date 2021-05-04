@@ -1,1 +1,9 @@
-﻿Get-AppxPackage -Name 37828IsaacLevin.197278F15330A | Remove-AppxPackage
+$light = Get-process presencelight*
+
+if($light){
+	$light | Stop-Process -Force
+}
+
+Remove-Item $Env:AppData\PresenceLight -Recurse -Force
+Remove-Item "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\PresenceLight.lnk"
+Remove-Item "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Startup\PresenceLight.lnk"

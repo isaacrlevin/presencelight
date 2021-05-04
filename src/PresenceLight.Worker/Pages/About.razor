@@ -1,10 +1,11 @@
 ﻿@page "/about"
+@inject PresenceLight.Worker.Services.SettingsService SettingsService
 
 <div class="container text-body" style="overflow:hidden">
     <div class="row">
         <div class="container-fluid">
             <div class="row-fluid">
-                <div class="centering text-center">
+                <div>
                     <div class="w-20">
                         <img src="images/profileimage.jpg" width="300" />
                     </div>
@@ -25,7 +26,7 @@
         <div class="w-25">
             <h4>Application Version</h4>
         </div>
-        <div class="w-75">
+        <div class="w-50">
             @assemblyVersion
         </div>
     </div>
@@ -33,7 +34,7 @@
         <div class="w-25">
             <h4>Install Location</h4>
         </div>
-        <div class="w-75">
+        <div class="w-50">
             @installLocation
         </div>
     </div>
@@ -41,7 +42,7 @@
         <div class="w-25">
             <h4>Install Date</h4>
         </div>
-        <div class="w-75">
+        <div class="w-50">
             @installedDate
         </div>
     </div>
@@ -49,8 +50,16 @@
         <div class="w-25">
             <h4>Runtime Version</h4>
         </div>
-        <div class="w-75">
+        <div class="w-50">
             @RuntimeVersionInfo
+        </div>
+    </div>
+    <div class="row">
+        <div class="w-25">
+            <h4>Configuration Path</h4>
+        </div>
+        <div class="w-50">
+            @localConfigurationPath
         </div>
     </div>
     <br />
@@ -67,11 +76,14 @@
     string installedDate;
     string RuntimeVersionInfo;
     string assemblyVersion;
+    string localConfigurationPath;
     protected override void OnInitialized()
     {
         installLocation = ThisAppInfo.GetInstallLocation();
         installedDate = ThisAppInfo.GetInstallationDate();
         RuntimeVersionInfo = ThisAppInfo.GetDotNetRuntimeInfo();
         assemblyVersion = ThisAppInfo.GetApplicationVersion();
+        localConfigurationPath = new System.IO.FileInfo(SettingsService.SettingsFileLocation).FullName;
+
     }
 }

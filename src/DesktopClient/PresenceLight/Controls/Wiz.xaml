@@ -1,0 +1,225 @@
+﻿<UserControl x:Class="PresenceLight.Controls.Wiz"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:gif="http://wpfanimatedgif.codeplex.com"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:local="clr-namespace:PresenceLight.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="50"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="50" />
+            </Grid.RowDefinitions>
+            <Grid Grid.Column="1" Grid.ColumnSpan="4">
+                <CheckBox x:Name="cbIsWizEnabled" IsChecked="{Binding LightSettings.Wiz.IsEnabled}" Content="Connect to Wiz" Grid.Column="1" Grid.ColumnSpan="4" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbIsWizEnabledChanged"  Checked="cbIsWizEnabledChanged" />
+            </Grid>
+            <Grid x:Name="pnlWiz"  Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="10" />
+                    <RowDefinition Height="50" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="150" />
+                </Grid.RowDefinitions>
+                <Button Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center" Grid.Column="1" Height="23" Width="120" Content="Find Wiz Lights" Click="FindWizs_Click"/>
+
+                <Grid x:Name="pnlWizData"   Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="3" Margin="0,0,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid x:Name="pnlWizLights"   Grid.Column="0" Grid.Row="0" Margin="0,0,0,0" Grid.RowSpan="4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="100"/>
+                        </Grid.RowDefinitions>
+
+                        <ComboBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" DisplayMemberPath="LightName" SelectedValuePath="MacAddress"  x:Name="ddlWizLights" Visibility="Visible" SelectionChanged="ddlWizLights_SelectionChanged"  HorizontalAlignment="Center" VerticalAlignment="Top"  Width="150" />
+
+                    </Grid>
+
+                    <Grid x:Name="pnlWizBrightness"  Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" Margin="0,0,0,88" Grid.RowSpan="4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="40"/>
+                        </Grid.RowDefinitions>
+                        <Label Grid.Column="0" x:Name="wizBrightnessText"  VerticalAlignment="Bottom" Foreground="Red" Content="Default Brightness in Settings is enabled"  Grid.ColumnSpan="3" Grid.Row="0" />
+                        <Label Grid.Column="0" VerticalAlignment="Top" Content="Brightness"  Grid.ColumnSpan="3" Grid.Row="0" />
+                        <Slider Grid.Column="1" VerticalAlignment="Center" Width="180"  HorizontalAlignment="Center" x:Name = "WizBrightness" Value="{Binding LightSettings.Wiz.Brightness}" IsSnapToTickEnabled="True"  Minimum = "0" Maximum = "100" TickFrequency = "10" TickPlacement = "BottomRight"  Grid.Row="0" />
+                        <TextBox Grid.Column="2" VerticalAlignment="Center"  x:Name="WizBrightnessNum" Text="{Binding ElementName=WizBrightness, Path=Value, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="20" TextAlignment="Center" Width="40" Grid.Row="0" />
+                    </Grid>
+
+                    <Grid Grid.Column="0" Grid.Row="2">
+                        <CheckBox IsChecked="{Binding LightSettings.Wiz.UseActivityStatus}" Content="Use Activity Status" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Center" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbUseWizActivityStatus" Checked="cbUseWizActivityStatus" />
+                    </Grid>
+
+                    <Grid x:Name="pnlWizAvailableStatuses" Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="3" Margin="0,20,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30" />
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                        </Grid.RowDefinitions>
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Available Colour"  Grid.Row="0" />
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Available Idle Colour"  Grid.Row="1" />
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Away Colour" Grid.Row="2" />
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Be Right Back Colour" Grid.Row="3" />
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Busy Colour" Grid.Row="4" />
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Busy Idle Colour" Grid.Row="5" />
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Do Not Disturb Colour" Grid.Row="6"  />
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Offline Colour" Grid.Row="7"/>
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Presence Unknown Colour" Grid.Row="8"/>
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Off Colour" Grid.Row="9" />
+
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Wiz.Statuses.AvailabilityAvailableStatus.Colour}" x:Name="wizAvailabilityAvailableColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="0" />
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Wiz.Statuses.AvailabilityAvailableIdleStatus.Colour}" x:Name="wizAvailabilityAvailableIdleColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="1" />
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Wiz.Statuses.AvailabilityAwayStatus.Colour}" x:Name="wizAvailabilityAwayColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="2"/>
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Wiz.Statuses.AvailabilityBeRightBackStatus.Colour}" x:Name="wizAvailabilityBeRightBackColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="3" />
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Wiz.Statuses.AvailabilityBusyStatus.Colour}" x:Name="wizAvailabilityBusyColour" HorizontalAlignment="Center" Height="23"  VerticalAlignment="Center" Width="120" Grid.Row="4"/>
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Wiz.Statuses.AvailabilityBusyIdleStatus.Colour}" x:Name="wizAvailabilityBusyIdleColour" HorizontalAlignment="Center" Height="23"  VerticalAlignment="Center" Width="120" Grid.Row="5"/>
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Wiz.Statuses.AvailabilityDoNotDisturbStatus.Colour}" x:Name="wizAvailabilityDoNotDisturbColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="6" />
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Wiz.Statuses.AvailabilityOfflineStatus.Colour}" x:Name="wizAvailabilityOfflineColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="7"/>
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Wiz.Statuses.AvailabilityPresenceUnknownStatus.Colour}" x:Name="wizAvailabilityPresenceUnknownColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="8"/>
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Wiz.Statuses.AvailabilityOffStatus.Colour}" x:Name="wizAvailabilityOffColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="9"/>
+
+                        <CheckBox x:Name="wizAvailabilityAvailableDisabled" IsChecked="{Binding LightSettings.Wiz.Statuses.AvailabilityAvailableStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbWizIsDisabledChange" Checked="cbWizIsDisabledChange" />
+                        <CheckBox x:Name="wizAvailabilityAvailableIdleDisabled" IsChecked="{Binding LightSettings.Wiz.Statuses.AvailabilityAvailableIdleStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbWizIsDisabledChange" Checked="cbWizIsDisabledChange" />
+                        <CheckBox x:Name="wizAvailabilityAwayDisabled" IsChecked="{Binding LightSettings.Wiz.Statuses.AvailabilityAwayStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbWizIsDisabledChange" Checked="cbWizIsDisabledChange" />
+                        <CheckBox x:Name="wizAvailabilityBeRightBackDisabled" IsChecked="{Binding LightSettings.Wiz.Statuses.AvailabilityBeRightBackStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="3" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbWizIsDisabledChange" Checked="cbWizIsDisabledChange" />
+                        <CheckBox x:Name="wizAvailabilityBusyDisabled" IsChecked="{Binding LightSettings.Wiz.Statuses.AvailabilityBusyStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbWizIsDisabledChange" Checked="cbWizIsDisabledChange" />
+                        <CheckBox x:Name="wizAvailabilityBusyIdleDisabled" IsChecked="{Binding LightSettings.Wiz.Statuses.AvailabilityBusyIdleStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="5" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbWizIsDisabledChange" Checked="cbWizIsDisabledChange" />
+                        <CheckBox x:Name="wizAvailabilityDoNotDisturbDisabled" IsChecked="{Binding LightSettings.Wiz.Statuses.AvailabilityDoNotDisturbStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="6" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbWizIsDisabledChange" Checked="cbWizIsDisabledChange" />
+                        <CheckBox x:Name="wizAvailabilityOfflineDisabled" IsChecked="{Binding LightSettings.Wiz.Statuses.AvailabilityOfflineStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="7" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbWizIsDisabledChange" Checked="cbWizIsDisabledChange" />
+                        <CheckBox x:Name="wizAvailabilityPresenceUnknownDisabled" IsChecked="{Binding LightSettings.Wiz.Statuses.AvailabilityPresenceUnknownStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="8" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbWizIsDisabledChange" Checked="cbWizIsDisabledChange" />
+                        <CheckBox x:Name="wizAvailabilityOffDisabled" IsChecked="{Binding LightSettings.Wiz.Statuses.AvailabilityOffStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="9" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbWizIsDisabledChange" Checked="cbWizIsDisabledChange" />
+
+                    </Grid>
+
+                    <Grid x:Name="pnlWizActivityStatuses"  Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="3" Margin="0,20,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30" />
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30" />
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                        </Grid.RowDefinitions>
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Available Colour"  Grid.Row="0" />
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Away Colour"  Grid.Row="1" />
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Be Right Back Colour"  Grid.Row="2" />
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Busy Colour"  Grid.Row="3" />
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Do Not Disturb Colour"  Grid.Row="4" />
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="In A Call Colour"  Grid.Row="5" />
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="In A Conference Call Colour"  Grid.Row="6" />
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Inactive Colour"  Grid.Row="7" />
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="In A Meeting Colour"  Grid.Row="8" />
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Offline Colour"  Grid.Row="9" />
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Off Work Colour"  Grid.Row="10" />
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Out Of Office Colour"  Grid.Row="11" />
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Presence Unknown Colour"  Grid.Row="12" />
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Presenting Colour"  Grid.Row="13" />
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Urgent Interruptions Only Colour"  Grid.Row="14" />
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Off Colour"  Grid.Row="15" />
+
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Wiz.Statuses.ActivityAvailableStatus.Colour}" x:Name="wizActivityAvailableColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="0" />
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Wiz.Statuses.ActivityAwayStatus.Colour}" x:Name="wizActivityAwayColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="1" />
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Wiz.Statuses.ActivityBeRightBackStatus.Colour}" x:Name="wizActivityBeRightBackColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="2" />
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Wiz.Statuses.ActivityBusyStatus.Colour}" x:Name="wizActivityBusyColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="3" />
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Wiz.Statuses.ActivityDoNotDisturbStatus.Colour}" x:Name="wizActivityDoNotDisturbColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="4" />
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Wiz.Statuses.ActivityInACallStatus.Colour}" x:Name="wizActivityInACallColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="5" />
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Wiz.Statuses.ActivityInAConferenceCallStatus.Colour}" x:Name="wizActivityInAConferenceCallColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="6" />
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Wiz.Statuses.ActivityInactiveStatus.Colour}" x:Name="wizActivityInactiveColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="7" />
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Wiz.Statuses.ActivityInAMeetingStatus.Colour}" x:Name="wizActivityInAMeetingColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="8" />
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Wiz.Statuses.ActivityOfflineStatus.Colour}" x:Name="wizActivityOfflineColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="9" />
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Wiz.Statuses.ActivityOffWorkStatus.Colour}" x:Name="wizActivityOffWorkColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="10" />
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Wiz.Statuses.ActivityOutOfOfficeStatus.Colour}" x:Name="wizActivityOutOfOfficeColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="11" />
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Wiz.Statuses.ActivityPresenceUnknownStatus.Colour}" x:Name="wizActivityPresenceUnknownColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="12" />
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Wiz.Statuses.ActivityPresentingStatus.Colour}" x:Name="wizActivityPresentingColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="13" />
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Wiz.Statuses.ActivityUrgentInterruptionsOnlyStatus.Colour}" x:Name="wizActivityUrgentInterruptionsOnlyColour" HorizontalAlignment="Center" Height="24" VerticalAlignment="Center" Width="120" Grid.Row="14" />
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Wiz.Statuses.ActivityOffStatus.Colour}" x:Name="wizActivityOffColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="15" />
+
+                        <CheckBox x:Name="wizActivityAvailableDisabled" IsChecked="{Binding LightSettings.Wiz.Statuses.ActivityAvailableStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbWizIsDisabledChange" Checked="cbWizIsDisabledChange" />
+                        <CheckBox x:Name="wizActivityAwayDisabled" IsChecked="{Binding LightSettings.Wiz.Statuses.ActivityAwayStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbWizIsDisabledChange" Checked="cbWizIsDisabledChange" />
+                        <CheckBox x:Name="wizActivityBeRightBackDisabled" IsChecked="{Binding LightSettings.Wiz.Statuses.ActivityBeRightBackStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbWizIsDisabledChange" Checked="cbWizIsDisabledChange" />
+                        <CheckBox x:Name="wizActivityBusyDisabled" IsChecked="{Binding LightSettings.Wiz.Statuses.ActivityBusyStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="3" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbWizIsDisabledChange" Checked="cbWizIsDisabledChange" />
+                        <CheckBox x:Name="wizActivityDoNotDisturbDisabled" IsChecked="{Binding LightSettings.Wiz.Statuses.ActivityDoNotDisturbStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbWizIsDisabledChange" Checked="cbWizIsDisabledChange" />
+                        <CheckBox x:Name="wizActivityInACallDisabled" IsChecked="{Binding LightSettings.Wiz.Statuses.ActivityInACallStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="5" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbWizIsDisabledChange" Checked="cbWizIsDisabledChange" />
+                        <CheckBox x:Name="wizActivityInAConferenceCallDisabled" IsChecked="{Binding LightSettings.Wiz.Statuses.ActivityInAConferenceCallStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="6" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbWizIsDisabledChange" Checked="cbWizIsDisabledChange" />
+                        <CheckBox x:Name="wizActivityInactiveDisabled" IsChecked="{Binding LightSettings.Wiz.Statuses.ActivityInactiveStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="7" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbWizIsDisabledChange" Checked="cbWizIsDisabledChange" />
+                        <CheckBox x:Name="wizActivityInAMeetingDisabled" IsChecked="{Binding LightSettings.Wiz.Statuses.ActivityInAMeetingStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="8" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbWizIsDisabledChange" Checked="cbWizIsDisabledChange" />
+                        <CheckBox x:Name="wizActivityOfflineDisabled" IsChecked="{Binding LightSettings.Wiz.Statuses.ActivityOfflineStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="9" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbWizIsDisabledChange" Checked="cbWizIsDisabledChange" />
+                        <CheckBox x:Name="wizActivityOffWorkDisabled" IsChecked="{Binding LightSettings.Wiz.Statuses.ActivityOffWorkStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="10" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbWizIsDisabledChange" Checked="cbWizIsDisabledChange" />
+                        <CheckBox x:Name="wizActivityOutOfOfficeDisabled" IsChecked="{Binding LightSettings.Wiz.Statuses.ActivityOutOfOfficeStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="11" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbWizIsDisabledChange" Checked="cbWizIsDisabledChange" />
+                        <CheckBox x:Name="wizActivityPresenceUnknownDisabled" IsChecked="{Binding LightSettings.Wiz.Statuses.ActivityPresenceUnknownStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="12" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbWizIsDisabledChange" Checked="cbWizIsDisabledChange" />
+                        <CheckBox x:Name="wizActivityPresentingDisabled" IsChecked="{Binding LightSettings.Wiz.Statuses.ActivityPresentingStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="13" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbWizIsDisabledChange" Checked="cbWizIsDisabledChange" />
+                        <CheckBox x:Name="wizActivityUrgentInterruptionsOnlyDisabled" IsChecked="{Binding LightSettings.Wiz.Statuses.ActivityUrgentInterruptionsOnlyStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="14" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbWizIsDisabledChange" Checked="cbWizIsDisabledChange" />
+                        <CheckBox x:Name="wizActivityOffDisabled" IsChecked="{Binding LightSettings.Wiz.Statuses.ActivityOffStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="15" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbWizIsDisabledChange" Checked="cbWizIsDisabledChange" />
+
+                    </Grid>
+
+                </Grid>
+                <Image Grid.Row="4" Grid.Column="1" x:Name="imgWizLoading" Visibility="Collapsed" gif:ImageBehavior.AnimatedSource="../Icons/loading.gif" Width="75" Margin="70,42,69,215" Grid.RowSpan="4"  />
+               
+
+            </Grid>
+            <Button Grid.Row="3" VerticalAlignment="Center" Grid.Column="2" x:Name="btnWiz" Height="45" Width="170" Content="Save"  Click="SaveWiz_Click" />
+            <Label Grid.Row="3"  VerticalAlignment="Top" Grid.Column="2" x:Name="lblWizSaved" HorizontalAlignment="Center" Visibility="Visible" Content="Settings Updated" Foreground="Green" Margin="0,-30,0,0" Grid.RowSpan="2" />
+        </Grid>
+    </Grid>
+</UserControl>

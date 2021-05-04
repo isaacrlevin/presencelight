@@ -14,6 +14,7 @@
     <title>PresenceLight</title>
     <base href="~/" />
     <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/bootstrap/bootstrap-big-grid.min.css" />
     <link href="css/colorjoe.css" rel="stylesheet" />
     <link href="_content/Blazored.Modal/blazored-modal.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
@@ -51,10 +52,10 @@
         window.loadColor = () => {
             colorjoe.rgb('extraPicker', joe, [
                 'currentColor',
-                ['fields', { space: 'RGB', limit: 255, fix: 2 }],
                 'hex',
-                'text',
-                ['text', { text: 'param demo' }]
+                ['fields', { space: 'RGB', limit: 255 }],
+                ['fields', {space: 'HSLA', limit: 100}],
+                ['fields', {space: 'CMYKA', limit: 100}]
             ]).on('change', function (c) {
                 joe = c.hex();
             });
@@ -64,6 +65,10 @@
             return joe;
         }
     </script>
+    <script src="~/js/site.js"></script>
     <script src="_content/Blazored.Modal/blazored.modal.js"></script>
+    <environment include="Development">
+        <script src="js/HotReload.js"></script>
+    </environment>
 </body>
 </html>

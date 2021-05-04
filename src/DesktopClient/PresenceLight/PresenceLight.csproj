@@ -6,7 +6,7 @@
     <OutputType>WinExe</OutputType>
     <AssemblyName>PresenceLight</AssemblyName>
     <Title>PresenceLight</Title>
-    <Description>PresenceLight is a solution to broadcast your Microsoft Teams presence to a Phillips Hue or LIFX light bulb. There are other solutions that do something similar, but they require a tethered solution (plugging a light into a computer via USB). What PresenceLight does is leverage the Presence Api, which is available in Microsoft Graph, allowing to retrieve your presence without having to be tethered. This could potentially allow someone to update the light bulb from a remote machine they do not use.</Description>
+    <Description>PresenceLight is a solution to broadcast your Microsoft Teams presence to a Philips Hue or LIFX light bulb. There are other solutions that do something similar, but they require a tethered solution (plugging a light into a computer via USB). What PresenceLight does is leverage the Presence Api, which is available in Microsoft Graph, allowing to retrieve your presence without having to be tethered. This could potentially allow someone to update the light bulb from a remote machine they do not use.</Description>
     <RootNamespace>PresenceLight</RootNamespace>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <TieredCompilationQuickJitForLoops>true</TieredCompilationQuickJitForLoops>
@@ -23,31 +23,26 @@
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
-  <ItemGroup>
-    <None Remove="Images\UnknownProfile.png" />
-  </ItemGroup>
 
-  <ItemGroup>
-    <!--<PackageReference Include="AppInsights.WindowsDesktop" Version="2.13.1" />-->
-    <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.16.0" />
-    <PackageReference Include="Extended.Wpf.Toolkit" Version="4.0.1" />
+  <ItemGroup> 
+    <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.17.0" />
+    <PackageReference Include="Extended.Wpf.Toolkit" Version="4.0.2" />
     <PackageReference Include="IdentityModel.OidcClient" Version="4.0.0-preview.4" />
-    <PackageReference Include="Microsoft.ApplicationInsights.SnapshotCollector" Version="1.4.0-pre-2011.801" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OAuth" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.2.7" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
     <PackageReference Include="Microsoft.Graph.Beta" Version="0.35.0-preview" />
     <PackageReference Include="Microsoft.Graph.Core" Version="2.0.0-preview.3" />
-    <PackageReference Include="Microsoft.Identity.Client" Version="4.24.0" />
+    <PackageReference Include="Microsoft.Identity.Client" Version="4.28.1" />
     <PackageReference Include="NETStandard.HttpListener" Version="1.0.3.5" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="Q42.HueApi" Version="3.16.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Q42.HueApi" Version="3.17.0" />
     <PackageReference Include="Q42.HueApi.ColorConverters" Version="3.14.0" />
     <PackageReference Include="WpfAnimatedGif" Version="2.0.0" />
-    <PackageReference Include="YeelightAPI" Version="1.9.0" />
-
+    <PackageReference Include="YeelightAPI" Version="1.10.2" />
     <ProjectReference Include="..\..\PresenceLight.Core\PresenceLight.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
@@ -121,6 +116,9 @@
     <None Update="appsettings.Development.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="appsettings.Development.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -132,8 +130,14 @@
 
   <ItemGroup>
     <PackageReference Update="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.2" />
-    <PackageReference Update="Microsoft.SourceLink.GitHub" Version="1.1.0-beta-20204-02" />
-    <PackageReference Update="Nerdbank.GitVersioning" Version="3.4.161-alpha" />
+    <PackageReference Update="Microsoft.SourceLink.GitHub" Version="1.0.0" />
+    <PackageReference Update="Nerdbank.GitVersioning" Version="3.3.37" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Controls\Wiz.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
   </ItemGroup>
 
 </Project>

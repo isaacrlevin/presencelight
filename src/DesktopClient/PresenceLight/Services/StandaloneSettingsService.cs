@@ -7,6 +7,7 @@ using System.IO;
 using PresenceLight.Core;
 using PresenceLight.Telemetry;
 using Newtonsoft.Json;
+using Microsoft.Extensions.Logging;
 
 namespace PresenceLight.Services
 {
@@ -15,10 +16,11 @@ namespace PresenceLight.Services
         private const string _settingsFileName = "settings.json";
         private static readonly string _settingsFolder = Directory.GetCurrentDirectory();
         private DiagnosticsClient _diagClient;
+        private readonly ILogger<StandaloneSettingsService> _logger;
 
-
-        public StandaloneSettingsService(DiagnosticsClient diagClient)
+        public StandaloneSettingsService(DiagnosticsClient diagClient, ILogger<StandaloneSettingsService> logger)
         {
+            _logger = logger;
             _diagClient = diagClient;
         }
 
@@ -48,6 +50,7 @@ namespace PresenceLight.Services
             }
             catch (Exception e)
             {
+                _logger.LogError(e, "Error Finding Settings File");
                 _diagClient.TrackException(e);
                 return false;
             }
@@ -57,11 +60,12 @@ namespace PresenceLight.Services
         {
             try
             {
-                string fileJSON = await File.ReadAllTextAsync(Path.Combine(_settingsFolder,_settingsFileName), Encoding.UTF8 ).ConfigureAwait(true);
+                string fileJSON = await File.ReadAllTextAsync(Path.Combine(_settingsFolder, _settingsFileName), Encoding.UTF8).ConfigureAwait(true);
                 return JsonConvert.DeserializeObject<BaseConfig>(fileJSON);
             }
             catch (Exception e)
             {
+                _logger.LogError(e, "Error Loading Settings");
                 _diagClient.TrackException(e);
                 return null;
             }
@@ -77,6 +81,7 @@ namespace PresenceLight.Services
             }
             catch (Exception e)
             {
+                _logger.LogError(e, "Error saving Settings");
                 _diagClient.TrackException(e);
                 return false;
             }

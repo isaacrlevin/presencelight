@@ -8,6 +8,7 @@
     <DockerfileFile>../Dockerfiles/Dockerfile</DockerfileFile>
     <DockerfileContext>..</DockerfileContext>
     <ApplicationIcon>favicon.ico</ApplicationIcon>
+    <UserSecretsId>8509488430545</UserSecretsId>
  </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -19,26 +20,25 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Alexa.NET" Version="1.14.0" />
-    <PackageReference Include="Blazored.Modal" Version="5.1.0" />
-    <PackageReference Include="Blazorise.Bootstrap" Version="0.9.2.4" />
-    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.2.4" />
+    <PackageReference Include="Alexa.NET" Version="1.15.0" />
+    <PackageReference Include="Blazored.Modal" Version="6.0.1" />
+    <PackageReference Include="Blazorise.Bootstrap" Version="0.9.3.2" />
+    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.3.2" />
     <PackageReference Include="BlazorPro.Spinkit" Version="1.2.0" />
-    <PackageReference Include="IdentityModel" Version="5.0.0-preview.0" />
-    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.16.0" />
+    <PackageReference Include="IdentityModel" Version="5.0.1" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.17.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.SnapshotCollector" Version="1.4.0-pre-2011.801" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="5.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="5.0.4" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="5.0.1" />
-    <PackageReference Include="Microsoft.Identity.Web" Version="1.4.1" />
-    <PackageReference Include="Microsoft.Identity.Web.MicrosoftGraphBeta" Version="1.4.1" />
-    <PackageReference Include="Microsoft.Identity.Web.UI" Version="1.4.1" />
+    <PackageReference Include="Microsoft.Identity.Web" Version="1.8.2" />
+    <PackageReference Include="Microsoft.Identity.Web.MicrosoftGraphBeta" Version="1.8.2" />
+    <PackageReference Include="Microsoft.Identity.Web.UI" Version="1.8.2" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="Microsoft.Identity.Client" Version="4.24.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Microsoft.Identity.Client" Version="4.28.1" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.2.0" />
-
   </ItemGroup>
 
   <ItemGroup>
@@ -49,6 +49,19 @@
     <Resource Include="wwwroot\images\profileimage.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="config\PresenceLightSettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="PresenceLightSettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="config\logs\" />
   </ItemGroup>
 
 </Project>

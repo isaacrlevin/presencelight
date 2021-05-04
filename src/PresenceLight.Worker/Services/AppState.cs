@@ -1,6 +1,9 @@
 ﻿using System;
 using Microsoft.Graph;
 using System.Collections.Generic;
+using YeelightAPI;
+using Device = YeelightAPI.Device;
+using PresenceLight.Core.WizServices;
 
 namespace PresenceLight.Worker
 {
@@ -12,13 +15,21 @@ namespace PresenceLight.Worker
 
         public User User { get; set; }
 
-        public IEnumerable<Q42.HueApi.Light> HueLights { get; set; }
+        public IEnumerable<object> HueLights { get; set; }
 
         public string HueLightId { get; set; }
+
+        public List<Device> YeelightLights { get; set; }
+
+        public string YeelightLightId { get; set; }
 
         public IEnumerable<object> LIFXLights { get; set; }
 
         public string LIFXLightId { get; set; }
+
+        public IEnumerable<WizLight> WizLights { get; set; }
+
+        public string WizLightId { get; set; }
 
         public string ProfileImage { get; set; }
 
@@ -28,15 +39,15 @@ namespace PresenceLight.Worker
 
         public string CustomColor { get; set; }
 
-        public bool IsUserAuthenticated { get; set; }
+        //public bool IsUserAuthenticated { get; set; }
 
-        public GraphServiceClient GraphServiceClient { get; set; }
+        //public GraphServiceClient GraphServiceClient { get; set; }
 
-        public void SetGraphServiceClient(GraphServiceClient graphServiceClient)
-        {
-            GraphServiceClient = graphServiceClient;
-            NotifyStateChanged();
-        }
+        //public void SetGraphServiceClient(GraphServiceClient graphServiceClient)
+        //{
+        //    GraphServiceClient = graphServiceClient;
+        //    NotifyStateChanged();
+        //}
 
         public void SetUserInfo(User user, string photo, Presence presence)
         {
@@ -52,11 +63,11 @@ namespace PresenceLight.Worker
             NotifyStateChanged();
         }
 
-        public void SetUserAuthentication(bool isAuthenticated)
-        {
-            IsUserAuthenticated = isAuthenticated;
-            NotifyStateChanged();
-        }
+        //public void SetUserAuthentication(bool isAuthenticated)
+        //{
+        //    IsUserAuthenticated = isAuthenticated;
+        //    NotifyStateChanged();
+        //}
 
         public void SetCustomColor(string color)
         {
@@ -70,7 +81,7 @@ namespace PresenceLight.Worker
             NotifyStateChanged();
         }
 
-        public void SetHueLights(IEnumerable<Q42.HueApi.Light> lights)
+        public void SetHueLights(IEnumerable<object> lights)
         {
             HueLights = lights;
             NotifyStateChanged();
@@ -79,6 +90,18 @@ namespace PresenceLight.Worker
         public void SetHueLight(string lightId)
         {
             HueLightId = lightId;
+            NotifyStateChanged();
+        }
+
+        public void SetYeelightLights(List<Device> lights)
+        {
+            YeelightLights = lights;
+            NotifyStateChanged();
+        }
+
+        public void SetYeelightLight(string lightId)
+        {
+            YeelightLightId = lightId;
             NotifyStateChanged();
         }
 
@@ -91,6 +114,18 @@ namespace PresenceLight.Worker
         public void SetLIFXLight(string lightId)
         {
             LIFXLightId = lightId;
+            NotifyStateChanged();
+        }
+
+        public void SetWizLights(IEnumerable<WizLight> lights)
+        {
+            WizLights = lights;
+            NotifyStateChanged();
+        }
+
+        public void SetWizLight(string lightId)
+        {
+            WizLightId = lightId;
             NotifyStateChanged();
         }
     }

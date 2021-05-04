@@ -1,0 +1,237 @@
+﻿<UserControl x:Class="PresenceLight.Controls.Yeelight"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:gif="http://wpfanimatedgif.codeplex.com"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:local="clr-namespace:PresenceLight.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="50"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="50" />
+            </Grid.RowDefinitions>
+            <Grid Grid.Column="1" Grid.ColumnSpan="4">
+                <CheckBox x:Name="cbIsYeelightEnabled" IsChecked="{Binding LightSettings.Yeelight.IsEnabled}" Content="Connect to Yeelight" Grid.Column="1" Grid.ColumnSpan="4" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbIsYeelightEnabledChanged"  Checked="cbIsYeelightEnabledChanged" />
+            </Grid>
+            <Grid x:Name="pnlYeelight"  Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="10" />
+                    <RowDefinition Height="50" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="150" />
+                </Grid.RowDefinitions>
+                <Button Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center" Grid.Column="1" Height="23" Width="120" Content="Find Yeelight's" Click="FindYeelights_Click"/>
+
+                <Grid x:Name="pnlYeelightData"   Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="3" Margin="0,0,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid x:Name="pnlYeelightLights"   Grid.Column="0" Grid.Row="0" Margin="0,0,0,0" Grid.RowSpan="4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="100"/>
+                        </Grid.RowDefinitions>
+
+                        <ComboBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" x:Name="ddlYeelightLights" Visibility="Visible" SelectionChanged="ddlYeelightLights_SelectionChanged"  HorizontalAlignment="Center" VerticalAlignment="Top"  Width="150">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock>
+                                        <TextBlock.Text>
+                                            <MultiBinding StringFormat="{}{0} ({1})">
+                                                <Binding Path="Name" />
+                                                <Binding Path="Hostname" />
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </Grid>
+
+                    <Grid x:Name="pnlYeelighteBrightness"  Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" Margin="0,0,0,88" Grid.RowSpan="4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="40"/>
+                        </Grid.RowDefinitions>
+                        <Label Grid.Column="0" x:Name="yeelightBrightnessText"  VerticalAlignment="Bottom" Foreground="Red" Content="Default Brightness in Settings is enabled"  Grid.ColumnSpan="3" Grid.Row="0" />
+                        <Label Grid.Column="0" VerticalAlignment="Top" Content="Brightness"  Grid.ColumnSpan="3" Grid.Row="0" />
+                        <Slider Grid.Column="1" VerticalAlignment="Center" Width="180"  HorizontalAlignment="Center" x:Name = "yeelightBrightness" Value="{Binding LightSettings.Yeelight.Brightness}" IsSnapToTickEnabled="True"  Minimum = "0" Maximum = "100" TickFrequency = "10" TickPlacement = "BottomRight"  Grid.Row="0" />
+                        <TextBox Grid.Column="2" VerticalAlignment="Center"  x:Name = "yeelightBrightnessNum" Text="{Binding ElementName=yeelightBrightness, Path=Value, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="20" TextAlignment="Center" Width="40" Grid.Row="0" />
+                    </Grid>
+
+                    <Grid Grid.Column="0" Grid.Row="2">
+                        <CheckBox IsChecked="{Binding LightSettings.Yeelight.UseActivityStatus}" Content="Use Activity Status" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Center" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbUseYeelightActivityStatus" Checked="cbUseYeelightActivityStatus" />
+                    </Grid>
+
+                    <Grid x:Name="pnlYeelightAvailableStatuses" Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="3" Margin="0,20,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30" />
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                        </Grid.RowDefinitions>
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Available Colour"  Grid.Row="0" />
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Available Idle Colour"  Grid.Row="1" />
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Away Colour" Grid.Row="2" />
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Be Right Back Colour" Grid.Row="3" />
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Busy Colour" Grid.Row="4" />
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Busy Idle Colour" Grid.Row="5" />
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Do Not Disturb Colour" Grid.Row="6"  />
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Offline Colour" Grid.Row="7"/>
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Presence Unknown Colour" Grid.Row="8"/>
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Off Colour" Grid.Row="9" />
+
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Yeelight.Statuses.AvailabilityAvailableStatus.Colour}" x:Name="yeelightAvailabilityAvailableColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="0" />
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Yeelight.Statuses.AvailabilityAvailableIdleStatus.Colour}" x:Name="yeelightAvailabilityAvailableIdleColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="1" />
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Yeelight.Statuses.AvailabilityAwayStatus.Colour}" x:Name="yeelightAvailabilityAwayColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="2"/>
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Yeelight.Statuses.AvailabilityBeRightBackStatus.Colour}" x:Name="yeelightAvailabilityBeRightBackColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="3" />
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Yeelight.Statuses.AvailabilityBusyStatus.Colour}" x:Name="yeelightAvailabilityBusyColour" HorizontalAlignment="Center" Height="23"  VerticalAlignment="Center" Width="120" Grid.Row="4"/>
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Yeelight.Statuses.AvailabilityBusyIdleStatus.Colour}" x:Name="yeelightAvailabilityBusyIdleColour" HorizontalAlignment="Center" Height="23"  VerticalAlignment="Center" Width="120" Grid.Row="5"/>
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Yeelight.Statuses.AvailabilityDoNotDisturbStatus.Colour}" x:Name="yeelightAvailabilityDoNotDisturbColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="6" />
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Yeelight.Statuses.AvailabilityOfflineStatus.Colour}" x:Name="yeelightAvailabilityOfflineColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="7"/>
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Yeelight.Statuses.AvailabilityPresenceUnknownStatus.Colour}" x:Name="yeelightAvailabilityPresenceUnknownColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="8"/>
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Yeelight.Statuses.AvailabilityOffStatus.Colour}" x:Name="yeelightAvailabilityOffColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="9"/>
+
+                        <CheckBox x:Name="yeelightAvailabilityAvailableDisabled" IsChecked="{Binding LightSettings.Yeelight.Statuses.AvailabilityAvailableStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbYeelightIsDisabledChange" Checked="cbYeelightIsDisabledChange" />
+                        <CheckBox x:Name="yeelightAvailabilityAvailableIdleDisabled" IsChecked="{Binding LightSettings.Yeelight.Statuses.AvailabilityAvailableIdleStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbYeelightIsDisabledChange" Checked="cbYeelightIsDisabledChange" />
+                        <CheckBox x:Name="yeelightAvailabilityAwayDisabled" IsChecked="{Binding LightSettings.Yeelight.Statuses.AvailabilityAwayStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbYeelightIsDisabledChange" Checked="cbYeelightIsDisabledChange" />
+                        <CheckBox x:Name="yeelightAvailabilityBeRightBackDisabled" IsChecked="{Binding LightSettings.Yeelight.Statuses.AvailabilityBeRightBackStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="3" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbYeelightIsDisabledChange" Checked="cbYeelightIsDisabledChange" />
+                        <CheckBox x:Name="yeelightAvailabilityBusyDisabled" IsChecked="{Binding LightSettings.Yeelight.Statuses.AvailabilityBusyStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbYeelightIsDisabledChange" Checked="cbYeelightIsDisabledChange" />
+                        <CheckBox x:Name="yeelightAvailabilityBusyIdleDisabled" IsChecked="{Binding LightSettings.Yeelight.Statuses.AvailabilityBusyIdleStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="5" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbYeelightIsDisabledChange" Checked="cbYeelightIsDisabledChange" />
+                        <CheckBox x:Name="yeelightAvailabilityDoNotDisturbDisabled" IsChecked="{Binding LightSettings.Yeelight.Statuses.AvailabilityDoNotDisturbStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="6" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbYeelightIsDisabledChange" Checked="cbYeelightIsDisabledChange" />
+                        <CheckBox x:Name="yeelightAvailabilityOfflineDisabled" IsChecked="{Binding LightSettings.Yeelight.Statuses.AvailabilityOfflineStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="7" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbYeelightIsDisabledChange" Checked="cbYeelightIsDisabledChange" />
+                        <CheckBox x:Name="yeelightAvailabilityPresenceUnknownDisabled" IsChecked="{Binding LightSettings.Yeelight.Statuses.AvailabilityPresenceUnknownStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="8" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbYeelightIsDisabledChange" Checked="cbYeelightIsDisabledChange" />
+                        <CheckBox x:Name="yeelightAvailabilityOffDisabled" IsChecked="{Binding LightSettings.Yeelight.Statuses.AvailabilityOffStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="9" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbYeelightIsDisabledChange" Checked="cbYeelightIsDisabledChange" />
+
+                    </Grid>
+
+                    <Grid x:Name="pnlYeelightActivityStatuses"  Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="3" Margin="0,20,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30" />
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30" />
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                        </Grid.RowDefinitions>
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Available Colour"  Grid.Row="0" />
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Away Colour"  Grid.Row="1" />
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Be Right Back Colour"  Grid.Row="2" />
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Busy Colour"  Grid.Row="3" />
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Do Not Disturb Colour"  Grid.Row="4" />
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="In A Call Colour"  Grid.Row="5" />
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="In A Conference Call Colour"  Grid.Row="6" />
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Inactive Colour"  Grid.Row="7" />
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="In A Meeting Colour"  Grid.Row="8" />
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Offline Colour"  Grid.Row="9" />
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Off Work Colour"  Grid.Row="10" />
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Out Of Office Colour"  Grid.Row="11" />
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Presence Unknown Colour"  Grid.Row="12" />
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Presenting Colour"  Grid.Row="13" />
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Urgent Interruptions Only Colour"  Grid.Row="14" />
+                        <Label Grid.Column="0" VerticalAlignment="Center" Content="Off Colour"  Grid.Row="15" />
+
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Yeelight.Statuses.ActivityAvailableStatus.Colour}" x:Name="yeelightActivityAvailableColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="0" />
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Yeelight.Statuses.ActivityAwayStatus.Colour}" x:Name="yeelightActivityAwayColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="1" />
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Yeelight.Statuses.ActivityBeRightBackStatus.Colour}" x:Name="yeelightActivityBeRightBackColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="2" />
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Yeelight.Statuses.ActivityBusyStatus.Colour}" x:Name="yeelightActivityBusyColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="3" />
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Yeelight.Statuses.ActivityDoNotDisturbStatus.Colour}" x:Name="yeelightActivityDoNotDisturbColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="4" />
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Yeelight.Statuses.ActivityInACallStatus.Colour}" x:Name="yeelightActivityInACallColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="5" />
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Yeelight.Statuses.ActivityInAConferenceCallStatus.Colour}" x:Name="yeelightActivityInAConferenceCallColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="6" />
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Yeelight.Statuses.ActivityInactiveStatus.Colour}" x:Name="yeelightActivityInactiveColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="7" />
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Yeelight.Statuses.ActivityInAMeetingStatus.Colour}" x:Name="yeelightActivityInAMeetingColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="8" />
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Yeelight.Statuses.ActivityOfflineStatus.Colour}" x:Name="yeelightActivityOfflineColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="9" />
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Yeelight.Statuses.ActivityOffWorkStatus.Colour}" x:Name="yeelightActivityOffWorkColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="10" />
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Yeelight.Statuses.ActivityOutOfOfficeStatus.Colour}" x:Name="yeelightActivityOutOfOfficeColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="11" />
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Yeelight.Statuses.ActivityPresenceUnknownStatus.Colour}" x:Name="yeelightActivityPresenceUnknownColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="12" />
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Yeelight.Statuses.ActivityPresentingStatus.Colour}" x:Name="yeelightActivityPresentingColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="13" />
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Yeelight.Statuses.ActivityUrgentInterruptionsOnlyStatus.Colour}" x:Name="yeelightActivityUrgentInterruptionsOnlyColour" HorizontalAlignment="Center" Height="24" VerticalAlignment="Center" Width="120" Grid.Row="14" />
+                        <xctk:ColorPicker Grid.Column="1" SelectedColor="{Binding LightSettings.Yeelight.Statuses.ActivityOffStatus.Colour}" x:Name="yeelightActivityOffColour" HorizontalAlignment="Center" Height="23" VerticalAlignment="Center" Width="120" Grid.Row="15" />
+
+                        <CheckBox x:Name="yeelightActivityAvailableDisabled" IsChecked="{Binding LightSettings.Yeelight.Statuses.ActivityAvailableStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbYeelightIsDisabledChange" Checked="cbYeelightIsDisabledChange" />
+                        <CheckBox x:Name="yeelightActivityAwayDisabled" IsChecked="{Binding LightSettings.Yeelight.Statuses.ActivityAwayStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbYeelightIsDisabledChange" Checked="cbYeelightIsDisabledChange" />
+                        <CheckBox x:Name="yeelightActivityBeRightBackDisabled" IsChecked="{Binding LightSettings.Yeelight.Statuses.ActivityBeRightBackStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbYeelightIsDisabledChange" Checked="cbYeelightIsDisabledChange" />
+                        <CheckBox x:Name="yeelightActivityBusyDisabled" IsChecked="{Binding LightSettings.Yeelight.Statuses.ActivityBusyStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="3" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbYeelightIsDisabledChange" Checked="cbYeelightIsDisabledChange" />
+                        <CheckBox x:Name="yeelightActivityDoNotDisturbDisabled" IsChecked="{Binding LightSettings.Yeelight.Statuses.ActivityDoNotDisturbStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbYeelightIsDisabledChange" Checked="cbYeelightIsDisabledChange" />
+                        <CheckBox x:Name="yeelightActivityInACallDisabled" IsChecked="{Binding LightSettings.Yeelight.Statuses.ActivityInACallStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="5" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbYeelightIsDisabledChange" Checked="cbYeelightIsDisabledChange" />
+                        <CheckBox x:Name="yeelightActivityInAConferenceCallDisabled" IsChecked="{Binding LightSettings.Yeelight.Statuses.ActivityInAConferenceCallStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="6" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbYeelightIsDisabledChange" Checked="cbYeelightIsDisabledChange" />
+                        <CheckBox x:Name="yeelightActivityInactiveDisabled" IsChecked="{Binding LightSettings.Yeelight.Statuses.ActivityInactiveStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="7" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbYeelightIsDisabledChange" Checked="cbYeelightIsDisabledChange" />
+                        <CheckBox x:Name="yeelightActivityInAMeetingDisabled" IsChecked="{Binding LightSettings.Yeelight.Statuses.ActivityInAMeetingStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="8" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbYeelightIsDisabledChange" Checked="cbYeelightIsDisabledChange" />
+                        <CheckBox x:Name="yeelightActivityOfflineDisabled" IsChecked="{Binding LightSettings.Yeelight.Statuses.ActivityOfflineStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="9" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbYeelightIsDisabledChange" Checked="cbYeelightIsDisabledChange" />
+                        <CheckBox x:Name="yeelightActivityOffWorkDisabled" IsChecked="{Binding LightSettings.Yeelight.Statuses.ActivityOffWorkStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="10" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbYeelightIsDisabledChange" Checked="cbYeelightIsDisabledChange" />
+                        <CheckBox x:Name="yeelightActivityOutOfOfficeDisabled" IsChecked="{Binding LightSettings.Yeelight.Statuses.ActivityOutOfOfficeStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="11" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbYeelightIsDisabledChange" Checked="cbYeelightIsDisabledChange" />
+                        <CheckBox x:Name="yeelightActivityPresenceUnknownDisabled" IsChecked="{Binding LightSettings.Yeelight.Statuses.ActivityPresenceUnknownStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="12" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbYeelightIsDisabledChange" Checked="cbYeelightIsDisabledChange" />
+                        <CheckBox x:Name="yeelightActivityPresentingDisabled" IsChecked="{Binding LightSettings.Yeelight.Statuses.ActivityPresentingStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="13" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbYeelightIsDisabledChange" Checked="cbYeelightIsDisabledChange" />
+                        <CheckBox x:Name="yeelightActivityUrgentInterruptionsOnlyDisabled" IsChecked="{Binding LightSettings.Yeelight.Statuses.ActivityUrgentInterruptionsOnlyStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="14" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbYeelightIsDisabledChange" Checked="cbYeelightIsDisabledChange" />
+                        <CheckBox x:Name="yeelightActivityOffDisabled" IsChecked="{Binding LightSettings.Yeelight.Statuses.ActivityOffStatus.Disabled}" Content="Off?" Grid.Column="2" Grid.Row="15" HorizontalAlignment="Left" VerticalAlignment="Center" Unchecked="cbYeelightIsDisabledChange" Checked="cbYeelightIsDisabledChange" />
+
+                    </Grid>
+
+                </Grid>
+                <Image Grid.Row="4" Grid.Column="1" x:Name="imgYeelightLoading" Visibility="Collapsed" gif:ImageBehavior.AnimatedSource="../Icons/loading.gif" Width="75" Margin="70,42,69,215" Grid.RowSpan="4"  />
+             
+            </Grid>
+            <Button Grid.Row="3" VerticalAlignment="Center" Grid.Column="2" x:Name="btnYeelight" Height="45" Width="170" Content="Save"  Click="SaveYeelight_Click" />
+            <Label Grid.Row="3"  VerticalAlignment="Top" Grid.Column="2" x:Name="lblYeelightSaved" HorizontalAlignment="Center" Visibility="Visible" Content="Settings Updated" Foreground="Green" Margin="0,-30,0,0" Grid.RowSpan="2" />
+
+        </Grid>
+    </Grid>
+</UserControl>
