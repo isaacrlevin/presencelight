@@ -36,11 +36,11 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
     <PackageReference Include="Microsoft.Graph.Beta" Version="0.35.0-preview" />
     <PackageReference Include="Microsoft.Graph.Core" Version="2.0.0-preview.3" />
-    <PackageReference Include="Microsoft.Identity.Client" Version="4.28.1" />
+    <PackageReference Include="Microsoft.Identity.Client" Version="4.30.1" />
     <PackageReference Include="NETStandard.HttpListener" Version="1.0.3.5" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="Q42.HueApi" Version="3.17.0" />
-    <PackageReference Include="Q42.HueApi.ColorConverters" Version="3.14.0" />
+    <PackageReference Include="Q42.HueApi" Version="3.18.1" />
+    <PackageReference Include="Q42.HueApi.ColorConverters" Version="3.18.1" />
     <PackageReference Include="WpfAnimatedGif" Version="2.0.0" />
     <PackageReference Include="YeelightAPI" Version="1.10.2" />
     <ProjectReference Include="..\..\PresenceLight.Core\PresenceLight.Core.csproj" />
@@ -131,7 +131,7 @@
   <ItemGroup>
     <PackageReference Update="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.2" />
     <PackageReference Update="Microsoft.SourceLink.GitHub" Version="1.0.0" />
-    <PackageReference Update="Nerdbank.GitVersioning" Version="3.3.37" />
+    <PackageReference Update="Nerdbank.GitVersioning" Version="3.4.194" />
   </ItemGroup>
 
   <ItemGroup>
