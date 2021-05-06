@@ -1,0 +1,83 @@
+version: 2
+updates:
+- package-ecosystem: nuget
+  directory: "/src"
+  schedule:
+    interval: daily
+    time: "10:00"
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: Blazorise.Bootstrap
+    versions:
+    - 0.9.3
+    - 0.9.3.1
+    - 0.9.3.3
+    - 0.9.3.4
+    - 0.9.3.5
+  - dependency-name: Microsoft.Identity.Client
+    versions:
+    - 4.26.0
+    - 4.27.0
+    - 4.28.0
+    - 4.28.1
+    - 4.29.0
+    - 4.30.0
+  - dependency-name: Blazorise.Icons.FontAwesome
+    versions:
+    - 0.9.3
+    - 0.9.3.1
+    - 0.9.3.3
+    - 0.9.3.4
+    - 0.9.3.5
+  - dependency-name: Microsoft.Identity.Web
+    versions:
+    - 1.6.0
+    - 1.7.0
+    - 1.8.1
+    - 1.8.2
+    - 1.9.0
+  - dependency-name: Microsoft.Identity.Web.MicrosoftGraphBeta
+    versions:
+    - 1.6.0
+    - 1.7.0
+    - 1.8.1
+    - 1.8.2
+    - 1.9.0
+  - dependency-name: Microsoft.Identity.Web.UI
+    versions:
+    - 1.6.0
+    - 1.7.0
+    - 1.8.1
+    - 1.8.2
+    - 1.9.0
+  - dependency-name: Nerdbank.GitVersioning
+    versions:
+    - 3.4.190
+  - dependency-name: Newtonsoft.Json
+    versions:
+    - 13.0.1
+  - dependency-name: YeelightAPI
+    versions:
+    - 1.10.1
+    - 1.10.2
+  - dependency-name: Microsoft.AspNetCore.Authentication.OpenIdConnect
+    versions:
+    - 5.0.3
+    - 5.0.4
+  - dependency-name: Serilog.Extensions.Hosting
+    versions:
+    - 4.0.0
+    - 4.1.0
+    - 4.1.2
+  - dependency-name: Microsoft.ApplicationInsights.NLogTarget
+    versions:
+    - 2.17.0
+  - dependency-name: Microsoft.ApplicationInsights.AspNetCore
+    versions:
+    - 2.17.0
+  - dependency-name: Microsoft.ApplicationInsights.WorkerService
+    versions:
+    - 2.17.0
+  - dependency-name: IdentityModel
+    versions:
+    - 5.0.1
