@@ -33,7 +33,7 @@
     <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="5.0.1" />
     <PackageReference Include="Microsoft.Identity.Web" Version="1.9.2" />
     <PackageReference Include="Microsoft.Identity.Web.MicrosoftGraphBeta" Version="1.9.2" />
-    <PackageReference Include="Microsoft.Identity.Web.UI" Version="1.9.2" />
+    <PackageReference Include="Microsoft.Identity.Web.UI" Version="1.11.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Microsoft.Identity.Client" Version="4.30.1" />
