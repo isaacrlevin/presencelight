@@ -23,7 +23,7 @@
     <PackageReference Include="Alexa.NET" Version="1.15.0" />
     <PackageReference Include="Blazored.Modal" Version="6.0.1" />
     <PackageReference Include="Blazorise.Bootstrap" Version="0.9.3.6" />
-    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.3.6" />
+    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.3.7" />
     <PackageReference Include="BlazorPro.Spinkit" Version="1.2.0" />
     <PackageReference Include="IdentityModel" Version="5.1.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.17.0" />
