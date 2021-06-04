@@ -36,7 +36,7 @@
     <PackageReference Include="Microsoft.Identity.Web.UI" Version="1.9.2" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="Microsoft.Identity.Client" Version="4.30.1" />
+    <PackageReference Include="Microsoft.Identity.Client" Version="4.32.0" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.2.0" />
   </ItemGroup>
