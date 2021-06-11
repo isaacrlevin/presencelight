@@ -111,7 +111,7 @@
             <TextBox x:Name="customApiOfflineUri" Grid.Row="7" TextWrapping="Wrap" VerticalAlignment="Center" Text="{Binding LightSettings.CustomApi.CustomApiOffline.Uri}" Grid.Column="2" Margin="10,0,14,0"/>
 
             <Label x:Name="customApiOffLabel" Content="Off:" Margin="10,0,0,0" Grid.Row="8" VerticalAlignment="Center"/>
-            <ComboBox x:Name="customApiOffMethod" HorizontalAlignment="Left" Grid.Row="8" VerticalAlignment="Center" Width="72" Grid.Column="1" Margin="10,0,0,0" SelectionChanged="customApiMethod_SelectionChanged" SelectedValuePath="Content" Text="{Binding LightSettings.CustomApi.CustomApiActivityPresenting.Method}">
+            <ComboBox x:Name="customApiOffMethod" HorizontalAlignment="Left" Grid.Row="8" VerticalAlignment="Center" Width="72" Grid.Column="1" Margin="10,0,0,0" SelectionChanged="customApiMethod_SelectionChanged" SelectedValuePath="Content" Text="{Binding LightSettings.CustomApi.CustomApiOff.Method}">
                 <ComboBoxItem Content="GET"></ComboBoxItem>
                 <ComboBoxItem Content="POST"></ComboBoxItem>
             </ComboBox>
