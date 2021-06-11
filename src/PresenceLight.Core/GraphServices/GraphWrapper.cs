@@ -51,7 +51,7 @@ namespace PresenceLight.Core
             }
             catch (Exception ex)
             {
-                _logger.LogError(e, "Error Occured Getting Presence from Graph Api Content");
+                _logger.LogError(ex, "Error Occured Getting Presence from Graph Api Content");
                 throw;
             }
         }
