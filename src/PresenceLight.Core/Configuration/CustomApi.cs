@@ -33,6 +33,8 @@
 
         public CustomApiSetting CustomApiActivityInACall { get; set; }
 
+        public CustomApiSetting CustomApiActivityInAConferenceCall { get; set; }
+
 
         public CustomApiSetting CustomApiActivityInAMeeting { get; set; }
 
