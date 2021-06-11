@@ -26,8 +26,8 @@
 
   <ItemGroup> 
     <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.17.0" />
-    <PackageReference Include="Extended.Wpf.Toolkit" Version="4.0.2" />
-    <PackageReference Include="IdentityModel.OidcClient" Version="4.0.0-preview.4" />
+    <PackageReference Include="Extended.Wpf.Toolkit" Version="4.1.0" />
+    <PackageReference Include="IdentityModel.OidcClient" Version="4.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OAuth" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.2.7" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.2.0" />
@@ -36,7 +36,7 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
     <PackageReference Include="Microsoft.Graph.Beta" Version="0.35.0-preview" />
     <PackageReference Include="Microsoft.Graph.Core" Version="2.0.0-preview.3" />
-    <PackageReference Include="Microsoft.Identity.Client" Version="4.30.1" />
+    <PackageReference Include="Microsoft.Identity.Client" Version="4.32.1" />
     <PackageReference Include="NETStandard.HttpListener" Version="1.0.3.5" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Q42.HueApi" Version="3.18.1" />
@@ -131,7 +131,7 @@
   <ItemGroup>
     <PackageReference Update="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.2" />
     <PackageReference Update="Microsoft.SourceLink.GitHub" Version="1.0.0" />
-    <PackageReference Update="Nerdbank.GitVersioning" Version="3.4.194" />
+    <PackageReference Update="Nerdbank.GitVersioning" Version="3.4.205" />
   </ItemGroup>
 
   <ItemGroup>
