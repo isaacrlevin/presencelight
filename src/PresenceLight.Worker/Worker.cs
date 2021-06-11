@@ -180,7 +180,7 @@ namespace PresenceLight.Worker
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e, "Error Occured");
+                    _logger.LogError(e, "Error Occured Interacting with Lights");
                 }
             }
         }
@@ -297,7 +297,6 @@ namespace PresenceLight.Worker
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error Occured");
             }
         }
     }
