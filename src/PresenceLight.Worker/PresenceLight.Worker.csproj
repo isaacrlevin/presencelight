@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Alexa.NET" Version="1.15.0" />
+    <PackageReference Include="Alexa.NET" Version="1.15.1" />
     <PackageReference Include="Blazored.Modal" Version="6.0.1" />
     <PackageReference Include="Blazorise.Bootstrap" Version="0.9.3.8" />
     <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.3.8" />
