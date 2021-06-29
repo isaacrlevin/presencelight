@@ -341,7 +341,7 @@ jobs:
         azcliversion: latest
 
     - name: Upload Release to Blob Storage
-      uses: bacongobbler/azure-blob-storage-upload@v1.1.1
+      uses: bacongobbler/azure-blob-storage-upload@v1.2.0
       with:
         source_dir: ${{ github.workspace }}/Sign
         container_name: ${{ secrets.WORKER_CONTAINER }}
