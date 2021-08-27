@@ -1,0 +1,7 @@
+{
+  "profiles": {
+    "PresenceLight.Maui.WinUI": {
+      "commandName": "MsixPackage"
+    }
+  }
+}

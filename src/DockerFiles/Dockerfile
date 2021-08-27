@@ -2,10 +2,10 @@ FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /source
 
 # copy everything else and build app
-COPY PresenceLight.Worker/. ./PresenceLight.Worker/
+COPY PresenceLight.Web/. ./PresenceLight.Web/
 COPY PresenceLight.Core/. ./PresenceLight.Core/
 
-WORKDIR /source/PresenceLight.Worker
+WORKDIR /source/PresenceLight.Web
 RUN dotnet publish -c release -o /app /p:Version={VERSION}
 
 # final stage/image

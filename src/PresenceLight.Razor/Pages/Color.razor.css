@@ -1,0 +1,341 @@
+
+.colorPicker {
+    width: 100%;
+  }
+
+  .colorPicker .twod {
+    position: relative;
+    width: 65%;
+    height: 600px;
+    float: left;
+    margin-left: 0px;
+    margin-right: 0px;
+    border-radius: 3px;
+  }
+
+  .colorPicker .twod .bg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 3px;
+  }
+
+  .colorPicker .twod .bg1 {
+    z-index: 0;
+    background: -moz-linear-gradient(left, white 0%, rgba(255, 255, 255, 0) 100%);
+    background: -webkit-gradient(
+      linear,
+      left top,
+      right top,
+      color-stop(0%, white),
+      color-stop(100%, rgba(255, 255, 255, 0))
+    );
+    background: -webkit-linear-gradient(
+      left,
+      white 0%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    background: -o-linear-gradient(left, white 0%, rgba(255, 255, 255, 0) 100%);
+    background: -webkit-gradient(
+      linear,
+      left top,
+      right top,
+      from(white),
+      to(rgba(255, 255, 255, 0))
+    );
+    background: linear-gradient(to right, white 0%, rgba(255, 255, 255, 0) 100%);
+  }
+
+  .colorPicker .twod .bg2 {
+    z-index: 1;
+    background: -moz-linear-gradient(top, rgba(0, 0, 0, 0) 0%, black 100%);
+    background: -webkit-gradient(
+      linear,
+      left top,
+      left bottom,
+      color-stop(0%, rgba(0, 0, 0, 0)),
+      color-stop(100%, black)
+    );
+    background: -webkit-linear-gradient(top, rgba(0, 0, 0, 0) 0%, black 100%);
+    background: -o-linear-gradient(top, rgba(0, 0, 0, 0) 0%, black 100%);
+    background: -webkit-gradient(
+      linear,
+      left top,
+      left bottom,
+      from(rgba(0, 0, 0, 0)),
+      to(black)
+    );
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, black 100%);
+  }
+
+  .colorPicker .twod .pointer {
+    position: relative;
+    z-index: 2;
+    width: 8px;
+  }
+
+  .colorPicker .twod .pointer .shape {
+    position: absolute;
+  }
+
+  .colorPicker .twod .pointer .shape1 {
+    margin-left: -9px;
+    margin-top: -9px;
+    width: 18px;
+    height: 18px;
+    border: 3px solid #3f3844;
+    -moz-border-radius: 9px;
+    border-radius: 9px;
+  }
+
+  .colorPicker .twod .pointer .shape2 {
+    margin-left: -6px;
+    margin-top: -6px;
+    width: 12px;
+    height: 12px;
+    border: 3px solid white;
+    -moz-border-radius: 6px;
+    border-radius: 6px;
+  }
+
+  .colorPicker .extras .hex {
+  float: none;
+      }
+
+      .colorPicker .oned {
+          width: 10%;
+          height: 600px;
+          padding: 0 1.5em;
+          float: left;
+          margin-left: 0px;
+          margin-right: 0px;
+          border-radius: 3px;
+      }
+
+  .colorPicker .oned .bg {
+    width: 100%;
+    height: 100%;
+    background: -moz-linear-gradient(
+      top,
+      red 0%,
+      #ff0 17%,
+      lime 33%,
+      cyan 50%,
+      blue 66%,
+      #f0f 83%,
+      red 100%
+    );
+    background: -webkit-gradient(
+      linear,
+      left top,
+      left bottom,
+      color-stop(0%, red),
+      color-stop(17%, #ff0),
+      color-stop(33%, lime),
+      color-stop(50%, cyan),
+      color-stop(66%, blue),
+      color-stop(83%, #f0f),
+      color-stop(100%, red)
+    );
+    background: -webkit-linear-gradient(
+      top,
+      red 0%,
+      #ff0 17%,
+      lime 33%,
+      cyan 50%,
+      blue 66%,
+      #f0f 83%,
+      red 100%
+    );
+    background: -o-linear-gradient(
+      top,
+      red 0%,
+      #ff0 17%,
+      lime 33%,
+      cyan 50%,
+      blue 66%,
+      #f0f 83%,
+      red 100%
+    );
+    background: -webkit-gradient(
+      linear,
+      left top,
+      left bottom,
+      from(red),
+      color-stop(17%, #ff0),
+      color-stop(33%, lime),
+      color-stop(50%, cyan),
+      color-stop(66%, blue),
+      color-stop(83%, #f0f),
+      to(red)
+    );
+    background: linear-gradient(
+      to bottom,
+      red 0%,
+      #ff0 17%,
+      lime 33%,
+      cyan 50%,
+      blue 66%,
+      #f0f 83%,
+      red 100%
+    );
+    border-radius: 3px;
+  }
+
+  .colorPicker .oned .pointer {
+    position: relative;
+    z-index: 2;
+  }
+
+  .colorPicker .oned .pointer .shape {
+    position: absolute;
+    width: calc(100% + 6px);
+    margin-left: -3px;
+    margin-top: -4px;
+    height: 9px;
+    border: 3px solid #3f3844;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+  }
+
+      .colorPicker .extras {
+          position: relative;
+          width: 20%;
+          height: 600px;
+          padding: 1.5em;
+          border-radius: 3px;
+          margin-left: 0px;
+          margin-right: 0px;
+          border-right: 1px solid #eaeaea;
+          border-left: 1px solid #eaeaea;
+          border-bottom: 1px solid #eaeaea;
+      }
+
+  .colorPicker .extras .currentColorContainer {
+    margin: -1.5em -1.5em 1em;
+  }
+
+  .colorPicker .extras .currentColor {
+    cursor: pointer;
+    width: calc(100% + 2px);
+    height: 86px;
+    margin-left: -1px;
+    border-top-right-radius: 3px;
+    border-top-left-radius: 3px;
+  }
+
+  .colorPicker .extras div.hex,
+  .colorPicker .extras div.colorFields {
+    padding-bottom: 0.5em;
+  }
+
+  .colorPicker .extras label,
+  .colorPicker .extras input {
+    font-family: "proxima-soft", "Proxima Soft", "Proxima Nova Soft", Helvetica,
+      Arial, sans-serif;
+    font-style: normal;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    font-size: 14px;
+    font-size: 0.875rem;
+  }
+
+  .colorPicker .extras label {
+    padding-right: 1.125em;
+    font-weight: 600;
+  }
+
+  .colorPicker .extras input {
+    width: 80px;
+    border: none;
+    font-weight: 700;
+    padding: 0.0625rem 0.75em 0.0625em;
+    border-radius: 3px;
+    border: 1px solid white;
+    background-color: transparent;
+    -webkit-transition: all 0.375s cubic-bezier(0.4, 0, 0.2, 1);
+    -moz-transition: all 0.375s cubic-bezier(0.4, 0, 0.2, 1);
+    -o-transition: all 0.375s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.375s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .colorPicker .extras input:focus {
+    outline: none;
+    border: 1px solid #eaeaea;
+    background-color: transparent;
+  }
+
+  .colorPicker .extras input[type="text"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+  }
+
+  @media only screen and (max-width: 40em) {
+    article#picker section.color-harmonies figure,
+    article#picker section.color-harmonies figure:nth-child(odd),
+    article#picker section.color-harmonies figure:nth-child(even) {
+      width: 100%;
+      float: none;
+      margin: 3em 0 1.5em;
+      text-align: center;
+    }
+
+    article#picker section.color-harmonies figure img {
+      padding: 1.5em 2.25em;
+    }
+
+    .colorPicker .twod {
+      width: 65%;
+      height: 240px;
+    }
+
+    .colorPicker .oned {
+      width: 10%;
+      height: 240px;
+      padding: 0 0 0 1.5em;
+    }
+
+    .colorPicker .extras {
+      width: 100%;
+      height: 100%;
+      margin-top: 1.5em;
+      padding: 1em 1.5em;
+      border-top: 1px solid #eaeaea;
+    }
+
+    .colorPicker .extras .currentColorContainer .currentColor {
+      height: 88px;
+    }
+
+    .colorPicker .extras div.hex {
+      width: 100%;
+    }
+
+    .colorPicker .extras div.colorFields {
+      width: calc(100% / 3);
+      float: left;
+      padding: 0;
+    }
+
+    .colorPicker .extras label {
+      width: 40%;
+      padding-right: 1.125em;
+      font-weight: 600;
+      color: #c3c3c3;
+    }
+
+    .colorPicker .extras input {
+      width: 60%;
+    }
+  }
+
+  @media only screen and (min-width: 40.063em) and (max-width: 48em) {
+    .colorPicker .twod {
+      width: 85%;
+    }
+
+    .colorPicker .extras {
+      width: 20%;
+    }
+  }

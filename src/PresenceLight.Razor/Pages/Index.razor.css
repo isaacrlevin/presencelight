@@ -1,0 +1,41 @@
+
+.Busy {
+    background-color: red;
+  }
+
+  .DoNotDisturb {
+    background-color: darkred;
+  }
+
+  .Available {
+    background-color: green;
+  }
+
+  .Away {
+    background-color: yellow;
+  }
+
+  .BeRightBack {
+    background-color: yellow;
+  }
+
+  .bottom-right {
+    position: relative;
+    bottom: 120px;
+    left: 55%;
+  }
+
+  .circle {
+    height: 120px;
+    width: 120px;
+    border-radius: 50%;
+    border-style: solid;
+    border-width: 5px;
+    border-color: white;
+  }
+
+  .image {
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+  }
