@@ -44,11 +44,6 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Use .NET Core SDK 5.0.x
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 5.0.x
-
     - name: setup-msbuild
       uses: microsoft/setup-msbuild@v1
 
@@ -138,11 +133,15 @@ jobs:
       shell: powershell
 
     - name: Build Standalone Presence Light x64
-      run: dotnet publish .\src\DesktopClient\PresenceLight\PresenceLight.csproj -c ${{ env.BuildConfiguration }} /p:PublishProfile=Properties/PublishProfiles/WinX64.pubxml
+      run: | 
+        dotnet restore .\src\DesktopClient\PresenceLight\PresenceLight.csproj
+        dotnet publish .\src\DesktopClient\PresenceLight\PresenceLight.csproj -c ${{ env.BuildConfiguration }} /p:PublishProfile=Properties/PublishProfiles/WinX64.pubxml
       if:  ${{ success() && matrix.ChannelName  == 'Standalone' }}
 
     - name: Build Standalone Presence Light x86
-      run: dotnet publish .\src\DesktopClient\PresenceLight\PresenceLight.csproj -c ${{ env.BuildConfiguration }} /p:PublishProfile=Properties/PublishProfiles/WinX86.pubxml
+      run: | 
+        dotnet restore .\src\DesktopClient\PresenceLight\PresenceLight.csproj
+        dotnet publish .\src\DesktopClient\PresenceLight\PresenceLight.csproj -c ${{ env.BuildConfiguration }} /p:PublishProfile=Properties/PublishProfiles/WinX86.pubxml
       if:  ${{ success() && matrix.ChannelName  == 'Standalone' }}
 
     - name: Zip Standalone PresenceLight x64 Files
@@ -161,6 +160,8 @@ jobs:
 
     - name: Build Appx Package
       run: |
+        dotnet restore .\src\DesktopClient\PresenceLight\PresenceLight.csproj
+        msbuild /t:restore .\src\DesktopClient\PresenceLight.Package\PresenceLight.Package.wapproj
         msbuild '.\src\DesktopClient\PresenceLight.Package\PresenceLight.Package.wapproj' /p:VersionNumber=${{ env.GitBuildVersionSimple }} `
         /p:ChannelName=${{ matrix.ChannelName }} /p:configuration='${{ env.BuildConfiguration }}' /p:IncludeSymbols=true `
         /p:AppxPackageDir="${{ github.workspace }}\${{ matrix.ChannelName }}\\"

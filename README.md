@@ -8,7 +8,7 @@
 
 | Nightly | Microsoft Store | Chocolatey | GitHub Releases | Worker Download Site | Worker Container |
 | ------- | --------------- | ---------- | --------------- | -------------------- | ---------------  |
-| [<img src="https://github.com/isaacrlevin/PresenceLight/raw/main/Icon.png" width="100">](https://presencelight.blob.core.windows.net/nightly/index.html)| [<img src="https://github.com/isaacrlevin/PresenceLight/raw/main/static/store.svg" width="100">](https://www.microsoft.com/en-us/p/presencelight/9nffkd8gznl7) | [<img src="https://chocolatey.org/content/images/global-shared/logo-square.svg" width="100">](https://chocolatey.org/packages/PresenceLight/) | [<img src="https://user-images.githubusercontent.com/8878502/110871471-55fe7c00-8283-11eb-8ce4-afeeaf62458a.png" width="100">](https://user-images.githubusercontent.com/8878502/110871316-061fb500-8283-11eb-8ad6-db529a86eab0.png) | [<img src="https://github.com/isaacrlevin/PresenceLight/raw/main/Icon.png" width="100">](https://presencelight.blob.core.windows.net/nightly/index.html) | [<img src="https://user-images.githubusercontent.com/8878502/110870857-2602a900-8282-11eb-8846-89c61a219236.png" width="100">](https://hub.docker.com/r/isaaclevin/presencelight)  [<img src="https://user-images.githubusercontent.com/8878502/110871471-55fe7c00-8283-11eb-8ce4-afeeaf62458a.png" width="100">](https://github.com/users/isaacrlevin/packages/container/package/presencelight) |
+| [<img src="https://github.com/isaacrlevin/PresenceLight/raw/main/Icon.png" width="100">](https://presencelight.blob.core.windows.net/nightly/index.html)| [<img src="https://github.com/isaacrlevin/PresenceLight/raw/main/static/store.svg" width="100">](https://www.microsoft.com/en-us/p/presencelight/9nffkd8gznl7) | [<img src="https://chocolatey.org/assets/images/global-shared/logo.svg" width="100">](https://chocolatey.org/packages/PresenceLight/) | [<img src="https://user-images.githubusercontent.com/8878502/110871471-55fe7c00-8283-11eb-8ce4-afeeaf62458a.png" width="100">](https://github.com/isaacrlevin/presencelight/releases) | [<img src="https://github.com/isaacrlevin/PresenceLight/raw/main/Icon.png" width="100">](https://presencelightapp.azurewebsites.net/) | [<img src="https://user-images.githubusercontent.com/8878502/110870857-2602a900-8282-11eb-8846-89c61a219236.png" width="100">](https://hub.docker.com/r/isaaclevin/presencelight)  [<img src="https://user-images.githubusercontent.com/8878502/110871471-55fe7c00-8283-11eb-8ce4-afeeaf62458a.png" width="100">](https://github.com/users/isaacrlevin/packages/container/package/presencelight) |
 
 ### App Versions
 
@@ -32,7 +32,7 @@
 | LIFX |
 | Yeelight |
 | Any light which can be controlled via a GET or POST call to a web API |
-| Philips Wiz **Coming Soon** |
+| Philips Wiz |
 
 ## Configure Hardware
 - [Configure Hardware](https://github.com/isaacrlevin/PresenceLight/wiki/Configure-Hardware)
