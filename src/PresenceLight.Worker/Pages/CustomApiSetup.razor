@@ -34,25 +34,28 @@
 
                                     <label class="col-sm-3 col-form-label" for="@lab">@Helpers.HumanifyText(customApiSetting.Name.Replace("CustomApi","")):</label>
 
-                                    @foreach (var setting in customApiSettingValue.GetType().GetProperties())
+                                    @if (customApiSettingValue != null)
                                     {
-                                        object settingValue = setting.GetValue(customApiSettingValue, null);
+                                        @foreach (var setting in customApiSettingValue.GetType().GetProperties())
+                                        {
+                                            object settingValue = setting.GetValue(customApiSettingValue, null);
 
-                                        if (setting.Name == "Method")
-                                        {
-                                            <div class="col-sm-2">
-                                                <select class="form-control" value="@settingValue?.ToString()" @onchange="@((ChangeEventArgs e) => OnChange(e, setting, customApiSettingValue))">
-                                                    <option value="" disabled="disabled">Select</option>
-                                                    <option value="GET">GET</option>
-                                                    <option value="POST">POST</option>
-                                                </select>
-                                            </div>
-                                        }
-                                        else
-                                        {
-                                            <div class="col-sm-7">
-                                                <input type="text" id="@lab" value="@settingValue?.ToString()" @onchange="@((ChangeEventArgs e) => OnChange(e, setting, customApiSettingValue))" class="form-control" />
-                                            </div>
+                                            if (setting.Name == "Method")
+                                            {
+                                                <div class="col-sm-2">
+                                                    <select class="form-control" value="@settingValue?.ToString()" @onchange="@((ChangeEventArgs e) => OnChange(e, setting, customApiSettingValue))">
+                                                        <option value="" disabled="disabled">Select</option>
+                                                        <option value="GET">GET</option>
+                                                        <option value="POST">POST</option>
+                                                    </select>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="col-sm-7">
+                                                    <input type="text" id="@lab" value="@settingValue?.ToString()" @onchange="@((ChangeEventArgs e) => OnChange(e, setting, customApiSettingValue))" class="form-control" />
+                                                </div>
+                                            }
                                         }
                                     }
                                 </div>
