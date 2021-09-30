@@ -27,7 +27,7 @@
     <PackageReference Include="BlazorPro.Spinkit" Version="1.2.0" />
     <PackageReference Include="IdentityModel" Version="5.1.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.18.0" />
-    <PackageReference Include="Microsoft.ApplicationInsights.SnapshotCollector" Version="1.4.0" />
+    <PackageReference Include="Microsoft.ApplicationInsights.SnapshotCollector" Version="1.4.2" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="5.0.10" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="5.0.1" />
@@ -36,7 +36,7 @@
     <PackageReference Include="Microsoft.Identity.Web.UI" Version="1.17.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.11.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="Microsoft.Identity.Client" Version="4.36.1" />
+    <PackageReference Include="Microsoft.Identity.Client" Version="4.36.2" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.2.0" />
   </ItemGroup>
