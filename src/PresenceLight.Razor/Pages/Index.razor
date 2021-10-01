@@ -1,0 +1,73 @@
+﻿@page "/"
+
+@using Microsoft.Identity.Web
+@using Microsoft.Graph
+
+
+@inject AppState appState
+@inject IOptionsMonitor<BaseConfig> Config
+@inject Microsoft.Graph.GraphServiceClient GraphServiceClient
+@inject MicrosoftIdentityConsentAndConditionalAccessHandler ConsentHandler
+@inject ILogger<Index> _logger;
+@inject UserAuthService _userAuthService
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor _httpContextAccessor
+
+<SpinLoader IsLoading="@(appState.Presence == null)">
+    <LoadingTemplate>
+        <div style="height:400px; position:relative; ">
+            <Circle style=" margin: 0; position: absolute; top: 50%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%);" Center="true" />
+        </div>
+    </LoadingTemplate>
+    <ContentTemplate>
+        <div class="container text-body">
+            <div class="row">
+                <div class="container-fluid">
+                    <div class="row-fluid">
+                        <div>
+                            <h1>@appState.User?.DisplayName</h1>
+                            <br />
+                            <br />
+                            <div>
+                                <img class="image" src="@appState.ProfileImage" />
+                                <div class="circle bottom-right @appState.Presence?.Availability"></div>
+                            </div>
+                            <h3>Availability: @Helpers.HumanifyText(appState.Presence?.Availability)</h3>
+                            <h3>Activity: @Helpers.HumanifyText(appState.Presence?.Activity)</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ContentTemplate>
+</SpinLoader>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        appState.OnChange += RaiseStateHasChanged;
+
+        bool isUserAuth = await _userAuthService.IsUserAuthenticated();
+        if (!isUserAuth)
+        {
+            appState.SetLightMode("");
+            await _httpContextAccessor.HttpContext.ChallengeAsync();
+        }
+        else
+        {
+            if (appState.LightMode != "Custom")
+            {
+                appState.SetLightMode("Graph");
+            }
+        }
+    }
+
+    public void Dispose()
+    {
+        appState.OnChange -= RaiseStateHasChanged;
+    }
+
+    private void RaiseStateHasChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+}
