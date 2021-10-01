@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29521.150
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31717.71
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresenceLight.Core", "PresenceLight.Core\PresenceLight.Core.csproj", "{4883809C-FF4B-4504-A85E-2503607E5B99}"
 EndProject
@@ -37,13 +37,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Readmes", "Readmes", "{AEA7
 		..\worker-README.md = ..\worker-README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresenceLight.Maui", "PresenceLight.Maui\PresenceLight.Maui\PresenceLight.Maui.csproj", "{E9EDEF2F-BB63-4050-93A4-810938314859}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresenceLight.Maui.WinUI", "PresenceLight.Maui\PresenceLight.Maui.WinUI\PresenceLight.Maui.WinUI.csproj", "{03B062B8-2BE8-4FA4-B6B4-62FBB6EF8BA8}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresenceLight.Razor", "PresenceLight.Razor\PresenceLight.Razor.csproj", "{0D9ADF1D-606A-4FD1-8EA1-7619EAE16703}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PresenceLight.Web", "PresenceLight.Web\PresenceLight.Web.csproj", "{F091F5B7-84B4-48B7-A2DB-862A351F4D0A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresenceLight.Web", "PresenceLight.Web\PresenceLight.Web.csproj", "{F091F5B7-84B4-48B7-A2DB-862A351F4D0A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -89,26 +85,6 @@ Global
 		{12DDAD24-CCBD-409F-9342-17A0E445604F}.Release|x64.ActiveCfg = Release|x64
 		{12DDAD24-CCBD-409F-9342-17A0E445604F}.Release|x64.Build.0 = Release|x64
 		{12DDAD24-CCBD-409F-9342-17A0E445604F}.Release|x64.Deploy.0 = Release|x64
-		{E9EDEF2F-BB63-4050-93A4-810938314859}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E9EDEF2F-BB63-4050-93A4-810938314859}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E9EDEF2F-BB63-4050-93A4-810938314859}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{E9EDEF2F-BB63-4050-93A4-810938314859}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{E9EDEF2F-BB63-4050-93A4-810938314859}.Debug|x64.Build.0 = Debug|Any CPU
-		{E9EDEF2F-BB63-4050-93A4-810938314859}.Debug|x64.Deploy.0 = Debug|Any CPU
-		{E9EDEF2F-BB63-4050-93A4-810938314859}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E9EDEF2F-BB63-4050-93A4-810938314859}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E9EDEF2F-BB63-4050-93A4-810938314859}.Release|Any CPU.Deploy.0 = Release|Any CPU
-		{E9EDEF2F-BB63-4050-93A4-810938314859}.Release|x64.ActiveCfg = Release|Any CPU
-		{E9EDEF2F-BB63-4050-93A4-810938314859}.Release|x64.Build.0 = Release|Any CPU
-		{E9EDEF2F-BB63-4050-93A4-810938314859}.Release|x64.Deploy.0 = Release|Any CPU
-		{03B062B8-2BE8-4FA4-B6B4-62FBB6EF8BA8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{03B062B8-2BE8-4FA4-B6B4-62FBB6EF8BA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{03B062B8-2BE8-4FA4-B6B4-62FBB6EF8BA8}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{03B062B8-2BE8-4FA4-B6B4-62FBB6EF8BA8}.Debug|x64.Build.0 = Debug|Any CPU
-		{03B062B8-2BE8-4FA4-B6B4-62FBB6EF8BA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{03B062B8-2BE8-4FA4-B6B4-62FBB6EF8BA8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{03B062B8-2BE8-4FA4-B6B4-62FBB6EF8BA8}.Release|x64.ActiveCfg = Release|Any CPU
-		{03B062B8-2BE8-4FA4-B6B4-62FBB6EF8BA8}.Release|x64.Build.0 = Release|Any CPU
 		{0D9ADF1D-606A-4FD1-8EA1-7619EAE16703}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0D9ADF1D-606A-4FD1-8EA1-7619EAE16703}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0D9ADF1D-606A-4FD1-8EA1-7619EAE16703}.Debug|x64.ActiveCfg = Debug|Any CPU
