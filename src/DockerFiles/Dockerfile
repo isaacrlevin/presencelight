@@ -3,6 +3,7 @@ WORKDIR /source
 
 # copy everything else and build app
 COPY PresenceLight.Web/. ./PresenceLight.Web/
+COPY PresenceLight.Razor/. ./PresenceLight.Razor/
 COPY PresenceLight.Core/. ./PresenceLight.Core/
 
 WORKDIR /source/PresenceLight.Web
