@@ -2,8 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-    <UserSecretsId>aspnet-PresenceLight.Web-E5A928CA-0154-43D4-A424-2537B26CBD50</UserSecretsId>
-    <WebProject_DirectoryAccessLevelKey>0</WebProject_DirectoryAccessLevelKey>
+    <LangVersion>latest</LangVersion>
+    <AssemblyName>PresenceLight</AssemblyName>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileFile>../Dockerfiles/Dockerfile</DockerfileFile>
+    <DockerfileContext>..</DockerfileContext>
+    <ApplicationIcon>favicon.ico</ApplicationIcon>
+    <UserSecretsId>8509488430545</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

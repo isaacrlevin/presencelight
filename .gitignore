@@ -392,6 +392,6 @@ Build/StorePublish/.env.local
 Build/StorePublish/node_modules
 Build/StorePublish/temp.zip
 /src/DesktopClient/PresenceLight/Properties/launchSettings.json
-/src/PresenceLight.Worker/config/
+/src/PresenceLight.Web/config/
 logs/
 /src/config

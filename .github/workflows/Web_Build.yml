@@ -21,8 +21,8 @@ on:
     - 'Build/PublishStore/**'
 
 jobs:
-  Build_Worker:
-    name: Build Worker
+  Build_Web:
+    name: Build Web
     runs-on: windows-latest
     strategy:
       matrix:
@@ -48,7 +48,7 @@ jobs:
       DOTNET_NOLOGO: true
       BuildConfiguration: Release
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
-      GitHubReleaseUrl: https://github.com/isaacrlevin/presencelight/releases/download/Worker-
+      GitHubReleaseUrl: https://github.com/isaacrlevin/presencelight/releases/download/Web-
 
     steps:
 
@@ -80,7 +80,7 @@ jobs:
     - name: Update appsettings.json
       run: |
         # Update AppSettings.json. This must be done before build.
-        $appsettings= get-content ".\src\PresenceLight.Worker\appsettings.json" -raw | ConvertFrom-Json
+        $appsettings= get-content ".\src\PresenceLight.Web\appsettings.json" -raw | ConvertFrom-Json
 
         $appsettings.certificate.name = "${{ secrets.CertificateName }}"
         $appsettings.certificate.password = "${{ secrets.CertificatePassword }}"
@@ -89,14 +89,14 @@ jobs:
         $appsettings.azureAd.clientSecret = "${{ secrets.ClientSecret }}"
 
         $appsettings.applicationInsights.instrumentationkey = "${{ secrets.InstrumentationKey }}"
-        $appsettings | ConvertTo-Json -depth 32| set-content '.\src\PresenceLight.Worker\appsettings.json'
+        $appsettings | ConvertTo-Json -depth 32| set-content '.\src\PresenceLight.Web\appsettings.json'
       shell: powershell
       if: ${{ success() && github.event_name != 'pull_request' }}
 
     - name: Update PresenceLightSettings.json
       run: |
         # Update PresenceLightSettings.json. This must be done before build.
-        $PresenceLightSettings= get-content ".\src\PresenceLight.Worker\PresenceLightSettings.json" -raw | ConvertFrom-Json
+        $PresenceLightSettings= get-content ".\src\PresenceLight.Web\PresenceLightSettings.json" -raw | ConvertFrom-Json
 
         $PresenceLightSettings.lightSettings.lifx.LIFXClientId = "${{ secrets.LIFXClientId }}"
         $PresenceLightSettings.lightSettings.lifx.LIFXClientSecret = "${{ secrets.LIFXClientSecret }}"
@@ -105,15 +105,15 @@ jobs:
         $PresenceLightSettings.lightSettings.hue.RemoteHueClientSecret = "${{ secrets.RemoteHueClientSecret }}"
         $PresenceLightSettings.lightSettings.hue.RemoteHueClientAppName = "${{ secrets.RemoteHueClientAppName }}"
 
-        $PresenceLightSettings | ConvertTo-Json -depth 32| set-content '.\src\PresenceLight.Worker\PresenceLightSettings.json'
+        $PresenceLightSettings | ConvertTo-Json -depth 32| set-content '.\src\PresenceLight.Web\PresenceLightSettings.json'
       shell: powershell
       if: ${{ success() && github.event_name != 'pull_request' }}
 
-    - run: dotnet publish '.\src\PresenceLight.Worker\PresenceLight.Worker.csproj' -r ${{ matrix.RID }} -c ${{ env.BuildConfiguration }} /p:PublishSingleFile=true -o ${{ github.workspace }}\${{ env.GitBuildVersionSimple }}_${{ matrix.ChannelName }} /p:Version=${{ env.GitBuildVersionSimple }}
+    - run: dotnet publish '.\src\PresenceLight.Web\PresenceLight.Web.csproj' -r ${{ matrix.RID }} -c ${{ env.BuildConfiguration }} /p:PublishSingleFile=true -o ${{ github.workspace }}\${{ env.GitBuildVersionSimple }}_${{ matrix.ChannelName }} /p:Version=${{ env.GitBuildVersionSimple }}
       name: dotnet publish ${{ matrix.RID }}
       if: ${{ success() }}
 
-    - name: Zip PresenceLight Worker Files
+    - name: Zip PresenceLight Web Files
       run: |
         Compress-Archive -Path '${{ github.workspace }}\${{ env.GitBuildVersionSimple }}_${{ matrix.ChannelName }}\' `
         -DestinationPath ${{ github.workspace }}\${{ matrix.ChannelName }}\PresenceLight.${{ matrix.ChannelName }}.${{ env.GitBuildVersionSimple }}.zip
@@ -134,12 +134,12 @@ jobs:
       if:  ${{ success() && matrix.ChannelName  == 'Windows_x64_x86' }}
 
   Code_Signing:
-    needs: Build_Worker
+    needs: Build_Web
     if: ${{ github.event_name != 'pull_request' }}
     environment:
         name: Code_Signing
         url: ${{ steps.deploy_staging.outputs.webapp-url }}
-    name: Code Sign Worker
+    name: Code Sign Web
     runs-on: ubuntu-latest
     steps:
     - name: Azure Login
@@ -272,7 +272,7 @@ jobs:
     environment:
         name: Deploy_Azure_Blob
         url: ${{ steps.deploy_staging.outputs.webapp-url }}
-    name: Deploy Worker Website
+    name: Deploy Web Website
     runs-on: ubuntu-latest
     steps:
     - name: Azure Login
@@ -349,12 +349,12 @@ jobs:
         sync: true
 
   Deploy_Containers:
-    needs: Build_Worker
+    needs: Build_Web
     if: ${{ github.event_name != 'pull_request' }}
     environment:
         name: Deploy_Containers
         url: ${{ steps.deploy_staging.outputs.webapp-url }}
-    name: Deploy Worker Containers (DockerHub / GitHub Packages)
+    name: Deploy Web Containers (DockerHub / GitHub Packages)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -362,7 +362,7 @@ jobs:
       - name: Update appsettings.json
         run: |
           # Update AppSettings.json. This must be done before build.
-          $appsettings= get-content ".\src\PresenceLight.Worker\appsettings.json" -raw | ConvertFrom-Json
+          $appsettings= get-content ".\src\PresenceLight.Web\appsettings.json" -raw | ConvertFrom-Json
 
           $appsettings.certificate.name = "${{ secrets.CertificateName }}"
           $appsettings.certificate.password = "${{ secrets.CertificatePassword }}"
@@ -371,14 +371,14 @@ jobs:
           $appsettings.azureAd.clientSecret = "${{ secrets.ClientSecret }}"
 
           $appsettings.applicationInsights.instrumentationkey = "${{ secrets.InstrumentationKey }}"
-          $appsettings | ConvertTo-Json -depth 32| set-content '.\src\PresenceLight.Worker\appsettings.json'
+          $appsettings | ConvertTo-Json -depth 32| set-content '.\src\PresenceLight.Web\appsettings.json'
         shell: pwsh
         if: ${{ success() && github.event_name != 'pull_request' }}
 
       - name: Update PresenceLightSettings.json
         run: |
           # Update PresenceLightSettings.json. This must be done before build.
-          $PresenceLightSettings= get-content ".\src\PresenceLight.Worker\PresenceLightSettings.json" -raw | ConvertFrom-Json
+          $PresenceLightSettings= get-content ".\src\PresenceLight.Web\PresenceLightSettings.json" -raw | ConvertFrom-Json
 
           $PresenceLightSettings.lightSettings.lifx.LIFXClientId = "${{ secrets.LIFXClientId }}"
           $PresenceLightSettings.lightSettings.lifx.LIFXClientSecret = "${{ secrets.LIFXClientSecret }}"
@@ -387,7 +387,7 @@ jobs:
           $PresenceLightSettings.lightSettings.hue.RemoteHueClientSecret = "${{ secrets.RemoteHueClientSecret }}"
           $PresenceLightSettings.lightSettings.hue.RemoteHueClientAppName = "${{ secrets.RemoteHueClientAppName }}"
 
-          $PresenceLightSettings | ConvertTo-Json -depth 32| set-content '.\src\PresenceLight.Worker\PresenceLightSettings.json'
+          $PresenceLightSettings | ConvertTo-Json -depth 32| set-content '.\src\PresenceLight.Web\PresenceLightSettings.json'
         shell: pwsh
         if: ${{ success() && github.event_name != 'pull_request' }}
 
@@ -525,7 +525,7 @@ jobs:
     environment:
         name: Deploy_GitHub_Release
         url: ${{ steps.deploy_staging.outputs.webapp-url }}
-    name: Deploy Worker GitHub Release
+    name: Deploy Web GitHub Release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -596,8 +596,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: "Worker-v${{ env.VERSION }}"
-          release_name: "Worker v${{ env.VERSION }}"
+          tag_name: "Web-v${{ env.VERSION }}"
+          release_name: "Web v${{ env.VERSION }}"
           body: |
             ${{ steps.changelog.outputs.compareurl }}
             ${{ steps.changelog.outputs.changelog }}

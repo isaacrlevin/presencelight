@@ -2,18 +2,18 @@ on:
   push:
     branches: [ main ]
     paths-ignore:
-    - '.github/workflows/Worker_Build.yml'
+    - '.github/workflows/Web_Build.yml'
     - '.github/workflows/test.yml'
-    - 'src/PresenceLight.Worker/**'
+    - 'src/PresenceLight.Web/**'
     - 'src/DockerFiles/**'
     - '*.md'
 
   pull_request:
     branches: [ main ]
     paths-ignore:
-    - '.github/workflows/Worker_Build.yml'
+    - '.github/workflows/Web_Build.yml'
     - '.github/workflows/test.yml'
-    - 'src/PresenceLight.Worker/**'
+    - 'src/PresenceLight.Web/**'
     - 'src/DockerFiles/**'
     - '*.md'
 
@@ -133,13 +133,13 @@ jobs:
       shell: powershell
 
     - name: Build Standalone Presence Light x64
-      run: | 
+      run: |
         dotnet restore .\src\DesktopClient\PresenceLight\PresenceLight.csproj
         dotnet publish .\src\DesktopClient\PresenceLight\PresenceLight.csproj -c ${{ env.BuildConfiguration }} /p:PublishProfile=Properties/PublishProfiles/WinX64.pubxml
       if:  ${{ success() && matrix.ChannelName  == 'Standalone' }}
 
     - name: Build Standalone Presence Light x86
-      run: | 
+      run: |
         dotnet restore .\src\DesktopClient\PresenceLight\PresenceLight.csproj
         dotnet publish .\src\DesktopClient\PresenceLight\PresenceLight.csproj -c ${{ env.BuildConfiguration }} /p:PublishProfile=Properties/PublishProfiles/WinX86.pubxml
       if:  ${{ success() && matrix.ChannelName  == 'Standalone' }}

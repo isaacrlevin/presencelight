@@ -15,7 +15,7 @@ namespace PresenceLight.Razor.Services
 
         public void Initialize(ITelemetry telemetry)
         {
-            telemetry.Context.GlobalProperties["App Version"] = "Worker";
+            telemetry.Context.GlobalProperties["App Version"] = "Web";
             telemetry.Context.Component.Version = _appVersion;
         }
     }

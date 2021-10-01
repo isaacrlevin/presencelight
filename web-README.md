@@ -1,10 +1,10 @@
 ![Logo](Icon.png)
-# PresenceLight - Worker Version
-![Build Status](https://dev.azure.com/isaaclevin/PresenceLight/_apis/build/status/CI-build-worker?branchName=main)
+# PresenceLight - Web Version
+![Build Status](https://dev.azure.com/isaaclevin/PresenceLight/_apis/build/status/CI-build-web?branchName=main)
 
-### Worker Version Installs
+### Web Version Installs
 
- Worker Download Site | Worker Container |
+ Web Download Site | Web Container |
 | ------- | ---------------   |
 | [<img src="https://github.com/isaacrlevin/PresenceLight/raw/main/Icon.png" width="100">](https://presencelightapp.azurewebsites.net/) | [<img src="https://user-images.githubusercontent.com/8878502/110870857-2602a900-8282-11eb-8846-89c61a219236.png" width="100">](https://hub.docker.com/r/isaaclevin/presencelight)  [<img src="https://user-images.githubusercontent.com/8878502/110871471-55fe7c00-8283-11eb-8ce4-afeeaf62458a.png" width="100">](https://github.com/users/isaacrlevin/packages/container/package/presencelight) |
 
