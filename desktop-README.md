@@ -16,7 +16,7 @@
 
 ## Desktop App Setup
 
-**NOTE: These steps are for the WPF (Windows desktop client) application. If you want to get PresenceLight working on non-Windows, please take a look at the [Worker Readme](https://github.com/isaacrlevin/PresenceLight/blob/main/worker-README.md).**
+**NOTE: These steps are for the WPF (Windows desktop client) application. If you want to get PresenceLight working on non-Windows, please take a look at the [Web Readme](https://github.com/isaacrlevin/PresenceLight/blob/main/web-README.md).**
 
 In order for the desktop app to work, you need to be running Windows 10, version 1903 (19H1), as well as provide the following steps.
 
