@@ -1,19 +1,6 @@
 {
-  "Logging": {
-    "LogLevel": {
-      "Default": "Information",
-      "Microsoft": "Information"
-    }
-  },
-  "SendDiagnosticData": true,
-  "StartMinimized": false,
-  "IsAppPackaged": false,
-  "IconType": "White",
-  "AADSettings": {
-    "ClientId": "",
-    "Instance": "https://login.microsoftonline.com/",
-    "RedirectUri": "http://localhost"
-  },
+  "SendDiagnosticData": false,
+  "IconType": "",
   "LightSettings": {
     "HoursPassedStatus": "Keep",
     "SyncLights": true,
@@ -371,7 +358,7 @@
       }
     },
     "CustomApi": {
-      "IsEnabled": false,
+      "IsEnabled": true,
       "SelectedItemId": "",
       "Brightness": 100,
       "UseActivityStatus": false,
@@ -411,11 +398,11 @@
         "Method": "",
         "Uri": ""
       },
-      "CustomApiActivityInAConferenceCall": {
+      "CustomApiActivityInAMeeting": {
         "Method": "",
         "Uri": ""
       },
-      "CustomApiActivityInAMeeting": {
+      "CustomApiActivityInAConferenceCall": {
         "Method": "",
         "Uri": ""
       },
@@ -568,46 +555,6 @@
           "Colour": "#FFFFFF"
         }
       }
-    }
-  },
-  "ApplicationInsights": {
-    "TelemetryChannel": {
-      "DeveloperMode": true
-    },
-    "InstrumentationKey": ""
-  },
-  "SnapshotCollectorConfiguration": {
-    "IsEnabledInDeveloperMode": true,
-    "ThresholdForSnapshotting": 1,
-    "MaximumSnapshotsRequired": 3,
-    "MaximumCollectionPlanSize": 50,
-    "ReconnectInterval": "00:15:00",
-    "ProblemCounterResetInterval": "1.00:00:00",
-    "SnapshotsPerTenMinutesLimit": 1,
-    "SnapshotsPerDayLimit": 30,
-    "SnapshotInLowPriorityThread": true,
-    "ProvideAnonymousTelemetry": true,
-    "FailedRequestLimit": 3
-  },
-  "Serilog": {
-    "Using": [ "Serilog.Sinks.Console", "Serilog.Sinks.File" ],
-    "MinimumLevel": "Information",
-    "WriteTo": [
-      { "Name": "Console" },
-      {
-        "Name": "File",
-        "Args": {
-          "path": "%LOCALAPPDATA%/PresenceLight/logs/DesktopClient/log-.json",
-          "formatter": "Serilog.Formatting.Json.JsonFormatter, Serilog",
-          "shared": "true",
-          "rollingInterval": "Hour",
-          "retainedFileCountLimit": 24
-        }
-      }
-    ],
-    "Enrich": [ "FromLogContext", "WithThreadId" ],
-    "Properties": {
-      "Application": "PresenceLight"
     }
   }
 }

@@ -205,7 +205,6 @@ namespace PresenceLight
             catch (Exception e)
             {
                 _logger.LogError(e, $"Error occured - {e.Message}");
-                _diagClient.TrackException(e);
             }
         }
 
@@ -342,8 +341,6 @@ namespace PresenceLight
 
             catch (Exception e)
             {
-                _logger.LogError(e, "Error occured");
-                _diagClient.TrackException(e);
             }
         }
 
@@ -414,10 +411,6 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
-
-                _logger.LogError(e, "Error Occurred");
-                _diagClient.TrackException(e);
-                //throw;
             }
         }
 
@@ -473,7 +466,6 @@ namespace PresenceLight
             catch (Exception e)
             {
                 _logger.LogError(e, "Error Occured in LoadImager");
-                _diagClient.TrackException(e);
                 throw;
             }
         }
@@ -550,8 +542,7 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error Occurred");
-                _diagClient.TrackException(e);
+                _logger.LogError(e, "Error Occurred Mapping UI");
                 throw;
             }
         }
@@ -566,8 +557,6 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error Occurred");
-                _diagClient.TrackException(e);
                 throw;
             }
         }
@@ -671,8 +660,7 @@ namespace PresenceLight
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error Occured");
-                _diagClient.TrackException(ex);
+                _logger.LogError(ex, "Error Occured turning Off Sync");
             }
             _logger.LogInformation("Turning Off PresenceLight Sync");
         }
@@ -688,8 +676,7 @@ namespace PresenceLight
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error Occured");
-                _diagClient.TrackException(ex);
+                _logger.LogError(ex, "Error Occured Exiting");
             }
             _logger.LogInformation("PresenceLight Exiting");
         }
@@ -704,8 +691,7 @@ namespace PresenceLight
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error Occured");
-                _diagClient.TrackException(ex);
+                _logger.LogError(ex, "Error Occured Ending Session");
             }
 
             _logger.LogInformation("PresenceLight Session Ending");
@@ -829,8 +815,7 @@ namespace PresenceLight
                                 }
                                 catch (Exception ex)
                                 {
-                                    _logger.LogError(ex, "Error Occured");
-                                    _diagClient.TrackException(ex);
+                                    _logger.LogError(ex, "Error Occured Interacting with Lights");
                                 }
                                 break;
                             default:
@@ -840,8 +825,6 @@ namespace PresenceLight
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e, "Error Occurred");
-                    _diagClient.TrackException(e);
                 }
             }
         }

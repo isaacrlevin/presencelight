@@ -1,0 +1,89 @@
+﻿@page "/about"
+@inject PresenceLight.Razor.Services.SettingsService SettingsService
+
+<div class="container text-body" style="overflow:hidden">
+    <div class="row">
+        <div class="container-fluid">
+            <div class="row-fluid">
+                <div>
+                    <div class="w-20">
+                        <img src="/_content/PresenceLight.Razor/profileimage.jpg" width="300" />
+                    </div>
+                    <div class="w-20">
+                        &nbsp;
+                    </div>
+                    <div class="w-70">
+                        <h2>PresenceLight by Isaac Levin</h2>
+                        <br />
+                        <h6><a href="https://github.com/isaacrlevin/presencelight" target="_blank">https://github.com/isaacrlevin/presencelight</a></h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br /><br /><br />
+    <div class="row">
+        <div class="w-25">
+            <h4>Application Version</h4>
+        </div>
+        <div class="w-50">
+            @assemblyVersion
+        </div>
+    </div>
+    <div class="row">
+        <div class="w-25">
+            <h4>Install Location</h4>
+        </div>
+        <div class="w-50">
+            @installLocation
+        </div>
+    </div>
+    <div class="row">
+        <div class="w-25">
+            <h4>Install Date</h4>
+        </div>
+        <div class="w-50">
+            @installedDate
+        </div>
+    </div>
+    <div class="row">
+        <div class="w-25">
+            <h4>Runtime Version</h4>
+        </div>
+        <div class="w-50">
+            @RuntimeVersionInfo
+        </div>
+    </div>
+    <div class="row">
+        <div class="w-25">
+            <h4>Configuration Path</h4>
+        </div>
+        <div class="w-50">
+            @localConfigurationPath
+        </div>
+    </div>
+    <br />
+    <br />
+    <div class="row">
+        <div class="w-100">
+            <h6>Found an issue or want a feature? File it <a href="https://github.com/isaacrlevin/PresenceLight/issues/new/choose" target="_blank">here</a></h6>
+        </div>
+    </div>
+</div>
+
+@code {
+    string installLocation;
+    string installedDate;
+    string RuntimeVersionInfo;
+    string assemblyVersion;
+    string localConfigurationPath;
+    protected override void OnInitialized()
+    {
+        installLocation = ThisAppInfo.GetInstallLocation();
+        installedDate = ThisAppInfo.GetInstallationDate();
+        RuntimeVersionInfo = ThisAppInfo.GetDotNetRuntimeInfo();
+        assemblyVersion = ThisAppInfo.GetApplicationVersion();
+        localConfigurationPath = new System.IO.FileInfo(SettingsService.SettingsFileLocation).FullName;
+
+    }
+}

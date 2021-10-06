@@ -69,6 +69,9 @@ namespace PresenceLight
                 case "customApiActivityInACallMethod":
                     Config.LightSettings.CustomApi.CustomApiActivityInACall.Method = selectedText;
                     break;
+                case "customApiActivityInAConferenceCallMethod":
+                    Config.LightSettings.CustomApi.CustomApiActivityInAConferenceCall.Method = selectedText;
+                    break;
                 case "customApiActivityInAMeetingMethod":
                     Config.LightSettings.CustomApi.CustomApiActivityInAMeeting.Method = selectedText;
                     break;

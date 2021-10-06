@@ -1,0 +1,137 @@
+﻿@page "/customapi"
+@using PresenceLight.Core.Initialize;
+
+@inject PresenceLight.Razor.Services.SettingsService SettingsService
+
+@inject AppState appState
+@inject IModalService Modal
+@inject IOptionsMonitor<BaseConfig> Config
+@inject ILogger<CustomApiSetup> _logger;
+
+<div class="container text-body" style="overflow:hidden">
+    <div class="row">
+        <div class="container-fluid">
+            <div class="row-fluid">
+                <div>
+                    <h1>Configure Custom API</h1>
+                    <br />
+                    <br />
+                    <div>
+                        <input type="checkbox" checked="@Config.CurrentValue.LightSettings.CustomApi.IsEnabled" @bind-value="@Config.CurrentValue.LightSettings.CustomApi.IsEnabled" /> Connect to Custom HTTP API
+                    </div>
+                    <br />
+                    <br />
+                    @if (Config.CurrentValue.LightSettings.CustomApi.IsEnabled)
+                    {
+                        @foreach (var customApiSetting in Config.CurrentValue.LightSettings.CustomApi.GetType().GetProperties())
+                        {
+                            @if (customApiSetting.PropertyType.Name == "CustomApiSetting")
+                            {
+                                object customApiSettingValue = customApiSetting.GetValue(Config.CurrentValue.LightSettings.CustomApi, null);
+                                var lab = $"{customApiSetting.Name}Uri";
+
+                                <div class="form-group row">
+
+                                    <label class="col-sm-3 col-form-label" for="@lab">@Helpers.HumanifyText(customApiSetting.Name.Replace("CustomApi","")):</label>
+
+                                    @if (customApiSettingValue != null)
+                                    {
+                                        @foreach (var setting in customApiSettingValue.GetType().GetProperties())
+                                        {
+                                            object settingValue = setting.GetValue(customApiSettingValue, null);
+
+                                            if (setting.Name == "Method")
+                                            {
+                                                <div class="col-sm-2">
+                                                    <select class="form-control" value="@settingValue?.ToString()" @onchange="@((ChangeEventArgs e) => OnChange(e, setting, customApiSettingValue))">
+                                                        <option value="" disabled="disabled">Select</option>
+                                                        <option value="GET">GET</option>
+                                                        <option value="POST">POST</option>
+                                                    </select>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="col-sm-7">
+                                                    <input type="text" id="@lab" value="@settingValue?.ToString()" @onchange="@((ChangeEventArgs e) => OnChange(e, setting, customApiSettingValue))" class="form-control" />
+                                                </div>
+                                            }
+                                        }
+
+                                    }
+                                </div>
+                            }
+                        }
+
+                        <br />
+                        <br />
+
+                        <button class="btn btn-primary" @onclick="Save">Save Custom API Settings</button>
+
+                        <br />
+                        <br />
+                        <div>
+                            @if (settingsSaved)
+                            {
+                                <span class="text-success">@message</span>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private void Save()
+    {
+        try
+        {
+            SettingsService.SaveSettings(Config.CurrentValue);
+            _mediator.Send(new InitializeCommand { Request = Config.CurrentValue });
+
+            message = "Settings Saved";
+            settingsSaved = true;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error Occured Saving Custom Api Settings");
+            throw;
+        }
+    }
+
+    bool settingsSaved = false;
+    string message;
+
+    private void OnChange(ChangeEventArgs e, object setting, object customApiSettingValue)
+    {
+        var newSetting = e.Value;
+        ((PropertyInfo)setting).SetValue(customApiSettingValue, newSetting);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+
+            appState.OnChange += RaiseStateHasChanged;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error Occured loading Hue Setup");
+            throw;
+        }
+        await Task.CompletedTask;
+    }
+
+    public void Dispose()
+    {
+        appState.OnChange -= RaiseStateHasChanged;
+    }
+
+    private void RaiseStateHasChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+}

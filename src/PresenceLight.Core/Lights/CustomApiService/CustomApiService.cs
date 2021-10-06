@@ -74,6 +74,10 @@ namespace PresenceLight.Core
                     method = _options.LightSettings.CustomApi.CustomApiActivityInACall.Method;
                     uri = _options.LightSettings.CustomApi.CustomApiActivityInACall.Uri;
                     break;
+                case "InAConferenceCall":
+                    method = _options.LightSettings.CustomApi.CustomApiActivityInAConferenceCall.Method;
+                    uri = _options.LightSettings.CustomApi.CustomApiActivityInAConferenceCall.Uri;
+                    break;
                 case "InAMeeting":
                     method = _options.LightSettings.CustomApi.CustomApiActivityInAMeeting.Method;
                     uri = _options.LightSettings.CustomApi.CustomApiActivityInAMeeting.Uri;

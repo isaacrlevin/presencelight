@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "secrets1": {
+      "type": "secrets.user"
+    },
+    "identityapp.aad1": {
+      "type": "identityapp.aad.callsgraph",
+      "connectionId": "AzureAD:ClientSecret",
+      "secretStore": "LocalSecretsFile"
+    }
+  }
+}

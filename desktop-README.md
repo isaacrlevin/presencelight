@@ -12,11 +12,11 @@
 
 | Nightly | Microsoft Store | Chocolatey | GitHub Releases  |
 | ------- | --------------- |--------------- | ---------------  |
-| [<img src="https://github.com/isaacrlevin/PresenceLight/raw/main/Icon.png" width="100">](https://presencelight.blob.core.windows.net/nightly/index.html)| [<img src="https://github.com/isaacrlevin/PresenceLight/raw/main/static/store.svg" width="100">](https://www.microsoft.com/en-us/p/presencelight/9nffkd8gznl7) | [<img src="https://chocolatey.org/content/images/global-shared/logo-square.svg" width="100">](https://chocolatey.org/packages/PresenceLight/) | [<img src="https://user-images.githubusercontent.com/8878502/110871471-55fe7c00-8283-11eb-8ce4-afeeaf62458a.png" width="100">](https://user-images.githubusercontent.com/8878502/110871316-061fb500-8283-11eb-8ad6-db529a86eab0.png) |
+| [<img src="https://github.com/isaacrlevin/PresenceLight/raw/main/Icon.png" width="100">](https://presencelight.blob.core.windows.net/nightly/index.html)| [<img src="https://github.com/isaacrlevin/PresenceLight/raw/main/static/store.svg" width="100">](https://www.microsoft.com/en-us/p/presencelight/9nffkd8gznl7) | [<img src="https://chocolatey.org/assets/images/global-shared/logo.svg" width="100">](https://chocolatey.org/packages/PresenceLight/) | [<img src="https://user-images.githubusercontent.com/8878502/110871471-55fe7c00-8283-11eb-8ce4-afeeaf62458a.png" width="100">](https://user-images.githubusercontent.com/8878502/110871316-061fb500-8283-11eb-8ad6-db529a86eab0.png) |
 
 ## Desktop App Setup
 
-**NOTE: These steps are for the WPF (Windows desktop client) application. If you want to get PresenceLight working on non-Windows, please take a look at the [Worker Readme](https://github.com/isaacrlevin/PresenceLight/blob/main/worker-README.md).**
+**NOTE: These steps are for the WPF (Windows desktop client) application. If you want to get PresenceLight working on non-Windows, please take a look at the [Web Readme](https://github.com/isaacrlevin/PresenceLight/blob/main/web-README.md).**
 
 In order for the desktop app to work, you need to be running Windows 10, version 1903 (19H1), as well as provide the following steps.
 
