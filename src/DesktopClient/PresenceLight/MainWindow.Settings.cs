@@ -93,6 +93,17 @@ namespace PresenceLight
                 {
                     customapi.pnlCustomApi.Visibility = Visibility.Collapsed;
                 }
+
+                if (Config.LightSettings.CustomApi.UseBasicAuth)
+                {
+                    customapi.pnlBasicAuth.Visibility = Visibility.Visible;
+
+                    SyncOptions();
+                }
+                else
+                {
+                    customapi.pnlBasicAuth.Visibility = Visibility.Collapsed;
+                }
             }
             catch (Exception e)
             {

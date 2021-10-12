@@ -26,6 +26,8 @@ namespace PresenceLight.Controls
         }
         public event EventHandler<RoutedEventArgs>? onbtnApiSettingsSaveClick;
         public event EventHandler<RoutedEventArgs>? oncbIsCustomApiEnabledChanged;
+        public event EventHandler<RoutedEventArgs>? oncbUseBasicAuthEnabledChanged;
+        public event EventHandler<RoutedEventArgs>? oncbIgnoreCertificateErrorsEnabledChanged;
         public event EventHandler<SelectionChangedEventArgs>? oncustomApiMethodSelectionChanged;
 
 
@@ -42,6 +44,26 @@ namespace PresenceLight.Controls
         private async void cbIsCustomApiEnabledChanged(object sender, RoutedEventArgs e)
         {
             var handler = oncbIsCustomApiEnabledChanged;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+            await Task.CompletedTask;
+        }
+
+        private async void cbUseBasicAuthEnabledChanged(object sender, RoutedEventArgs e)
+        {
+            var handler = oncbUseBasicAuthEnabledChanged;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+            await Task.CompletedTask;
+        }
+
+        private async void cbIgnoreCertificateErrorsEnabledChanged(object sender, RoutedEventArgs e)
+        {
+            var handler = oncbIgnoreCertificateErrorsEnabledChanged;
             if (handler != null)
             {
                 handler(this, e);
