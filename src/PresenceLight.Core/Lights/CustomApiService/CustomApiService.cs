@@ -1,12 +1,13 @@
 ﻿using System;
-using Microsoft.Extensions.Options;
 using System.Collections.Generic;
-using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Net.Http;
-using Microsoft.Graph;
+
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace PresenceLight.Core
 {
@@ -23,7 +24,7 @@ namespace PresenceLight.Core
         private string _currentAvailability = string.Empty;
         private string _currentActivity = string.Empty;
 
-        readonly HttpClient _client;
+        HttpClient _client;
 
         private readonly ILogger<CustomApiService> _logger;
         private BaseConfig _options;
@@ -37,10 +38,15 @@ namespace PresenceLight.Core
             _client = new HttpClient
             {
                 Timeout = TimeSpan.FromSeconds(optionsAccessor.CurrentValue.LightSettings.CustomApi.CustomApiTimeout > 0 ?
-                                               optionsAccessor.CurrentValue.LightSettings.CustomApi.CustomApiTimeout :
-                                               20)
+                                                   optionsAccessor.CurrentValue.LightSettings.CustomApi.CustomApiTimeout :
+                                                   20)
             };
         }
+
+        //public void ResyncService()
+        //{
+        //    _options = options;
+        //}
 
         public void Initialize(BaseConfig options)
         {
@@ -178,7 +184,7 @@ namespace PresenceLight.Core
                 {
                     // operation was cancelled
                 }
-                    
+
             }
             else
             {
@@ -226,7 +232,30 @@ namespace PresenceLight.Core
                 {
                     try
                     {
+                        if (_options.LightSettings.CustomApi.IgnoreCertificateErrors)
+                        {
+                            var httpClientHandler = new HttpClientHandler();
+                            httpClientHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; };
+                            _client = new HttpClient(httpClientHandler);
+                        }
+                        else
+                        {
+                            _client = new HttpClient();
+                        }
+
+                        _client.Timeout = TimeSpan.FromSeconds(_options.LightSettings.CustomApi.CustomApiTimeout > 0 ?
+                                                           _options.LightSettings.CustomApi.CustomApiTimeout :
+                                                           20);
+
                         HttpResponseMessage response = new HttpResponseMessage();
+
+                        if (_options.LightSettings.CustomApi.UseBasicAuth)
+                        {
+                            var byteArray = Encoding.ASCII.GetBytes($"{_options.LightSettings.CustomApi.BasicAuthUserName}:{_options.LightSettings.CustomApi.BasicAuthUserPassword}");
+
+                            _client.DefaultRequestHeaders.Authorization = new
+                            AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
+                        }
 
                         switch (method)
                         {
