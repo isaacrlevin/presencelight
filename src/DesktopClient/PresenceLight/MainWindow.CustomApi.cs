@@ -28,6 +28,28 @@ namespace PresenceLight
             e.Handled = true;
         }
 
+        private void cbUseBasicAuthEnabledChanged(object sender, RoutedEventArgs e)
+        {
+            if (Config.LightSettings.CustomApi.UseBasicAuth)
+            {
+                customapi.pnlBasicAuth.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                customapi.pnlBasicAuth.Visibility = Visibility.Collapsed;
+            }
+
+            SyncOptions();
+            e.Handled = true;
+        }
+
+        private void cbIgnoreCertificateErrorsEnabledChanged(object sender, RoutedEventArgs e)
+        {
+            
+            SyncOptions();
+            e.Handled = true;
+        }
+
         private void customApiMethod_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             ComboBox sourceComboBox = e.Source as ComboBox ?? throw new ArgumentException("Custom Api Not Found");

@@ -442,7 +442,11 @@
         "Method": "",
         "Uri": ""
       },
-      "CustomApiTimeout": 100
+      "CustomApiTimeout": 100,
+      "IgnoreCertificateErrors": false,
+      "UseBasicAuth": false,
+      "BasicAuthUserName": "",
+      "BasicAuthUserPassword":  ""
     },
     "Wiz": {
       "SelectedItemId": "",

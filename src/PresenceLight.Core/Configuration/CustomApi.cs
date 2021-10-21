@@ -4,6 +4,14 @@
     {
         public double CustomApiTimeout { get; set; }
 
+        public bool IgnoreCertificateErrors { get; set; }
+
+        public bool UseBasicAuth { get; set; }
+
+        public string BasicAuthUserName { get; set; }
+
+        public string BasicAuthUserPassword { get; set; }
+
         public CustomApiSetting CustomApiAvailable { get; set; }
 
 

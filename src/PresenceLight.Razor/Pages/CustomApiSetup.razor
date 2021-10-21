@@ -65,7 +65,44 @@
 
                         <br />
                         <br />
+                        <div>
+                            <input type="checkbox" checked="@Config.CurrentValue.LightSettings.CustomApi.UseBasicAuth" @bind-value="@Config.CurrentValue.LightSettings.CustomApi.UseBasicAuth" /> Use Basic Auth
+                        </div>
+                        <br />
+                        <br />
+                        @if (Config.CurrentValue.LightSettings.CustomApi.UseBasicAuth)
+                        {
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">
+                                    Basic Auth Username:
+                                </label>
 
+
+                                <div class="col-sm-7">
+                                    <input style="width: 100%" @bind-value="@Config.CurrentValue.LightSettings.CustomApi.BasicAuthUserName" type="text" class="form-control">
+                                </div>
+
+                            </div>
+
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">
+                                    Basic Auth Password:
+                                </label>
+
+                                <div class="col-sm-7">
+                                    <input style="width: 100%" @bind-value="@Config.CurrentValue.LightSettings.CustomApi.BasicAuthUserPassword" type="text" class="form-control">
+                                </div>
+
+                            </div>
+
+                            <br />
+                            <br />
+                        }
+                        <div>
+                            <input type="checkbox" checked="@Config.CurrentValue.LightSettings.CustomApi.IgnoreCertificateErrors" @bind-value="@Config.CurrentValue.LightSettings.CustomApi.IgnoreCertificateErrors" /> Ignore Certificate Errors
+                        </div>
+                        <br />
+                        <br />
                         <button class="btn btn-primary" @onclick="Save">Save Custom API Settings</button>
 
                         <br />
