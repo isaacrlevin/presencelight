@@ -136,7 +136,7 @@ namespace PresenceLight
 
             services.AddSingleton<IGraphService, GraphService>();
 
-            services.AddPresenceServices();
+            services.AddPresenceServices(Configuration);
 
             services.AddSingleton<LIFXOAuthHelper, LIFXOAuthHelper>();
             services.AddSingleton<ThisAppInfo, ThisAppInfo>();

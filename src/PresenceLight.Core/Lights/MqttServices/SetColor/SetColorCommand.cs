@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace PresenceLight.Core.Lights.MqttServices.SetColor
+namespace PresenceLight.Core.MqttServices
 {
     public class SetColorCommand : IRequest<Unit>
     {

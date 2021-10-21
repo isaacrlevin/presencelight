@@ -4,6 +4,14 @@
     {
         public double CustomApiTimeout { get; set; }
 
+        public bool IgnoreCertificateErrors { get; set; }
+
+        public bool UseBasicAuth { get; set; }
+
+        public string BasicAuthUserName { get; set; }
+
+        public string BasicAuthUserPassword { get; set; }
+
         public CustomApiSetting CustomApiAvailable { get; set; }
 
 
@@ -32,6 +40,8 @@
 
 
         public CustomApiSetting CustomApiActivityInACall { get; set; }
+
+        public CustomApiSetting CustomApiActivityInAConferenceCall { get; set; }
 
 
         public CustomApiSetting CustomApiActivityInAMeeting { get; set; }

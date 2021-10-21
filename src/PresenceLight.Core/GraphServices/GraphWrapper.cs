@@ -14,7 +14,7 @@ using Polly.Retry;
 
 namespace PresenceLight.Core
 {
-  
+
     public class GraphWrapper
     {
         private readonly ILogger<GraphWrapper> _logger;
@@ -45,8 +45,17 @@ namespace PresenceLight.Core
 
         public async Task<Presence> GetPresence(CancellationToken token)
         {
-            return await _retryPolicy.ExecuteAsync<Presence>(async () => await _graphServiceClient.Me.Presence.Request().GetAsync(token).ConfigureAwait(true));
+            try
+            {
+                return await _retryPolicy.ExecuteAsync<Presence>(async () => await _graphServiceClient.Me.Presence.Request().GetAsync(token).ConfigureAwait(true));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error Occured Getting Presence from Graph Api Content");
+                throw;
+            }
         }
+
 
         public async Task<System.IO.Stream> GetPhoto(CancellationToken token)
         {
@@ -55,7 +64,15 @@ namespace PresenceLight.Core
 
         public async Task<User> GetProfile(CancellationToken token)
         {
-            return await _retryPolicy.ExecuteAsync<User>(async () => await _graphServiceClient.Me.Request().GetAsync(token).ConfigureAwait(true));
+            try
+            {
+                return await _retryPolicy.ExecuteAsync<User>(async () => await _graphServiceClient.Me.Request().GetAsync(token).ConfigureAwait(true));
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Error Occured Getting Profile from Graph Api");
+                throw;
+            }
         }
 
         public async Task<(User User, Presence Presence)> GetProfileAndPresence(CancellationToken token)
@@ -77,7 +94,7 @@ namespace PresenceLight.Core
                 var userRequestId = batchRequestContent.AddBatchRequestStep(userRequest);
                 var presenceRequestId = batchRequestContent.AddBatchRequestStep(presenceRequest);
 
-                BatchResponseContent returnedResponse = await _graphServiceClient.Batch.Request().PostAsync(batchRequestContent,token).ConfigureAwait(true);
+                BatchResponseContent returnedResponse = await _graphServiceClient.Batch.Request().PostAsync(batchRequestContent, token).ConfigureAwait(true);
 
                 User user = await returnedResponse.GetResponseByIdAsync<User>(userRequestId).ConfigureAwait(true);
                 Presence presence = await returnedResponse.GetResponseByIdAsync<Presence>(presenceRequestId).ConfigureAwait(true);
@@ -86,10 +103,9 @@ namespace PresenceLight.Core
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error Occured Getting Batch Content");
+                _logger.LogError(e, "Error Occured Getting Batch Content from Graph Api");
                 throw;
             }
-
         }
 
     }

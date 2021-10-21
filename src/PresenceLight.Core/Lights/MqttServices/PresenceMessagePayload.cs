@@ -2,7 +2,7 @@
 
 using Newtonsoft.Json;
 
-namespace PresenceLight.Core.Lights.MqttServices
+namespace PresenceLight.Core.MqttServices
 {
     internal class PresenceMessagePayload : IEquatable<PresenceMessagePayload>
     {

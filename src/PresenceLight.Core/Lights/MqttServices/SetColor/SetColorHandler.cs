@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 using MediatR;
 
-namespace PresenceLight.Core.Lights.MqttServices.SetColor
+namespace PresenceLight.Core.MqttServices
 {
     internal class SetColorHandler : IRequestHandler<SetColorCommand, Unit>
     {

@@ -7,7 +7,7 @@ using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Client.Publishing;
 
-namespace PresenceLight.Core.Lights.MqttServices
+namespace PresenceLight.Core.MqttServices
 {
     internal class MqttNotificationChannel
     {

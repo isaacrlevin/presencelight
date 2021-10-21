@@ -74,6 +74,7 @@
             <TabItem Header="Configure Custom API" >
                 <lc:CustomApi x:Name="customapi"
                               onbtnApiSettingsSaveClick="btnApiSettingsSave_Click"
+                              oncbUseBasicAuthEnabledChanged="cbUseBasicAuthEnabledChanged"
                               oncbIsCustomApiEnabledChanged="cbIsCustomApiEnabledChanged"
                               oncustomApiMethodSelectionChanged="customApiMethod_SelectionChanged"
                               />

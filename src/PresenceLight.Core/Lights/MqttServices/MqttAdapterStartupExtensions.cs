@@ -9,7 +9,7 @@ using MQTTnet.Client.Options;
 using MQTTnet.Extensions;
 using MQTTnet.Extensions.ManagedClient;
 
-namespace PresenceLight.Core.Lights.MqttServices;
+namespace PresenceLight.Core.MqttServices;
 
 public static class MqttAdapterStartupExtensions
 {
