@@ -12,6 +12,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Graph;
 
 using PresenceLight.Core;
+using PresenceLight.Core.Lights.MqttServices.SetColor;
 
 namespace PresenceLight.Worker
 {
@@ -293,6 +294,11 @@ namespace PresenceLight.Worker
                         Availability = color,
                         LightID = Config.LightSettings.Wiz.SelectedItemId
                     });
+                }
+
+                if (Config.MqttSettings.IsEnabled && !string.IsNullOrEmpty(Config.MqttSettings.BrokerUrl))
+                {
+                    await _mediator.Send(new SetColorCommand { Activity = activity, Availability = color, UserName = _appState.User?.DisplayName }).ConfigureAwait(true);
                 }
             }
             catch (Exception e)

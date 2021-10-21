@@ -60,6 +60,7 @@ namespace PresenceLight.Worker
                 .AddJsonFile("PresenceLightSettings.Development.json", optional: true, reloadOnChange: false)
                 .AddJsonFile(System.IO.Path.Combine("config", "appsettings.json"), optional: true, reloadOnChange: false)
                 .AddJsonFile(System.IO.Path.Combine("config", "PresenceLightSettings.json"), optional: true, reloadOnChange: false)
+                .AddUserSecrets<Program>()
                 .AddEnvironmentVariables();
 
             config.Build();

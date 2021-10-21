@@ -1,0 +1,109 @@
+﻿@page "/mqtt"
+@using PresenceLight.Core.Initialize;
+ 
+@inject PresenceLight.Worker.Services.SettingsService SettingsService
+ 
+@inject AppState appState
+@inject IModalService Modal
+@inject IOptionsMonitor<BaseConfig> Config
+@inject ILogger<MqttSetup> _logger;
+
+<div class="container text-body" style="overflow:hidden">
+    <div class="row">
+        <div class="container-fluid">
+            <div class="row-fluid">
+                <div>
+                    <h1>MQTT</h1>
+                    <br />
+                    <br />
+                    <div>
+                        <input type="checkbox" checked="@Config.CurrentValue.MqttSettings.IsEnabled" @bind-value="@Config.CurrentValue.MqttSettings.IsEnabled" /> Connect to MQTT broker
+                    </div>
+                    <br />
+                    <br />
+                    @if (Config.CurrentValue.MqttSettings.IsEnabled)
+                    {
+                        @foreach (var mqttSetting in Config.CurrentValue.MqttSettings.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public))
+                        {
+                            object settingValue = mqttSetting.GetValue(Config.CurrentValue.MqttSettings, null);
+
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label" for="@mqttSetting.Name">@Helpers.HumanifyText(mqttSetting.Name):</label>
+                                <div class="col-sm-7">
+                                    <input type="text" id="@mqttSetting.Name" value="@settingValue?.ToString()" @onchange="@((ChangeEventArgs e) => OnChange(e, mqttSetting, Config.CurrentValue.MqttSettings))" class="form-control" />
+                                </div>
+                            </div>
+                        }
+
+                        <br />
+                        <br />
+
+                        <button class="btn btn-primary" @onclick="Save">Save MQTT Settings</button>
+
+                        <br />
+                        <br />
+                        <div>
+                            @if (settingsSaved)
+                            {
+                                <span class="text-success">@message</span>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private void Save()
+    {
+        try
+        {
+            SettingsService.SaveSettings(Config.CurrentValue);
+            _mediator.Send(new InitializeCommand { Request = Config.CurrentValue});
+            
+            message = "Settings Saved";
+            settingsSaved = true;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error Occurred Saving MQTT Settings");
+            throw ;
+        }
+    }
+
+    bool settingsSaved = false;
+    string message;
+
+    private void OnChange(ChangeEventArgs e, object setting, object mqttSettingValue)
+    {
+        var newSetting = e.Value;
+        ((PropertyInfo)setting).SetValue(mqttSettingValue, newSetting);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+
+            appState.OnChange += RaiseStateHasChanged;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error Occurred Loading MQTT Setup");
+            throw;
+        }
+        await Task.CompletedTask;
+    }
+
+    public void Dispose()
+    {
+        appState.OnChange -= RaiseStateHasChanged;
+    }
+
+    private void RaiseStateHasChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+}

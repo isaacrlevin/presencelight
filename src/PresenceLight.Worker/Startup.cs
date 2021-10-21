@@ -121,7 +121,7 @@ namespace PresenceLight.Worker
 
             services.AddOptions();
             services.AddSingleton<AppState>();
-            services.AddPresenceServices();
+            services.AddPresenceServices(Configuration);
             services.AddBlazoredModal();
 
             services.AddHostedService<Worker>();
@@ -154,7 +154,6 @@ namespace PresenceLight.Worker
             });
             services.Configure<SnapshotCollectorConfiguration>(Configuration.GetSection(nameof(SnapshotCollectorConfiguration)));
             services.AddSingleton<ITelemetryProcessorFactory>(sp => new SnapshotCollectorTelemetryProcessorFactory(sp));
-
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
