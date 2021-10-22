@@ -1,0 +1,57 @@
+﻿<UserControl x:Class="PresenceLight.Controls.Mqtt"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:gif="http://wpfanimatedgif.codeplex.com"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:l="clr-namespace:PresenceLight"
+             xmlns:lc="clr-namespace:PresenceLight.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="850">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="50"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="50"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="50" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Column="1" Grid.ColumnSpan="4">
+            <CheckBox x:Name="cbIsMqttEnabled" IsChecked="{Binding MqttSettings.IsEnabled}" Content="Enable MQTT" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top" Unchecked="cbIsMqttEnabledChanged" Checked="cbIsMqttEnabledChanged" Grid.Column="1" Grid.ColumnSpan="4" />
+        </Grid>
+        <Grid x:Name="pnlMqtt" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="165"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="35" />
+                <RowDefinition Height="35" />
+                <RowDefinition Height="35" />
+               
+                <RowDefinition Height="35" />
+
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Label x:Name="mqttBrokerUrlLabel" Content="Broker URL:" Margin="10,0,0,0" Grid.Row="0" VerticalAlignment="Center"/>
+            <TextBox x:Name="MqttBrokerUrl" Grid.Row="0" TextWrapping="Wrap" VerticalAlignment="Center" Text="{Binding MqttSettings.BrokerUrl}" Grid.Column="2" Margin="10,0,14,0"/>
+            <Label x:Name="mqttBrokerPortLabel" Content="Broker Port:" Margin="10,0,0,0" Grid.Row="1" VerticalAlignment="Center"/>
+            <TextBox x:Name="MqttBrokerPort" Grid.Row="1" TextWrapping="Wrap" VerticalAlignment="Center" Text="{Binding MqttSettings.BrokerPort}" Grid.Column="2" Margin="10,0,14,0"/>
+            <Label x:Name="mqttUserNameLabel" Content="User Name:" Margin="10,0,0,0" Grid.Row="2" VerticalAlignment="Center"/>
+            <TextBox x:Name="MqttUserName" Grid.Row="2" TextWrapping="Wrap" VerticalAlignment="Center" Text="{Binding MqttSettings.UserName}" Grid.Column="2" Margin="10,0,14,0"/>
+            <Label x:Name="mqttPasswordLabel" Content="Password:" Margin="10,0,0,0" Grid.Row="3" VerticalAlignment="Center"/>
+            <TextBox x:Name="MqttPassword" Grid.Row="3" TextWrapping="Wrap" VerticalAlignment="Center" Text="{Binding MqttSettings.Password}" Grid.Column="2" Margin="10,0,14,0"/>
+            <Label x:Name="mqttBaseTopicLabel" Content="Base Topic:" Margin="10,0,0,0" Grid.Row="4" VerticalAlignment="Center"/>
+            <TextBox x:Name="MqttBaseTopic" Grid.Row="4" TextWrapping="Wrap" VerticalAlignment="Center" Text="{Binding MqttSettings.BaseTopic}" Grid.Column="2" Margin="10,0,14,0"/>
+        </Grid>
+        <Button x:Name="btnMqttSettingsSave" Content="Save" HorizontalAlignment="Center" Grid.Row="3" VerticalAlignment="Center" Grid.Column="1" Grid.ColumnSpan="3" Height="40" Width="132" Click="btnMqttSettingsSave_Click"/>
+        <Label Grid.Row="3" Grid.RowSpan="1" Grid.Column="1" Grid.ColumnSpan="3" VerticalAlignment="Center" x:Name="lblMqttSettingsSaved" HorizontalAlignment="Center" Visibility="Collapsed" Content="Settings Saved" Foreground="Green" Margin="0,60,0,0"/>
+    </Grid>
+</UserControl>

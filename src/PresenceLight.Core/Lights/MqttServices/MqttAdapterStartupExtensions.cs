@@ -16,7 +16,7 @@ public static class MqttAdapterStartupExtensions
     private static Lazy<IMqttClient> _lazyClient;
     public static IServiceCollection AddMqttNotificationChannel(this IServiceCollection services, IConfiguration config)
     {
-        var settings = config.GetSection(MqttSettings.SectionName).Get<MqttSettings>();
+        var settings = config.GetSection(MqttSettings.SectionName).Get<MqttSettings>() ?? new MqttSettings();
 
         _lazyClient = new Lazy<IMqttClient>(() => CreateClient(settings));
         services.AddSingleton<Func<IMqttClient>>(() => _lazyClient.Value);

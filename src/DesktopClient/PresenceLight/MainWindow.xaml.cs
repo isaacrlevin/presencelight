@@ -26,6 +26,8 @@ using PresenceLight.Telemetry;
 
 using Windows.ApplicationModel;
 
+using PresenceLight.Core.MqttServices;
+
 using Media = System.Windows.Media;
 using Package = Windows.ApplicationModel.Package;
 
@@ -407,6 +409,11 @@ namespace PresenceLight
                         }
                     });
 
+                }
+
+                if (Config.MqttSettings.IsEnabled && !string.IsNullOrEmpty(Config.MqttSettings.BrokerUrl))
+                {
+                    await _mediator.Send(new SetColorCommand { Activity = activity, Availability = color, UserName = null }).ConfigureAwait(true);
                 }
             }
             catch (Exception e)

@@ -61,7 +61,14 @@ namespace PresenceLight.Services
             try
             {
                 string fileJSON = await File.ReadAllTextAsync(Path.Combine(_settingsFolder, _settingsFileName), Encoding.UTF8).ConfigureAwait(true);
-                return JsonConvert.DeserializeObject<BaseConfig>(fileJSON);
+                var settings = JsonConvert.DeserializeObject<BaseConfig>(fileJSON);
+
+                if (settings.MqttSettings == null)
+                    settings.MqttSettings = new MqttSettings(); // Backward compatibility with saved settings
+                if (settings.LightSettings == null)
+                    settings.LightSettings = new LightSettings(); // Backward compatibility with saved settings
+
+                return settings;
             }
             catch (Exception e)
             {

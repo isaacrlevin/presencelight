@@ -79,6 +79,12 @@
                               oncustomApiMethodSelectionChanged="customApiMethod_SelectionChanged"
                               />
             </TabItem>
+            <TabItem Header="Configure MQTT" >
+                <lc:Mqtt x:Name="mqtt"
+                              onbtnMqttSettingsSaveClick="btnMqttSettingsSave_Click"
+                              oncbIsMqttEnabledChanged="cbIsMqttEnabledChanged"
+                />
+            </TabItem>
             <TabItem Header="Settings" >
                 <lc:Settings x:Name="settings"
                              oncbSyncLights="cbSyncLights"

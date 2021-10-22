@@ -135,6 +135,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Page Update="Controls\Mqtt.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
     <Page Update="Controls\Wiz.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
