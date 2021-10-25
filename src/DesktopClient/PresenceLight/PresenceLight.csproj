@@ -41,7 +41,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Q42.HueApi" Version="3.18.1" />
     <PackageReference Include="Q42.HueApi.ColorConverters" Version="3.18.1" />
-    <PackageReference Include="WpfAnimatedGif" Version="2.0.1" />
+    <PackageReference Include="WpfAnimatedGif" Version="2.0.2" />
     <PackageReference Include="YeelightAPI" Version="1.10.2" />
     <ProjectReference Include="..\..\PresenceLight.Core\PresenceLight.Core.csproj" />
   </ItemGroup>
