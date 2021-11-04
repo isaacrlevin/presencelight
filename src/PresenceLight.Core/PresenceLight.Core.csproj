@@ -23,7 +23,7 @@
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.2" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
-    <PackageReference Include="Microsoft.Graph" Version="4.6.0" />
+    <PackageReference Include="Microsoft.Graph" Version="4.9.0" />
     <PackageReference Include="Microsoft.Identity.Client" Version="4.36.2" />
     <PackageReference Include="Polly" Version="7.2.2" />
     <PackageReference Include="OpenWiz" Version="1.1.0" />
