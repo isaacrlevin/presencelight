@@ -34,7 +34,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
-    <PackageReference Include="Microsoft.Graph" Version="4.6.0" />
+    <PackageReference Include="Microsoft.Graph" Version="4.11.0" />
     <PackageReference Include="Microsoft.Graph.Core" Version="2.0.5" />
     <PackageReference Include="Microsoft.Identity.Client" Version="4.36.2" />
     <PackageReference Include="NETStandard.HttpListener" Version="1.0.3.5" />
