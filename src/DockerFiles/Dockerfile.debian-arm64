@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /source
 
 # copy everything else and build app
@@ -10,7 +10,7 @@ WORKDIR /source/PresenceLight.Web
 RUN dotnet publish -c release -o /app  -r linux-arm64 --self-contained false /p:Version={VERSION}
 
 # final stage/image
-FROM mcr.microsoft.com/dotnet/aspnet:5.0-buster-slim-arm64v8
+FROM mcr.microsoft.com/dotnet/aspnet:6.0-buster-slim-arm64v8
 EXPOSE 5000
 EXPOSE 5001
 
