@@ -38,11 +38,11 @@
                                     {
                                         @if (Config.CurrentValue.LightSettings.Yeelight.SelectedItemId == light.Id)
                                         {
-                                            <option selected="selected" value=@light.Id>@light.Name</option>
+                                            <option selected="selected" value=@light.Id>@light.Hostname</option>
                                         }
                                         else
                                         {
-                                            <option value=@light.Id>@light.Name</option>
+                                            <option value=@light.Id>@light.Hostname</option>
                                         }
                                     }
                                 </select>
