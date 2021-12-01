@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0-windows10.0.19041</TargetFramework>
-    <AssetTargetFallback>net472</AssetTargetFallback>
     <OutputType>WinExe</OutputType>
     <AssemblyName>PresenceLight</AssemblyName>
     <Title>PresenceLight</Title>
