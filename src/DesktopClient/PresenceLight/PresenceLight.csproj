@@ -34,7 +34,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0" />
     <PackageReference Include="Microsoft.Graph" Version="4.11.0" />
-    <PackageReference Include="Microsoft.Graph.Core" Version="2.0.5" />
+    <PackageReference Include="Microsoft.Graph.Core" Version="2.0.6" />
     <PackageReference Include="Microsoft.Identity.Client" Version="4.39.0" />
     <PackageReference Include="NETStandard.HttpListener" Version="1.0.3.5" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
