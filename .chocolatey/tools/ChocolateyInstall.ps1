@@ -51,6 +51,18 @@ $packageArgs = @{
 
 Install-ChocolateyZipPackage @packageArgs
 
+$TempSettingsPath = Join-Path $env:TEMP 'PresenceLightSettings.json'
+
+if (Test-Path -Path $TempSettingsPath -PathType Leaf)
+{
+    $SettingsPath Join-Path $InstallDir 'appsettings.json'
+    Remove-Item -Path $SettingsPath -Recurse
+    
+    Get-ChildItem -path $TempSettingsPath | 
+    Copy-Item -Destination $InstallDir -PassThru | Rename-Item -NewName  'appsettings.json'
+}
+
+
 $exePath = Join-Path $InstallDir 'PresenceLight.exe'
 
 
