@@ -1,5 +1,10 @@
 $ErrorActionPreference  = 'Stop';
 
+# Make sure to kill any presencelight processes before attempting an
+# installation. This covers the case that PresenceLight is currently
+# installed outside of Chocolatey
+Get-Process presencelight* -ErrorAction SilentlyContinue | Stop-Process
+
 $WindowsVersion=[Environment]::OSVersion.Version
 if ($WindowsVersion.Major -ne "10") {
   throw "This package requires Windows 10."
