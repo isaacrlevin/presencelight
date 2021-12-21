@@ -543,12 +543,22 @@ jobs:
           Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.Package_${{ env.VERSION }}.0_x64.appxbundle" -OutFile "${{ github.workspace }}/Download/PresenceLight.Package_${{ env.VERSION }}.0_x64.appxbundle"
           $hash64=Get-Filehash ${{ github.workspace }}/Download/PresenceLight.Package_${{ env.VERSION }}.0_x64.appxbundle
 
-          # Update winget.yaml
-          $yaml = Get-Content -path "${{ github.workspace }}/Build/winget.yaml"
+          # Update isaaclevin.presencelight.installer.yaml
+          $yaml = Get-Content -path "${{ github.workspace }}/Build/winget/isaaclevin.presencelight.installer.yaml"
           $yaml = $yaml -replace '{x64Link}' , "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.Package_${{ env.VERSION }}.0_x64.appxbundle"
           $yaml = $yaml -replace '{HASHx64}', $hash64.Hash
           $yaml = $yaml -replace '{VERSION}', " ${{ env.VERSION }}"
-          $yaml | Set-Content -Path "${{ github.workspace }}/Build/${{ env.VERSION }}.yaml"
+          $yaml | Set-Content -Path "${{ github.workspace }}/Build/winget/isaaclevin.presencelight.installer.yaml"
+
+          # Update isaaclevin.presencelight.locale.en-US.yaml
+          $yaml = Get-Content -path "${{ github.workspace }}/Build/winget/isaaclevin.presencelight.installer.yaml"
+          $yaml = $yaml -replace '{VERSION}', " ${{ env.VERSION }}"
+          $yaml | Set-Content -Path "${{ github.workspace }}/Build/winget/isaaclevin.presencelight.installer.yaml"
+
+          # Update isaaclevin.presencelight.yaml
+          $yaml = Get-Content -path "${{ github.workspace }}/Build/winget/isaaclevin.presencelight.yaml"
+          $yaml = $yaml -replace '{VERSION}', " ${{ env.VERSION }}"
+          $yaml | Set-Content -Path "${{ github.workspace }}/Build/winget/isaaclevin.presencelight.yaml"
         shell: pwsh
 
       - name: Add Version File to Artifact
@@ -570,7 +580,9 @@ jobs:
       - name: GitHub Cli
         run: |
           mkdir -p "~/winget-pkgs/manifests/i/isaaclevin/presencelight/${{ env.VERSION }}"
-          cp "${{ github.workspace }}/Build/${{ env.VERSION }}.yaml" "~/winget-pkgs/manifests/i/isaaclevin/presencelight/${{ env.VERSION }}"
+          cp "${{ github.workspace }}/Build/winget/isaaclevin.presencelight.installer.yaml" "~/winget-pkgs/manifests/i/isaaclevin/presencelight/${{ env.VERSION }}"
+          cp "${{ github.workspace }}/Build/winget/isaaclevin.presencelight.yaml" "~/winget-pkgs/manifests/i/isaaclevin/presencelight/${{ env.VERSION }}"
+          cp "${{ github.workspace }}/Build/winget/isaaclevin.presencelight.locale.en-US.yaml" "~/winget-pkgs/manifests/i/isaaclevin/presencelight/${{ env.VERSION }}"          
           cd ~/winget-pkgs
 
           git config --global user.email "github-action@microsoft.com"
