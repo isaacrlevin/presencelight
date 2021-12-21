@@ -20,8 +20,6 @@ Some statuses you can broadcast are: your availability in Microsoft Teams, your 
 
 ## Package Parameters
 
-- x86: Force x86 installation of PresenceLight
-- x64: Force x64 installation of PresenceLight (default)
 - InstallDir: Change installation directory of PresenceLight. Default is "$env:APPDATA\PresenceLight"
     </description>
     <summary>Broadcasts colors to various Smart Lights</summary>

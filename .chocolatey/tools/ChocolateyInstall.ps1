@@ -12,41 +12,23 @@ if ($IsCorrectBuild -lt "17134") {
 
 $packageName    = "presencelight"
 $toolsDir       = "$(Split-Path -parent $MyInvocation.MyCommand.Definition)"
-$InstallDir = Join-Path $env:APPDATA 'PresenceLight'
-$url_x86        = "{x86Link}"
-$url_x64        = "{x64Link}"
-$checksum_x86   = "{ReplaceCheckSumx86}"
-$checksum_x64   = "{ReplaceCheckSumx64}"
+$InstallDir     = Join-Path $env:APPDATA 'PresenceLight'
 
-# Detect Architecture automatically
-# Respect user choice first 
 $pp = Get-PackageParameters
-$Is64Bit = [Environment]::Is64BitOperatingSystem
-if ($pp['x86'] -eq 'true')
-{
-  $url = $url_x86
-  $checksum = $checksum_x86
-}elseif ($pp['x64'] -eq 'true') {
-  $url = $url_x64
-  $checksum = $checksum_x64
-}elseif ($Is64Bit -eq 'true') {
-  $url = $url_x64
-  $checksum = $checksum_x64
-}else { # Default to 32 bit system
-  $url = $url_x86
-  $checksum = $checksum_x86
-}
 
 if($pp['InstallDir']){
   $InstallDir = $pp['InstallDir']
 }
 
 $packageArgs = @{
-  packageName   = $packageName
-  unzipLocation = $InstallDir
-  url           = $url
-  checksum      = $checksum
-  checksumType  = 'SHA256'
+  packageName    = $packageName
+  unzipLocation  = $InstallDir
+  url            = "{x86Link}"
+  url64bit       = "{x64Link}"
+  checksum       = "{ReplaceCheckSumx86}"
+  checksum64     = "{ReplaceCheckSumx64}"
+  checksumType   = 'SHA256'
+  checksumType64 = 'SHA256'
 }
 
 Install-ChocolateyZipPackage @packageArgs
