@@ -1,0 +1,5 @@
+PackageIdentifier: isaaclevin.presencelight
+PackageVersion: {VERSION}
+DefaultLocale: en-US
+ManifestType: version
+ManifestVersion: 1.1.0
