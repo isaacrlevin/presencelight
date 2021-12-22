@@ -1,4 +1,4 @@
-﻿<CascadingAuthenticationState>
+﻿@*<CascadingAuthenticationState>
     <CascadingBlazoredModal>
         <Router AppAssembly="@typeof(App).Assembly">
             <Found Context="routeData">
@@ -12,3 +12,13 @@
         </Router>
     </CascadingBlazoredModal>
 </CascadingAuthenticationState>
+*@
+The count is @counter.
+
+<button @onclick=Increment>Increment</button>
+
+@code
+{
+    int counter;
+    void Increment() => counter++;
+}
