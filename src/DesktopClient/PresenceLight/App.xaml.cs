@@ -14,6 +14,7 @@ using Microsoft.Extensions.Hosting;
 
 using PresenceLight.Core;
 using PresenceLight.Graph;
+using PresenceLight.Razor;
 using PresenceLight.Services;
 using PresenceLight.Telemetry;
 
@@ -34,7 +35,8 @@ namespace PresenceLight
 
         public static IConfiguration? StaticConfig { get; private set; }
 
-     
+        private readonly AppState _appState = new();
+
         public App()
         {
             
@@ -107,6 +109,9 @@ namespace PresenceLight
             Log.Debug("Starting PresenceLight");
 
             IServiceCollection services = new ServiceCollection();
+
+            services.AddBlazorWebView();
+            services.AddSingleton<AppState>(_appState);
             services.AddOptions();
             services.AddLogging(logging =>
             {

@@ -7,9 +7,18 @@
         xmlns:lc="clr-namespace:PresenceLight.Controls"
         xmlns:gif="http://wpfanimatedgif.codeplex.com"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:local="clr-namespace:PresenceLight.Razor;assembly=PresenceLight.Razor"
+        xmlns:blazor="clr-namespace:Microsoft.AspNetCore.Components.WebView.Wpf;assembly=Microsoft.AspNetCore.Components.WebView.Wpf"
         mc:Ignorable="d" Title="PresenceLight" Icon="Icons/Icon.ico" Height="1100" Width="750">
     <Grid>
-        <TabControl x:Name="tabControl" SelectionChanged="TabControl_SelectionChanged">
+        <TabControl x:Name="tabControl">
+            <TabItem Header="BlazorWebView">
+                <blazor:BlazorWebView x:Name="blazorWebView1">
+                    <blazor:BlazorWebView.RootComponents>
+                        <blazor:RootComponent Selector="#app" ComponentType="{x:Type local:App}" />
+                    </blazor:BlazorWebView.RootComponents>
+                </blazor:BlazorWebView>
+            </TabItem>
             <TabItem Header="Sign In">
                 <lc:LandingPage x:Name="landingPage"
                                 onExitClick="OnExitClick"
