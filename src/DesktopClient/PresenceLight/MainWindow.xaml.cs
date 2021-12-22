@@ -67,6 +67,9 @@ namespace PresenceLight
                           ILogger<MainWindow> logger,
                           ISettingsService settingsService)
         {
+            var currentApp = (App)System.Windows.Application.Current;
+            Resources.Add("services", currentApp.ServiceProvider);
+
             _logger = logger;
             InitializeComponent();
             System.Windows.Application.Current.SessionEnding += new SessionEndingCancelEventHandler(Current_SessionEnding);

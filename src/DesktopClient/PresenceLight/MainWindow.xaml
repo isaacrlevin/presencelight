@@ -13,7 +13,7 @@
     <Grid>
         <TabControl x:Name="tabControl">
             <TabItem Header="BlazorWebView">
-                <blazor:BlazorWebView x:Name="blazorWebView1">
+                <blazor:BlazorWebView x:Name="blazorWebView1" HostPage="wwwroot\index.html" Services="{StaticResource services}">
                     <blazor:BlazorWebView.RootComponents>
                         <blazor:RootComponent Selector="#app" ComponentType="{x:Type local:App}" />
                     </blazor:BlazorWebView.RootComponents>

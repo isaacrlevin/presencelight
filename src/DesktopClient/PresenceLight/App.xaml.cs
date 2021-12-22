@@ -158,6 +158,8 @@ namespace PresenceLight
 
             services.AddTransient<DiagnosticsClient, DiagnosticsClient>();
 
+            services.AddBlazorWebView();
+
             ServiceProvider = services.BuildServiceProvider();
 
             var configuration = ServiceProvider.GetService<TelemetryConfiguration>();
