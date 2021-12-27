@@ -8,6 +8,7 @@ using PresenceLight.Core;
 using PresenceLight.Telemetry;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
+using PresenceLight.Razor;
 
 namespace PresenceLight.Services
 {
@@ -17,23 +18,29 @@ namespace PresenceLight.Services
         private static readonly string _settingsFolder = Directory.GetCurrentDirectory();
         private DiagnosticsClient _diagClient;
         private readonly ILogger<StandaloneSettingsService> _logger;
+        private readonly AppState _appState;
 
-        public StandaloneSettingsService(DiagnosticsClient diagClient, ILogger<StandaloneSettingsService> logger)
+        public StandaloneSettingsService(DiagnosticsClient diagClient, ILogger<StandaloneSettingsService> logger, AppState appState)
         {
+            _appState = appState;
             _logger = logger;
             _diagClient = diagClient;
         }
 
         public Task<bool> DeleteSettings()
         {
-            throw new NotImplementedException();
+            if (File.Exists(GetSettingsFileLocation()))
+            {
+                File.Delete(GetSettingsFileLocation());
+            }
+            return Task.Run(() => true);
         }
 
         public async Task<bool> IsFilePresent()
         {
             try
             {
-                if (!File.Exists(Path.Combine(_settingsFolder, _settingsFileName)))
+                if (!File.Exists(GetSettingsFileLocation()))
                 {
                     return false;
                 }
@@ -60,8 +67,10 @@ namespace PresenceLight.Services
         {
             try
             {
-                string fileJSON = await File.ReadAllTextAsync(Path.Combine(_settingsFolder, _settingsFileName), Encoding.UTF8).ConfigureAwait(true);
-                return JsonConvert.DeserializeObject<BaseConfig>(fileJSON);
+                string fileJSON = await File.ReadAllTextAsync(GetSettingsFileLocation(), Encoding.UTF8).ConfigureAwait(true);
+                var config = JsonConvert.DeserializeObject<BaseConfig>(fileJSON);
+                _appState.SetConfig(config);
+                return config;
             }
             catch (Exception e)
             {
@@ -76,7 +85,8 @@ namespace PresenceLight.Services
             try
             {
                 string content = JsonConvert.SerializeObject(data, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { });
-                await File.WriteAllTextAsync(Path.Combine(_settingsFolder, _settingsFileName), content, Encoding.UTF8).ConfigureAwait(false);
+                await File.WriteAllTextAsync(GetSettingsFileLocation(), content, Encoding.UTF8).ConfigureAwait(false);
+                _appState.SetConfig(data);
                 return true;
             }
             catch (Exception e)
@@ -85,6 +95,11 @@ namespace PresenceLight.Services
                 _diagClient.TrackException(e);
                 return false;
             }
+        }
+
+        public string GetSettingsFileLocation()
+        {
+            return Path.Combine(_settingsFolder, _settingsFileName);
         }
     }
 }

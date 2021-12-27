@@ -19,22 +19,22 @@ namespace PresenceLight.Core
     }
     public class YeelightService : IYeelightService
     {
-        private BaseConfig _options;
+        private AppState _appState;
 
         private MediatR.IMediator _mediator;
         private DeviceGroup deviceGroup;
         private readonly ILogger<YeelightService> _logger;
 
-        public YeelightService(IOptionsMonitor<BaseConfig> optionsAccessor, ILogger<YeelightService> logger, MediatR.IMediator mediator)
+        public YeelightService(AppState appState, ILogger<YeelightService> logger, MediatR.IMediator mediator)
         {
             _logger = logger;
-            _options = optionsAccessor.CurrentValue;
+            _appState = appState;
             _mediator = mediator;
         }
 
-        public void Initialize(BaseConfig options)
+        public void Initialize(AppState appState)
         {
-            _options = options;
+            _appState = appState;
         }
 
         public async Task SetColor(string availability, string activity, string lightId)
@@ -47,7 +47,7 @@ namespace PresenceLight.Core
                 return;
             }
 
-            var o = await Handle(_options.LightSettings.Yeelight.UseActivityStatus ? activity : availability, lightId);
+            var o = await Handle(_appState.Config.LightSettings.Yeelight.UseActivityStatus ? activity : availability, lightId);
 
             if (o.returnFunc)
             {
@@ -97,28 +97,28 @@ namespace PresenceLight.Core
                     return;
                 }
 
-                if (_options.LightSettings.UseDefaultBrightness)
+                if (_appState.Config.LightSettings.UseDefaultBrightness)
                 {
-                    if (_options.LightSettings.DefaultBrightness == 0)
+                    if (_appState.Config.LightSettings.DefaultBrightness == 0)
                     {
                         await o.device.TurnOff();
                     }
                     else
                     {
                         await o.device.TurnOn();
-                        await o.device.SetBrightness(Convert.ToInt32(_options.LightSettings.DefaultBrightness));
+                        await o.device.SetBrightness(Convert.ToInt32(_appState.Config.LightSettings.DefaultBrightness));
                     }
                 }
                 else
                 {
-                    if (_options.LightSettings.Hue.Brightness == 0)
+                    if (_appState.Config.LightSettings.Hue.Brightness == 0)
                     {
                         await o.device.TurnOff();
                     }
                     else
                     {
                         await o.device.TurnOn();
-                        await o.device.SetBrightness(Convert.ToInt32(_options.LightSettings.Yeelight.Brightness));
+                        await o.device.SetBrightness(Convert.ToInt32(_appState.Config.LightSettings.Yeelight.Brightness));
                     }
                 }
 
@@ -159,9 +159,9 @@ namespace PresenceLight.Core
 
         private async Task<(string color, Device device, bool returnFunc)> Handle(string presence, string lightId)
         {
-            var props = _options.LightSettings.Yeelight.Statuses.GetType().GetProperties().ToList();
+            var props = _appState.Config.LightSettings.Yeelight.Statuses.GetType().GetProperties().ToList();
 
-            if (_options.LightSettings.Yeelight.UseActivityStatus)
+            if (_appState.Config.LightSettings.Yeelight.UseActivityStatus)
             {
                 props = props.Where(a => a.Name.ToLower().StartsWith("activity")).ToList();
             }
@@ -193,7 +193,7 @@ namespace PresenceLight.Core
                 {
                     if (presence == prop.Name.Replace("Status", "").Replace("Availability", "").Replace("Activity", ""))
                     {
-                        var value = (AvailabilityStatus)prop.GetValue(_options.LightSettings.Yeelight.Statuses);
+                        var value = (AvailabilityStatus)prop.GetValue(_appState.Config.LightSettings.Yeelight.Statuses);
 
                         if (!value.Disabled)
                         {

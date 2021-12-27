@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using PresenceLight.Core;
 
-namespace PresenceLight.Services
+namespace PresenceLight.Core
 {
     public interface ISettingsService
     {
@@ -14,5 +14,6 @@ namespace PresenceLight.Services
         public Task<bool> SaveSettings(BaseConfig data);
         public  Task<bool> DeleteSettings();
         public Task<bool> IsFilePresent();
+        public string GetSettingsFileLocation();
     }
 }

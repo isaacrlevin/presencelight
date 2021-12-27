@@ -24,7 +24,7 @@ namespace PresenceLight.Web
     {
         public static IServiceCollection AddPresenceLight(this IServiceCollection services, IConfiguration Configuration)
         {
-            services.AddMediatR(typeof(App),
+            services.AddMediatR(typeof(PresenceLightApp),
                                 typeof(BaseConfig));
 
 
@@ -34,7 +34,7 @@ namespace PresenceLight.Web
             services.AddHttpContextAccessor();
 
             services.Configure<BaseConfig>(Configuration);
-            services.AddSingleton<SettingsService>();
+            services.AddSingleton<ISettingsService, WebAppSettingsService>();
 
             services.AddOptions();
             services.AddSingleton<AppState>();

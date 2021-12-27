@@ -4,16 +4,23 @@ using System.Collections.Generic;
 using YeelightAPI;
 using Device = YeelightAPI.Device;
 using PresenceLight.Core.WizServices;
+using PresenceLight.Core;
 
-namespace PresenceLight.Razor
+namespace PresenceLight.Core
 {
     public class AppState
-    {
+    {       
         private void NotifyStateChanged() => OnChange?.Invoke();
 
         public event Action OnChange;
 
         public User User { get; set; }
+
+        public bool SignedIn { get; set; }
+
+        public bool SignInRequested { get; set; }
+
+        public bool SignOutRequested { get; set; }
 
         public IEnumerable<object> HueLights { get; set; }
 
@@ -39,6 +46,8 @@ namespace PresenceLight.Razor
 
         public string CustomColor { get; set; }
 
+        public BaseConfig Config { get; set; }
+
         //public bool IsUserAuthenticated { get; set; }
 
         //public GraphServiceClient GraphServiceClient { get; set; }
@@ -48,6 +57,11 @@ namespace PresenceLight.Razor
         //    GraphServiceClient = graphServiceClient;
         //    NotifyStateChanged();
         //}
+
+        public void SetConfig(BaseConfig config)
+        {
+            Config = config;
+        }
 
         public void SetUserInfo(User user, string photo, Presence presence)
         {

@@ -38,11 +38,6 @@ namespace PresenceLight.Web
         {
             var initialScopes = Configuration.GetValue<string>("DownstreamApi:Scopes")?.Split(' ');
 
-            //services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-            //    .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"));
-
-
-
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
                     .EnableTokenAcquisitionToCallDownstreamApi(initialScopes)
@@ -68,8 +63,8 @@ namespace PresenceLight.Web
 
                  options.TokenValidationParameters = new TokenValidationParameters
                  {
-                         // Azure ID tokens give name in "name"
-                         NameClaimType = "name",
+                     // Azure ID tokens give name in "name"
+                     NameClaimType = "name",
                      ValidateIssuer = false
                  };
 

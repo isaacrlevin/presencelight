@@ -1,10 +1,8 @@
 ﻿@page "/lifx"
 
-@inject PresenceLight.Razor.Services.SettingsService SettingsService
-
+@inject ISettingsService SettingsService
 @inject AppState appState
 @inject IModalService Modal
-@inject IOptionsMonitor<BaseConfig> Config
 @inject ILogger<Lifx> _logger;
 
 <div class="container text-body" style="overflow:hidden">
@@ -17,24 +15,24 @@
                     <br />
                     <div class="row">
                         <div class="col-12">
-                            <input type="checkbox" checked="@Config.CurrentValue.LightSettings.LIFX.IsEnabled" @bind-value="@Config.CurrentValue.LightSettings.LIFX.IsEnabled" /> Connect to LIFX
+                            <input type="checkbox" checked="@appState.Config.LightSettings.LIFX.IsEnabled" @bind-value="@appState.Config.LightSettings.LIFX.IsEnabled" /> Connect to LIFX
                         </div>
                     </div>
                     <br />
                     <br />
-                    @if (Config.CurrentValue.LightSettings.LIFX.IsEnabled)
+                    @if (appState.Config.LightSettings.LIFX.IsEnabled)
                     {
                         <div class="row">
                             <div class="col-4">
                                 <h5>LIFX Token</h5>
                             </div>
                             <div class="col-4">
-                                <input style="width: 100%" @bind-value="@Config.CurrentValue.LightSettings.LIFX.LIFXApiKey" type="text">
+                                <input style="width: 100%" @bind-value="@appState.Config.LightSettings.LIFX.LIFXApiKey" type="text">
                                 <a href="https://cloud.lifx.com/settings" target="_blank">Get Token</a>
                             </div>
                         </div>
                         <br /><br />
-                        @if (!string.IsNullOrEmpty(Config.CurrentValue.LightSettings.LIFX.LIFXApiKey))
+                        @if (!string.IsNullOrEmpty(appState.Config.LightSettings.LIFX.LIFXApiKey))
                         {
                             <button @onclick="@((ev) => CheckLIFX("Lights"))" class="btn btn-primary" type="submit">Get Lights</button>
                             <span>&nbsp;&nbsp;</span>
@@ -68,7 +66,7 @@
                                             {
                                                 var obj = (LifxCloud.NET.Models.Group)light;
 
-                                                @if (Config.CurrentValue.LightSettings.LIFX.SelectedItemId == $"group_id:{obj.Id}")
+                                                @if (appState.Config.LightSettings.LIFX.SelectedItemId == $"group_id:{obj.Id}")
                                                 {
                                                     <option selected="selected" value=group_id:@obj.Id>@obj.Label</option>
                                                 }
@@ -81,7 +79,7 @@
                                             {
                                                 var obj = (LifxCloud.NET.Models.Light)light;
 
-                                                @if (Config.CurrentValue.LightSettings.LIFX.SelectedItemId == $"id:{obj.Id}")
+                                                @if (appState.Config.LightSettings.LIFX.SelectedItemId == $"id:{obj.Id}")
                                                 {
                                                     <option selected="selected" value=id:@obj.Id>@obj.Label</option>
                                                 }
@@ -103,24 +101,24 @@
                                         <h5>Brightness</h5>
                                     </div>
                                     <div class="col-4">
-                                        <Slider TValue="int" @bind-Value="@Config.CurrentValue.LightSettings.Hue.Brightness" Step="1" Min="0" Max="100" />
+                                        <Slider TValue="int" @bind-Value="@appState.Config.LightSettings.Hue.Brightness" Step="1" Min="0" Max="100" />
                                     </div>
                                     <div class="col-4">
-                                        <input style="width:50px" @bind-value="@Config.CurrentValue.LightSettings.Hue.Brightness" type="text" />
+                                        <input style="width:50px" @bind-value="@appState.Config.LightSettings.Hue.Brightness" type="text" />
                                     </div>
                                 </div>
 
                                 <br />
                                 <br />
 
-                                <Statuses Light="@Config.CurrentValue.LightSettings.LIFX"></Statuses>
+                                <Statuses Light="@appState.Config.LightSettings.LIFX"></Statuses>
 
                                 <br />
                                 <br />
                             }
                             <br />
                             <br />
-                            @if (!string.IsNullOrEmpty(Config.CurrentValue.LightSettings.LIFX.LIFXApiKey))
+                            @if (!string.IsNullOrEmpty(appState.Config.LightSettings.LIFX.LIFXApiKey))
                             {
                                 <button class="btn btn-primary" @onclick="Save">Save LIFX Settings</button>
                             }
@@ -152,7 +150,7 @@
     {
         try
         {
-            SettingsService.SaveSettings(Config.CurrentValue);
+            SettingsService.SaveSettings(appState.Config);
             message = "Settings Saved";
             settingsSaved = true;
         }
@@ -168,11 +166,11 @@
         isLoadingLights = true;
         if (string.IsNullOrEmpty(lastType) || type != lastType)
         {
-            Config.CurrentValue.LightSettings.LIFX.SelectedItemId = string.Empty;
+            appState.Config.LightSettings.LIFX.SelectedItemId = string.Empty;
             lastType = type;
         }
 
-        if (!string.IsNullOrEmpty(Config.CurrentValue.LightSettings.LIFX.LIFXApiKey))
+        if (!string.IsNullOrEmpty(appState.Config.LightSettings.LIFX.LIFXApiKey))
         {
             try
             {
@@ -182,22 +180,22 @@
                 if (type == "Groups")
                 {
 
-                    appState.SetLIFXLights(await _mediator.Send(new Core.LifxServices.GetAllGroupsCommand() { ApiKey = Config.CurrentValue.LightSettings.LIFX.LIFXApiKey }));
+                    appState.SetLIFXLights(await _mediator.Send(new Core.LifxServices.GetAllGroupsCommand() { ApiKey = appState.Config.LightSettings.LIFX.LIFXApiKey }));
 
-                    if (string.IsNullOrEmpty(Config.CurrentValue.LightSettings.LIFX.SelectedItemId) && appState.LIFXLights.Count() > 0)
+                    if (string.IsNullOrEmpty(appState.Config.LightSettings.LIFX.SelectedItemId) && appState.LIFXLights.Count() > 0)
                     {
                         var obj = (LifxCloud.NET.Models.Group)appState.LIFXLights.FirstOrDefault();
-                        Config.CurrentValue.LightSettings.LIFX.SelectedItemId = $"group_id:{obj.Id}";
+                        appState.Config.LightSettings.LIFX.SelectedItemId = $"group_id:{obj.Id}";
                     }
                 }
                 else
                 {
-                    appState.SetLIFXLights(await _mediator.Send(new Core.LifxServices.GetAllLightsCommand() { ApiKey = Config.CurrentValue.LightSettings.LIFX.LIFXApiKey }));
+                    appState.SetLIFXLights(await _mediator.Send(new Core.LifxServices.GetAllLightsCommand() { ApiKey = appState.Config.LightSettings.LIFX.LIFXApiKey }));
 
-                    if (string.IsNullOrEmpty(Config.CurrentValue.LightSettings.LIFX.SelectedItemId) && appState.LIFXLights.Count() > 0)
+                    if (string.IsNullOrEmpty(appState.Config.LightSettings.LIFX.SelectedItemId) && appState.LIFXLights.Count() > 0)
                     {
                         var obj = (LifxCloud.NET.Models.Light)appState.LIFXLights.FirstOrDefault();
-                        Config.CurrentValue.LightSettings.LIFX.SelectedItemId = $"id:{obj.Id}";
+                        appState.Config.LightSettings.LIFX.SelectedItemId = $"id:{obj.Id}";
                     }
                 }
 
@@ -226,7 +224,7 @@
     private void OnChange(ChangeEventArgs e)
     {
         var light = e.Value.ToString();
-        Config.CurrentValue.LightSettings.LIFX.SelectedItemId = light;
+        appState.Config.LightSettings.LIFX.SelectedItemId = light;
         appState.SetLIFXLight(light);
     }
 
@@ -236,21 +234,21 @@
         {
             appState.OnChange += RaiseStateHasChanged;
 
-            if (Config.CurrentValue.LightSettings.LIFX.IsEnabled
-            && !string.IsNullOrEmpty(Config.CurrentValue.LightSettings.LIFX.LIFXApiKey)
-            && !string.IsNullOrEmpty(Config.CurrentValue.LightSettings.LIFX.SelectedItemId))
+            if (appState.Config.LightSettings.LIFX.IsEnabled
+            && !string.IsNullOrEmpty(appState.Config.LightSettings.LIFX.LIFXApiKey)
+            && !string.IsNullOrEmpty(appState.Config.LightSettings.LIFX.SelectedItemId))
             {
                 isLoadingLights = true;
-                if (Config.CurrentValue.LightSettings.LIFX.SelectedItemId.Contains("group"))
+                if (appState.Config.LightSettings.LIFX.SelectedItemId.Contains("group"))
                 {
 
-                    appState.SetLIFXLights(await _mediator.Send(new Core.LifxServices.GetAllGroupsCommand() { ApiKey = Config.CurrentValue.LightSettings.LIFX.LIFXApiKey }));
+                    appState.SetLIFXLights(await _mediator.Send(new Core.LifxServices.GetAllGroupsCommand() { ApiKey = appState.Config.LightSettings.LIFX.LIFXApiKey }));
 
                     lastType = "Groups";
                 }
                 else
                 {
-                    appState.SetLIFXLights(await _mediator.Send(new Core.LifxServices.GetAllLightsCommand() { ApiKey = Config.CurrentValue.LightSettings.LIFX.LIFXApiKey }));
+                    appState.SetLIFXLights(await _mediator.Send(new Core.LifxServices.GetAllLightsCommand() { ApiKey = appState.Config.LightSettings.LIFX.LIFXApiKey }));
                      
                     lastType = "Lights";
                 }

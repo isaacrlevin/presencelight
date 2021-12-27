@@ -1,5 +1,5 @@
 ﻿@page "/about"
-@inject PresenceLight.Razor.Services.SettingsService SettingsService
+@inject ISettingsService SettingsService
 
 <div class="container text-body" style="overflow:hidden">
     <div class="row">
@@ -83,7 +83,6 @@
         installedDate = ThisAppInfo.GetInstallationDate();
         RuntimeVersionInfo = ThisAppInfo.GetDotNetRuntimeInfo();
         assemblyVersion = ThisAppInfo.GetApplicationVersion();
-        localConfigurationPath = new System.IO.FileInfo(SettingsService.SettingsFileLocation).FullName;
-
+        localConfigurationPath = new System.IO.FileInfo(SettingsService.GetSettingsFileLocation()).FullName;
     }
 }

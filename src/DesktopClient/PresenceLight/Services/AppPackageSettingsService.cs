@@ -5,6 +5,8 @@ using PresenceLight.Telemetry;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Microsoft.Extensions.Logging;
+using System.IO;
+using PresenceLight.Razor;
 
 namespace PresenceLight.Services
 {
@@ -14,9 +16,11 @@ namespace PresenceLight.Services
         private static readonly StorageFolder _settingsFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
         private DiagnosticsClient _diagClient;
         private readonly ILogger<AppPackageSettingsService> _logger;
+        private readonly AppState _appState;
 
-        public AppPackageSettingsService(DiagnosticsClient diagClient, ILogger<AppPackageSettingsService> logger)
+        public AppPackageSettingsService(DiagnosticsClient diagClient, ILogger<AppPackageSettingsService> logger, AppState appState)
         {
+            _appState = appState;
             _logger = logger;
             _diagClient = diagClient;
         }
@@ -29,7 +33,9 @@ namespace PresenceLight.Services
                 if (sf == null) return null;
 
                 string content = await FileIO.ReadTextAsync(sf, Windows.Storage.Streams.UnicodeEncoding.Utf8);
-                return JsonConvert.DeserializeObject<BaseConfig>(content);
+                var config = JsonConvert.DeserializeObject<BaseConfig>(content);
+                _appState.SetConfig(config);
+                return config;
             }
             catch (Exception e)
             {
@@ -66,6 +72,7 @@ namespace PresenceLight.Services
                     {                     
                     }
                 }
+                _appState.SetConfig(data);
                 return true;
             }
             catch (Exception e)
@@ -119,6 +126,11 @@ namespace PresenceLight.Services
                 _diagClient.TrackException(e);
                 return false;
             }
+        }
+
+        public string GetSettingsFileLocation()
+        {
+            return Path.Combine(_settingsFolder.Path, SETTINGS_FILENAME);
         }
     }
 }

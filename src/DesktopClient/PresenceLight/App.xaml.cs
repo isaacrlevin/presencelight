@@ -5,6 +5,12 @@ using System.Globalization;
 using System.Threading;
 using System.Windows;
 
+using Blazored.Modal;
+
+using Blazorise;
+using Blazorise.Bootstrap;
+using Blazorise.Icons.FontAwesome;
+
 using MediatR;
 
 using Microsoft.ApplicationInsights.Extensibility;
@@ -15,6 +21,7 @@ using Microsoft.Extensions.Hosting;
 using PresenceLight.Core;
 using PresenceLight.Graph;
 using PresenceLight.Razor;
+using PresenceLight.Razor.Services;
 using PresenceLight.Services;
 using PresenceLight.Telemetry;
 
@@ -110,6 +117,36 @@ namespace PresenceLight
 
             IServiceCollection services = new ServiceCollection();
 
+            services.AddBlazoredModal();
+            services.AddBlazorise(options =>
+            {
+                options.ChangeTextOnKeyPress = true;
+            }).AddBootstrapProviders()
+.AddFontAwesomeIcons();
+
+
+            services.AddMediatR(typeof(App),
+                     typeof(BaseConfig));
+
+
+
+            services.AddHttpClient();
+
+            services.AddHttpContextAccessor();
+
+            services.Configure<BaseConfig>(Configuration);
+            services.AddSingleton(Configuration);
+            services.AddOptions();
+            services.AddSingleton<AppState>();
+            services.AddPresenceServices();
+            services.AddBlazoredModal();
+
+            services.AddBlazorise(options =>
+            {
+                options.ChangeTextOnKeyPress = true;
+            }).AddBootstrapProviders()
+.AddFontAwesomeIcons();
+
             services.AddBlazorWebView();
             services.AddSingleton<AppState>(_appState);
             services.AddOptions();
@@ -122,8 +159,13 @@ namespace PresenceLight
             services.AddMediatR(typeof(App),
                                 typeof(PresenceLight.Core.BaseConfig));
 
-            services.Configure<BaseConfig>(Configuration);
             services.Configure<AADSettings>(Configuration.GetSection("AADSettings"));
+
+
+            var userAuthService = new UserAuthService(Configuration);
+            services.AddSingleton(userAuthService);
+
+
             services.Configure<TelemetryConfiguration>(
     (o) =>
     {

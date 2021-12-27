@@ -1,9 +1,52 @@
-﻿<AuthorizeView>
-    <Authorized>
-        Hello, @context.User.Identity.Name!
-        <a href="MicrosoftIdentity/Account/SignOut">Log out</a>
-    </Authorized>
-    <NotAuthorized>
-        <a href="MicrosoftIdentity/Account/SignIn">Log in</a>
-    </NotAuthorized>
-</AuthorizeView>
+﻿@inject AppState appState
+
+@if (appState.Config.AppType == "Desktop")
+{
+    @if (appState.SignedIn && appState.User != null)
+    {
+        <span> Hello, @appState.User.DisplayName!</span>
+        <a href="" @onclick="@SignOut" @onclick:preventDefault>Log out</a>
+    }
+    else
+    { }
+}
+else
+{
+    <AuthorizeView>
+        <Authorized>
+            Hello, @context.User.Identity.Name!
+            <a href="MicrosoftIdentity/Account/SignOut">Log out</a>
+        </Authorized>
+        <NotAuthorized>
+            <a href="MicrosoftIdentity/Account/SignIn">Log in</a>
+        </NotAuthorized>
+    </AuthorizeView>
+}
+
+@code
+{
+    protected override async Task OnInitializedAsync()
+    {
+        appState.OnChange += RaiseStateHasChanged;
+    }
+
+    private void SignIn()
+    {
+        appState.SignInRequested = true;
+    }
+
+    private void SignOut()
+    {
+        appState.SignOutRequested = true;
+    }
+
+    public void Dispose()
+    {
+        appState.OnChange -= RaiseStateHasChanged;
+    }
+
+    private void RaiseStateHasChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+}
