@@ -41,7 +41,7 @@
 else
 {
     <div>
-       <button @onclick=@SignIn>Sign In</button>
+        <button @onclick=@SignIn>Sign In</button>
     </div>
 }
 
@@ -50,15 +50,23 @@ else
     {
         appState.OnChange += RaiseStateHasChanged;
 
+          _logger.LogInformation("Error occured Loading Settings");
+
         bool isUserAuth = await _userAuthService.IsUserAuthenticated();
         if (!isUserAuth && appState.User == null)
         {
             appState.SetLightMode("");
+
+            if (appState.Config.AppType == "Web")
+            {
+                await _httpContextAccessor.HttpContext.ChallengeAsync();
+            }
         }
         else
         {
             if (appState.LightMode != "Custom")
             {
+                appState.SignedIn = true;
                 appState.SetLightMode("Graph");
             }
         }

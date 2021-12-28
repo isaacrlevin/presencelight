@@ -367,46 +367,49 @@ namespace PresenceLight
                 SolidColorBrush mySolidColorBrush = new SolidColorBrush();
                 System.Windows.Media.Color color;
                 BitmapImage image;
-                switch (presence.Availability)
+                if (presence != null)
                 {
-                    case "Available":
-                        image = new BitmapImage(new Uri(IconConstants.GetIcon(_appState.Config.IconType, IconConstants.Available)));
-                        color = MapColor("#009933");
-                        notificationIcon.Text = PresenceConstants.Available;
-                        break;
-                    case "Busy":
-                        image = new BitmapImage(new Uri(IconConstants.GetIcon(_appState.Config.IconType, IconConstants.Busy)));
-                        color = MapColor("#ff3300");
-                        notificationIcon.Text = PresenceConstants.Busy;
-                        break;
-                    case "BeRightBack":
-                        image = new BitmapImage(new Uri(IconConstants.GetIcon(_appState.Config.IconType, IconConstants.BeRightBack)));
-                        color = MapColor("#ffff00");
-                        notificationIcon.Text = PresenceConstants.BeRightBack;
-                        break;
-                    case "Away":
-                        image = new BitmapImage(new Uri(IconConstants.GetIcon(_appState.Config.IconType, IconConstants.Away)));
-                        color = MapColor("#ffff00");
-                        notificationIcon.Text = PresenceConstants.Away;
-                        break;
-                    case "DoNotDisturb":
-                        image = new BitmapImage(new Uri(IconConstants.GetIcon(_appState.Config.IconType, IconConstants.DoNotDisturb)));
-                        color = MapColor("#B03CDE");
-                        notificationIcon.Text = PresenceConstants.DoNotDisturb;
-                        break;
-                    case "OutOfOffice":
-                        image = new BitmapImage(new Uri(IconConstants.GetIcon(_appState.Config.IconType, IconConstants.OutOfOffice)));
-                        color = MapColor("#800080");
-                        notificationIcon.Text = PresenceConstants.OutOfOffice;
-                        break;
-                    default:
-                        image = new BitmapImage(new Uri(IconConstants.GetIcon(string.Empty, IconConstants.Inactive)));
-                        color = MapColor("#FFFFFF");
-                        notificationIcon.Text = PresenceConstants.Inactive;
-                        break;
-                }
+                    switch (presence.Availability)
+                    {
+                        case "Available":
+                            image = new BitmapImage(new Uri(IconConstants.GetIcon(_appState.Config.IconType, IconConstants.Available)));
+                            color = MapColor("#009933");
+                            notificationIcon.Text = PresenceConstants.Available;
+                            break;
+                        case "Busy":
+                            image = new BitmapImage(new Uri(IconConstants.GetIcon(_appState.Config.IconType, IconConstants.Busy)));
+                            color = MapColor("#ff3300");
+                            notificationIcon.Text = PresenceConstants.Busy;
+                            break;
+                        case "BeRightBack":
+                            image = new BitmapImage(new Uri(IconConstants.GetIcon(_appState.Config.IconType, IconConstants.BeRightBack)));
+                            color = MapColor("#ffff00");
+                            notificationIcon.Text = PresenceConstants.BeRightBack;
+                            break;
+                        case "Away":
+                            image = new BitmapImage(new Uri(IconConstants.GetIcon(_appState.Config.IconType, IconConstants.Away)));
+                            color = MapColor("#ffff00");
+                            notificationIcon.Text = PresenceConstants.Away;
+                            break;
+                        case "DoNotDisturb":
+                            image = new BitmapImage(new Uri(IconConstants.GetIcon(_appState.Config.IconType, IconConstants.DoNotDisturb)));
+                            color = MapColor("#B03CDE");
+                            notificationIcon.Text = PresenceConstants.DoNotDisturb;
+                            break;
+                        case "OutOfOffice":
+                            image = new BitmapImage(new Uri(IconConstants.GetIcon(_appState.Config.IconType, IconConstants.OutOfOffice)));
+                            color = MapColor("#800080");
+                            notificationIcon.Text = PresenceConstants.OutOfOffice;
+                            break;
+                        default:
+                            image = new BitmapImage(new Uri(IconConstants.GetIcon(string.Empty, IconConstants.Inactive)));
+                            color = MapColor("#FFFFFF");
+                            notificationIcon.Text = PresenceConstants.Inactive;
+                            break;
+                    }
 
-                notificationIcon.Icon = image;
+                    notificationIcon.Icon = image;
+                }
             }
             catch (Exception e)
             {

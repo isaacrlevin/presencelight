@@ -1,7 +1,13 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+
+using PresenceLight.Core;
+
+using Serilog;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -24,7 +30,19 @@ namespace PresenceLight.Web
 
             IConfiguration configForMain = configBuilderForMain.Build();
 
+            var telemetryConfiguration = TelemetryConfiguration.CreateDefault();
+            telemetryConfiguration.InstrumentationKey = configForMain["ApplicationInsights:InstrumentationKey"];
+
+            Log.Logger = new LoggerConfiguration()
+                 .ReadFrom.Configuration(configForMain)
+                 .WriteTo.PresenceEventsLogSink()
+                 .WriteTo.ApplicationInsights(telemetryConfiguration, TelemetryConverter.Traces, Serilog.Events.LogEventLevel.Error)
+                 .Enrich.FromLogContext()
+                 .CreateLogger();
+
+
             Host.CreateDefaultBuilder(args)
+                .UseSerilog()
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
@@ -49,8 +67,11 @@ namespace PresenceLight.Web
                     }
                 })
                 .UseContentRoot(Directory.GetCurrentDirectory())
+                  .ConfigureLogging(setup => {
+                      setup.AddSerilog(Log.Logger);
+                  })
                 .UseStartup<Startup>();
-            });
+            }).UseSerilog();
 
             return builder;
         }

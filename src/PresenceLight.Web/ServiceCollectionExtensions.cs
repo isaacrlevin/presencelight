@@ -24,7 +24,7 @@ namespace PresenceLight.Web
     {
         public static IServiceCollection AddPresenceLight(this IServiceCollection services, IConfiguration Configuration)
         {
-            services.AddMediatR(typeof(PresenceLightApp),
+            services.AddMediatR(typeof(PresenceLightClientApp),
                                 typeof(BaseConfig));
 
 

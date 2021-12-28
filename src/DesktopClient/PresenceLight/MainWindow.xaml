@@ -12,7 +12,7 @@
     <Grid>
         <blazor:BlazorWebView x:Name="blazorWebView1" HostPage="wwwroot\index.html" Services="{StaticResource services}">
             <blazor:BlazorWebView.RootComponents>
-                <blazor:RootComponent Selector="#app" ComponentType="{x:Type local:PresenceLightApp}" />
+                <blazor:RootComponent Selector="#app" ComponentType="{x:Type local:PresenceLightClientApp}" />
             </blazor:BlazorWebView.RootComponents>
         </blazor:BlazorWebView>
         <l:NotifyIcon x:Name="notificationIcon" MouseDoubleClick="OnNotifyIconDoubleClick">
