@@ -44,8 +44,9 @@ namespace PresenceLight.Web
             services.AddBlazorise(options =>
             {
                 options.ChangeTextOnKeyPress = true;
-            }).AddBootstrapProviders()
-.AddFontAwesomeIcons();
+            })
+            .AddBootstrapProviders()
+            .AddFontAwesomeIcons();
 
             return services;
         }
