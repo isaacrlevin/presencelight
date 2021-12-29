@@ -94,6 +94,21 @@ namespace PresenceLight
 
             await Task.Run(() =>
             {
+                this.Dispatcher.Invoke(() =>
+                {
+                    appState.SignedIn = false;
+                    LoadApp();
+
+                    var tbContext = notificationIcon.DataContext;
+                    DataContext = _appState.Config;
+                    notificationIcon.DataContext = tbContext;
+
+                    if (_appState.Config.StartMinimized)
+                    {
+                        this.Hide();
+                    }
+                });
+
                 while (true)
                 {
                     if (_appState.SignInRequested)
@@ -118,20 +133,7 @@ namespace PresenceLight
                 }
             });
 
-            this.Dispatcher.Invoke(() =>
-            {
-                appState.SignedIn = false;
-                LoadApp();
 
-                var tbContext = notificationIcon.DataContext;
-                DataContext = _appState.Config;
-                notificationIcon.DataContext = tbContext;
-
-                if (_appState.Config.StartMinimized)
-                {
-                    this.Hide();
-                }
-            });
         }, TaskScheduler.Current);
         }
 
@@ -186,8 +188,8 @@ namespace PresenceLight
             {
                 previousRemoteFlag = _appState.Config.LightSettings.Hue.UseRemoteApi;
 
-                notificationIcon.Text = PresenceConstants.Inactive;
-                notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(String.Empty, IconConstants.Inactive)));
+                notificationIcon.Text = $"PresenceLight Status - {PresenceConstants.Inactive}";
+                notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(string.Empty, string.Empty)));
 
                 _appState.Config.LightSettings.WorkingHoursStartTimeAsDate = string.IsNullOrEmpty(_appState.Config.LightSettings.WorkingHoursStartTime) ? null : DateTime.Parse(_appState.Config.LightSettings.WorkingHoursStartTime, null);
                 _appState.Config.LightSettings.WorkingHoursEndTimeAsDate = string.IsNullOrEmpty(_appState.Config.LightSettings.WorkingHoursEndTime) ? null : DateTime.Parse(_appState.Config.LightSettings.WorkingHoursEndTime, null);
@@ -315,8 +317,8 @@ namespace PresenceLight
                     await WPFAuthorizationProvider.Application.RemoveAsync(accounts.FirstOrDefault()).ConfigureAwait(true);
                     _appState.SignedIn = false;
                     _appState.SetUserInfo(null, null, null);
-                    notificationIcon.Text = PresenceConstants.Inactive;
-                    notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(string.Empty, IconConstants.Inactive)));
+                    notificationIcon.Text = $"PresenceLight Status - {PresenceConstants.Inactive}";
+                    notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(string.Empty, string.Empty)));
 
                     await SetColor("Off").ConfigureAwait(true);
                 }
@@ -365,50 +367,11 @@ namespace PresenceLight
             try
             {
                 SolidColorBrush mySolidColorBrush = new SolidColorBrush();
-                System.Windows.Media.Color color;
                 BitmapImage image;
                 if (presence != null)
                 {
-                    switch (presence.Availability)
-                    {
-                        case "Available":
-                            image = new BitmapImage(new Uri(IconConstants.GetIcon(_appState.Config.IconType, IconConstants.Available)));
-                            color = MapColor("#009933");
-                            notificationIcon.Text = PresenceConstants.Available;
-                            break;
-                        case "Busy":
-                            image = new BitmapImage(new Uri(IconConstants.GetIcon(_appState.Config.IconType, IconConstants.Busy)));
-                            color = MapColor("#ff3300");
-                            notificationIcon.Text = PresenceConstants.Busy;
-                            break;
-                        case "BeRightBack":
-                            image = new BitmapImage(new Uri(IconConstants.GetIcon(_appState.Config.IconType, IconConstants.BeRightBack)));
-                            color = MapColor("#ffff00");
-                            notificationIcon.Text = PresenceConstants.BeRightBack;
-                            break;
-                        case "Away":
-                            image = new BitmapImage(new Uri(IconConstants.GetIcon(_appState.Config.IconType, IconConstants.Away)));
-                            color = MapColor("#ffff00");
-                            notificationIcon.Text = PresenceConstants.Away;
-                            break;
-                        case "DoNotDisturb":
-                            image = new BitmapImage(new Uri(IconConstants.GetIcon(_appState.Config.IconType, IconConstants.DoNotDisturb)));
-                            color = MapColor("#B03CDE");
-                            notificationIcon.Text = PresenceConstants.DoNotDisturb;
-                            break;
-                        case "OutOfOffice":
-                            image = new BitmapImage(new Uri(IconConstants.GetIcon(_appState.Config.IconType, IconConstants.OutOfOffice)));
-                            color = MapColor("#800080");
-                            notificationIcon.Text = PresenceConstants.OutOfOffice;
-                            break;
-                        default:
-                            image = new BitmapImage(new Uri(IconConstants.GetIcon(string.Empty, IconConstants.Inactive)));
-                            color = MapColor("#FFFFFF");
-                            notificationIcon.Text = PresenceConstants.Inactive;
-                            break;
-                    }
-
-                    notificationIcon.Icon = image;
+                    notificationIcon.Text = $"PresenceLight Status - {Helpers.HumanifyText(presence.Availability)}";
+                    notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(_appState.Config.IconType, presence.Availability)));
                 }
             }
             catch (Exception e)
@@ -509,7 +472,7 @@ namespace PresenceLight
                 await SetColor("Off", "Off");
 
                 notificationIcon.Text = PresenceConstants.Inactive;
-                notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(string.Empty, IconConstants.Inactive)));
+                notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(string.Empty, string.Empty)));
 
                 this.WindowState = this.lastWindowState;
             }

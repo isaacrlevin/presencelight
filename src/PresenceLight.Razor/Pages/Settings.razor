@@ -124,9 +124,26 @@
             <input style="width:50px" @bind-value="@appState.Config.LightSettings.PollingInterval" type="text" />
         </div>
     </div>
+    <br />
+    <br />
+    @if (appState.Config.AppType == "Desktop")
+    {
+        <div class="row">
+            <div class="col-4">
+                <h5><strong>Icon Type</strong></h5>
+            </div>
+            <div class="col-4">
+                <RadioGroup TValue="string" Name="iconType" @bind-CheckedValue="@appState.Config.IconType">
+                    <Radio TValue="string" Value="@("Transparent")">Transparent</Radio>
+                    <br />
+                    <Radio TValue="string" Value="@("White")">White</Radio>
+                </RadioGroup>
+            </div>
+        </div>
+        <br />
+        <br />
+    }
 
-    <br />
-    <br />
     <div>
         <button @onclick="SaveSettings" class="btn btn-primary">Save Settings</button>
         <br />

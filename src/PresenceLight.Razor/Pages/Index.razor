@@ -40,7 +40,11 @@
 }
 else
 {
-    <div>
+    <div style="height:400px; position:relative; ">
+        <br /> <br />
+        <br /> <br />
+        Login to Microsoft Account to Sync Presence
+        <br /> <br />
         <button @onclick=@SignIn>Sign In</button>
     </div>
 }
@@ -50,7 +54,7 @@ else
     {
         appState.OnChange += RaiseStateHasChanged;
 
-          _logger.LogInformation("Error occured Loading Settings");
+        _logger.LogInformation("Error occured Loading Settings");
 
         bool isUserAuth = await _userAuthService.IsUserAuthenticated();
         if (!isUserAuth && appState.User == null)

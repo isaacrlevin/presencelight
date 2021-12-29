@@ -1,6 +1,6 @@
 ﻿@page "/about"
 @inject ISettingsService SettingsService
-
+@inject IJSRuntime js
 <div class="container text-body" style="overflow:hidden">
     <div class="row">
         <div class="container-fluid">
@@ -59,7 +59,7 @@
             <h4>Configuration Path</h4>
         </div>
         <div class="w-50">
-            @localConfigurationPath
+           <a href="" @onclick:preventDefault @onclick="@((ev) => DownloadSettings(@localConfigurationPath))" title="Click to Download @@localConfigurationPath">@localConfigurationPath</a>  
         </div>
     </div>
     <br />
@@ -84,5 +84,26 @@
         RuntimeVersionInfo = ThisAppInfo.GetDotNetRuntimeInfo();
         assemblyVersion = ThisAppInfo.GetApplicationVersion();
         localConfigurationPath = new System.IO.FileInfo(SettingsService.GetSettingsFileLocation()).FullName;
+    }
+
+        async Task DownloadSettings(string filename)
+    {
+        string fileContents;
+        using (var fs = new System.IO.FileStream(
+                filename,
+                System.IO.FileMode.Open,
+                System.IO.FileAccess.Read,
+                System.IO.FileShare.ReadWrite))
+        {
+            var b = new byte[fs.Length];
+
+            fs.Read(b, 0, b.Length);
+            fileContents = Convert.ToBase64String(b);
+        }
+
+        await js.InvokeAsync<object>(
+                   "saveAsFile",
+                   filename,
+                   fileContents);
     }
 }
