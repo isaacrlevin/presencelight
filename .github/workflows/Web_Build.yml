@@ -9,6 +9,7 @@ on:
     - 'README.md'
     - 'desktop-README.md'
     - 'Build/PublishStore/**'
+    - 'Build/.chocolatey/**'
 
   pull_request:
     branches: [ main ]
@@ -19,6 +20,7 @@ on:
     - 'README.md'
     - 'desktop-README.md'
     - 'Build/PublishStore/**'
+    - 'Build/.chocolatey/**'
 
 jobs:
   Build_Web:
