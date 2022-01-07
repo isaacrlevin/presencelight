@@ -46,4 +46,3 @@ Install-ChocolateyShortcut -ShortcutFilePath "C:\ProgramData\Microsoft\Windows\S
 
 Write-Output "Adding shortcut to Startup"
 Install-ChocolateyShortcut -ShortcutFilePath "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Startup\PresenceLight.lnk" -TargetPath $exePath -WorkingDirectory $InstallDir
-
