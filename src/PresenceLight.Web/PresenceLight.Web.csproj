@@ -15,8 +15,8 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.1" NoWarn="NU1605" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="6.0.1" NoWarn="NU1605" />
-    <PackageReference Include="Microsoft.Identity.Web" Version="1.21.1" />
-    <PackageReference Include="Microsoft.Identity.Web.UI" Version="1.21.1" />
+    <PackageReference Include="Microsoft.Identity.Web" Version="1.22.1" />
+    <PackageReference Include="Microsoft.Identity.Web.UI" Version="1.22.1" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
   </ItemGroup>
 

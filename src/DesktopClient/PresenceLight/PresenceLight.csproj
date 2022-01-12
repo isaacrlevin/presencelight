@@ -13,54 +13,14 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DebugType>full</DebugType>
-    <DebugSymbols>true</DebugSymbols>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DebugType>full</DebugType>
-    <DebugSymbols>true</DebugSymbols>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="MainWindow.ColorPicker.cs" />
-    <Compile Remove="MainWindow.CustomApi.cs" />
-    <Compile Remove="MainWindow.Hue.cs" />
-    <Compile Remove="MainWindow.Lifx.cs" />
-    <Compile Remove="MainWindow.Settings.cs" />
-    <Compile Remove="MainWindow.Wiz.cs" />
-    <Compile Remove="MainWindow.Yeelight.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="Icons\AvailableIdle.ico" />
-    <None Remove="Icons\BusyIdle.ico" />
-    <None Remove="Icons\Offline.ico" />
-    <None Remove="Icons\t_AvailableIdle.ico" />
-    <None Remove="Icons\t_BusyIdle.ico" />
-  </ItemGroup>
 
   <ItemGroup> 
     <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.20.0" />
-    <PackageReference Include="Extended.Wpf.Toolkit" Version="4.2.0" />
-    <PackageReference Include="IdentityModel.OidcClient" Version="5.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.OAuth" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Wpf" Version="6.0.101-preview.11.2349" />
-    <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.2.7" />
-    <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Graph" Version="4.12.0" />
-    <PackageReference Include="Microsoft.Graph.Core" Version="2.0.7" />
-    <PackageReference Include="Microsoft.Identity.Client" Version="4.39.0" />
-    <PackageReference Include="NETStandard.HttpListener" Version="1.0.3.5" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="Q42.HueApi" Version="3.19.0" />
-    <PackageReference Include="Q42.HueApi.ColorConverters" Version="3.18.1" />
-    <PackageReference Include="WpfAnimatedGif" Version="2.0.2" />
-    <PackageReference Include="YeelightAPI" Version="1.10.2" />
+    <PackageReference Include="Serilog.Sinks.ApplicationInsights" Version="3.1.0" />
+    <PackageReference Update="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.2" />
+    <PackageReference Update="Microsoft.SourceLink.GitHub" Version="1.1.1" />
+    <PackageReference Update="Nerdbank.GitVersioning" Version="3.4.255" />
     <ProjectReference Include="..\..\PresenceLight.Core\PresenceLight.Core.csproj" />
     <ProjectReference Include="..\..\PresenceLight.Razor\PresenceLight.Razor.csproj" />
   </ItemGroup>
@@ -135,27 +95,13 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
-  <ItemGroup>
-    <Compile Update="Properties\Settings.Designer.cs">
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
-  </ItemGroup>
 
   <ItemGroup>
     <None Update="appsettings.Development.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="appsettings.Development.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
 
@@ -163,12 +109,6 @@
     <Content Update="wwwroot\**">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Update="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.2" />
-    <PackageReference Update="Microsoft.SourceLink.GitHub" Version="1.1.1" />
-    <PackageReference Update="Nerdbank.GitVersioning" Version="3.4.244" />
   </ItemGroup>
 
 </Project>
