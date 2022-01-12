@@ -8,8 +8,8 @@
     <ApplicationIcon>favicon.ico</ApplicationIcon>
     <UserSecretsId>8509488430545</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    <DockerfileFile>DockerFiles/Dockerfile</DockerfileFile>
-    <DockerfileContext>../..</DockerfileContext>
+    <DockerfileFile>Dockerfile</DockerfileFile>
+    <DockerfileContext>..</DockerfileContext>
     <DockerDevelopmentMode>Regular</DockerDevelopmentMode>
   </PropertyGroup>
 

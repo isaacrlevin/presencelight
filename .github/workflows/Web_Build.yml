@@ -404,17 +404,17 @@ jobs:
 
       - name: Update Docker Files
         run: |
-          $dockerFileLatest = Get-Content -path "${{ github.workspace }}/src/PresenceLight.Web/DockerFiles/Dockerfile" -Raw
+          $dockerFileLatest = Get-Content -path "${{ github.workspace }}/src/PresenceLight.Web/Dockerfile" -Raw
           $dockerFileLatest = $dockerFileLatest -replace '{VERSION}', "${{ env.VERSION }} "
-          $dockerFileLatest | Set-Content -Path "${{ github.workspace }}/src/PresenceLight.Web/DockerFiles/Dockerfile"
+          $dockerFileLatest | Set-Content -Path "${{ github.workspace }}/src/PresenceLight.Web/Dockerfile"
 
-          $dockerFile32 = Get-Content -path "${{ github.workspace }}/src/PresenceLight.Web/DockerFiles/Dockerfile.debian-arm32" -Raw
+          $dockerFile32 = Get-Content -path "${{ github.workspace }}/src/PresenceLight.Web/Dockerfile.debian-arm32" -Raw
           $dockerFile32 = $dockerFile32 -replace '{VERSION}', "${{ env.VERSION }} "
-          $dockerFile32 | Set-Content -Path "${{ github.workspace }}/src/PresenceLight.Web/DockerFiles/Dockerfile.debian-arm32"
+          $dockerFile32 | Set-Content -Path "${{ github.workspace }}/src/PresenceLight.Web/Dockerfile.debian-arm32"
 
-          $dockerFile64 = Get-Content -path "${{ github.workspace }}/src/PresenceLight.Web/DockerFiles/Dockerfile.debian-arm64" -Raw
+          $dockerFile64 = Get-Content -path "${{ github.workspace }}/src/PresenceLight.Web/Dockerfile.debian-arm64" -Raw
           $dockerFile64 = $dockerFile64 -replace '{VERSION}', "${{ env.VERSION }} "
-          $dockerFile64 | Set-Content -Path "${{ github.workspace }}/src/PresenceLight.Web/DockerFiles/Dockerfile.debian-arm64"
+          $dockerFile64 | Set-Content -Path "${{ github.workspace }}/src/PresenceLight.Web/Dockerfile.debian-arm64"
         shell: pwsh
         if: ${{ success() && github.event_name != 'pull_request' }}
 
@@ -426,7 +426,7 @@ jobs:
           USERNAME: isaacrlevin
           REGISTRY: "ghcr.io"
           PASSWORD: ${{ secrets.GH_PERSONAL_TOKEN }}
-          DOCKERFILE: "${{ github.workspace }}/src/PresenceLight.Web/DockerFiles/Dockerfile"
+          DOCKERFILE: "${{ github.workspace }}/src/PresenceLight.Web/Dockerfile"
           IMAGE_NAME: "isaacrlevin/presencelight"
           TAG_NAME: "${{ env.VERSION }}"
           LATEST: "true"
@@ -440,7 +440,7 @@ jobs:
           USERNAME: isaacrlevin
           REGISTRY: "ghcr.io"
           PASSWORD: ${{ secrets.GH_PERSONAL_TOKEN }}
-          DOCKERFILE: "${{ github.workspace }}/src/PresenceLight.Web/DockerFiles/Dockerfile.debian-arm32"
+          DOCKERFILE: "${{ github.workspace }}/src/PresenceLight.Web/Dockerfile.debian-arm32"
           IMAGE_NAME: "isaacrlevin/presencelight"
           TAG_NAME: "debian-arm32"
           BUILD_PATH: "${{ github.workspace }}/src/"
@@ -453,7 +453,7 @@ jobs:
           USERNAME: isaacrlevin
           REGISTRY: "ghcr.io"
           PASSWORD: ${{ secrets.GH_PERSONAL_TOKEN }}
-          DOCKERFILE: "${{ github.workspace }}/src/PresenceLight.Web/DockerFiles/Dockerfile.debian-arm64"
+          DOCKERFILE: "${{ github.workspace }}/src/PresenceLight.Web/Dockerfile.debian-arm64"
           IMAGE_NAME: "isaacrlevin/presencelight"
           TAG_NAME: "debian-arm64"
           BUILD_PATH: "${{ github.workspace }}/src/"
@@ -465,7 +465,7 @@ jobs:
         env:
           USERNAME: ${{ secrets.DOCKER_USERNAME }}
           PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-          DOCKERFILE: "${{ github.workspace }}/src/PresenceLight.Web/DockerFiles/Dockerfile.debian-arm32"
+          DOCKERFILE: "${{ github.workspace }}/src/PresenceLight.Web/Dockerfile.debian-arm32"
           IMAGE_NAME: "isaaclevin/presencelight"
           TAG_NAME: "${{ env.VERSION }}-debian-arm32"
           BUILD_PATH: "${{ github.workspace }}/src/"
@@ -477,7 +477,7 @@ jobs:
         env:
           USERNAME: ${{ secrets.DOCKER_USERNAME }}
           PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-          DOCKERFILE: "${{ github.workspace }}/src/PresenceLight.Web/DockerFiles/Dockerfile.debian-arm32"
+          DOCKERFILE: "${{ github.workspace }}/src/PresenceLight.Web/Dockerfile.debian-arm32"
           IMAGE_NAME: "isaaclevin/presencelight"
           TAG_NAME: "debian-arm32"
           BUILD_PATH: "${{ github.workspace }}/src/"
@@ -489,7 +489,7 @@ jobs:
         env:
           USERNAME: ${{ secrets.DOCKER_USERNAME }}
           PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-          DOCKERFILE: "${{ github.workspace }}/src/PresenceLight.Web/DockerFiles/Dockerfile.debian-arm64"
+          DOCKERFILE: "${{ github.workspace }}/src/PresenceLight.Web/Dockerfile.debian-arm64"
           IMAGE_NAME: "isaaclevin/presencelight"
           TAG_NAME: "${{ env.VERSION }}-debian-arm64"
           BUILD_PATH: "${{ github.workspace }}/src/"
@@ -501,7 +501,7 @@ jobs:
         env:
           USERNAME: ${{ secrets.DOCKER_USERNAME }}
           PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-          DOCKERFILE: "${{ github.workspace }}/src/PresenceLight.Web/DockerFiles/Dockerfile.debian-arm64"
+          DOCKERFILE: "${{ github.workspace }}/src/PresenceLight.Web/Dockerfile.debian-arm64"
           IMAGE_NAME: "isaaclevin/presencelight"
           TAG_NAME: "debian-arm64"
           BUILD_PATH: "${{ github.workspace }}/src/"
@@ -513,7 +513,7 @@ jobs:
         env:
           USERNAME: ${{ secrets.DOCKER_USERNAME }}
           PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-          DOCKERFILE: "${{ github.workspace }}/src/PresenceLight.Web/DockerFiles/Dockerfile"
+          DOCKERFILE: "${{ github.workspace }}/src/PresenceLight.Web/Dockerfile"
           IMAGE_NAME: "isaaclevin/presencelight"
           TAG_NAME: "${{ env.VERSION }}"
           LATEST: "true"
