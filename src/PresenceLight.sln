@@ -19,13 +19,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		..\.github\workflows\Web_Build.yml = ..\.github\workflows\Web_Build.yml
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dockerfiles", "Dockerfiles", "{C28F3920-8CF1-488B-A9FC-49BB2BA865D9}"
-	ProjectSection(SolutionItems) = preProject
-		DockerFiles\Dockerfile = DockerFiles\Dockerfile
-		DockerFiles\Dockerfile.debian-arm32 = DockerFiles\Dockerfile.debian-arm32
-		DockerFiles\Dockerfile.debian-arm64 = DockerFiles\Dockerfile.debian-arm64
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Readmes", "Readmes", "{AEA7D3CB-0200-4256-BB51-D9A63E788C97}"
 	ProjectSection(SolutionItems) = preProject
 		..\desktop-README.md = ..\desktop-README.md
@@ -95,7 +88,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{C28F3920-8CF1-488B-A9FC-49BB2BA865D9} = {9BCEC868-73D3-4393-8099-D4DF2DC6DB74}
 		{AEA7D3CB-0200-4256-BB51-D9A63E788C97} = {9BCEC868-73D3-4393-8099-D4DF2DC6DB74}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
