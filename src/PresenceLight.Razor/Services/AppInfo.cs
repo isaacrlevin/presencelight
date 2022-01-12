@@ -40,6 +40,11 @@ namespace PresenceLight.Razor
 
         public string GetAppInstallType()
         {
+            if (Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true")
+            {
+                return "Container";
+            }
+
             if (_config["AppType"] == "Web")
             {
                 return "Web";
