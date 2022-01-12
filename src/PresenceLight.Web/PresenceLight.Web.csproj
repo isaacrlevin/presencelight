@@ -11,6 +11,7 @@
     <DockerfileFile>Dockerfile</DockerfileFile>
     <DockerfileContext>..</DockerfileContext>
     <DockerDevelopmentMode>Regular</DockerDevelopmentMode>
+    <DockerComposeProjectPath>..\DockerCompose\docker-compose.dcproj</DockerComposeProjectPath>
   </PropertyGroup>
 
   <ItemGroup>
