@@ -8,7 +8,7 @@
 
         public int Brightness { get; set; }
 
-        public Statuses Statuses { get; set; }
+        public PresenceLightStatuses Statuses { get; set; }
 
         public bool UseActivityStatus { get; set; }
     }

@@ -16,12 +16,10 @@ using MediatR;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 using PresenceLight.Core;
 using PresenceLight.Graph;
 using PresenceLight.Razor;
-using PresenceLight.Razor.Services;
 using PresenceLight.Services;
 using PresenceLight.Telemetry;
 

@@ -4,6 +4,7 @@
 @inject AppState appState
 @inject IModalService Modal
 @inject ILogger<Lifx> _logger;
+@inject LIFXOAuthHelper _lIFXOAuthHelper;
 
 <div class="container text-body" style="overflow:hidden">
     <div class="row">
@@ -28,34 +29,44 @@
                             </div>
                             <div class="col-4">
                                 <input style="width: 100%" @bind-value="@appState.Config.LightSettings.LIFX.LIFXApiKey" type="text">
-                                <a href="https://cloud.lifx.com/settings" target="_blank">Get Token</a>
+                                <a href="#" @onclick:preventDefault @onclick="@GetToken">Get Token</a>
                             </div>
                         </div>
-                        <br /><br />
+                        <br />
+
+                        <br />
                         @if (!string.IsNullOrEmpty(appState.Config.LightSettings.LIFX.LIFXApiKey))
                         {
                             <button @onclick="@((ev) => CheckLIFX("Lights"))" class="btn btn-primary" type="submit">Get Lights</button>
                             <span>&nbsp;&nbsp;</span>
                             <button @onclick="@((ev) => CheckLIFX("Groups"))" class="btn btn-primary" type="submit">Get Groups</button>
                         }
-                        <br /><br />
+                        <br />
+
+                        <br />
                         if (isLoadingLights)
                         {
-                            <br /><br />
+                            <br />
+
+                            <br />
                             <Circle Center="true" />
                         }
                         else
                         {
                             @if (appState.LIFXLights != null)
                             {
-                                <br /><br />
+                                <br />
+
+                                <br />
 
                                 @if (showLifxMessage)
                                 {
                                     <span class="@lifxMessageClass">@lifxMessage</span>
                                 }
 
-                                <br /><br />
+                                <br />
+
+                                <br />
                                 <span><strong>@lastType</strong></span>
                                 <div class="form-group col-3 centering text-center">
                                     <select class="form-control" @onchange="OnChange">
@@ -207,7 +218,7 @@
             }
             catch (Exception e)
             {
-                _logger.LogError(e,"Error Occured Getting LIFX Lights");
+                _logger.LogError(e, "Error Occured Getting LIFX Lights");
                 showLifxMessage = true;
                 lifxMessage = "Error Occured Connecting to LIFX, please try again";
                 lifxMessageClass = "text-danger";
@@ -220,6 +231,17 @@
         isLoadingLights = false;
     }
 
+    async Task GetToken()
+    {
+        var token = await _lIFXOAuthHelper.InitiateTokenRetrieval();
+        appState.Config.LightSettings.LIFX.LIFXApiKey = token;
+        if (!@appState.Config.LightSettings.LIFX.IsEnabled)
+        {
+            appState.Config.LightSettings.LIFX.IsEnabled = true;
+        }
+
+        Save();
+    }
 
     private void OnChange(ChangeEventArgs e)
     {
@@ -233,6 +255,7 @@
         try
         {
             appState.OnChange += RaiseStateHasChanged;
+
 
             if (appState.Config.LightSettings.LIFX.IsEnabled
             && !string.IsNullOrEmpty(appState.Config.LightSettings.LIFX.LIFXApiKey)
@@ -249,7 +272,7 @@
                 else
                 {
                     appState.SetLIFXLights(await _mediator.Send(new Core.LifxServices.GetAllLightsCommand() { ApiKey = appState.Config.LightSettings.LIFX.LIFXApiKey }));
-                     
+
                     lastType = "Lights";
                 }
 
