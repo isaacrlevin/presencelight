@@ -158,30 +158,6 @@ namespace PresenceLight
             }
         }
 
-        private void SettingsLinkClick(object sender, RoutedEventArgs e)
-        {
-            string filePath = ThisAppInfo.GetSettingsLocation();
-            if (!System.IO.File.Exists(filePath))
-            {
-                _logger.LogError("Settings File Not Found");
-            }
-            else
-            {
-                //Clean up file path so it can be navigated OK
-                filePath = System.IO.Path.GetFullPath(filePath);
-                System.Diagnostics.Process.Start("explorer.exe", string.Format("/select,\"{0}\"", filePath));
-            }
-        }
-
-        private async void CheckForUpdates(object sender, RoutedEventArgs e)
-        {
-            var result = await Package.Current.CheckUpdateAvailabilityAsync();
-            if (result.Availability == PackageUpdateAvailability.Available)
-            {
-                MessageBox.Show("There's a new update! Restart your app to install it");
-            }
-        }
-
         private void LoadApp()
         {
             try
@@ -205,13 +181,6 @@ namespace PresenceLight
         #endregion
 
         #region Profile Panel
-
-        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
-        {
-            var url = e.Uri.AbsoluteUri;
-            Helpers.OpenBrowser(url);
-            e.Handled = true;
-        }
 
         private async void SignIn()
         {
@@ -355,11 +324,6 @@ namespace PresenceLight
                 _logger.LogError(e, "Error Occured in LoadImager");
                 throw;
             }
-        }
-
-        public Media.Color MapColor(string hexColor)
-        {
-            return (Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(hexColor);
         }
 
         public void MapUI(Presence presence, User? profile, BitmapImage? profileImageBit)
@@ -532,6 +496,8 @@ namespace PresenceLight
                             var (profile, presence) = await _mediator.Send(new Core.GraphServices.GetProfileAndPresenceCommand());
 
                             var photo = await GetPhoto().ConfigureAwait(true);
+
+                            _appState.SetLightMode("Graph");
 
                             if (photo == null)
                             {

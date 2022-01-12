@@ -1,6 +1,7 @@
 ﻿@page "/about"
 @inject ISettingsService SettingsService
 @inject IJSRuntime js
+@inject AppInfo _appInfo
 <div class="container text-body" style="overflow:hidden">
     <div class="row">
         <div class="container-fluid">
@@ -22,6 +23,14 @@
         </div>
     </div>
     <br /><br /><br />
+    <div class="row">
+        <div class="w-25">
+            <h4>Application Type</h4>
+        </div>
+        <div class="w-50">
+            @appType
+        </div>
+    </div>
     <div class="row">
         <div class="w-25">
             <h4>Application Version</h4>
@@ -77,12 +86,14 @@
     string RuntimeVersionInfo;
     string assemblyVersion;
     string localConfigurationPath;
+    string appType;
     protected override void OnInitialized()
     {
-        installLocation = ThisAppInfo.GetInstallLocation();
-        installedDate = ThisAppInfo.GetInstallationDate();
-        RuntimeVersionInfo = ThisAppInfo.GetDotNetRuntimeInfo();
-        assemblyVersion = ThisAppInfo.GetApplicationVersion();
+        appType = _appInfo.GetAppInstallType();
+        installLocation = _appInfo.GetInstallLocation();
+        installedDate = _appInfo.GetInstallationDate();
+        RuntimeVersionInfo = _appInfo.GetDotNetRuntimeInfo();
+        assemblyVersion = _appInfo.GetApplicationVersion();
         localConfigurationPath = new System.IO.FileInfo(SettingsService.GetSettingsFileLocation()).FullName;
     }
 

@@ -8,7 +8,7 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:PresenceLight.Razor;assembly=PresenceLight.Razor"
         xmlns:blazor="clr-namespace:Microsoft.AspNetCore.Components.WebView.Wpf;assembly=Microsoft.AspNetCore.Components.WebView.Wpf"
-        mc:Ignorable="d" Title="PresenceLight" Icon="Icons/Icon.ico" Height="1100" Width="750">
+        mc:Ignorable="d" Title="PresenceLight" Icon="Icons/Icon.ico" Height="1200" Width="1200">
     <Grid>
         <blazor:BlazorWebView x:Name="blazorWebView1" HostPage="wwwroot\index.html" Services="{StaticResource services}">
             <blazor:BlazorWebView.RootComponents>

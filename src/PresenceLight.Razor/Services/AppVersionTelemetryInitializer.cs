@@ -1,22 +1,25 @@
-﻿using System;
+﻿using System.Diagnostics;
+
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.Extensibility;
 
 namespace PresenceLight.Razor.Services
 {
-    internal class AppVersionTelemetryInitializer : ITelemetryInitializer
+    public class AppVersionTelemetryInitializer : ITelemetryInitializer
     {
         private readonly string _appVersion;
+        private readonly AppInfo _appInfo;
 
-        public AppVersionTelemetryInitializer()
+        public AppVersionTelemetryInitializer(AppInfo appInfo)
         {
-            _appVersion = ThisAppInfo.GetApplicationVersion();
+            _appInfo = appInfo;
         }
 
         public void Initialize(ITelemetry telemetry)
         {
-            telemetry.Context.GlobalProperties["App Version"] = "Web";
-            telemetry.Context.Component.Version = _appVersion;
+            telemetry.Context.Component.Version = _appInfo.GetApplicationVersion();
+            telemetry.Context.GlobalProperties["App Version"] = _appInfo.GetApplicationVersion();
+            telemetry.Context.GlobalProperties["App Install Type"] = _appInfo.GetAppInstallType();
         }
     }
 }

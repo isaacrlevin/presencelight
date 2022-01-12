@@ -38,6 +38,7 @@ namespace PresenceLight.Web
 
             services.AddOptions();
             services.AddSingleton<AppState>();
+            services.AddSingleton<AppInfo, AppInfo>();
             services.AddPresenceServices();
             services.AddBlazoredModal();
 
