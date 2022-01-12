@@ -40,8 +40,6 @@ namespace PresenceLight
 
         public static IConfiguration? StaticConfig { get; private set; }
 
-        private readonly AppState _appState = new();
-
         public App()
         {
             
@@ -146,7 +144,6 @@ namespace PresenceLight
 .AddFontAwesomeIcons();
 
             services.AddBlazorWebView();
-            services.AddSingleton<AppState>(_appState);
             services.AddOptions();
             services.AddLogging(logging =>
             {

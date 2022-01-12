@@ -233,6 +233,10 @@
 
     async Task GetToken()
     {
+        if (!@appState.Config.LightSettings.LIFX.IsEnabled)
+        {
+            appState.Config.LightSettings.LIFX.IsEnabled = true;
+        }
         var token = await _lIFXOAuthHelper.InitiateTokenRetrieval();
         appState.Config.LightSettings.LIFX.LIFXApiKey = token;
         if (!@appState.Config.LightSettings.LIFX.IsEnabled)
