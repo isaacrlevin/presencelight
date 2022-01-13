@@ -28,7 +28,7 @@ jobs:
         run: |
           # Hash the Zip Files
           mkdir "${{ github.workspace }}/Download"
-          Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}${{ github.event.inputs.version }}/PresenceLight.Package_${{ github.event.inputs.version }}.0_x64.appxbundle" -OutFile "${{ github.workspace }}/Download/PresenceLight.Package_${{ github.event.inputs.version }}.0_x64.appxbundle"
+          Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}v${{ github.event.inputs.version }}/PresenceLight.Package_${{ github.event.inputs.version }}.0_x64.appxbundle" -OutFile "${{ github.workspace }}/Download/PresenceLight.Package_${{ github.event.inputs.version }}.0_x64.appxbundle"
           $hash64=Get-Filehash ${{ github.workspace }}/Download/PresenceLight.Package_${{ github.event.inputs.version }}.0_x64.appxbundle
           # Update isaaclevin.presencelight.installer.yaml
           $yaml = Get-Content -path "${{ github.workspace }}/Build/winget/isaaclevin.presencelight.installer.yaml"
