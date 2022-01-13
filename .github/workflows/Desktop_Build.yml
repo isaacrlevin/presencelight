@@ -594,6 +594,9 @@ jobs:
 
           COMMIT_MESSAGE="Adding PresenceLight Version: ${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.Package_${{ env.VERSION }}.0_x64.appxbundle"
           gh pr create --title "Submitting  PresenceLight Version ${{ env.VERSION }}" --body "$COMMIT_MESSAGE" -R microsoft/winget-pkgs
+      - name: Setup tmate session
+        if: ${{ failure() }}
+        uses: mxschmitt/action-tmate@v3
 
   Deploy_Store:
     needs: Deploy_Azure_Blob
