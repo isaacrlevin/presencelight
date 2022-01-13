@@ -64,9 +64,10 @@ jobs:
         run: |
           cd ~
           mkdir -p "winget-pkgs/manifests/i/isaaclevin/presencelight/${{ github.event.inputs.version }}"
-          cp "${{ github.workspace }}/Build/winget/isaaclevin.presencelight.installer.yaml" "~/winget-pkgs/manifests/i/isaaclevin/presencelight/${{ github.event.inputs.version }}"
-          cp "${{ github.workspace }}/Build/winget/isaaclevin.presencelight.yaml" "~/winget-pkgs/manifests/i/isaaclevin/presencelight/${{ github.event.inputs.version }}"
-          cp "${{ github.workspace }}/Build/winget/isaaclevin.presencelight.locale.en-US.yaml" "~/winget-pkgs/manifests/i/isaaclevin/presencelight/${{ github.event.inputs.version }}"          
+          cd "winget-pkgs/manifests/i/isaaclevin/presencelight/${{ github.event.inputs.version }}"
+          cp "${{ github.workspace }}/Build/winget/isaaclevin.presencelight.installer.yaml" .
+          cp "${{ github.workspace }}/Build/winget/isaaclevin.presencelight.yaml" .
+          cp "${{ github.workspace }}/Build/winget/isaaclevin.presencelight.locale.en-US.yaml" .
           cd ~/winget-pkgs
           git config --global user.email "github-action@microsoft.com"
           git config --global user.name "GitHub Action"
