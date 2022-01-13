@@ -3,7 +3,7 @@ on:
     branches: [ main ]
     paths-ignore:
     - '.github/workflows/Web_Build.yml'
-    - '.github/workflows/test.yml'
+    - '.github/workflows/winget.yml'
     - 'src/PresenceLight.Web/**'
     - 'src/DockerFiles/**'
     - '*.md'
@@ -12,7 +12,7 @@ on:
     branches: [ main ]
     paths-ignore:
     - '.github/workflows/Web_Build.yml'
-    - '.github/workflows/test.yml'
+    - '.github/workflows/winget.yml'
     - 'src/PresenceLight.Web/**'
     - 'src/DockerFiles/**'
     - '*.md'
