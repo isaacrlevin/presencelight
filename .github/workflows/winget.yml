@@ -62,7 +62,8 @@ jobs:
           dir
       - name: GitHub Cli
         run: |
-          mkdir -p "~/winget-pkgs/manifests/i/isaaclevin/presencelight/${{ github.event.inputs.version }}/"
+          cd ~
+          mkdir -p "winget-pkgs/manifests/i/isaaclevin/presencelight/${{ github.event.inputs.version }}"
           cp "${{ github.workspace }}/Build/winget/isaaclevin.presencelight.installer.yaml" "~/winget-pkgs/manifests/i/isaaclevin/presencelight/${{ github.event.inputs.version }}"
           cp "${{ github.workspace }}/Build/winget/isaaclevin.presencelight.yaml" "~/winget-pkgs/manifests/i/isaaclevin/presencelight/${{ github.event.inputs.version }}"
           cp "${{ github.workspace }}/Build/winget/isaaclevin.presencelight.locale.en-US.yaml" "~/winget-pkgs/manifests/i/isaaclevin/presencelight/${{ github.event.inputs.version }}"          
