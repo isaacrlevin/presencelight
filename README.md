@@ -46,11 +46,18 @@ I welcome all contributions here, as I am no expert in WPF/MSIX things.
 
 ## Third Party Libraries
 
-Presence Light would not be possibke without the amazing work from the contributors to the following third party libraries!
+Presence Light would not be possible without the amazing work from the contributors to the following third party libraries!
 
 - [Q42.HueApi](https://github.com/Q42/Q42.HueApi)
-- [AppInsights.WindowsDesktop](https://github.com/novotnyllc/AppInsights.WindowsDesktop)
+- [OpenWiz](https://github.com/UselessMnemonic/OpenWiz)
+- [YeelightAPI](https://github.dev/roddone/YeelightAPI)
+- [LifxCloud](https://github.com/isaacrlevin/LifxCloudClient)
+- [MediatR](https://github.com/jbogard/MediatR)
+- [Polly](https://github.com/App-vNext/Polly)
+- [Serilog](https://github.com/serilog/serilog)
+- [Blazored.Modal](https://github.com/Blazored/Modal)
+- [Blazorise](https://github.com/Megabit/Blazorise)
+- [BlazorPro.Spinkit](https://github.com/EdCharbeneau/BlazorPro.Spinkit)
+- [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json)
 - [IdentityModel.OidcClient](https://github.com/IdentityModel/IdentityModel.OidcClient)
-- [wpftoolkit](https://github.com/xceedsoftware/wpftoolkit)
-- [OSVersionHelper](https://github.com/onovotny/OSVersionHelper)
-- [WpfAnimatedGif](https://github.com/XamlAnimatedGif/WpfAnimatedGif)
+- [Nerdbank.GitVersioning](https://github.com/dotnet/Nerdbank.GitVersioning)

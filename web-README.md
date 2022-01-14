@@ -76,7 +76,7 @@ Here are some examples for this
 **docker run example**
 
 ```bash
-docker run --rm -it -p 5000:80 -p 5001:443 -e ASPNETCORE_URLS="https://+;http://+" -e ASPNETCORE_HTTPS_PORT=5001 -e ASPNETCORE_Kestrel__Certificates__Default__Password="presencelight" -e ASPNETCORE_Kestrel__Certificates__Default__Path=/https/presencelight.pfx -v $env:USERPROFILE\.aspnet\https:/https/ docker pull isaaclevin/presencelight
+docker run --rm -it -p 5000:80 -p 5001:443 -e ASPNETCORE_URLS="https://+;http://+" -e ASPNETCORE_HTTPS_PORT=5001 -e ASPNETCORE_Kestrel__Certificates__Default__Password="presencelight" -e ASPNETCORE_Kestrel__Certificates__Default__Path=/https/presencelight.pfx -v $env:USERPROFILE\.aspnet\https:/https/ isaaclevin/presencelight
 ```
 
 

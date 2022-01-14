@@ -128,7 +128,7 @@ namespace PresenceLight.Core
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error Occured Finding Lights");
+                _logger.LogError(e, "Error Occured Setting Color");
                 throw;
             }
         }
