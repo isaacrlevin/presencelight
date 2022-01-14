@@ -4,21 +4,21 @@ on:
     branches: [ main ]
     paths-ignore:
     - '.github/workflows/Desktop_Build.yml'
-    - '.github/workflows/test.yml'
     - 'src/DesktopClient/**'
     - 'README.md'
     - 'desktop-README.md'
     - 'Build/PublishStore/**'
+    - '.chocolatey/**'
 
   pull_request:
     branches: [ main ]
     paths-ignore:
     - '.github/workflows/Desktop_Build.yml'
-    - '.github/workflows/test.yml'
     - 'src/DesktopClient/**'
     - 'README.md'
     - 'desktop-README.md'
     - 'Build/PublishStore/**'
+    - '.chocolatey/**'
 
 jobs:
   Build_Web:
@@ -55,11 +55,6 @@ jobs:
     - uses: actions/checkout@v2
       with:
         fetch-depth: 0
-
-    - name: Use .NET Core SDK 6.0.x
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 6.0.x
 
     - name: Nerdbank.GitVersioning
       uses: dotnet/nbgv@v0.3.1

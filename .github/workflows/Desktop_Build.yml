@@ -3,7 +3,6 @@ on:
     branches: [ main ]
     paths-ignore:
     - '.github/workflows/Web_Build.yml'
-    - '.github/workflows/test.yml'
     - 'src/PresenceLight.Web/**'
     - 'src/DockerFiles/**'
     - '*.md'
@@ -12,7 +11,6 @@ on:
     branches: [ main ]
     paths-ignore:
     - '.github/workflows/Web_Build.yml'
-    - '.github/workflows/test.yml'
     - 'src/PresenceLight.Web/**'
     - 'src/DockerFiles/**'
     - '*.md'
@@ -46,16 +44,14 @@ jobs:
 
     - name: setup-msbuild
       uses: microsoft/setup-msbuild@v1
-
-    - name: Use .NET Core SDK 6.0.x
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 6.0.x
-
+      
     - name: Nerdbank.GitVersioning
       uses: dotnet/nbgv@v0.3.1
       with:
         setCommonVars: true
+
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
 
     - run: echo "BuildNumber - ${{ env.GitBuildVersionSimple }}"
 
@@ -142,10 +138,10 @@ jobs:
         dotnet publish .\src\DesktopClient\PresenceLight\PresenceLight.csproj -c ${{ env.BuildConfiguration }} /p:PublishProfile=Properties/PublishProfiles/WinX64.pubxml
       if:  ${{ success() && matrix.ChannelName  == 'Standalone' }}
 
-    - name: Build Standalone Presence Light x86
+    - name: Build Standalone Presence Light ARM64
       run: |
         dotnet restore .\src\DesktopClient\PresenceLight\PresenceLight.csproj
-        dotnet publish .\src\DesktopClient\PresenceLight\PresenceLight.csproj -c ${{ env.BuildConfiguration }} /p:PublishProfile=Properties/PublishProfiles/WinX86.pubxml
+        dotnet publish .\src\DesktopClient\PresenceLight\PresenceLight.csproj -c ${{ env.BuildConfiguration }} /p:PublishProfile=Properties/PublishProfiles/WinARM64.pubxml
       if:  ${{ success() && matrix.ChannelName  == 'Standalone' }}
 
     - name: Zip Standalone PresenceLight x64 Files
@@ -155,18 +151,17 @@ jobs:
       shell: powershell
       if:  ${{ success() && matrix.ChannelName  == 'Standalone' }}
 
-    - name: Zip Standalone PresenceLight x86 Files
+    - name: Zip Standalone PresenceLight ARM Files
       run: |
-        Compress-Archive -Path '.\src\DesktopClient\PresenceLight\bin\${{ env.BuildConfiguration }}\${{ env.Win10RID }}\win-x86\publish\*' `
-        -DestinationPath ${{ github.workspace }}\${{ matrix.ChannelName }}\PresenceLight.${{ env.GitBuildVersionSimple }}-x86.zip
+        Compress-Archive -Path '.\src\DesktopClient\PresenceLight\bin\${{ env.BuildConfiguration }}\${{ env.Win10RID }}\win-arm64\publish\*' `
+        -DestinationPath ${{ github.workspace }}\${{ matrix.ChannelName }}\PresenceLight.${{ env.GitBuildVersionSimple }}-win-arm64.zip
       shell: powershell
       if:  ${{ success() && matrix.ChannelName  == 'Standalone' }}
 
     - name: Build Appx Package
       run: |
         dotnet restore .\src\DesktopClient\PresenceLight\PresenceLight.csproj
-        msbuild /t:restore .\src\DesktopClient\PresenceLight.Package\PresenceLight.Package.wapproj
-        msbuild '.\src\DesktopClient\PresenceLight.Package\PresenceLight.Package.wapproj' /p:VersionNumber=${{ env.GitBuildVersionSimple }} `
+        msbuild /t:restore '.\src\DesktopClient\PresenceLight.Package\PresenceLight.Package.wapproj' /p:VersionNumber=${{ env.GitBuildVersionSimple }} `
         /p:ChannelName=${{ matrix.ChannelName }} /p:configuration='${{ env.BuildConfiguration }}' /p:IncludeSymbols=true `
         /p:AppxPackageDir="${{ github.workspace }}\${{ matrix.ChannelName }}\\"
       if:  ${{ success() && matrix.ChannelName  != 'Standalone' }}
@@ -425,8 +420,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: "/home/runner/work/presencelight/presencelight/StandaloneSigned/PresenceLight.${{ env.VERSION }}-x86.zip"
-          asset_name: "PresenceLight.${{ env.VERSION }}-x86.zip"
+          asset_path: "/home/runner/work/presencelight/presencelight/StandaloneSigned/PresenceLight.${{ env.VERSION }}-win-arm64.zip"
+          asset_name: "PresenceLight.${{ env.VERSION }}-win-arm64.zip"
           asset_content_type: application/zip
 
       - name: Upload Release Asset
@@ -473,25 +468,25 @@ jobs:
         run: |
           # Hash the Zip Files
           mkdir "${{ github.workspace }}\Download"
-          Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x86.zip" -OutFile "${{ github.workspace }}\\Download\\PresenceLight.${{ env.VERSION }}-x86.zip"
+          Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-win-arm64.zip" -OutFile "${{ github.workspace }}\\Download\\PresenceLight.${{ env.VERSION }}-win-arm64.zip"
           Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x64.zip" -OutFile "${{ github.workspace }}\\Download\\PresenceLight.${{ env.VERSION }}-x64.zip"
           $hash64=Get-Filehash ${{ github.workspace }}\\Download\\PresenceLight.${{ env.VERSION }}-x64.zip
-          $hash86=Get-Filehash ${{ github.workspace }}\\Download\\PresenceLight.${{ env.VERSION }}-x86.zip
+          $hashARM=Get-Filehash ${{ github.workspace }}\\Download\\PresenceLight.${{ env.VERSION }}-win-arm64.zip
 
           # Update ChocolateyInstall.ps1
           $installFile = Get-Content -path "${{ github.workspace }}\\Chocolatey\\tools\\ChocolateyInstall.ps1" -Raw
-          $installFile = $installFile -replace '{ReplaceCheckSumx86}', $hash86.Hash
+          $installFile = $installFile -replace '{ReplaceCheckSumARM}', $hashARM.Hash
           $installFile = $installFile -replace '{ReplaceCheckSumx64}', $hash64.Hash
-          $installFile = $installFile -replace '{x86Link}' , "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x86.zip"
+          $installFile = $installFile -replace '{ARMLink}' , "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-win-arm64.zip"
           $installFile = $installFile -replace '{x64Link}' , "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x64.zip"
           $installFile | Set-Content -Path "${{ github.workspace }}\\Chocolatey\\tools\\ChocolateyInstall.ps1"
 
           # Update Verification.txt
           $verificationFile = Get-Content -path "${{ github.workspace }}\\Chocolatey\\tools\\Verification.txt"
-          $verificationFile = $verificationFile -replace '{x86Link}' , "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x86.zip"
+          $verificationFile = $verificationFile -replace '{ARMLink}' , "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-win-arm64.zip"
           $verificationFile = $verificationFile -replace '{x64Link}' , "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x64.zip"
           $verificationFile = $verificationFile -replace '{HASHx64}', $hash64.Hash
-          $verificationFile = $verificationFile -replace '{HASHx86}', $hash86.Hash
+          $verificationFile = $verificationFile -replace '{HASHARM}', $hashARM.Hash
           $verificationFile | Set-Content -Path "${{ github.workspace }}\\Chocolatey\\tools\\Verification.txt"
         shell: powershell
 
@@ -507,81 +502,6 @@ jobs:
             & choco.exe push $nupkg --source https://push.chocolatey.org/
           }
         shell: powershell
-
-  Deploy_WinGet:
-    needs: Deploy_GitHub_Release
-    if: ${{ github.event_name != 'pull_request' }}
-    environment:
-        name: Deploy_WinGet
-        url: ${{ steps.deploy_staging.outputs.webapp-url }}
-    name: Deploy WPF WinGet
-    runs-on: ubuntu-latest
-    env:
-      GitHubReleaseUrl: https://github.com/isaacrlevin/presencelight/releases/download/Desktop-
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-
-      - uses: actions/download-artifact@v2
-        name: Download Chocolatey Artifacts
-        with:
-          name: Chocolatey
-          path: "${{ github.workspace }}/Chocolatey"
-
-      - name: Get Version from File
-        run: |
-          version=$(<"${{ github.workspace }}/Chocolatey/version.txt")
-          echo "VERSION=$version" >> $GITHUB_ENV
-        shell: bash
-
-      - name: Update Winget Yaml
-        run: |
-          # Hash the Zip Files
-          mkdir "${{ github.workspace }}/Download"
-
-          Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.Package_${{ env.VERSION }}.0_x64.appxbundle" -OutFile "${{ github.workspace }}/Download/PresenceLight.Package_${{ env.VERSION }}.0_x64.appxbundle"
-          $hash64=Get-Filehash ${{ github.workspace }}/Download/PresenceLight.Package_${{ env.VERSION }}.0_x64.appxbundle
-
-          # Update winget.yaml
-          $yaml = Get-Content -path "${{ github.workspace }}/Build/winget.yaml"
-          $yaml = $yaml -replace '{x64Link}' , "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.Package_${{ env.VERSION }}.0_x64.appxbundle"
-          $yaml = $yaml -replace '{HASHx64}', $hash64.Hash
-          $yaml = $yaml -replace '{VERSION}', " ${{ env.VERSION }}"
-          $yaml | Set-Content -Path "${{ github.workspace }}/Build/${{ env.VERSION }}.yaml"
-        shell: pwsh
-
-      - name: Add Version File to Artifact
-        run : |
-          New-Item -Path ${{ github.workspace }} -Name "token.txt" -ItemType "file" -Value "${{ secrets.GHCliToken }}"
-        shell: pwsh
-
-      - name: GitHub Cli Auth
-        run: |
-          gh auth login --with-token < "${{ github.workspace }}/token.txt"
-
-      - name: GitHub Cli Fork
-        run: |
-          cd ~
-          gh repo fork microsoft/winget-pkgs --clone=false
-          git clone "https://${{ secrets.GHCliToken  }}@github.com/isaacrlevin/winget-pkgs.git"
-          dir
-
-      - name: GitHub Cli
-        run: |
-          mkdir -p "~/winget-pkgs/manifests/i/isaaclevin/presencelight/${{ env.VERSION }}"
-          cp "${{ github.workspace }}/Build/${{ env.VERSION }}.yaml" "~/winget-pkgs/manifests/i/isaaclevin/presencelight/${{ env.VERSION }}"
-          cd ~/winget-pkgs
-
-          git config --global user.email "github-action@microsoft.com"
-          git config --global user.name "GitHub Action"
-
-          git add .
-          git commit -m "Submitting  PresenceLight version ${{ env.VERSION }}.yaml"
-          git push
-
-          COMMIT_MESSAGE="Adding PresenceLight Version: ${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.Package_${{ env.VERSION }}.0_x64.appxbundle"
-          gh pr create --title "Submitting  PresenceLight Version ${{ env.VERSION }}" --body "$COMMIT_MESSAGE" -R microsoft/winget-pkgs
 
   Deploy_Store:
     needs: Deploy_Azure_Blob
