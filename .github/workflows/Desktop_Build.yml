@@ -44,6 +44,11 @@ jobs:
 
     - name: setup-msbuild
       uses: microsoft/setup-msbuild@v1
+
+    - name: Use .NET Core SDK 6.0.x
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
       
     - name: Nerdbank.GitVersioning
       uses: dotnet/nbgv@v0.3.1
