@@ -55,9 +55,6 @@ jobs:
       with:
         setCommonVars: true
 
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
-
     - run: echo "BuildNumber - ${{ env.GitBuildVersionSimple }}"
 
     - name: Create Directory for Channel
