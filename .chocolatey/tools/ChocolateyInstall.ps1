@@ -28,9 +28,9 @@ if($pp['InstallDir']){
 $packageArgs = @{
   packageName    = $packageName
   unzipLocation  = $InstallDir
-  url            = "{x86Link}"
+  url            = "{xARMLink}"
   url64bit       = "{x64Link}"
-  checksum       = "{ReplaceCheckSumx86}"
+  checksum       = "{ReplaceCheckSumxARM}"
   checksum64     = "{ReplaceCheckSumx64}"
   checksumType   = 'SHA256'
   checksumType64 = 'SHA256'
