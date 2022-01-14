@@ -44,11 +44,14 @@ jobs:
 
     - name: setup-msbuild
       uses: microsoft/setup-msbuild@v1
-
+      
     - name: Nerdbank.GitVersioning
       uses: dotnet/nbgv@v0.3.1
       with:
         setCommonVars: true
+
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
 
     - run: echo "BuildNumber - ${{ env.GitBuildVersionSimple }}"
 
