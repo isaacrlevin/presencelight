@@ -28,12 +28,13 @@ if($pp['InstallDir']){
 $packageArgs = @{
   packageName    = $packageName
   unzipLocation  = $InstallDir
-  url            = "{xARMLink}"
+  urlARM         = "{ARMLink}"
+  url86bit       = "{x86Link}"
   url64bit       = "{x64Link}"
-  checksum       = "{ReplaceCheckSumxARM}"
+  checksumARM    = "{ReplaceCheckSumARM}"
+  checksum       = "{ReplaceCheckSumx86}"
   checksum64     = "{ReplaceCheckSumx64}"
   checksumType   = 'SHA256'
-  checksumType64 = 'SHA256'
 }
 
 Install-ChocolateyZipPackage @packageArgs
