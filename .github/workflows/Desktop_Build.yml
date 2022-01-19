@@ -313,7 +313,7 @@ jobs:
     - name: Scale Down Sign Service
       uses: azure/cli@v1.0.0
       with:
-        inlineScript: az appservice plan update --name levin-signserv-asp-2dnwx6q6jwiay --resource-group SignService --sku S1
+        inlineScript: az appservice plan update --name levin-signserv-asp-2dnwx6q6jwiay --resource-group SignService --sku B1
         azcliversion: latest
 
     - name: Publish Signed Release Packages
