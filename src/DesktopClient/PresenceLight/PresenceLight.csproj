@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <TargetFramework>net6.0-windows10.0.19041</TargetFramework>
@@ -10,42 +10,32 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <TieredCompilationQuickJitForLoops>true</TieredCompilationQuickJitForLoops>
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
-    <ApplicationIcon>Icon.ico</ApplicationIcon>
+    <ApplicationIcon>Icons\Icon.ico</ApplicationIcon>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DebugType>full</DebugType>
-    <DebugSymbols>true</DebugSymbols>
-  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Services\MessageBoxHelper.cs" />
+  </ItemGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DebugType>full</DebugType>
-    <DebugSymbols>true</DebugSymbols>
-  </PropertyGroup>
 
   <ItemGroup> 
     <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.20.0" />
-    <PackageReference Include="Extended.Wpf.Toolkit" Version="4.2.0" />
-    <PackageReference Include="IdentityModel.OidcClient" Version="5.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.OAuth" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.2.7" />
-    <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Graph" Version="4.12.0" />
-    <PackageReference Include="Microsoft.Graph.Core" Version="2.0.7" />
-    <PackageReference Include="Microsoft.Identity.Client" Version="4.39.0" />
-    <PackageReference Include="NETStandard.HttpListener" Version="1.0.3.5" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="Q42.HueApi" Version="3.19.0" />
-    <PackageReference Include="Q42.HueApi.ColorConverters" Version="3.18.1" />
-    <PackageReference Include="WpfAnimatedGif" Version="2.0.2" />
-    <PackageReference Include="YeelightAPI" Version="1.10.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Wpf" Version="6.0.200-preview.12.2441" />
+    <PackageReference Include="Serilog.Sinks.ApplicationInsights" Version="3.1.0" />
+    <PackageReference Update="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.2" />
+    <PackageReference Update="Microsoft.SourceLink.GitHub" Version="1.1.1" />
+    <PackageReference Update="Nerdbank.GitVersioning" Version="3.4.255" />
     <ProjectReference Include="..\..\PresenceLight.Core\PresenceLight.Core.csproj" />
+    <ProjectReference Include="..\..\PresenceLight.Razor\PresenceLight.Razor.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Icons\Available.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Icons\BusyIdle.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Icons\AvailableIdle.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Icons\Away.ico">
@@ -60,13 +50,13 @@
     <Resource Include="Icons\DoNotDisturb.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Icons\DoNotDisturb.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
     <Resource Include="Icons\Icon.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Icons\Icon.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Icons\Offline.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Icons\Inactive.ico">
@@ -79,6 +69,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Icons\t_Available.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Icons\t_BusyIdle.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Icons\t_AvailableIdle.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Icons\t_Away.ico">
@@ -103,40 +99,20 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
-  <ItemGroup>
-    <Compile Update="Properties\Settings.Designer.cs">
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
-  </ItemGroup>
 
   <ItemGroup>
-    <None Update="appsettings.Development.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="appsettings.Development.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Update="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.2" />
-    <PackageReference Update="Microsoft.SourceLink.GitHub" Version="1.1.1" />
-    <PackageReference Update="Nerdbank.GitVersioning" Version="3.4.244" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Page Update="Controls\Wiz.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-    </Page>
+    <ItemGroup>
+    <Content Update="wwwroot\**">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 
 namespace PresenceLight.Core
 {
-    public class Statuses
+    public class PresenceLightStatuses
     {
         public AvailabilityStatus AvailabilityAvailableStatus { get; set; }
 

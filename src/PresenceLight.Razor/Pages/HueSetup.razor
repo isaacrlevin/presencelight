@@ -1,10 +1,8 @@
 ﻿@page "/hue"
 
-@inject PresenceLight.Razor.Services.SettingsService SettingsService
-
+@inject ISettingsService SettingsService
 @inject AppState appState
 @inject IModalService Modal
-@inject IOptionsMonitor<BaseConfig> Config
 @inject ILogger<HueSetup> _logger;
 
 <div class="container text-body" style="overflow:hidden">
@@ -17,21 +15,21 @@
                     <br />
                     <div class="row">
                         <div class="col-4">
-                            <input type="checkbox" checked="@Config.CurrentValue.LightSettings.Hue.IsEnabled" @bind-value="@Config.CurrentValue.LightSettings.Hue.IsEnabled" /> Connect to Philips Hue
+                            <input type="checkbox" checked="@appState.Config.LightSettings.Hue.IsEnabled" @bind-value="@appState.Config.LightSettings.Hue.IsEnabled" /> Connect to Philips Hue
                         </div>
-                        @if (Config.CurrentValue.LightSettings.Hue.IsEnabled)
+                        @if (appState.Config.LightSettings.Hue.IsEnabled)
                         {
                             <div class="col-4">
-                                <input type="checkbox" checked="@Config.CurrentValue.LightSettings.Hue.UseRemoteApi" @bind-value="@Config.CurrentValue.LightSettings.Hue.UseRemoteApi" /> Use Remote Api
+                                <input type="checkbox" checked="@appState.Config.LightSettings.Hue.UseRemoteApi" @bind-value="@appState.Config.LightSettings.Hue.UseRemoteApi" /> Use Remote Api
                             </div>
                             <div class="col-4">
-                                <button class="btn btn-primary" disabled="@(!Config.CurrentValue.LightSettings.Hue.UseRemoteApi)" @onclick="LoginRemoteApi">Login to Hue Cloud</button>
+                                <button class="btn btn-primary" disabled="@(!appState.Config.LightSettings.Hue.UseRemoteApi)" @onclick="LoginRemoteApi">Login to Hue Cloud</button>
                             </div>
                         }
                     </div>
                     <br />
                     <br />
-                    @if (Config.CurrentValue.LightSettings.Hue.IsEnabled)
+                    @if (appState.Config.LightSettings.Hue.IsEnabled)
                     {
                         <EditForm Model="@tempConfig" OnValidSubmit="RegisterBridge">
                             <InputText id="name" @bind-Value="@tempConfig.LightSettings.Hue.HueIpAddress" />
@@ -68,7 +66,7 @@
                                         {
                                             var obj = (Q42.HueApi.Models.Groups.Group)light;
 
-                                            @if (Config.CurrentValue.LightSettings.LIFX.SelectedItemId == $"group_id:{obj.Id}")
+                                            @if (appState.Config.LightSettings.LIFX.SelectedItemId == $"group_id:{obj.Id}")
                                             {
                                                 <option selected="selected" value=group_id:@obj.Id>@obj.Name</option>
                                             }
@@ -81,7 +79,7 @@
                                         {
                                             var obj = (Q42.HueApi.Light)light;
 
-                                            @if (Config.CurrentValue.LightSettings.LIFX.SelectedItemId == $"id:{obj.Id}")
+                                            @if (appState.Config.LightSettings.LIFX.SelectedItemId == $"id:{obj.Id}")
                                             {
                                                 <option selected="selected" value=id:@obj.Id>@obj.Name</option>
                                             }
@@ -98,7 +96,7 @@
                         <br />
                         <br />
 
-                        <Statuses Light="@Config.CurrentValue.LightSettings.Hue"></Statuses>
+                        <Statuses Light="@appState.Config.LightSettings.Hue"></Statuses>
 
                         <br />
                         <br />
@@ -126,9 +124,9 @@
     {
         try
         {
-            SettingsService.SaveSettings(Config.CurrentValue);
+            SettingsService.SaveSettings(appState.Config);
 
-            _mediator.Send(new Core.HueServices.InitializeCommand() { Request = Config.CurrentValue }).Wait();
+            _mediator.Send(new Core.HueServices.InitializeCommand() { AppState = appState }).Wait();
 
             message = "Settings Saved";
             settingsSaved = true;
@@ -147,11 +145,11 @@
             var (bridgeId, apiKey, bridgeIp) = await _mediator.Send(new PresenceLight.Core.RemoteHueServices.RegisterBridgeCommand());
             if (!string.IsNullOrEmpty(apiKey) && !string.IsNullOrEmpty(bridgeId) && !string.IsNullOrEmpty(bridgeIp))
             {
-                Config.CurrentValue.LightSettings.Hue.HueApiKey = apiKey;
-                Config.CurrentValue.LightSettings.Hue.RemoteBridgeId = bridgeId;
-                Config.CurrentValue.LightSettings.Hue.HueIpAddress = bridgeIp;
+                appState.Config.LightSettings.Hue.HueApiKey = apiKey;
+                appState.Config.LightSettings.Hue.RemoteBridgeId = bridgeId;
+                appState.Config.LightSettings.Hue.HueIpAddress = bridgeIp;
 
-                SettingsService.SaveSettings(Config.CurrentValue);
+                SettingsService.SaveSettings(appState.Config);
             }
         }
         catch (Exception ex)
@@ -227,7 +225,7 @@
 
                     appState.SetHueLights(await _mediator.Send(new PresenceLight.Core.HueServices.GetLightsCommand()));
 
-                    if (string.IsNullOrEmpty(Config.CurrentValue.LightSettings.Hue.SelectedItemId) && appState.HueLights.Count() > 0)
+                    if (string.IsNullOrEmpty(appState.Config.LightSettings.Hue.SelectedItemId) && appState.HueLights.Count() > 0)
                     {
                         tempConfig.LightSettings.Hue.SelectedItemId = ((Q42.HueApi.Light)appState.HueLights.FirstOrDefault()).Id;
                     }
@@ -237,9 +235,9 @@
                     _logger.LogError(e, "Error Occured Getting Hue Lights");
                     throw;
                 }
-                Config.CurrentValue.LightSettings.Hue.HueIpAddress = tempConfig.LightSettings.Hue.HueIpAddress;
-                Config.CurrentValue.LightSettings.Hue.HueApiKey = tempConfig.LightSettings.Hue.HueApiKey;
-                Config.CurrentValue.LightSettings.Hue.SelectedItemId = tempConfig.LightSettings.Hue.SelectedItemId;
+                appState.Config.LightSettings.Hue.HueIpAddress = tempConfig.LightSettings.Hue.HueIpAddress;
+                appState.Config.LightSettings.Hue.HueApiKey = tempConfig.LightSettings.Hue.HueApiKey;
+                appState.Config.LightSettings.Hue.SelectedItemId = tempConfig.LightSettings.Hue.SelectedItemId;
 
                 Save();
             }
@@ -258,11 +256,11 @@
     {
         if (string.IsNullOrEmpty(lastType) || type != lastType)
         {
-            Config.CurrentValue.LightSettings.Hue.SelectedItemId = string.Empty;
+            appState.Config.LightSettings.Hue.SelectedItemId = string.Empty;
             lastType = type;
         }
 
-        if (!string.IsNullOrEmpty(Config.CurrentValue.LightSettings.Hue.HueApiKey))
+        if (!string.IsNullOrEmpty(appState.Config.LightSettings.Hue.HueApiKey))
         {
             try
             {
@@ -274,20 +272,20 @@
 
                     appState.SetHueLights(await _mediator.Send(new Core.HueServices.GetGroupsCommand()));
 
-                    if (string.IsNullOrEmpty(Config.CurrentValue.LightSettings.Hue.SelectedItemId) && appState.HueLights.Count() > 0)
+                    if (string.IsNullOrEmpty(appState.Config.LightSettings.Hue.SelectedItemId) && appState.HueLights.Count() > 0)
                     {
                         var obj = (Q42.HueApi.Models.Groups.Group)appState.HueLights.FirstOrDefault();
-                        Config.CurrentValue.LightSettings.Hue.SelectedItemId = $"group_id:{obj.Id}";
+                        appState.Config.LightSettings.Hue.SelectedItemId = $"group_id:{obj.Id}";
                     }
                 }
                 else
                 {
                     appState.SetHueLights(await _mediator.Send(new Core.HueServices.GetLightsCommand()));
 
-                    if (string.IsNullOrEmpty(Config.CurrentValue.LightSettings.Hue.SelectedItemId) && appState.HueLights.Count() > 0)
+                    if (string.IsNullOrEmpty(appState.Config.LightSettings.Hue.SelectedItemId) && appState.HueLights.Count() > 0)
                     {
                         var obj = (Q42.HueApi.Light)appState.HueLights.FirstOrDefault();
-                        Config.CurrentValue.LightSettings.Hue.SelectedItemId = $"id:{obj.Id}";
+                        appState.Config.LightSettings.Hue.SelectedItemId = $"id:{obj.Id}";
                     }
                 }
 
@@ -314,7 +312,7 @@
     {
         var light = e.Value.ToString();
         tempConfig.LightSettings.Hue.SelectedItemId = light;
-        Config.CurrentValue.LightSettings.Hue.SelectedItemId = light;
+        appState.Config.LightSettings.Hue.SelectedItemId = light;
         appState.SetHueLight(light);
     }
 
@@ -322,11 +320,11 @@
     {
         try
         {
-            tempConfig = Config.CurrentValue;
+            tempConfig = appState.Config;
 
             if (!string.IsNullOrEmpty(tempConfig.LightSettings.Hue.HueApiKey))
             {
-                if (Config.CurrentValue.LightSettings.LIFX.SelectedItemId.Contains("group"))
+                if (appState.Config.LightSettings.LIFX.SelectedItemId.Contains("group"))
                 {
                     appState.SetHueLights(await _mediator.Send(new PresenceLight.Core.HueServices.GetGroupsCommand()));
 

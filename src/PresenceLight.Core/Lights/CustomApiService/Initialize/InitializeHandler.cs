@@ -18,7 +18,7 @@ namespace PresenceLight.Core.Initialize
 
         public Task<Unit> Handle(InitializeCommand command, CancellationToken cancellationToken)
         {
-            _service.Initialize(command.Request);
+            _service.Initialize(command.AppState);
             return Unit.Task;
         }
     }

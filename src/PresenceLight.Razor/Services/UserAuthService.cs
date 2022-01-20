@@ -20,12 +20,22 @@ namespace PresenceLight.Razor
 
         public UserAuthService(IConfiguration Configuration)
         {
-            _msalClient = ConfidentialClientApplicationBuilder
-                 .Create(Configuration["AzureAd:ClientId"])
-                 .WithClientSecret(Configuration["AzureAd:ClientSecret"])
-                 .WithAuthority($"{Configuration["AzureAd:Instance"]}common/v2.0")
-                 .WithRedirectUri($"{Configuration["AzureAd:RedirectHost"].ToString()}{Configuration["AzureAd:CallbackPath"]}")
-                 .Build();
+            if (string.IsNullOrEmpty(Configuration["AzureAd:ClientId"]) ||
+                string.IsNullOrEmpty(Configuration["AzureAd:ClientSecret"]) ||
+                string.IsNullOrEmpty(Configuration["AzureAd:Instance"]) ||
+                string.IsNullOrEmpty(Configuration["AzureAd:RedirectHost"]) ||
+                string.IsNullOrEmpty(Configuration["AzureAd:CallbackPath"])
+                )
+            { }
+            else
+            {
+                _msalClient = ConfidentialClientApplicationBuilder
+                     .Create(Configuration["AzureAd:ClientId"])
+                     .WithClientSecret(Configuration["AzureAd:ClientSecret"])
+                     .WithAuthority($"{Configuration["AzureAd:Instance"]}common/v2.0")
+                     .WithRedirectUri($"{Configuration["AzureAd:RedirectHost"].ToString()}{Configuration["AzureAd:CallbackPath"]}")
+                     .Build();
+            }
         }
 
         public async Task<bool> IsUserAuthenticated()
@@ -35,6 +45,11 @@ namespace PresenceLight.Razor
             if (null != _userAccount)
             {
                 return true;
+            }
+
+            if (_msalClient == null)
+            {
+                return false;
             }
 
             // See if there are any accounts in the cache

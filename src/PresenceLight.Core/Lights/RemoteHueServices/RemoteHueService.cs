@@ -20,24 +20,24 @@ namespace PresenceLight.Core
         Task SetColor(string availability, string activity, string lightId);
         Task<(string bridgeId, string apiKey, string bridgeIp)> RegisterBridge();
         Task<IEnumerable<Light>> GetLights();
-        void Initialize(BaseConfig options);
+        void Initialize(AppState _appState);
     }
     public class RemoteHueService : IRemoteHueService
     {
-        private BaseConfig _options;
+        private AppState _appState;
         private RemoteHueClient _client;
         private IRemoteAuthenticationClient _authClient;
         private readonly ILogger<RemoteHueService> _logger;
         private MediatR.IMediator _mediator;
 
-        public RemoteHueService(IOptionsMonitor<BaseConfig> optionsAccessor, ILogger<RemoteHueService> logger, MediatR.IMediator mediator)
+        public RemoteHueService(AppState appState, ILogger<RemoteHueService> logger, MediatR.IMediator mediator)
         {
             _mediator = mediator;
             _logger = logger;
-            _options = optionsAccessor.CurrentValue;
-            if (!string.IsNullOrWhiteSpace(_options.LightSettings.Hue.RemoteHueClientId))
+            _appState = appState;
+            if (!string.IsNullOrWhiteSpace(_appState.Config.LightSettings.Hue.RemoteHueClientId))
             {
-                _authClient = new RemoteAuthenticationClient(_options.LightSettings.Hue.RemoteHueClientId, _options.LightSettings.Hue.RemoteHueClientSecret, _options.LightSettings.Hue.RemoteHueClientAppName);
+                _authClient = new RemoteAuthenticationClient(_appState.Config.LightSettings.Hue.RemoteHueClientId, _appState.Config.LightSettings.Hue.RemoteHueClientSecret, _appState.Config.LightSettings.Hue.RemoteHueClientAppName);
             }
             else
             {
@@ -45,17 +45,17 @@ namespace PresenceLight.Core
             }
         }
 
-        public void Initialize(BaseConfig options)
+        public void Initialize(AppState appState)
         {
-            _options = options;
-            _authClient = new RemoteAuthenticationClient(_options.LightSettings.Hue.RemoteHueClientId, _options.LightSettings.Hue.RemoteHueClientSecret, _options.LightSettings.Hue.RemoteHueClientAppName);
+            _appState = appState;
+            _authClient = new RemoteAuthenticationClient(_appState.Config.LightSettings.Hue.RemoteHueClientId, _appState.Config.LightSettings.Hue.RemoteHueClientSecret, _appState.Config.LightSettings.Hue.RemoteHueClientAppName);
         }
 
         private async Task GetAccessToken()
         {
             try
             {
-                Uri authorizeUri = _authClient.BuildAuthorizeUri(_options.LightSettings.Hue.RemoteHueClientAppName, _options.LightSettings.Hue.RemoteHueClientAppName);
+                Uri authorizeUri = _authClient.BuildAuthorizeUri(_appState.Config.LightSettings.Hue.RemoteHueClientAppName, _appState.Config.LightSettings.Hue.RemoteHueClientAppName);
 
                 TryBindListenerOnFreePort(out HttpListener http, out int port, out string redirectURI);
 
@@ -131,25 +131,25 @@ namespace PresenceLight.Core
 
                 string bridgeId;
                 string bridgeIp;
-                if (string.IsNullOrEmpty(_options.LightSettings.Hue.RemoteBridgeId))
+                if (string.IsNullOrEmpty(_appState.Config.LightSettings.Hue.RemoteBridgeId))
                 {
                     bridgeId = bridges.First().Id;
                     bridgeIp = bridges.First().InternalIpaddress;
                 }
                 else
                 {
-                    bridgeId = _options.LightSettings.Hue.RemoteBridgeId;
-                    bridgeIp = _options.LightSettings.Hue.HueIpAddress;
+                    bridgeId = _appState.Config.LightSettings.Hue.RemoteBridgeId;
+                    bridgeIp = _appState.Config.LightSettings.Hue.HueIpAddress;
                 }
 
                 string apiKey;
-                if (string.IsNullOrEmpty(_options.LightSettings.Hue.HueApiKey))
+                if (string.IsNullOrEmpty(_appState.Config.LightSettings.Hue.HueApiKey))
                 {
-                    apiKey = await _client.RegisterAsync(bridgeId, _options.LightSettings.Hue.RemoteHueClientAppName);
+                    apiKey = await _client.RegisterAsync(bridgeId, _appState.Config.LightSettings.Hue.RemoteHueClientAppName);
                 }
                 else
                 {
-                    apiKey = _options.LightSettings.Hue.HueApiKey;
+                    apiKey = _appState.Config.LightSettings.Hue.HueApiKey;
                 }
 
                 if (!_client.IsInitialized)
@@ -183,7 +183,7 @@ namespace PresenceLight.Core
                     throw new ArgumentNullException("Remote Hue Client Not Configured");
                 }
 
-                var o = await Handle(_options.LightSettings.Hue.UseActivityStatus ? activity : availability, lightId);
+                var o = await Handle(_appState.Config.LightSettings.Hue.UseActivityStatus ? activity : availability, lightId);
 
                 if (o.returnFunc)
                 {
@@ -229,29 +229,29 @@ namespace PresenceLight.Core
                     return;
                 }
 
-                if (_options.LightSettings.UseDefaultBrightness)
+                if (_appState.Config.LightSettings.UseDefaultBrightness)
                 {
-                    if (_options.LightSettings.DefaultBrightness == 0)
+                    if (_appState.Config.LightSettings.DefaultBrightness == 0)
                     {
                         command.On = false;
                     }
                     else
                     {
                         command.On = true;
-                        command.Brightness = Convert.ToByte(((Convert.ToDouble(_options.LightSettings.DefaultBrightness) / 100) * 254));
+                        command.Brightness = Convert.ToByte(((Convert.ToDouble(_appState.Config.LightSettings.DefaultBrightness) / 100) * 254));
                         command.TransitionTime = new TimeSpan(0);
                     }
                 }
                 else
                 {
-                    if (_options.LightSettings.Hue.Brightness == 0)
+                    if (_appState.Config.LightSettings.Hue.Brightness == 0)
                     {
                         command.On = false;
                     }
                     else
                     {
                         command.On = true;
-                        command.Brightness = Convert.ToByte(((Convert.ToDouble(_options.LightSettings.Hue.Brightness) / 100) * 254));
+                        command.Brightness = Convert.ToByte(((Convert.ToDouble(_appState.Config.LightSettings.Hue.Brightness) / 100) * 254));
                         command.TransitionTime = new TimeSpan(0);
                     }
                 }
@@ -282,7 +282,7 @@ namespace PresenceLight.Core
                 if (_client == null || !_client.IsInitialized)
                 {
                     _client = new RemoteHueClient(_authClient.GetValidToken);
-                    _client.Initialize(_options.LightSettings.Hue.RemoteBridgeId, _options.LightSettings.Hue.HueApiKey);
+                    _client.Initialize(_appState.Config.LightSettings.Hue.RemoteBridgeId, _appState.Config.LightSettings.Hue.HueApiKey);
                 }
 
                 var lights = await _client.GetLightsAsync();
@@ -309,9 +309,9 @@ namespace PresenceLight.Core
 
         private async Task<(string color, LightCommand command, bool returnFunc)> Handle(string presence, string lightId)
         {
-            var props = _options.LightSettings.Hue.Statuses.GetType().GetProperties().ToList();
+            var props = _appState.Config.LightSettings.Hue.Statuses.GetType().GetProperties().ToList();
 
-            if (_options.LightSettings.Hue.UseActivityStatus)
+            if (_appState.Config.LightSettings.Hue.UseActivityStatus)
             {
                 props = props.Where(a => a.Name.ToLower().StartsWith("activity")).ToList();
             }
@@ -336,7 +336,7 @@ namespace PresenceLight.Core
             {
                 if (presence == prop.Name.Replace("Status", "").Replace("Availability", "").Replace("Activity", ""))
                 {
-                    var value = (AvailabilityStatus)prop.GetValue(_options.LightSettings.Hue.Statuses);
+                    var value = (AvailabilityStatus)prop.GetValue(_appState.Config.LightSettings.Hue.Statuses);
 
                     if (!value.Disabled)
                     {
