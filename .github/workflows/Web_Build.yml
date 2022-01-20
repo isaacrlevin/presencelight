@@ -106,13 +106,13 @@ jobs:
       shell: powershell
       if: ${{ success() && github.event_name != 'pull_request' }}
 
-    - run: dotnet publish '.\src\PresenceLight.Web\PresenceLight.Web.csproj' -r ${{ matrix.RID }} -c ${{ env.BuildConfiguration }} /p:PublishSingleFile=true -o ${{ github.workspace }}\${{ env.GitBuildVersionSimple }}_${{ matrix.ChannelName }} /p:Version=${{ env.GitBuildVersionSimple }}
+    - run: dotnet publish '.\src\PresenceLight.Web\PresenceLight.Web.csproj' -r ${{ matrix.RID }} -c ${{ env.BuildConfiguration }} /p:PublishSingleFile=true -o ${{ github.workspace }}\PresenceLight.${{ env.GitBuildVersionSimple }}_${{ matrix.ChannelName }} /p:Version=${{ env.GitBuildVersionSimple }}
       name: dotnet publish ${{ matrix.RID }}
       if: ${{ success() }}
 
     - name: Zip PresenceLight Web Files
       run: |
-        Compress-Archive -Path '${{ github.workspace }}\${{ env.GitBuildVersionSimple }}_${{ matrix.ChannelName }}\' `
+        Compress-Archive -Path '${{ github.workspace }}\PresenceLight.${{ env.GitBuildVersionSimple }}_${{ matrix.ChannelName }}\' `
         -DestinationPath ${{ github.workspace }}\${{ matrix.ChannelName }}\PresenceLight.${{ matrix.ChannelName }}.${{ env.GitBuildVersionSimple }}.zip
       shell: powershell
 
