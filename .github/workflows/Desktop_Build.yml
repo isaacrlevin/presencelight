@@ -256,7 +256,7 @@ jobs:
           --descriptionUrl "https://github.com/isaacrlevin/presencelight"
 
     - uses: nick-invision/retry@v2
-      name: Authenticode Sign AppXBundle Release
+      name: Authenticode Sign AppXUpload Release
       with:
         timeout_minutes: 5
         max_attempts: 5
@@ -265,7 +265,7 @@ jobs:
         command: |
           .\SignClient "Sign" `
           --baseDirectory "${{ github.workspace }}/ToSign/Release" `
-          --input "**/*.appxbundle" `
+          --input "**/*.appxupload" `
           --config "${{ github.workspace }}/SigningScripts/appsettings.json" `
           --filelist "${{ github.workspace }}/SigningScripts/filelist.txt" `
           --user "${{ secrets.SignClientUser }}" `
@@ -449,17 +449,6 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: "/home/runner/work/presencelight/presencelight/StandaloneSigned/PresenceLight.${{ env.VERSION }}-win-arm64.zip"
           asset_name: "PresenceLight.${{ env.VERSION }}-win-arm64.zip"
-          asset_content_type: application/zip
-
-      - name: Upload AppX Release
-        id: upload-release-asset3
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: "/home/runner/work/presencelight/presencelight/ReleaseSigned/PresenceLight.Package_${{ env.VERSION }}.0_Test/PresenceLight.Package_${{ env.VERSION }}.0_x64_x86.appxbundle"
-          asset_name: "PresenceLight.Package_${{ env.VERSION }}.0_x64_x86.appxbundle"
           asset_content_type: application/zip
 
   Deploy_Choco:
