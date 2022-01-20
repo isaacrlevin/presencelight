@@ -45,8 +45,7 @@
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>x64|x86</AppxBundlePlatforms>
     <AppxPackageIncludePrivateSymbols>true</AppxPackageIncludePrivateSymbols>
-    <UapAppxPackageBuildMode>SideLoadOnly</UapAppxPackageBuildMode>
-    <UapAppxPackageBuildMode Condition="'$(ChannelName)' == 'Release'">CI</UapAppxPackageBuildMode>
+    <UapAppxPackageBuildMode Condition="'$(ChannelName)' == 'Release'">StoreUpload</UapAppxPackageBuildMode>
     <EntryPointProjectUniqueName>..\PresenceLight\PresenceLight.csproj</EntryPointProjectUniqueName>
     <EntryPointExe Condition="'$(BuildingInsideVisualStudio)' != 'true' ">PresenceLight\PresenceLight.exe</EntryPointExe>
     <EntryPointProjectUniqueName Condition="'$(BuildingInsideVisualStudio)' == 'true' ">..\PresenceLight\PresenceLight.csproj</EntryPointProjectUniqueName>
