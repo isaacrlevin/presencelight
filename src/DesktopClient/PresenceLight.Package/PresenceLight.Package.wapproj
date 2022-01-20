@@ -16,18 +16,6 @@
       <Configuration>Debug</Configuration>
       <Platform>x86</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|x86">
-      <Configuration>Release</Configuration>
-      <Platform>x86</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Debug|ARM64">
-      <Configuration>Debug</Configuration>
-      <Platform>ARM64</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|ARM64">
-      <Configuration>Release</Configuration>
-      <Platform>ARM64</Platform>
-    </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup>
     <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
@@ -42,6 +30,7 @@
     <DebuggerType>ManagedOnly</DebuggerType>
     <AppxPackageSigningEnabled>false</AppxPackageSigningEnabled>
     <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
+    <AppxBundleAutoResourcePackageQualifiers>Language|DXFeatureLevel</AppxBundleAutoResourcePackageQualifiers>
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>x64|x86</AppxBundlePlatforms>
     <AppxPackageIncludePrivateSymbols>true</AppxPackageIncludePrivateSymbols>
@@ -80,7 +69,6 @@
       <SkipGetTargetFrameworkProperties>True</SkipGetTargetFrameworkProperties>
       <PublishProfile Condition="'$(Platform)'=='x64'">Properties\PublishProfiles\WinX64.pubxml</PublishProfile>
       <PublishProfile Condition="'$(Platform)'=='x86'">Properties\PublishProfiles\WinX86.pubxml</PublishProfile>
-      <PublishProfile Condition="'$(Platform)'=='ARM64'">Properties\PublishProfiles\WinARM64.pubxml</PublishProfile>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(WapProjPath)\Microsoft.DesktopBridge.targets" />

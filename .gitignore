@@ -55,6 +55,9 @@ mono_crash.*
 x64/
 x86/
 win-arm64/
+Nightly/
+.Store
+SignClient.exe
 
 [Aa][Rr][Mm]/
 [Aa][Rr][Mm]64/
