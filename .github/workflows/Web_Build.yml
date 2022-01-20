@@ -85,6 +85,8 @@ jobs:
         $appsettings.azureAd.clientId = "${{ secrets.ApplicationId }}"
         $appsettings.azureAd.clientSecret = "${{ secrets.ClientSecret }}"
 
+        $appsettings.appVersion = ${{ env.GitBuildVersionSimple }}
+
         $appsettings.applicationInsights.instrumentationkey = "${{ secrets.InstrumentationKey }}"
         $appsettings | ConvertTo-Json -depth 32| set-content '.\src\PresenceLight.Web\appsettings.json'
       shell: powershell
@@ -363,6 +365,8 @@ jobs:
 
           $appsettings.azureAd.clientId = "${{ secrets.ApplicationId }}"
           $appsettings.azureAd.clientSecret = "${{ secrets.ClientSecret }}"
+
+          $appsettings.appVersion = ${{ env.GitBuildVersionSimple }}
 
           $appsettings.applicationInsights.instrumentationkey = "${{ secrets.InstrumentationKey }}"
           $appsettings | ConvertTo-Json -depth 32| set-content '.\src\PresenceLight.Web\appsettings.json'
