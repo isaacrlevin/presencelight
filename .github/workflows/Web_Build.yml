@@ -286,37 +286,37 @@ jobs:
     - name: Download Windows_ARM Artifacts
       uses: actions/download-artifact@v2
       with:
-        name: Windows_ARM
+        name: Windows_ARM_Signed
         path: ${{ github.workspace }}/Sign/Windows_ARM
 
     - name: Download macOS Artifacts
       uses: actions/download-artifact@v2
       with:
-        name: macOS
+        name: macOS_Signed
         path: ${{ github.workspace }}/Sign/macOS
 
     - name: Download Linux_ARM Artifacts
       uses: actions/download-artifact@v2
       with:
-        name: Linux_ARM
+        name: Linux_ARM_Signed
         path: ${{ github.workspace }}/Sign/Linux_ARM
 
     - name: Download Linux_ARM64 Artifacts
       uses: actions/download-artifact@v2
       with:
-        name: Linux_ARM64
+        name: Linux_ARM64_Signed
         path: ${{ github.workspace }}/Sign/Linux_ARM64
 
     - name: Download Linux_Musl_x64 Artifacts
       uses: actions/download-artifact@v2
       with:
-        name: Linux_Musl_x64
+        name: Linux_Musl_x64_Signed
         path: ${{ github.workspace }}/Sign/Linux_Musl_x64
 
     - name: Download Linux_Musl_ARM_x64 Artifacts
       uses: actions/download-artifact@v2
       with:
-        name: Linux_Musl_ARM_x64
+        name: Linux_Musl_ARM_x64_Signed
         path: ${{ github.workspace }}/Sign/Linux_Musl_ARM_x64
 
     - name: Archive Previous Release
