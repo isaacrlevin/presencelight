@@ -5,22 +5,15 @@ using System.Globalization;
 using System.Threading;
 using System.Windows;
 
-using Blazored.Modal;
-
-using Blazorise;
-using Blazorise.Bootstrap;
-using Blazorise.Icons.FontAwesome;
-
 using MediatR;
 
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 using PresenceLight.Core;
 using PresenceLight.Graph;
-using PresenceLight.Razor;
-using PresenceLight.Razor.Services;
 using PresenceLight.Services;
 using PresenceLight.Telemetry;
 
@@ -41,6 +34,7 @@ namespace PresenceLight
 
         public static IConfiguration? StaticConfig { get; private set; }
 
+     
         public App()
         {
             
@@ -61,6 +55,7 @@ namespace PresenceLight
                 {
                     Trace.WriteLine($"## Warning Notify ##: {ex}");
                     Log.Error(ex, "Stopped program because of exception");
+                    OnCriticalFontLoadFailure();
                 }
             }
             else
@@ -112,40 +107,6 @@ namespace PresenceLight
             Log.Debug("Starting PresenceLight");
 
             IServiceCollection services = new ServiceCollection();
-
-            services.AddBlazoredModal();
-            services.AddBlazorise(options =>
-            {
-                options.ChangeTextOnKeyPress = true;
-            }).AddBootstrapProviders()
-.AddFontAwesomeIcons();
-
-
-            services.AddMediatR(typeof(App),
-                     typeof(BaseConfig));
-
-
-
-            services.AddHttpClient();
-
-            services.AddHttpContextAccessor();
-
-            services.Configure<BaseConfig>(Configuration);
-            services.AddSingleton(Configuration);
-            services.AddOptions();
-            services.AddSingleton<AppState>();
-            services.AddSingleton<AppInfo, AppInfo>();
-            services.AddSingleton<ITelemetryInitializer, AppVersionTelemetryInitializer>();
-            services.AddPresenceServices();
-            services.AddBlazoredModal();
-
-            services.AddBlazorise(options =>
-            {
-                options.ChangeTextOnKeyPress = true;
-            }).AddBootstrapProviders()
-.AddFontAwesomeIcons();
-
-            services.AddBlazorWebView();
             services.AddOptions();
             services.AddLogging(logging =>
             {
@@ -156,19 +117,16 @@ namespace PresenceLight
             services.AddMediatR(typeof(App),
                                 typeof(PresenceLight.Core.BaseConfig));
 
+            services.Configure<BaseConfig>(Configuration);
             services.Configure<AADSettings>(Configuration.GetSection("AADSettings"));
-
-
-            var userAuthService = new UserAuthService(Configuration);
-            services.AddSingleton(userAuthService);
-
-
             services.Configure<TelemetryConfiguration>(
     (o) =>
     {
         o.InstrumentationKey = Configuration["ApplicationInsights:InstrumentationKey"];
         o.TelemetryInitializers.Add(new OperationCorrelationTelemetryInitializer());
-        //o.TelemetryInitializers.Add(AppVersionTelemetryInitializer);
+        o.TelemetryInitializers.Add(new AppVersionTelemetryInitializer());
+        o.TelemetryInitializers.Add(new EnvironmentTelemetryInitializer());
+
     });
             services.AddApplicationInsightsTelemetryWorkerService(options =>
         {
@@ -181,6 +139,7 @@ namespace PresenceLight
             services.AddPresenceServices();
 
             services.AddSingleton<LIFXOAuthHelper, LIFXOAuthHelper>();
+            services.AddSingleton<ThisAppInfo, ThisAppInfo>();
             services.AddSingleton<MainWindow>();
 
             if (Convert.ToBoolean(Configuration["IsAppPackaged"], CultureInfo.InvariantCulture))
@@ -213,6 +172,28 @@ namespace PresenceLight
         {
             return ex.StackTrace.Contains("MS.Internal.Text.TextInterface.FontFamily.GetFirstMatchingFont", StringComparison.OrdinalIgnoreCase) ||
                    ex.StackTrace.Contains("MS.Internal.Text.Line.Format", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static void OnCriticalFontLoadFailure()
+        {
+            Trace.WriteLine($"App OnCriticalFontLoadFailure");
+
+            new Thread(() =>
+            {
+                if (MessageBox.Show(
+                    "PresenceLight Is Already Running",
+                    "PresenceLight Could Note Start",
+                    MessageBoxButton.OKCancel,
+                    MessageBoxImage.Error,
+                    MessageBoxResult.OK) == MessageBoxResult.OK)
+                {
+                    Trace.WriteLine($"App OnCriticalFontLoadFailure OK");
+                }
+                Environment.Exit(0);
+            }).Start();
+
+            // Stop execution because callbacks to the UI thread will likely cause another cascading font error.
+            new AutoResetEvent(false).WaitOne();
         }
     }
 }

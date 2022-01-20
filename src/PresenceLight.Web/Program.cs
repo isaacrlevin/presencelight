@@ -1,158 +1,73 @@
-﻿using Microsoft.ApplicationInsights.Extensibility;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.Graph.ExternalConnectors;
-using Microsoft.Identity.Web;
-using Microsoft.Identity.Web.UI;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
-using PresenceLight.Core;
-using PresenceLight.Razor;
-using PresenceLight.Web;
-
-using Serilog;
-
-var builder = WebApplication.CreateBuilder(args);
-
-IConfigurationBuilder configBuilderForMain = new ConfigurationBuilder();
-
-configBuilderForMain
-    .SetBasePath(Directory.GetCurrentDirectory())
-    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
-    .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: false)
-    .AddJsonFile("PresenceLightSettings.json", optional: false, reloadOnChange: false)
-    .AddJsonFile("PresenceLightSettings.Development.json", optional: true, reloadOnChange: false)
-    .AddJsonFile(System.IO.Path.Combine("config", "appsettings.json"), optional: true, reloadOnChange: false)
-    .AddJsonFile(System.IO.Path.Combine("config", "PresenceLightSettings.json"), optional: true, reloadOnChange: false)
-    .AddEnvironmentVariables();
-
-configBuilderForMain.Build();
-
-IConfiguration configForMain = configBuilderForMain.Build();
-
-var telemetryConfiguration = TelemetryConfiguration.CreateDefault();
-telemetryConfiguration.InstrumentationKey = configForMain["ApplicationInsights:InstrumentationKey"];
-
-Log.Logger = new LoggerConfiguration()
-     .ReadFrom.Configuration(configForMain)
-     .WriteTo.PresenceEventsLogSink()
-     .WriteTo.ApplicationInsights(telemetryConfiguration, TelemetryConverter.Traces, Serilog.Events.LogEventLevel.Error)
-     .Enrich.FromLogContext()
-     .CreateLogger();
-
-builder.Configuration.SetBasePath(Directory.GetCurrentDirectory());
-builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
-builder.Configuration.AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: false);
-builder.Configuration.AddJsonFile("PresenceLightSettings.json", optional: false, reloadOnChange: false);
-builder.Configuration.AddJsonFile("PresenceLightSettings.Development.json", optional: true, reloadOnChange: false);
-builder.Configuration.AddJsonFile(System.IO.Path.Combine("config", "appsettings.json"), optional: true, reloadOnChange: false);
-builder.Configuration.AddJsonFile(System.IO.Path.Combine("config", "PresenceLightSettings.json"), optional: true, reloadOnChange: false);
-builder.Configuration.AddEnvironmentVariables();
-
-
-builder.Logging.AddSerilog();
-builder.Host.UseSerilog();
-
-var initialScopes = builder.Configuration.GetValue<string>("DownstreamApi:Scopes")?.Split(' ');
-
-builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-    .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAd"))
-        .EnableTokenAcquisitionToCallDownstreamApi(initialScopes)
-            .AddMicrosoftGraph(builder.Configuration.GetSection("DownstreamApi"))
-            .AddInMemoryTokenCaches();
-
-
-builder.Services.AddControllersWithViews()
-    .AddMicrosoftIdentityUI();
-
-var userAuthService = new UserAuthService(builder.Configuration);
-builder.Services.AddSingleton(userAuthService);
-
-builder.Services.AddOptions<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme)
- .Configure<IServiceProvider>((options, serviceProvider) =>
- {
-     options.ResponseType = OpenIdConnectResponseType.Code;
-     options.UsePkce = false;
-     options.Authority = $"{builder.Configuration["AzureAd:Instance"]}common/v2.0";
-
-     options.Scope.Add("offline_access");
-     options.Scope.Add("User.Read");
-
-     options.TokenValidationParameters = new TokenValidationParameters
-     {
-         // Azure ID tokens give name in "name"
-         NameClaimType = "name",
-         ValidateIssuer = false
-     };
-
-     options.Events = new OpenIdConnectEvents
-     {
-         OnAuthenticationFailed = async context =>
-         {
-             context.Response.Redirect("/Error");
-             context.HandleResponse();
-         },
-
-         OnAuthorizationCodeReceived = async context =>
-         {
-
-             context.HandleCodeRedemption();
-
-             var idToken = await userAuthService
-                   .AddUserToTokenCache(context.ProtocolMessage.Code);
-
-             context.HandleCodeRedemption(null, idToken);
-         },
-         OnRedirectToIdentityProviderForSignOut = async context =>
-         {
-             await userAuthService.SignOut();
-         }
-     };
- });
-
-
-builder.Services.AddHostedService<Worker>();
-
-builder.Services.AddAuthorization(options =>
+namespace PresenceLight.Web
 {
-    // By default, all incoming requests will be authorized according to the default policy
-    options.FallbackPolicy = options.DefaultPolicy;
-});
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            CreateHostBuilder(args).Build().Run();
+        }
 
-builder.Services.AddPresenceLight(builder.Configuration);
+        public static IHostBuilder CreateHostBuilder(string[] args)
+        {
+            IConfigurationBuilder configBuilderForMain = new ConfigurationBuilder();
+            ConfigureConfiguration(configBuilderForMain);
 
-builder.Services.AddRazorPages();
-builder.Services.AddServerSideBlazor()
-    .AddMicrosoftIdentityConsentHandler();
+            IConfiguration configForMain = configBuilderForMain.Build();
 
+            Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                });
 
-var app = builder.Build();
+            var builder = Host.CreateDefaultBuilder(args);
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseDeveloperExceptionPage();
+            builder.ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder
+                .ConfigureAppConfiguration((hostingContext, config) =>
+                {
+                    config.Sources.Clear();
+
+                    var env = hostingContext.HostingEnvironment;
+
+                    ConfigureConfiguration(config);
+
+                    if (args != null)
+                    {
+                        config.AddCommandLine(args);
+                    }
+                })
+                .UseContentRoot(Directory.GetCurrentDirectory())
+                .UseStartup<Startup>();
+            });
+
+            return builder;
+        }
+
+        private static void ConfigureConfiguration(IConfigurationBuilder config)
+        {
+            config
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
+                .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: false)
+                .AddJsonFile("PresenceLightSettings.json", optional: false, reloadOnChange: false)
+                .AddJsonFile("PresenceLightSettings.Development.json", optional: true, reloadOnChange: false)
+                .AddJsonFile(System.IO.Path.Combine("config", "appsettings.json"), optional: true, reloadOnChange: false)
+                .AddJsonFile(System.IO.Path.Combine("config", "PresenceLightSettings.json"), optional: true, reloadOnChange: false)
+                .AddEnvironmentVariables();
+
+            config.Build();
+        }
+    }
 }
-else
-{
-    app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
-}
-
-app.UseHttpsRedirection();
-app.UseStaticFiles();
-
-app.UseRouting();
-
-app.UseAuthentication();
-app.UseAuthorization();
-
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapControllers();
-    endpoints.MapBlazorHub();
-    endpoints.MapFallbackToPage("/_Host");
-});
-
-app.Run();
-

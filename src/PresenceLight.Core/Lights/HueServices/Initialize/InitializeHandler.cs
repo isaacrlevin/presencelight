@@ -19,7 +19,7 @@ namespace PresenceLight.Core.HueServices
 
         public async Task<Unit> Handle(InitializeCommand command, CancellationToken cancellationToken)
         {
-            _service.Initialize(command.AppState);
+            _service.Initialize(command.Request);
             await Task.CompletedTask;
             return default;
         }

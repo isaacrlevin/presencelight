@@ -14,7 +14,7 @@ namespace PresenceLight.Core
     public interface ICustomApiService
     {
         Task<string> SetColor(string availability, string? activity, CancellationToken cancellationToken = default);
-        void Initialize(AppState _appState);
+        void Initialize(BaseConfig options);
     }
 
 
@@ -27,25 +27,30 @@ namespace PresenceLight.Core
         HttpClient _client;
 
         private readonly ILogger<CustomApiService> _logger;
-        private AppState _appState;
+        private BaseConfig _options;
 
-        public CustomApiService(AppState appState, ILogger<CustomApiService> logger, MediatR.IMediator mediator)
+        public CustomApiService(IOptionsMonitor<BaseConfig> optionsAccessor, ILogger<CustomApiService> logger, MediatR.IMediator mediator)
         {
             _logger = logger;
-            _appState = appState;
+            _options = optionsAccessor.CurrentValue;
             _mediator = mediator;
 
             _client = new HttpClient
             {
-                Timeout = TimeSpan.FromSeconds(_appState.Config.LightSettings.CustomApi.CustomApiTimeout > 0 ?
-                                                   _appState.Config.LightSettings.CustomApi.CustomApiTimeout :
+                Timeout = TimeSpan.FromSeconds(optionsAccessor.CurrentValue.LightSettings.CustomApi.CustomApiTimeout > 0 ?
+                                                   optionsAccessor.CurrentValue.LightSettings.CustomApi.CustomApiTimeout :
                                                    20)
             };
         }
 
-        public void Initialize(AppState appState)
+        //public void ResyncService()
+        //{
+        //    _options = options;
+        //}
+
+        public void Initialize(BaseConfig options)
         {
-            _appState = appState;
+            _options = options;
         }
 
         public async Task<string> SetColor(string availability, string? activity, CancellationToken cancellationToken = default)
@@ -64,52 +69,52 @@ namespace PresenceLight.Core
             switch (newActivity)
             {
                 case "Available":
-                    method = _appState.Config.LightSettings.CustomApi.CustomApiActivityAvailable.Method;
-                    uri = _appState.Config.LightSettings.CustomApi.CustomApiActivityAvailable.Uri;
+                    method = _options.LightSettings.CustomApi.CustomApiActivityAvailable.Method;
+                    uri = _options.LightSettings.CustomApi.CustomApiActivityAvailable.Uri;
                     break;
                 case "Presenting":
-                    method = _appState.Config.LightSettings.CustomApi.CustomApiActivityPresenting.Method;
-                    uri = _appState.Config.LightSettings.CustomApi.CustomApiActivityPresenting.Uri;
+                    method = _options.LightSettings.CustomApi.CustomApiActivityPresenting.Method;
+                    uri = _options.LightSettings.CustomApi.CustomApiActivityPresenting.Uri;
                     break;
                 case "InACall":
-                    method = _appState.Config.LightSettings.CustomApi.CustomApiActivityInACall.Method;
-                    uri = _appState.Config.LightSettings.CustomApi.CustomApiActivityInACall.Uri;
+                    method = _options.LightSettings.CustomApi.CustomApiActivityInACall.Method;
+                    uri = _options.LightSettings.CustomApi.CustomApiActivityInACall.Uri;
                     break;
                 case "InAConferenceCall":
-                    method = _appState.Config.LightSettings.CustomApi.CustomApiActivityInAConferenceCall.Method;
-                    uri = _appState.Config.LightSettings.CustomApi.CustomApiActivityInAConferenceCall.Uri;
+                    method = _options.LightSettings.CustomApi.CustomApiActivityInAConferenceCall.Method;
+                    uri = _options.LightSettings.CustomApi.CustomApiActivityInAConferenceCall.Uri;
                     break;
                 case "InAMeeting":
-                    method = _appState.Config.LightSettings.CustomApi.CustomApiActivityInAMeeting.Method;
-                    uri = _appState.Config.LightSettings.CustomApi.CustomApiActivityInAMeeting.Uri;
+                    method = _options.LightSettings.CustomApi.CustomApiActivityInAMeeting.Method;
+                    uri = _options.LightSettings.CustomApi.CustomApiActivityInAMeeting.Uri;
                     break;
                 case "Busy":
-                    method = _appState.Config.LightSettings.CustomApi.CustomApiActivityBusy.Method;
-                    uri = _appState.Config.LightSettings.CustomApi.CustomApiActivityBusy.Uri;
+                    method = _options.LightSettings.CustomApi.CustomApiActivityBusy.Method;
+                    uri = _options.LightSettings.CustomApi.CustomApiActivityBusy.Uri;
                     break;
                 case "Away":
-                    method = _appState.Config.LightSettings.CustomApi.CustomApiActivityAway.Method;
-                    uri = _appState.Config.LightSettings.CustomApi.CustomApiActivityAway.Uri;
+                    method = _options.LightSettings.CustomApi.CustomApiActivityAway.Method;
+                    uri = _options.LightSettings.CustomApi.CustomApiActivityAway.Uri;
                     break;
                 case "BeRightBack":
-                    method = _appState.Config.LightSettings.CustomApi.CustomApiActivityBeRightBack.Method;
-                    uri = _appState.Config.LightSettings.CustomApi.CustomApiActivityBeRightBack.Uri;
+                    method = _options.LightSettings.CustomApi.CustomApiActivityBeRightBack.Method;
+                    uri = _options.LightSettings.CustomApi.CustomApiActivityBeRightBack.Uri;
                     break;
                 case "DoNotDisturb":
-                    method = _appState.Config.LightSettings.CustomApi.CustomApiActivityDoNotDisturb.Method;
-                    uri = _appState.Config.LightSettings.CustomApi.CustomApiActivityDoNotDisturb.Uri;
+                    method = _options.LightSettings.CustomApi.CustomApiActivityDoNotDisturb.Method;
+                    uri = _options.LightSettings.CustomApi.CustomApiActivityDoNotDisturb.Uri;
                     break;
                 case "Idle":
-                    method = _appState.Config.LightSettings.CustomApi.CustomApiActivityIdle.Method;
-                    uri = _appState.Config.LightSettings.CustomApi.CustomApiActivityIdle.Uri;
+                    method = _options.LightSettings.CustomApi.CustomApiActivityIdle.Method;
+                    uri = _options.LightSettings.CustomApi.CustomApiActivityIdle.Uri;
                     break;
                 case "Offline":
-                    method = _appState.Config.LightSettings.CustomApi.CustomApiActivityOffline.Method;
-                    uri = _appState.Config.LightSettings.CustomApi.CustomApiActivityOffline.Uri;
+                    method = _options.LightSettings.CustomApi.CustomApiActivityOffline.Method;
+                    uri = _options.LightSettings.CustomApi.CustomApiActivityOffline.Uri;
                     break;
                 case "Off":
-                    method = _appState.Config.LightSettings.CustomApi.CustomApiActivityOff.Method;
-                    uri = _appState.Config.LightSettings.CustomApi.CustomApiActivityOff.Uri;
+                    method = _options.LightSettings.CustomApi.CustomApiActivityOff.Method;
+                    uri = _options.LightSettings.CustomApi.CustomApiActivityOff.Uri;
                     break;
                 default:
                     break;
@@ -127,36 +132,36 @@ namespace PresenceLight.Core
             switch (newAvailability)
             {
                 case "Available":
-                    method = _appState.Config.LightSettings.CustomApi.CustomApiAvailable.Method;
-                    uri = _appState.Config.LightSettings.CustomApi.CustomApiAvailable.Uri;
+                    method = _options.LightSettings.CustomApi.CustomApiAvailable.Method;
+                    uri = _options.LightSettings.CustomApi.CustomApiAvailable.Uri;
                     break;
                 case "Busy":
-                    method = _appState.Config.LightSettings.CustomApi.CustomApiBusy.Method;
-                    uri = _appState.Config.LightSettings.CustomApi.CustomApiBusy.Uri;
+                    method = _options.LightSettings.CustomApi.CustomApiBusy.Method;
+                    uri = _options.LightSettings.CustomApi.CustomApiBusy.Uri;
                     break;
                 case "BeRightBack":
-                    method = _appState.Config.LightSettings.CustomApi.CustomApiBeRightBack.Method;
-                    uri = _appState.Config.LightSettings.CustomApi.CustomApiBeRightBack.Uri;
+                    method = _options.LightSettings.CustomApi.CustomApiBeRightBack.Method;
+                    uri = _options.LightSettings.CustomApi.CustomApiBeRightBack.Uri;
                     break;
                 case "Away":
-                    method = _appState.Config.LightSettings.CustomApi.CustomApiAway.Method;
-                    uri = _appState.Config.LightSettings.CustomApi.CustomApiAway.Uri;
+                    method = _options.LightSettings.CustomApi.CustomApiAway.Method;
+                    uri = _options.LightSettings.CustomApi.CustomApiAway.Uri;
                     break;
                 case "DoNotDisturb":
-                    method = _appState.Config.LightSettings.CustomApi.CustomApiDoNotDisturb.Method;
-                    uri = _appState.Config.LightSettings.CustomApi.CustomApiDoNotDisturb.Uri;
+                    method = _options.LightSettings.CustomApi.CustomApiDoNotDisturb.Method;
+                    uri = _options.LightSettings.CustomApi.CustomApiDoNotDisturb.Uri;
                     break;
                 case "AvailableIdle":
-                    method = _appState.Config.LightSettings.CustomApi.CustomApiAvailableIdle.Method;
-                    uri = _appState.Config.LightSettings.CustomApi.CustomApiAvailableIdle.Uri;
+                    method = _options.LightSettings.CustomApi.CustomApiAvailableIdle.Method;
+                    uri = _options.LightSettings.CustomApi.CustomApiAvailableIdle.Uri;
                     break;
                 case "Offline":
-                    method = _appState.Config.LightSettings.CustomApi.CustomApiOffline.Method;
-                    uri = _appState.Config.LightSettings.CustomApi.CustomApiOffline.Uri;
+                    method = _options.LightSettings.CustomApi.CustomApiOffline.Method;
+                    uri = _options.LightSettings.CustomApi.CustomApiOffline.Uri;
                     break;
                 case "Off":
-                    method = _appState.Config.LightSettings.CustomApi.CustomApiOff.Method;
-                    uri = _appState.Config.LightSettings.CustomApi.CustomApiOff.Uri;
+                    method = _options.LightSettings.CustomApi.CustomApiOff.Method;
+                    uri = _options.LightSettings.CustomApi.CustomApiOff.Uri;
                     break;
                 default:
                     break;
@@ -227,7 +232,7 @@ namespace PresenceLight.Core
                 {
                     try
                     {
-                        if (_appState.Config.LightSettings.CustomApi.IgnoreCertificateErrors)
+                        if (_options.LightSettings.CustomApi.IgnoreCertificateErrors)
                         {
                             var httpClientHandler = new HttpClientHandler();
                             httpClientHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; };
@@ -238,15 +243,15 @@ namespace PresenceLight.Core
                             _client = new HttpClient();
                         }
 
-                        _client.Timeout = TimeSpan.FromSeconds(_appState.Config.LightSettings.CustomApi.CustomApiTimeout > 0 ?
-                                                           _appState.Config.LightSettings.CustomApi.CustomApiTimeout :
+                        _client.Timeout = TimeSpan.FromSeconds(_options.LightSettings.CustomApi.CustomApiTimeout > 0 ?
+                                                           _options.LightSettings.CustomApi.CustomApiTimeout :
                                                            20);
 
                         HttpResponseMessage response = new HttpResponseMessage();
 
-                        if (_appState.Config.LightSettings.CustomApi.UseBasicAuth)
+                        if (_options.LightSettings.CustomApi.UseBasicAuth)
                         {
-                            var byteArray = Encoding.ASCII.GetBytes($"{_appState.Config.LightSettings.CustomApi.BasicAuthUserName}:{_appState.Config.LightSettings.CustomApi.BasicAuthUserPassword}");
+                            var byteArray = Encoding.ASCII.GetBytes($"{_options.LightSettings.CustomApi.BasicAuthUserName}:{_options.LightSettings.CustomApi.BasicAuthUserPassword}");
 
                             _client.DefaultRequestHeaders.Authorization = new
                             AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));

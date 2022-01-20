@@ -1,9 +1,11 @@
 ﻿@page "/customapi"
 @using PresenceLight.Core.Initialize;
 
-@inject ISettingsService SettingsService
+@inject PresenceLight.Razor.Services.SettingsService SettingsService
+
 @inject AppState appState
 @inject IModalService Modal
+@inject IOptionsMonitor<BaseConfig> Config
 @inject ILogger<CustomApiSetup> _logger;
 
 <div class="container text-body" style="overflow:hidden">
@@ -15,17 +17,17 @@
                     <br />
                     <br />
                     <div>
-                        <input type="checkbox" checked="@appState.Config.LightSettings.CustomApi.IsEnabled" @bind-value="@appState.Config.LightSettings.CustomApi.IsEnabled" /> Connect to Custom HTTP API
+                        <input type="checkbox" checked="@Config.CurrentValue.LightSettings.CustomApi.IsEnabled" @bind-value="@Config.CurrentValue.LightSettings.CustomApi.IsEnabled" /> Connect to Custom HTTP API
                     </div>
                     <br />
                     <br />
-                    @if (appState.Config.LightSettings.CustomApi.IsEnabled)
+                    @if (Config.CurrentValue.LightSettings.CustomApi.IsEnabled)
                     {
-                        @foreach (var customApiSetting in appState.Config.LightSettings.CustomApi.GetType().GetProperties())
+                        @foreach (var customApiSetting in Config.CurrentValue.LightSettings.CustomApi.GetType().GetProperties())
                         {
                             @if (customApiSetting.PropertyType.Name == "CustomApiSetting")
                             {
-                                object customApiSettingValue = customApiSetting.GetValue(appState.Config.LightSettings.CustomApi, null);
+                                object customApiSettingValue = customApiSetting.GetValue(Config.CurrentValue.LightSettings.CustomApi, null);
                                 var lab = $"{customApiSetting.Name}Uri";
 
                                 <div class="form-group row">
@@ -64,11 +66,11 @@
                         <br />
                         <br />
                         <div>
-                            <input type="checkbox" checked="@appState.Config.LightSettings.CustomApi.UseBasicAuth" @bind-value="@appState.Config.LightSettings.CustomApi.UseBasicAuth" /> Use Basic Auth
+                            <input type="checkbox" checked="@Config.CurrentValue.LightSettings.CustomApi.UseBasicAuth" @bind-value="@Config.CurrentValue.LightSettings.CustomApi.UseBasicAuth" /> Use Basic Auth
                         </div>
                         <br />
                         <br />
-                        @if (appState.Config.LightSettings.CustomApi.UseBasicAuth)
+                        @if (Config.CurrentValue.LightSettings.CustomApi.UseBasicAuth)
                         {
                             <div class="form-group row">
                                 <label class="col-sm-3 col-form-label">
@@ -77,7 +79,7 @@
 
 
                                 <div class="col-sm-7">
-                                    <input style="width: 100%" @bind-value="@appState.Config.LightSettings.CustomApi.BasicAuthUserName" type="text" class="form-control">
+                                    <input style="width: 100%" @bind-value="@Config.CurrentValue.LightSettings.CustomApi.BasicAuthUserName" type="text" class="form-control">
                                 </div>
 
                             </div>
@@ -88,7 +90,7 @@
                                 </label>
 
                                 <div class="col-sm-7">
-                                    <input style="width: 100%" @bind-value="@appState.Config.LightSettings.CustomApi.BasicAuthUserPassword" type="text" class="form-control">
+                                    <input style="width: 100%" @bind-value="@Config.CurrentValue.LightSettings.CustomApi.BasicAuthUserPassword" type="text" class="form-control">
                                 </div>
 
                             </div>
@@ -97,7 +99,7 @@
                             <br />
                         }
                         <div>
-                            <input type="checkbox" checked="@appState.Config.LightSettings.CustomApi.IgnoreCertificateErrors" @bind-value="@appState.Config.LightSettings.CustomApi.IgnoreCertificateErrors" /> Ignore Certificate Errors
+                            <input type="checkbox" checked="@Config.CurrentValue.LightSettings.CustomApi.IgnoreCertificateErrors" @bind-value="@Config.CurrentValue.LightSettings.CustomApi.IgnoreCertificateErrors" /> Ignore Certificate Errors
                         </div>
                         <br />
                         <br />
@@ -123,8 +125,8 @@
     {
         try
         {
-            SettingsService.SaveSettings(appState.Config);
-            _mediator.Send(new InitializeCommand { AppState = appState });
+            SettingsService.SaveSettings(Config.CurrentValue);
+            _mediator.Send(new InitializeCommand { Request = Config.CurrentValue });
 
             message = "Settings Saved";
             settingsSaved = true;

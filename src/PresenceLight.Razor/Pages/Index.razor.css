@@ -1,52 +1,41 @@
-.Available {
-    background-color: green;
-}
-
-.AvailableIdle {
-    background-color: yellow;
-}
-
-.Away {
-    background-color: yellow;
-}
 
 .Busy {
     background-color: red;
-}
+  }
 
-.BeRightBack {
-    background-color: yellow;
-}
-
-.DoNotDisturb {
+  .DoNotDisturb {
     background-color: darkred;
-}
+  }
 
-.Offline {
-    background-color: white;
-}
+  .Available {
+    background-color: green;
+  }
 
-.PresenceUnknown {
-    background-color: white;
-}
+  .Away {
+    background-color: yellow;
+  }
 
-.bottom-right {
+  .BeRightBack {
+    background-color: yellow;
+  }
+
+  .bottom-right {
     position: relative;
     bottom: 120px;
     left: 55%;
-}
+  }
 
-.circle {
+  .circle {
     height: 120px;
     width: 120px;
     border-radius: 50%;
     border-style: solid;
     border-width: 5px;
     border-color: white;
-}
+  }
 
-.image {
+  .image {
     width: 300px;
     height: 300px;
     border-radius: 50%;
-}
+  }

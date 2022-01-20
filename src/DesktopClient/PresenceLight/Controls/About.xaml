@@ -1,0 +1,89 @@
+﻿<UserControl x:Class="PresenceLight.Controls.About"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:PresenceLight.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="50"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="50"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50" />
+            <RowDefinition Height="120" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="10" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="10" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="20" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+
+        <Border Grid.Row="1" VerticalAlignment="Top" Grid.Column="2" Grid.ColumnSpan="2">
+            <TextBlock FontSize="25" Text="PresenceLight by Isaac Levin">
+            </TextBlock>
+        </Border>
+
+        <Border VerticalAlignment="Top" Margin="0,40,0,0" Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2">
+            <TextBlock>
+                            <Hyperlink FontSize="15" NavigateUri="https://github.com/isaacrlevin/presencelight" RequestNavigate="Hyperlink_RequestNavigate">
+                                https://github.com/isaacrlevin/presencelight
+                            </Hyperlink>
+            </TextBlock>
+        </Border>
+
+        <Border VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,80,0,0" Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2">
+            <Button x:Name="updateBtn" Click="UpdateClick" Width="150px">Check for Updates</Button>
+        </Border>
+
+
+
+        <Image Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Left" Grid.Column="1" Height="100"  Source="/Images/profileimage.jpg"  Width="100"/>
+
+        <Label Grid.Column="1" Grid.Row="2" FontSize="15" Content="Package Name" Target="{Binding ElementName=packageName}" VerticalAlignment="Center" />
+        <TextBlock Grid.ColumnSpan="2" Grid.Row="2" FontSize="15" x:Name="packageName" Grid.Column="2"  VerticalAlignment="Center"  />
+
+        <Label Grid.Column="1" Grid.Row="4" FontSize="15" Content="Package Version" Target="{Binding ElementName=packageVersion}" VerticalAlignment="Center" />
+        <TextBlock Grid.ColumnSpan="2" Grid.Row="4" FontSize="15" x:Name="packageVersion" Grid.Column="2"  VerticalAlignment="Center" />
+
+        <Label Grid.Column="1" Grid.Row="6" FontSize="15" Content="Installed from" Target="{Binding ElementName=installedFrom}" VerticalAlignment="Center" />
+        <TextBlock Grid.ColumnSpan="2" Grid.Row="6" FontSize="15" TextWrapping="Wrap" x:Name="installedFrom" Grid.Column="2" VerticalAlignment="Center"  />
+
+        <Label Grid.Column="1" Grid.Row="8" FontSize="15" Content="Install Location" Target="{Binding ElementName=installLocation}"  />
+        <TextBlock Grid.ColumnSpan="2" Grid.Row="8" FontSize="15" TextWrapping="Wrap" x:Name="installLocation"  Grid.Column="2" VerticalAlignment="Center"  />
+
+        <Label Grid.Column="1" Grid.Row="12" FontSize="15" Content="Settings Location" Target="{Binding ElementName=installLocation}"  />
+        <TextBlock Grid.ColumnSpan="2" Grid.Row="12" FontSize="15" TextWrapping="Wrap"  Grid.Column="2" VerticalAlignment="Center"  >
+            <Hyperlink Click="SettingsClicked" >
+                <Run x:Name="settingsLocation"></Run>
+            </Hyperlink>
+        </TextBlock>
+
+        <Label Grid.Column="1" Grid.Row="14" FontSize="15" Content="Install Date" Target="{Binding ElementName=installedDate}"  />
+        <TextBlock Grid.ColumnSpan="2" Grid.Row="14" FontSize="15" TextWrapping="Wrap" x:Name="installedDate" Grid.Column="2" VerticalAlignment="Center"   />
+
+        <Label Grid.Column="1" Grid.Row="16" FontSize="15" Content="Runtime Version" Target="{Binding ElementName=RuntimeVersionInfo}"  />
+        <TextBlock Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Left" x:Name="RuntimeVersionInfo" FontSize="15" Grid.Row="16" Grid.Column="2" />
+
+    </Grid>
+</UserControl>

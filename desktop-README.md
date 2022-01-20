@@ -29,11 +29,11 @@ In order for the desktop app to work, you need to be running Windows 10, version
 
 After you have followed the above steps (enable side-loading and installing app), you will have be welcomed with a message like this
 
-   ![Configured](static/configured.png)
+   ![Configured](https://github.com/isaacrlevin/PresenceLight/raw/main/static/configured.png)
 
 PresenceLight obtains your Microsoft Teams Availability using a multi-tenant Azure Active Directory Application, meaning you will need to "grant" access to your Presence the first time you use the app. Clicking sign-in will prompt you for a login with your Microsoft 365 credentials, and finally when authenticated, you will be shown your Graph profile image and your presence. If you are curious about what is required to do this on your own tenant, read [Configure an Azure Active Directory Application](https://github.com/isaacrlevin/PresenceLight/wiki/Configure-an-Azure-Active-Directory-Application)
 
-   ![Profile Image](static/profile.png)
+   ![Profile Image](https://github.com/isaacrlevin/PresenceLight/raw/main/static/profile.png)
 
 The application "polls" the Presence Api at a configured value, whican you can set bewteen 1 and 5 seconds on the Settings page. This means that the light and app will update based on your Teams presence with a slight delay.
 
@@ -51,15 +51,15 @@ You can only do one of these at a time, so if you for instance are syncing with 
 
 One of the features of PresenceLight is that you can minimize the app to the icon tray. When you open the app, you will see an icon similar to this.
 
-   ![white Image](static/light-icon.png)
+   ![white Image](https://github.com/isaacrlevin/PresenceLight/raw/main/static/light-icon.png)
 
 This icon will represent your presence color. There are two "kinds" of icons: Transparent, and White. Here is the transparent icon
 
-   ![Settings 1](static/trans-icon.png)
+   ![Settings 1](https://github.com/isaacrlevin/PresenceLight/raw/main/static/trans-icon.png)
 
 You can change the icon type in the settings pane.
 
-   ![Settings 2](static/settings1.png)
+   ![Settings 2](https://github.com/isaacrlevin/PresenceLight/raw/main/static/settings1.png)
 
 After you change and save, the icon will update in the icon tray.
 
@@ -70,25 +70,25 @@ To connect PresenceLight to Philips Hue, you can do it 1 of 2 ways
  - Obtain the IP Address of your Philips Hue Bridge (if you have it)
  - Ask PresenceLight to find it for you (may no work in certain network configurations)
 
- ![Hue Settings](static/hue-settings.png)
+ ![Hue Settings](https://github.com/isaacrlevin/PresenceLight/raw/main/static/hue-settings.png)
 
 Once you have the IP of the bridge, you will need to register a developer account and get an Api Key. This is easily done by clicking the "Register Bridge" button. Clicking the button will popup a window asking you to press the sync button on the bridge, this is needed to register PresenceLight to the bridge.
 
- ![Sync Button](static/sync-button.png)
+ ![Sync Button](https://github.com/isaacrlevin/PresenceLight/raw/main/static/sync-button.png)
 
 When PresenceLight is configured, you will see a dropdown of Hue Bulbs connected to the bridge for you to set your presence to.
 
- ![Registered Bridge](static/registered-bridge.png)
+ ![Registered Bridge](https://github.com/isaacrlevin/PresenceLight/raw/main/static/registered-bridge.png)
 
 ## Wire up LIFX
 
 To connect PresenceLight to LIFX colored bulbs, you need to obtain a LIFX Developer Token. When you first arrive at the LIFX tab, you will see a message like this if you try to get Lights or Groups
 
- ![LIFX Unconfigured](static/lifx-unconfigured.png)
+ ![LIFX Unconfigured](https://github.com/isaacrlevin/PresenceLight/raw/main/static/lifx-unconfigured.png)
 
 After entering an obtained token, you will be able to get a list of either individual lights or groups of lights, selecting one of the options and saving gives you a message like this
 
- ![LIFX Configured](static/lifx-configured.png)
+ ![LIFX Configured](https://github.com/isaacrlevin/PresenceLight/raw/main/static/lifx-configured.png)
 
 ## [Wire-up Custom API](https://github.com/isaacrlevin/presencelight/wiki/Wire-up-Custom-API)
 

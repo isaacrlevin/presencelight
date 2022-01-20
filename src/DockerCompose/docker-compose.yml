@@ -1,8 +1,0 @@
-version: '3.4'
-
-services:
-  presencelight.web:
-    image: ${DOCKER_REGISTRY-}presencelightweb
-    build:
-      context: ..
-      dockerfile: PresenceLight.Web/Dockerfile

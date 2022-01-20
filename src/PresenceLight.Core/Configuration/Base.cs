@@ -14,7 +14,5 @@ namespace PresenceLight.Core
         public bool StartMinimized { get; set; }
         public string? IconType { get; set; }
         public LightSettings LightSettings { get; set; }
-
-        public string AppType { get; set; }
     }
 }

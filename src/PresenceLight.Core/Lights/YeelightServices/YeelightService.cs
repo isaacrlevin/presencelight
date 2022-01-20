@@ -19,22 +19,22 @@ namespace PresenceLight.Core
     }
     public class YeelightService : IYeelightService
     {
-        private AppState _appState;
+        private BaseConfig _options;
 
         private MediatR.IMediator _mediator;
         private DeviceGroup deviceGroup;
         private readonly ILogger<YeelightService> _logger;
 
-        public YeelightService(AppState appState, ILogger<YeelightService> logger, MediatR.IMediator mediator)
+        public YeelightService(IOptionsMonitor<BaseConfig> optionsAccessor, ILogger<YeelightService> logger, MediatR.IMediator mediator)
         {
             _logger = logger;
-            _appState = appState;
+            _options = optionsAccessor.CurrentValue;
             _mediator = mediator;
         }
 
-        public void Initialize(AppState appState)
+        public void Initialize(BaseConfig options)
         {
-            _appState = appState;
+            _options = options;
         }
 
         public async Task SetColor(string availability, string activity, string lightId)
@@ -47,7 +47,7 @@ namespace PresenceLight.Core
                 return;
             }
 
-            var o = await Handle(_appState.Config.LightSettings.Yeelight.UseActivityStatus ? activity : availability, lightId);
+            var o = await Handle(_options.LightSettings.Yeelight.UseActivityStatus ? activity : availability, lightId);
 
             if (o.returnFunc)
             {
@@ -97,28 +97,28 @@ namespace PresenceLight.Core
                     return;
                 }
 
-                if (_appState.Config.LightSettings.UseDefaultBrightness)
+                if (_options.LightSettings.UseDefaultBrightness)
                 {
-                    if (_appState.Config.LightSettings.DefaultBrightness == 0)
+                    if (_options.LightSettings.DefaultBrightness == 0)
                     {
                         await o.device.TurnOff();
                     }
                     else
                     {
                         await o.device.TurnOn();
-                        await o.device.SetBrightness(Convert.ToInt32(_appState.Config.LightSettings.DefaultBrightness));
+                        await o.device.SetBrightness(Convert.ToInt32(_options.LightSettings.DefaultBrightness));
                     }
                 }
                 else
                 {
-                    if (_appState.Config.LightSettings.Hue.Brightness == 0)
+                    if (_options.LightSettings.Hue.Brightness == 0)
                     {
                         await o.device.TurnOff();
                     }
                     else
                     {
                         await o.device.TurnOn();
-                        await o.device.SetBrightness(Convert.ToInt32(_appState.Config.LightSettings.Yeelight.Brightness));
+                        await o.device.SetBrightness(Convert.ToInt32(_options.LightSettings.Yeelight.Brightness));
                     }
                 }
 
@@ -128,7 +128,7 @@ namespace PresenceLight.Core
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error Occured Setting Color");
+                _logger.LogError(e, "Error Occured Finding Lights");
                 throw;
             }
         }
@@ -159,9 +159,9 @@ namespace PresenceLight.Core
 
         private async Task<(string color, Device device, bool returnFunc)> Handle(string presence, string lightId)
         {
-            var props = _appState.Config.LightSettings.Yeelight.Statuses.GetType().GetProperties().ToList();
+            var props = _options.LightSettings.Yeelight.Statuses.GetType().GetProperties().ToList();
 
-            if (_appState.Config.LightSettings.Yeelight.UseActivityStatus)
+            if (_options.LightSettings.Yeelight.UseActivityStatus)
             {
                 props = props.Where(a => a.Name.ToLower().StartsWith("activity")).ToList();
             }
@@ -193,7 +193,7 @@ namespace PresenceLight.Core
                 {
                     if (presence == prop.Name.Replace("Status", "").Replace("Availability", "").Replace("Activity", ""))
                     {
-                        var value = (AvailabilityStatus)prop.GetValue(_appState.Config.LightSettings.Yeelight.Statuses);
+                        var value = (AvailabilityStatus)prop.GetValue(_options.LightSettings.Yeelight.Statuses);
 
                         if (!value.Disabled)
                         {

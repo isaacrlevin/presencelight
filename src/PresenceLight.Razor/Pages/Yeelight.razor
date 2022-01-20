@@ -1,7 +1,9 @@
 ﻿@page "/yeelight"
 
-@inject ISettingsService SettingsService
+@inject PresenceLight.Razor.Services.SettingsService SettingsService
+
 @inject AppState appState
+@inject IOptionsMonitor<BaseConfig> Config
 @inject ILogger<CustomApiSetup> _logger;
 
 <div class="container text-body" style="overflow:hidden">
@@ -13,11 +15,11 @@
                     <br />
                     <br />
                     <div>
-                        <input type="checkbox" checked="@appState.Config.LightSettings.Yeelight.IsEnabled" @bind-value="@appState.Config.LightSettings.Yeelight.IsEnabled" /> Connect to Yeelight
+                        <input type="checkbox" checked="@Config.CurrentValue.LightSettings.Yeelight.IsEnabled" @bind-value="@Config.CurrentValue.LightSettings.Yeelight.IsEnabled" /> Connect to Yeelight
                     </div>
                     <br />
                     <br />
-                    @if (appState.Config.LightSettings.Yeelight.IsEnabled)
+                    @if (Config.CurrentValue.LightSettings.Yeelight.IsEnabled)
                     {
                         <div class="row">
                             <div class="col-12">
@@ -34,7 +36,7 @@
                                     <option disabled="disabled">Select</option>
                                     @foreach (var light in appState.YeelightLights)
                                     {
-                                        @if (appState.Config.LightSettings.Yeelight.SelectedItemId == light.Id)
+                                        @if (Config.CurrentValue.LightSettings.Yeelight.SelectedItemId == light.Id)
                                         {
                                             <option selected="selected" value=@light.Id>@light.Hostname</option>
                                         }
@@ -52,17 +54,17 @@
                                 <h5>Brightness</h5>
                             </div>
                             <div class="col-4">
-                                <Slider TValue="int" @bind-Value="@appState.Config.LightSettings.Yeelight.Brightness" Step="1" Min="0" Max="100" />
+                                <Slider TValue="int" @bind-Value="@Config.CurrentValue.LightSettings.Yeelight.Brightness" Step="1" Min="0" Max="100" />
                             </div>
                             <div class="col-4">
-                                <input style="width:50px" @bind-value="@appState.Config.LightSettings.Yeelight.Brightness" type="text" />
+                                <input style="width:50px" @bind-value="@Config.CurrentValue.LightSettings.Yeelight.Brightness" type="text" />
                             </div>
                         </div>
 
                         <br />
                         <br />
 
-                        <Statuses Light="@appState.Config.LightSettings.Yeelight"></Statuses>
+                        <Statuses Light="@Config.CurrentValue.LightSettings.Yeelight"></Statuses>
 
                         <br />
                         <br />
@@ -89,7 +91,7 @@
     {
         try
         {
-            SettingsService.SaveSettings(appState.Config);
+            SettingsService.SaveSettings(Config.CurrentValue);
             message = "Settings Saved";
             settingsSaved = true;
         }
@@ -120,7 +122,7 @@
     private void OnChange(ChangeEventArgs e)
     {
         var light = e.Value.ToString();
-        appState.Config.LightSettings.Yeelight.SelectedItemId = light;
+        Config.CurrentValue.LightSettings.Yeelight.SelectedItemId = light;
         appState.SetYeelightLight(light);
     }
 
@@ -130,9 +132,9 @@
         {
             appState.SetYeelightLights(await _mediator.Send(new Core.YeelightServices.GetLightCommand()));
 
-            if (string.IsNullOrEmpty(appState.Config.LightSettings.Yeelight.SelectedItemId) && appState.YeelightLights.Count() > 0)
+            if (string.IsNullOrEmpty(Config.CurrentValue.LightSettings.Yeelight.SelectedItemId) && appState.YeelightLights.Count() > 0)
             {
-                appState.Config.LightSettings.Yeelight.SelectedItemId = appState.YeelightLights.FirstOrDefault().Id;
+                Config.CurrentValue.LightSettings.Yeelight.SelectedItemId = appState.YeelightLights.FirstOrDefault().Id;
             }
 
         }

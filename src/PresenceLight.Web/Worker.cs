@@ -18,27 +18,30 @@ namespace PresenceLight.Web
 {
     public class Worker : BackgroundService
     {
+        private readonly BaseConfig Config;
         private readonly AppState _appState;
         private readonly ILogger<Worker> _logger;
         UserAuthService _userAuthService;
         private readonly GraphServiceClient _graphClient;
         private MediatR.IMediator _mediator;
+
         private IWorkingHoursService _workingHoursService;
 
 
         public Worker(ILogger<Worker> logger,
-            IOptionsMonitor<BaseConfig> optionsAccessor,
+                      IOptionsMonitor<BaseConfig> optionsAccessor,
                       AppState appState,
                       UserAuthService userAuthService,
                      MediatR.IMediator mediator,
                       IWorkingHoursService workingHoursService)
         {
+            Config = optionsAccessor.CurrentValue;
             _workingHoursService = workingHoursService;
             _mediator = mediator;
             _userAuthService = userAuthService;
             _logger = logger;
             _appState = appState;
-            _appState.Config = optionsAccessor.CurrentValue;
+
             _graphClient = new GraphServiceClient(userAuthService);
         }
 
@@ -82,6 +85,7 @@ namespace PresenceLight.Web
                 using (Serilog.Context.LogContext.PushProperty("Activity", presence.Activity))
                 {
                     _appState.SetUserInfo(user, photo, presence);
+                    _appState.SetUserInfo(user, photo, presence);
 
                     await SetColor(_appState.Presence.Availability, _appState.Presence.Activity);
                     await InteractWithLights();
@@ -105,12 +109,12 @@ namespace PresenceLight.Web
 
                 try
                 {
-                    await Task.Delay(Convert.ToInt32(_appState.Config.LightSettings.PollingInterval * 1000)).ConfigureAwait(true);
+                    await Task.Delay(Convert.ToInt32(Config.LightSettings.PollingInterval * 1000)).ConfigureAwait(true);
 
                     bool touchLight = false;
                     string newColor = "";
 
-                    if (_appState.Config.LightSettings.SyncLights)
+                    if (Config.LightSettings.SyncLights)
                     {
                         if (!useWorkingHours)
                         {
@@ -134,7 +138,7 @@ namespace PresenceLight.Web
                                 // check to see if working hours have passed
                                 if (previousWorkingHours)
                                 {
-                                    switch (_appState.Config.LightSettings.HoursPassedStatus)
+                                    switch (Config.LightSettings.HoursPassedStatus)
                                     {
                                         case "Keep":
                                             break;
@@ -242,38 +246,38 @@ namespace PresenceLight.Web
         {
             try
             {
-                if (!string.IsNullOrEmpty(_appState.Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(_appState.Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(_appState.Config.LightSettings.Hue.SelectedItemId))
+                if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedItemId))
                 {
-                    if (_appState.Config.LightSettings.Hue.UseRemoteApi)
+                    if (Config.LightSettings.Hue.UseRemoteApi)
                     {
-                        if (!string.IsNullOrEmpty(_appState.Config.LightSettings.Hue.RemoteBridgeId))
+                        if (!string.IsNullOrEmpty(Config.LightSettings.Hue.RemoteBridgeId))
                         {
                             await _mediator.Send(new Core.RemoteHueServices.SetColorCommand
                             {
                                 Availability = color,
-                                LightId = _appState.Config.LightSettings.Hue.SelectedItemId,
-                                BridgeId = _appState.Config.LightSettings.Hue.RemoteBridgeId
+                                LightId = Config.LightSettings.Hue.SelectedItemId,
+                                BridgeId = Config.LightSettings.Hue.RemoteBridgeId
                             }).ConfigureAwait(true);
                         }
                     }
                     else
                     {
-                        await _mediator.Send(new Core.HueServices.SetColorCommand() { Activity = activity, Availability = color, LightID = _appState.Config.LightSettings.Hue.SelectedItemId }).ConfigureAwait(true);
+                        await _mediator.Send(new Core.HueServices.SetColorCommand() { Activity = activity, Availability = color, LightID = Config.LightSettings.Hue.SelectedItemId }).ConfigureAwait(true);
 
                     }
                 }
 
-                if (_appState.Config.LightSettings.LIFX.IsEnabled && !string.IsNullOrEmpty(_appState.Config.LightSettings.LIFX.LIFXApiKey))
+                if (Config.LightSettings.LIFX.IsEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
                 {
-                    await _mediator.Send(new Core.LifxServices.SetColorCommand() { Availability = color, Activity = activity, LightId = _appState.Config.LightSettings.LIFX.SelectedItemId }).ConfigureAwait(true);
+                    await _mediator.Send(new Core.LifxServices.SetColorCommand() { Availability = color, Activity = activity, LightId = Config.LightSettings.LIFX.SelectedItemId }).ConfigureAwait(true);
                 }
 
-                if (_appState.Config.LightSettings.Yeelight.IsEnabled && !string.IsNullOrEmpty(_appState.Config.LightSettings.Yeelight.SelectedItemId))
+                if (Config.LightSettings.Yeelight.IsEnabled && !string.IsNullOrEmpty(Config.LightSettings.Yeelight.SelectedItemId))
                 {
-                    await _mediator.Send(new PresenceLight.Core.YeelightServices.SetColorCommand { Activity = activity, Availability = color, LightId = _appState.Config.LightSettings.Yeelight.SelectedItemId }).ConfigureAwait(true);
+                    await _mediator.Send(new PresenceLight.Core.YeelightServices.SetColorCommand { Activity = activity, Availability = color, LightId = Config.LightSettings.Yeelight.SelectedItemId }).ConfigureAwait(true);
                 }
 
-                if (_appState.Config.LightSettings.CustomApi.IsEnabled)
+                if (Config.LightSettings.CustomApi.IsEnabled)
                 {
                     string response = await _mediator.Send(new Core.CustomApiServices.SetColorCommand
                     {
@@ -282,13 +286,13 @@ namespace PresenceLight.Web
                     });
                 }
 
-                if (_appState.Config.LightSettings.Wiz.IsEnabled)
+                if (Config.LightSettings.Wiz.IsEnabled)
                 {
                     await _mediator.Send(new Core.WizServices.SetColorCommand
                     {
                         Activity = activity,
                         Availability = color,
-                        LightID = _appState.Config.LightSettings.Wiz.SelectedItemId
+                        LightID = Config.LightSettings.Wiz.SelectedItemId
                     });
                 }
             }

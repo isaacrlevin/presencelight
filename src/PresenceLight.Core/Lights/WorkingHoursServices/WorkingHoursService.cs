@@ -15,13 +15,17 @@ namespace PresenceLight.Core
     public class WorkingHoursService : IWorkingHoursService
 
     {
-        private readonly AppState _appState;
+        private readonly BaseConfig _options;
 
-        public WorkingHoursService(AppState appState)
+        public WorkingHoursService(IOptionsMonitor<BaseConfig> optionsAccessor)
         {
-            _appState = appState;
+            _options = optionsAccessor.CurrentValue;
         }
 
+        public WorkingHoursService(BaseConfig options)
+        {
+            _options = options;
+        }
 
         /// <summary>
         /// Exposes a config value should you want to short circuit the working hours test.
@@ -29,7 +33,7 @@ namespace PresenceLight.Core
         public bool UseWorkingHours()
         {
 
-            return _appState.Config.LightSettings.UseWorkingHours;
+            return _options.LightSettings.UseWorkingHours;
 
         }
         public bool IsInWorkingHours()
@@ -37,21 +41,21 @@ namespace PresenceLight.Core
 
             bool IsWorkingHours = false;
 
-            if (string.IsNullOrEmpty(_appState.Config.LightSettings.WorkingHoursStartTime) || string.IsNullOrEmpty(_appState.Config.LightSettings.WorkingHoursEndTime) || string.IsNullOrEmpty(_appState.Config.LightSettings.WorkingDays))
+            if (string.IsNullOrEmpty(_options.LightSettings.WorkingHoursStartTime) || string.IsNullOrEmpty(_options.LightSettings.WorkingHoursEndTime) || string.IsNullOrEmpty(_options.LightSettings.WorkingDays))
             {
                 IsWorkingHours = false;
                 return false;
             }
 
-            if (!_appState.Config.LightSettings.WorkingDays.Contains(DateTime.Now.DayOfWeek.ToString(), StringComparison.OrdinalIgnoreCase))
+            if (!_options.LightSettings.WorkingDays.Contains(DateTime.Now.DayOfWeek.ToString(), StringComparison.OrdinalIgnoreCase))
             {
                 IsWorkingHours = false;
                 return false;
             }
 
             // convert datetime to a TimeSpan
-            bool validStart = TimeSpan.TryParse(_appState.Config.LightSettings.WorkingHoursStartTime, out TimeSpan start);
-            bool validEnd = TimeSpan.TryParse(_appState.Config.LightSettings.WorkingHoursEndTime, out TimeSpan end);
+            bool validStart = TimeSpan.TryParse(_options.LightSettings.WorkingHoursStartTime, out TimeSpan start);
+            bool validEnd = TimeSpan.TryParse(_options.LightSettings.WorkingHoursEndTime, out TimeSpan end);
             if (!validEnd || !validStart)
             {
                 IsWorkingHours = false;

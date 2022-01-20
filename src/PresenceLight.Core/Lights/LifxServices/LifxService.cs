@@ -10,21 +10,21 @@ namespace PresenceLight.Core
 {
     public class LIFXService
     {
-        private AppState _appState;
+        private BaseConfig _options;
         private LifxCloudClient _client;
         private readonly ILogger<LIFXService> _logger;
         MediatR.IMediator _mediator;
 
-        public LIFXService(AppState appState, MediatR.IMediator mediator, ILogger<LIFXService> logger)
+        public LIFXService(Microsoft.Extensions.Options.IOptionsMonitor<BaseConfig> optionsAccessor, MediatR.IMediator mediator, ILogger<LIFXService> logger)
         {
-            _appState = appState;
             _logger = logger;
+            _options = optionsAccessor.CurrentValue;
             _mediator = mediator;
         }
 
-        public void Initialize(AppState appState)
+        public void Initialize(BaseConfig options)
         {
-            _appState = appState;
+            _options = options;
         }
 
         public async Task<List<Light>> GetAllLights(string apiKey = null)
@@ -33,15 +33,15 @@ namespace PresenceLight.Core
             {
                 if (!string.IsNullOrEmpty(apiKey))
                 {
-                    _appState.Config.LightSettings.LIFX.LIFXApiKey = apiKey;
+                    _options.LightSettings.LIFX.LIFXApiKey = apiKey;
                 }
 
-                if (!_appState.Config.LightSettings.LIFX.IsEnabled || string.IsNullOrEmpty(_appState.Config.LightSettings.LIFX.LIFXApiKey))
+                if (!_options.LightSettings.LIFX.IsEnabled || string.IsNullOrEmpty(_options.LightSettings.LIFX.LIFXApiKey))
                 {
                     return new List<Light>();
                 }
 
-                _client = await LifxCloudClient.CreateAsync(_appState.Config.LightSettings.LIFX.LIFXApiKey);
+                _client = await LifxCloudClient.CreateAsync(_options.LightSettings.LIFX.LIFXApiKey);
                 return await _client.ListLights(Selector.All);
             }
             catch (Exception e)
@@ -57,14 +57,14 @@ namespace PresenceLight.Core
             {
                 if (!string.IsNullOrEmpty(apiKey))
                 {
-                    _appState.Config.LightSettings.LIFX.LIFXApiKey = apiKey;
+                    _options.LightSettings.LIFX.LIFXApiKey = apiKey;
                 }
-                if (!_appState.Config.LightSettings.LIFX.IsEnabled || string.IsNullOrEmpty(_appState.Config.LightSettings.LIFX.LIFXApiKey))
+                if (!_options.LightSettings.LIFX.IsEnabled || string.IsNullOrEmpty(_options.LightSettings.LIFX.LIFXApiKey))
                 {
                     return new List<Group>();
                 }
 
-                _client = await LifxCloudClient.CreateAsync(_appState.Config.LightSettings.LIFX.LIFXApiKey);
+                _client = await LifxCloudClient.CreateAsync(_options.LightSettings.LIFX.LIFXApiKey);
                 return await _client.ListGroups(Selector.All);
             }
             catch (Exception e)
@@ -95,18 +95,18 @@ namespace PresenceLight.Core
 
             if (!string.IsNullOrEmpty(apiKey))
             {
-                _appState.Config.LightSettings.LIFX.LIFXApiKey = apiKey;
+                _options.LightSettings.LIFX.LIFXApiKey = apiKey;
             }
-            if (!_appState.Config.LightSettings.LIFX.IsEnabled || string.IsNullOrEmpty(_appState.Config.LightSettings.LIFX.LIFXApiKey))
+            if (!_options.LightSettings.LIFX.IsEnabled || string.IsNullOrEmpty(_options.LightSettings.LIFX.LIFXApiKey))
             {
                 return;
             }
 
             try
             {
-                _client = await LifxCloudClient.CreateAsync(_appState.Config.LightSettings.LIFX.LIFXApiKey);
+                _client = await LifxCloudClient.CreateAsync(_options.LightSettings.LIFX.LIFXApiKey);
 
-                var o = await Handle(_appState.Config.LightSettings.LIFX.UseActivityStatus ? activity : availability, lightId);
+                var o = await Handle(_options.LightSettings.LIFX.UseActivityStatus ? activity : availability, lightId);
 
                 if (o.returnFunc)
                 {
@@ -138,29 +138,29 @@ namespace PresenceLight.Core
                     return;
                 }
 
-                if (_appState.Config.LightSettings.UseDefaultBrightness)
+                if (_options.LightSettings.UseDefaultBrightness)
                 {
-                    if (_appState.Config.LightSettings.DefaultBrightness == 0)
+                    if (_options.LightSettings.DefaultBrightness == 0)
                     {
                         command.Power = PowerState.Off;
                     }
                     else
                     {
                         command.Power = PowerState.On;
-                        command.Brightness = Convert.ToDouble(_appState.Config.LightSettings.DefaultBrightness) / 100;
+                        command.Brightness = Convert.ToDouble(_options.LightSettings.DefaultBrightness) / 100;
                         command.Duration = 0;
                     }
                 }
                 else
                 {
-                    if (_appState.Config.LightSettings.LIFX.Brightness == 0)
+                    if (_options.LightSettings.LIFX.Brightness == 0)
                     {
                         command.Power = PowerState.Off;
                     }
                     else
                     {
                         command.Power = PowerState.On;
-                        command.Brightness = Convert.ToDouble(_appState.Config.LightSettings.DefaultBrightness) / 100;
+                        command.Brightness = Convert.ToDouble(_options.LightSettings.DefaultBrightness) / 100;
                         command.Duration = 0;
                     }
                 }
@@ -179,9 +179,9 @@ namespace PresenceLight.Core
 
         private async Task<(string color, SetStateRequest command, bool returnFunc)> Handle(string presence, string lightId)
         {
-            var props = _appState.Config.LightSettings.LIFX.Statuses.GetType().GetProperties().ToList();
+            var props = _options.LightSettings.LIFX.Statuses.GetType().GetProperties().ToList();
 
-            if (_appState.Config.LightSettings.LIFX.UseActivityStatus)
+            if (_options.LightSettings.LIFX.UseActivityStatus)
             {
                 props = props.Where(a => a.Name.ToLower().StartsWith("activity")).ToList();
             }
@@ -206,7 +206,7 @@ namespace PresenceLight.Core
             {
                 if (presence == prop.Name.Replace("Status", "").Replace("Availability", "").Replace("Activity", ""))
                 {
-                    var value = (AvailabilityStatus)prop.GetValue(_appState.Config.LightSettings.LIFX.Statuses);
+                    var value = (AvailabilityStatus)prop.GetValue(_options.LightSettings.LIFX.Statuses);
 
                     if (!value.Disabled)
                     {

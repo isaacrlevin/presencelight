@@ -1,6 +1,4 @@
 ﻿@page "/logs"
-@using System.IO
-
 @inject ILogger<Logs> _logger
 @inject IJSRuntime js
 @inject Microsoft.Extensions.Configuration.IConfiguration _configuration
@@ -57,7 +55,6 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th></th>
                         <th>FileName</th>
                         <th>Size</th>
                         <th>Creation Time</th>
@@ -71,9 +68,8 @@
                         {
                             <tr>
                                 <th scope="row">
-                                    <a href="" @onclick:preventDefault @onclick="@((ev) => DownloadLogs(logFile.Name))" title="Click to Download @logFile.Name">Open</a>
+                                    <a @onclick="@((ev) => DownloadLogs(logFile.Name))" title="Click to Download @logFile.Name">@logFile.Name</a>
                                 </th>
-                                <th>@logFile.Name</th>
                                 <td>@logFile.Length</td>
                                 <td>@logFile.CreationTime</td>
                                 <td>@logFile.LastAccessTime</td>
@@ -91,8 +87,6 @@
     string selectedTab = "logfiles";
     static object logsLockObject = new();
     static object logFilesLockObject = new();
-
-    public string? LogFilePath { get; set; }
 
     private Queue<Serilog.Events.LogEvent> InformationLogs = new(25);
     List<System.IO.FileInfo> LogFiles = new();
@@ -112,29 +106,24 @@
         selectedTab = name;
     }
 
-    bool fileWatcherInitialized = false;
-
     private void InitializeFileWatcher()
     {
         //TODO:  May consider making this a bit mode robust in the future.. Assumes this config
         //       IS always the second item in the config file.
+        _logFilePath = _configuration["Serilog:WriteTo:1:Args:Path"];
 
-        LogFilePath = _configuration["Serilog:WriteTo:1:Args:Path"];
 
-        if (string.IsNullOrWhiteSpace(LogFilePath))
+        if (string.IsNullOrWhiteSpace(_logFilePath))
             return;
-        LogFilePath = Environment.ExpandEnvironmentVariables(LogFilePath);
-        if (LogFilePath.Contains('/'))
-            LogFilePath = LogFilePath.Replace('/', '\\');
 
-        var fi = new FileInfo(LogFilePath);
-        if (!string.IsNullOrWhiteSpace(fi.Extension))
-        {
-            LogFilePath = fi.DirectoryName;
-        }
 
-        fileWatcherInitialized = true;
-        var di = new System.IO.DirectoryInfo(LogFilePath);
+        var fileParts = _logFilePath.Split('/');
+        _logFilePath = System.IO.Path.Combine(fileParts.Take(fileParts.Length - 1).ToArray());
+        _logFilePath = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), _logFilePath);
+
+        var di = new System.IO.DirectoryInfo(_logFilePath);
+
+
 
         if (di.Exists)
         {
@@ -145,7 +134,7 @@
             di.Create();
         }
 
-        _watcher = new System.IO.FileSystemWatcher(LogFilePath);
+        _watcher = new System.IO.FileSystemWatcher(_logFilePath);
 
         _watcher.Deleted += Watcher_Changed;
         _watcher.Created += Watcher_Changed;
@@ -200,7 +189,7 @@
     {
         string fileContents;
         using (var fs = new System.IO.FileStream(
-                System.IO.Path.Combine(LogFilePath, filename),
+                System.IO.Path.Combine(_logFilePath, filename),
                 System.IO.FileMode.Open,
                 System.IO.FileAccess.Read,
                 System.IO.FileShare.ReadWrite))

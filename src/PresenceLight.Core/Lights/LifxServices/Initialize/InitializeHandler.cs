@@ -18,7 +18,7 @@ namespace PresenceLight.Core.LifxServices
 
         public async Task<Unit> Handle(InitializeCommand command, CancellationToken cancellationToken)
         {
-            _service.Initialize(command.AppState);
+            _service.Initialize(command.Options);
             await Task.CompletedTask;
             return default;
         }

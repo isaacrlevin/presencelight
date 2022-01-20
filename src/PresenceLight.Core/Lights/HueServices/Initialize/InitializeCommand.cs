@@ -6,6 +6,6 @@ namespace PresenceLight.Core.HueServices
 {
     public class InitializeCommand : IRequest
     {
-        public AppState AppState { get; set; }
+        public BaseConfig Request { get; set; }
     }
 }

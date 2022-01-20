@@ -5,6 +5,6 @@ namespace PresenceLight.Core.RemoteHueServices
 {
     public class InitializeCommand : IRequest
     {
-        public AppState AppState { get;   set; }
+        public BaseConfig Options { get;   set; }
     }
 }
