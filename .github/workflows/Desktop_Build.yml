@@ -265,7 +265,7 @@ jobs:
         command: |
           .\SignClient "Sign" `
           --baseDirectory "${{ github.workspace }}/ToSign/Release" `
-          --input "**/*.appxbundle" `
+          --input "**/*.appxupload" `
           --config "${{ github.workspace }}/SigningScripts/appsettings.json" `
           --filelist "${{ github.workspace }}/SigningScripts/filelist.txt" `
           --user "${{ secrets.SignClientUser }}" `
