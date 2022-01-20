@@ -93,7 +93,7 @@ jobs:
         # Update AppSettings.json. This must be done before build.
         $appsettings= get-content ".\src\DesktopClient\PresenceLight\appsettings.json" -raw | ConvertFrom-Json
         $appsettings.isAppPackaged = "false"
-        $appsettings.appVersion = ${{ env.GitBuildVersionSimple }}
+        $appsettings.appVersion = "${{ env.GitBuildVersionSimple }}"
         $appsettings | ConvertTo-Json -depth 32| set-content '.\src\DesktopClient\PresenceLight\appsettings.json'
       shell: powershell
       if:  ${{ success() && matrix.ChannelName  == 'Standalone' }}
@@ -103,7 +103,7 @@ jobs:
         # Update AppSettings.json. This must be done before build.
         $appsettings= get-content ".\src\DesktopClient\PresenceLight\appsettings.json" -raw | ConvertFrom-Json
         $appsettings.isAppPackaged = "true"
-        $appsettings.appVersion = ${{ env.GitBuildVersionSimple }}
+        $appsettings.appVersion = "${{ env.GitBuildVersionSimple }}"
         $appsettings | ConvertTo-Json -depth 32| set-content '.\src\DesktopClient\PresenceLight\appsettings.json'
       shell: powershell
       if:  ${{ success() && matrix.ChannelName  != 'Standalone' }}
