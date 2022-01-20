@@ -28,14 +28,7 @@ namespace PresenceLight.Razor
 
         public string GetApplicationVersion()
         {
-            if (Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true")
-            {
-                var assembly = System.Reflection.Assembly.GetEntryAssembly();
-                return FileVersionInfo.GetVersionInfo(assembly.Location).FileVersion;
-
-            }
-
-            return Process.GetCurrentProcess().MainModule.FileVersionInfo.FileVersion;
+            return _config["AppVersion"];
         }
 
         public string GetDotNetRuntimeInfo()
