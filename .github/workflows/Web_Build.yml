@@ -358,6 +358,17 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Download Linux_ARM64 Artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: Linux_ARM64
+          path: ${{ github.workspace }}/Sign/Linux_ARM64
+
+      - name: Get Version from File
+        run: |
+          version=$(<"${{ github.workspace }}/Sign/Linux_ARM64/version.txt")
+          echo "VERSION=$version" >> $GITHUB_ENV
+
       - name: Update appsettings.json
         run: |
           # Update AppSettings.json. This must be done before build.
@@ -366,7 +377,7 @@ jobs:
           $appsettings.azureAd.clientId = "${{ secrets.ApplicationId }}"
           $appsettings.azureAd.clientSecret = "${{ secrets.ClientSecret }}"
 
-          $appsettings.appVersion = "${{ env.GitBuildVersionSimple }}"
+          $appsettings.appVersion = "${{ env.VERSION }}"
 
           $appsettings.applicationInsights.instrumentationkey = "${{ secrets.InstrumentationKey }}"
           $appsettings | ConvertTo-Json -depth 32| set-content '.\src\PresenceLight.Web\appsettings.json'
@@ -388,17 +399,6 @@ jobs:
           $PresenceLightSettings | ConvertTo-Json -depth 32| set-content '.\src\PresenceLight.Web\PresenceLightSettings.json'
         shell: pwsh
         if: ${{ success() && github.event_name != 'pull_request' }}
-
-      - name: Download Linux_ARM64 Artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: Linux_ARM64
-          path: ${{ github.workspace }}/Sign/Linux_ARM64
-
-      - name: Get Version from File
-        run: |
-          version=$(<"${{ github.workspace }}/Sign/Linux_ARM64/version.txt")
-          echo "VERSION=$version" >> $GITHUB_ENV
 
       - name: Update Docker Files
         run: |
