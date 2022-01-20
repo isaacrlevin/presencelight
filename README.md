@@ -14,11 +14,11 @@
 
 | Application Type |  Platforms | Readme
 |--- |  ---- | ---- |
-| Desktop (.NET 5) | Windows 10 (min Version 1803) | [Desktop Readme](https://github.com/isaacrlevin/PresenceLight/blob/main/desktop-README.md)
-| Web (ASP.NET 5) | Windows, Linux (Debian, AMD x64, ARM, ARM x64),  | [Web Readme](https://github.com/isaacrlevin/PresenceLight/blob/main/web-README.md)
+| Desktop (.NET 6) | Windows 10 (min Version 1803) | [Desktop Readme](https://github.com/isaacrlevin/PresenceLight/blob/main/desktop-README.md)
+| Web (ASP.NET 6) | Windows, MacOS, Linux (Debian, AMD x64, ARM, ARM x64),  | [Web Readme](https://github.com/isaacrlevin/PresenceLight/blob/main/web-README.md)
 ## What is PresenceLight?
 
-[PresenceLight](https://isaacl.dev/presence-light) is a solution to broadcast your various statuses to various kinds of smart lights. Some statuses you can broadcast are: your availability in Microsoft Teams, your current Windows 10 theme, and a theme or color of your choosing. There are other solutions that do something similar to sending Teams Availability to a light, but they require a tethered solution (plugging a light into a computer via USB). What PresenceLight does is leverage the [Presence Api](https://docs.microsoft.com/graph/api/presence-get), which is available in [Microsoft Graph](https://docs.microsoft.com/graph/overview), allowing to retrieve your presence without having to be tethered. This could potentially allow someone to update the light bulb from a remote machine they do not use.
+[PresenceLight](https://isaacl.dev/presence-light) is a solution to broadcast your various statuses to various kinds of smart lights. Some statuses you can broadcast are: your availability in Microsoft Teams or color of your choosing. There are other solutions that do something similar to sending Teams Availability to a light, but they require a tethered solution (plugging a light into a computer via USB). What PresenceLight does is leverage the [Presence Api](https://docs.microsoft.com/graph/api/presence-get), which is available in [Microsoft Graph](https://docs.microsoft.com/graph/overview), allowing to retrieve your presence without having to be tethered. This could potentially allow someone to update the light bulb from a remote machine they do not use.
 
 #### [Blog Post](https://isaacl.dev/presence-light)
 
@@ -31,8 +31,8 @@
 | Philips Hue (Local and Remote)
 | LIFX |
 | Yeelight |
-| Any light which can be controlled via a GET or POST call to a web API |
 | Philips Wiz |
+| Any light which can be controlled via a GET or POST call to a web API |
 
 ## Configure Hardware
 - [Configure Hardware](https://github.com/isaacrlevin/PresenceLight/wiki/Configure-Hardware)
@@ -49,8 +49,14 @@ I welcome all contributions here, as I am no expert in WPF/MSIX things.
 Presence Light would not be possible without the amazing work from the contributors to the following third party libraries!
 
 - [Q42.HueApi](https://github.com/Q42/Q42.HueApi)
-- [AppInsights.WindowsDesktop](https://github.com/novotnyllc/AppInsights.WindowsDesktop)
+- [OpenWiz](https://github.com/UselessMnemonic/OpenWiz)
+- [YeelightAPI](https://github.dev/roddone/YeelightAPI)
+- [LifxCloud](https://github.com/isaacrlevin/LifxCloudClient)
+- [MediatR](https://github.com/jbogard/MediatR)
+- [Polly](https://github.com/App-vNext/Polly)
+- [Serilog](https://github.com/serilog/serilog)
+- [Blazored.Modal](https://github.com/Blazored/Modal)
+- [Blazorise](https://github.com/Megabit/Blazorise)
+- [BlazorPro.Spinkit](https://github.com/EdCharbeneau/BlazorPro.Spinkit)
+- [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json)
 - [IdentityModel.OidcClient](https://github.com/IdentityModel/IdentityModel.OidcClient)
-- [wpftoolkit](https://github.com/xceedsoftware/wpftoolkit)
-- [OSVersionHelper](https://github.com/onovotny/OSVersionHelper)
-- [WpfAnimatedGif](https://github.com/XamlAnimatedGif/WpfAnimatedGif)

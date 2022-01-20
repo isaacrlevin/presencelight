@@ -4,18 +4,22 @@
     <TargetFramework>net6.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <AssemblyName>PresenceLight</AssemblyName>
-    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    <DockerfileFile>../Dockerfiles/Dockerfile</DockerfileFile>
-    <DockerfileContext>..</DockerfileContext>
+    <ImplicitUsings>enable</ImplicitUsings>
     <ApplicationIcon>favicon.ico</ApplicationIcon>
     <UserSecretsId>8509488430545</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileFile>Dockerfile</DockerfileFile>
+    <DockerfileContext>..</DockerfileContext>
+    <DockerDevelopmentMode>Regular</DockerDevelopmentMode>
+    <DockerComposeProjectPath>..\DockerCompose\docker-compose.dcproj</DockerComposeProjectPath>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.1" NoWarn="NU1605" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="6.0.1" NoWarn="NU1605" />
-    <PackageReference Include="Microsoft.Identity.Web" Version="1.21.1" />
-    <PackageReference Include="Microsoft.Identity.Web.UI" Version="1.21.1" />
+    <PackageReference Include="Microsoft.Identity.Web" Version="1.22.1" />
+    <PackageReference Include="Microsoft.Identity.Web.UI" Version="1.22.1" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
   </ItemGroup>
 
   <ItemGroup>

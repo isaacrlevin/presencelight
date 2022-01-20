@@ -23,19 +23,19 @@ namespace PresenceLight.Core
     }
     public class WizService : IWizService
     {
-        private BaseConfig _options;
+        private AppState _appState;
         private readonly ILogger<WizService> _logger;
         MediatR.IMediator _mediator;
-        public WizService(IOptionsMonitor<BaseConfig> optionsAccessor, MediatR.IMediator mediator, ILogger<WizService> logger)
+        public WizService(AppState appState, MediatR.IMediator mediator, ILogger<WizService> logger)
         {
             _mediator = mediator;
             _logger = logger;
-            _options = optionsAccessor.CurrentValue;
+            _appState = appState;
         }
 
-        public WizService(BaseConfig options)
+        public WizService(AppState appState)
         {
-            _options = options;
+            _appState = appState;
         }
 
         public async Task<IEnumerable<WizLight>> GetLights()
@@ -65,7 +65,7 @@ namespace PresenceLight.Core
 
             try
             {
-                var o = Handle(_options.LightSettings.Wiz.UseActivityStatus ? activity : availability, lightId);
+                var o = Handle(_appState.Config.LightSettings.Wiz.UseActivityStatus ? activity : availability, lightId);
 
                 if (o.returnFunc)
                 {
@@ -104,29 +104,29 @@ namespace PresenceLight.Core
                     return;
                 }
 
-                if (_options.LightSettings.UseDefaultBrightness)
+                if (_appState.Config.LightSettings.UseDefaultBrightness)
                 {
-                    if (_options.LightSettings.DefaultBrightness == 0)
+                    if (_appState.Config.LightSettings.DefaultBrightness == 0)
                     {
                         command.State = false;
                     }
                     else
                     {
                         command.State = true;
-                        command.Dimming = _options.LightSettings.DefaultBrightness;
+                        command.Dimming = _appState.Config.LightSettings.DefaultBrightness;
                         command.Speed = 0;
                     }
                 }
                 else
                 {
-                    if (_options.LightSettings.Wiz.Brightness == 0)
+                    if (_appState.Config.LightSettings.Wiz.Brightness == 0)
                     {
                         command.State = false;
                     }
                     else
                     {
                         command.State = true;
-                        command.Dimming = _options.LightSettings.Wiz.Brightness;
+                        command.Dimming = _appState.Config.LightSettings.Wiz.Brightness;
                         command.Speed = 0;
                     }
                 }
@@ -176,9 +176,9 @@ namespace PresenceLight.Core
 
         private (string color, WizParams command, bool returnFunc) Handle(string presence, string lightId)
         {
-            var props = _options.LightSettings.Hue.Statuses.GetType().GetProperties().ToList();
+            var props = _appState.Config.LightSettings.Hue.Statuses.GetType().GetProperties().ToList();
 
-            if (_options.LightSettings.Hue.UseActivityStatus)
+            if (_appState.Config.LightSettings.Hue.UseActivityStatus)
             {
                 props = props.Where(a => a.Name.ToLower().StartsWith("activity")).ToList();
             }
@@ -204,7 +204,7 @@ namespace PresenceLight.Core
             {
                 if (presence == prop.Name.Replace("Status", "").Replace("Availability", "").Replace("Activity", ""))
                 {
-                    var value = (AvailabilityStatus)prop.GetValue(_options.LightSettings.Hue.Statuses);
+                    var value = (AvailabilityStatus)prop.GetValue(_appState.Config.LightSettings.Hue.Statuses);
 
                     if (!value.Disabled)
                     {

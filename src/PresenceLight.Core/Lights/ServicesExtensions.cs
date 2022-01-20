@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Microsoft.Extensions.DependencyInjection;
-
-using Polly;
-using Polly.Retry;
+﻿using Microsoft.Extensions.DependencyInjection;
 
 namespace PresenceLight.Core
 {
@@ -23,6 +14,7 @@ namespace PresenceLight.Core
             services.AddSingleton<IYeelightService, YeelightService>();
             services.AddSingleton<ICustomApiService, CustomApiService>();
             services.AddSingleton<IWizService, WizService>();
+            services.AddSingleton<LIFXOAuthHelper, LIFXOAuthHelper>();
         }
     }
 }

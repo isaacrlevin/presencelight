@@ -15,21 +15,21 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="6.0.0" />
     <PackageReference Include="Alexa.NET" Version="1.19.0" />
     <PackageReference Include="Blazored.Modal" Version="6.0.1" />
-    <PackageReference Include="Blazorise.Bootstrap" Version="0.9.5.3" />
-    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.5.3" />
+    <PackageReference Include="Blazorise.Bootstrap" Version="0.9.5.4" />
+    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.5.4" />
     <PackageReference Include="BlazorPro.Spinkit" Version="1.2.0" />
-    <PackageReference Include="IdentityModel" Version="5.2.0" />
+    <PackageReference Include="IdentityModel" Version="6.0.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.20.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.SnapshotCollector" Version="1.4.2" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Identity.Web" Version="1.21.1" />
-    <PackageReference Include="Microsoft.Identity.Web.MicrosoftGraph" Version="1.21.1" />
-    <PackageReference Include="Microsoft.Identity.Web.UI" Version="1.21.1" />
+    <PackageReference Include="Microsoft.Identity.Web" Version="1.22.1" />
+    <PackageReference Include="Microsoft.Identity.Web.MicrosoftGraph" Version="1.22.1" />
+    <PackageReference Include="Microsoft.Identity.Web.UI" Version="1.22.1" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="Microsoft.Identity.Client" Version="4.39.0" />
+    <PackageReference Include="Microsoft.Identity.Client" Version="4.40.0" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.2.0" />
   </ItemGroup>

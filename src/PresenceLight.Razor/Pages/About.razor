@@ -1,6 +1,7 @@
 ﻿@page "/about"
-@inject PresenceLight.Razor.Services.SettingsService SettingsService
-
+@inject ISettingsService SettingsService
+@inject IJSRuntime js
+@inject AppInfo _appInfo
 <div class="container text-body" style="overflow:hidden">
     <div class="row">
         <div class="container-fluid">
@@ -22,6 +23,14 @@
         </div>
     </div>
     <br /><br /><br />
+    <div class="row">
+        <div class="w-25">
+            <h4>Application Type</h4>
+        </div>
+        <div class="w-50">
+            @appType
+        </div>
+    </div>
     <div class="row">
         <div class="w-25">
             <h4>Application Version</h4>
@@ -59,7 +68,7 @@
             <h4>Configuration Path</h4>
         </div>
         <div class="w-50">
-            @localConfigurationPath
+           <a href="" @onclick:preventDefault @onclick="@((ev) => DownloadSettings(@localConfigurationPath))" title="Click to Download @@localConfigurationPath">@localConfigurationPath</a>  
         </div>
     </div>
     <br />
@@ -77,13 +86,36 @@
     string RuntimeVersionInfo;
     string assemblyVersion;
     string localConfigurationPath;
+    string appType;
+   
     protected override void OnInitialized()
     {
-        installLocation = ThisAppInfo.GetInstallLocation();
-        installedDate = ThisAppInfo.GetInstallationDate();
-        RuntimeVersionInfo = ThisAppInfo.GetDotNetRuntimeInfo();
-        assemblyVersion = ThisAppInfo.GetApplicationVersion();
-        localConfigurationPath = new System.IO.FileInfo(SettingsService.SettingsFileLocation).FullName;
+        appType = _appInfo.GetAppInstallType();
+        installLocation = _appInfo.GetInstallLocation();
+        installedDate = _appInfo.GetInstallationDate();
+        RuntimeVersionInfo = _appInfo.GetDotNetRuntimeInfo();
+        assemblyVersion = _appInfo.GetApplicationVersion();
+        localConfigurationPath = new System.IO.FileInfo(SettingsService.GetSettingsFileLocation()).FullName;
+    }
 
+        async Task DownloadSettings(string filename)
+    {
+        string fileContents;
+        using (var fs = new System.IO.FileStream(
+                filename,
+                System.IO.FileMode.Open,
+                System.IO.FileAccess.Read,
+                System.IO.FileShare.ReadWrite))
+        {
+            var b = new byte[fs.Length];
+
+            fs.Read(b, 0, b.Length);
+            fileContents = Convert.ToBase64String(b);
+        }
+
+        await js.InvokeAsync<object>(
+                   "saveAsFile",
+                   filename,
+                   fileContents);
     }
 }

@@ -1,10 +1,8 @@
 ﻿@page "/wiz"
 
-@inject PresenceLight.Razor.Services.SettingsService SettingsService
-
+@inject ISettingsService SettingsService
 @inject AppState appState
-@inject IOptionsMonitor<BaseConfig> Config
-@inject ILogger<CustomApiSetup> _logger;
+@inject ILogger<Wiz> _logger;
 
 <div class="container text-body" style="overflow:hidden">
     <div class="row">
@@ -15,11 +13,11 @@
                     <br />
                     <br />
                     <div>
-                        <input type="checkbox" checked="@Config.CurrentValue.LightSettings.Wiz.IsEnabled" @bind-value="@Config.CurrentValue.LightSettings.Wiz.IsEnabled" /> Connect to Wiz
+                        <input type="checkbox" checked="@appState.Config.LightSettings.Wiz.IsEnabled" @bind-value="@appState.Config.LightSettings.Wiz.IsEnabled" /> Connect to Wiz
                     </div>
                     <br />
                     <br />
-                    @if (Config.CurrentValue.LightSettings.Wiz.IsEnabled)
+                    @if (appState.Config.LightSettings.Wiz.IsEnabled)
                     {
                         <div class="row">
                             <div class="col-12">
@@ -36,7 +34,7 @@
                                     <option disabled="disabled">Select</option>
                                     @foreach (var light in appState.WizLights)
                                     {
-                                        @if (Config.CurrentValue.LightSettings.Wiz.SelectedItemId == light.MacAddress)
+                                        @if (appState.Config.LightSettings.Wiz.SelectedItemId == light.MacAddress)
                                         {
                                             <option selected="selected" value=@light.MacAddress>@light.LightName</option>
                                         }
@@ -55,17 +53,17 @@
                                 <h5>Brightness</h5>
                             </div>
                             <div class="col-4">
-                                <Slider TValue="int" @bind-Value="@Config.CurrentValue.LightSettings.Wiz.Brightness" Step="1" Min="0" Max="100" />
+                                <Slider TValue="int" @bind-Value="@appState.Config.LightSettings.Wiz.Brightness" Step="1" Min="0" Max="100" />
                             </div>
                             <div class="col-4">
-                                <input style="width:50px" @bind-value="@Config.CurrentValue.LightSettings.Wiz.Brightness" type="text" />
+                                <input style="width:50px" @bind-value="@appState.Config.LightSettings.Wiz.Brightness" type="text" />
                             </div>
                         </div>
 
                         <br />
                         <br />
 
-                        <Statuses Light="@Config.CurrentValue.LightSettings.Wiz"></Statuses>
+                        <Statuses Light="@appState.Config.LightSettings.Wiz"></Statuses>
 
                         <br />
                         <br />
@@ -92,7 +90,7 @@
     {
         try
         {
-            SettingsService.SaveSettings(Config.CurrentValue);
+            SettingsService.SaveSettings(appState.Config);
             message = "Settings Saved";
             settingsSaved = true;
         }
@@ -114,8 +112,8 @@
         {
             appState.OnChange += RaiseStateHasChanged;
 
-            if (Config.CurrentValue.LightSettings.Wiz.IsEnabled
-            && !string.IsNullOrEmpty(Config.CurrentValue.LightSettings.Wiz.SelectedItemId))
+            if (appState.Config.LightSettings.Wiz.IsEnabled
+            && !string.IsNullOrEmpty(appState.Config.LightSettings.Wiz.SelectedItemId))
             {
                 isLoadingLights = true;
                 appState.SetWizLights(await _mediator.Send(new Core.WizServices.GetLightsCommand()));
@@ -137,7 +135,7 @@
     private void OnChange(ChangeEventArgs e)
     {
         var light = e.Value.ToString();
-        Config.CurrentValue.LightSettings.Wiz.SelectedItemId = light;
+        appState.Config.LightSettings.Wiz.SelectedItemId = light;
         appState.SetWizLight(light);
     }
 
@@ -147,9 +145,9 @@
         {
             appState.SetWizLights(await _mediator.Send(new Core.WizServices.GetLightsCommand()));
 
-            if (string.IsNullOrEmpty(Config.CurrentValue.LightSettings.Wiz.SelectedItemId) && appState.WizLights.Count() > 0)
+            if (string.IsNullOrEmpty(appState.Config.LightSettings.Wiz.SelectedItemId) && appState.WizLights.Count() > 0)
             {
-                Config.CurrentValue.LightSettings.Wiz.SelectedItemId = appState.WizLights.FirstOrDefault().MacAddress;
+                appState.Config.LightSettings.Wiz.SelectedItemId = appState.WizLights.FirstOrDefault().MacAddress;
             }
 
         }

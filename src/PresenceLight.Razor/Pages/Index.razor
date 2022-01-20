@@ -2,63 +2,83 @@
 
 @using Microsoft.Identity.Web
 @using Microsoft.Graph
-
-
 @inject AppState appState
-@inject IOptionsMonitor<BaseConfig> Config
-@inject Microsoft.Graph.GraphServiceClient GraphServiceClient
-@inject MicrosoftIdentityConsentAndConditionalAccessHandler ConsentHandler
 @inject ILogger<Index> _logger;
 @inject UserAuthService _userAuthService
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor _httpContextAccessor
 
-<SpinLoader IsLoading="@(appState.Presence == null)">
-    <LoadingTemplate>
-        <div style="height:400px; position:relative; ">
-            <Circle style=" margin: 0; position: absolute; top: 50%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%);" Center="true" />
-        </div>
-    </LoadingTemplate>
-    <ContentTemplate>
-        <div class="container text-body">
-            <div class="row">
-                <div class="container-fluid">
-                    <div class="row-fluid">
-                        <div>
-                            <h1>@appState.User?.DisplayName</h1>
-                            <br />
-                            <br />
+@if (appState.SignedIn)
+{
+    <SpinLoader IsLoading="@(appState.Presence == null)">
+        <LoadingTemplate>
+            <div style="height:400px; position:relative; ">
+                <Circle style=" margin: 0; position: absolute; top: 50%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%);" Center="true" />
+            </div>
+        </LoadingTemplate>
+        <ContentTemplate>
+            <div class="container text-body">
+                <div class="row">
+                    <div class="container-fluid">
+                        <div class="row-fluid">
                             <div>
-                                <img class="image" src="@appState.ProfileImage" />
-                                <div class="circle bottom-right @appState.Presence?.Availability"></div>
+                                <h1>@appState.User?.DisplayName</h1>
+                                <br />
+                                <br />
+                                <div>
+                                    <img class="image" src="@appState.ProfileImage" />
+                                    <div class="circle bottom-right @appState.Presence?.Availability"></div>
+                                </div>
+                                <h3>Availability: @Helpers.HumanifyText(appState.Presence?.Availability)</h3>
+                                <h3>Activity: @Helpers.HumanifyText(appState.Presence?.Activity)</h3>
                             </div>
-                            <h3>Availability: @Helpers.HumanifyText(appState.Presence?.Availability)</h3>
-                            <h3>Activity: @Helpers.HumanifyText(appState.Presence?.Activity)</h3>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </ContentTemplate>
-</SpinLoader>
+        </ContentTemplate>
+    </SpinLoader>
+}
+else
+{
+    <div style="height:400px; position:relative; ">
+        <br /> <br />
+        <br /> <br />
+        Login to Microsoft Account to Sync Presence
+        <br /> <br />
+        <button @onclick=@SignIn>Sign In</button>
+    </div>
+}
 
 @code {
     protected override async Task OnInitializedAsync()
     {
         appState.OnChange += RaiseStateHasChanged;
 
+        _logger.LogInformation("Error occured Loading Settings");
+
         bool isUserAuth = await _userAuthService.IsUserAuthenticated();
-        if (!isUserAuth)
+        if (!isUserAuth && appState.User == null)
         {
             appState.SetLightMode("");
-            await _httpContextAccessor.HttpContext.ChallengeAsync();
+
+            if (appState.Config.AppType == "Web")
+            {
+                await _httpContextAccessor.HttpContext.ChallengeAsync();
+            }
         }
         else
         {
             if (appState.LightMode != "Custom")
             {
+                appState.SignedIn = true;
                 appState.SetLightMode("Graph");
             }
         }
+    }
+
+    void SignIn()
+    {
+        appState.SignInRequested = true;
     }
 
     public void Dispose()

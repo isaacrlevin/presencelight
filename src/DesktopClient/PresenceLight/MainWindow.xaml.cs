@@ -21,6 +21,7 @@ using Microsoft.Identity.Client;
 
 using PresenceLight.Core;
 using PresenceLight.Graph;
+using PresenceLight.Razor;
 using PresenceLight.Services;
 using PresenceLight.Telemetry;
 
@@ -37,17 +38,13 @@ namespace PresenceLight
     public partial class MainWindow : Window
     {
         private readonly BaseConfig _options;
-        public BaseConfig Config { get; set; }
 
-        private string lightMode;
 
-        private Presence presence { get; set; }
+        // private Presence presence { get; set; }
         private DateTime settingsLastSaved = DateTime.MinValue;
 
         private MediatR.IMediator _mediator;
         private LIFXOAuthHelper _lIFXOAuthHelper;
-
-
 
         private readonly IGraphService _graphservice;
         private DiagnosticsClient _diagClient;
@@ -55,7 +52,9 @@ namespace PresenceLight
         private IWorkingHoursService _workingHoursService;
         private WindowState lastWindowState;
         private bool previousRemoteFlag;
+        private bool isInteractRunning;
         private readonly ILogger<MainWindow> _logger;
+        private readonly AppState _appState;
 
         #region Init
         public MainWindow(IGraphService graphService,
@@ -65,19 +64,21 @@ namespace PresenceLight
                           LIFXOAuthHelper lifxOAuthHelper,
                           DiagnosticsClient diagClient,
                           ILogger<MainWindow> logger,
-                          ISettingsService settingsService)
+                          ISettingsService settingsService,
+                          AppState appState)
         {
+            var currentApp = (App)System.Windows.Application.Current;
+            Resources.Add("services", currentApp.ServiceProvider);
+
+            _appState = appState;
+
             _logger = logger;
             InitializeComponent();
             System.Windows.Application.Current.SessionEnding += new SessionEndingCancelEventHandler(Current_SessionEnding);
 
-            LoadAboutMe();
-
             _workingHoursService = workingHoursService;
             _graphservice = graphService;
 
-
-            logs.LogFilePath = App.StaticConfig["Serilog:WriteTo:1:Args:Path"];
 
             _mediator = mediator;
             _options = optionsAccessor != null ? optionsAccessor.CurrentValue : throw new NullReferenceException("Options Accessor is null");
@@ -86,68 +87,74 @@ namespace PresenceLight
             _settingsService = settingsService;
 
             LoadSettings().ContinueWith(
-        t =>
+        async t =>
         {
             if (t.IsFaulted)
             { }
 
-            this.Dispatcher.Invoke(() =>
+            await Task.Run(() =>
             {
-                LoadApp();
-
-                var tbContext = landingPage.notificationIcon.DataContext;
-                DataContext = Config;
-                landingPage.notificationIcon.DataContext = tbContext;
-
-                if (Config.StartMinimized)
+                this.Dispatcher.Invoke(() =>
                 {
-                    this.Hide();
+                    appState.SignedIn = false;
+                    LoadApp();
+
+                    var tbContext = notificationIcon.DataContext;
+                    DataContext = _appState.Config;
+                    notificationIcon.DataContext = tbContext;
+
+                    if (_appState.Config.StartMinimized)
+                    {
+                        this.Hide();
+                    }
+                });
+
+                while (true)
+                {
+                    if (_appState.SignInRequested)
+                    {
+                        _appState.SignInRequested = false;
+
+                        this.Dispatcher.Invoke(() =>
+                        {
+                            SignIn();
+                        });
+                    }
+
+                    if (_appState.SignOutRequested)
+                    {
+                        _appState.SignOutRequested = false;
+                        this.Dispatcher.Invoke(() =>
+                        {
+                            SignOut();
+                        });
+                    }
+
                 }
             });
+
+
         }, TaskScheduler.Current);
         }
 
-        private void LoadAboutMe()
+        private async Task LoadSettings()
         {
-            about.packageName.Text = ThisAppInfo.GetDisplayName();
-            about.packageVersion.Text = ThisAppInfo.GetPackageVersion();
-            about.installedFrom.Text = ThisAppInfo.GetAppInstallerUri();
-            about.installLocation.Text = ThisAppInfo.GetInstallLocation();
-            about.settingsLocation.Text = ThisAppInfo.GetSettingsLocation();
-            about.installedDate.Text = ThisAppInfo.GetInstallationDate();
-            about.RuntimeVersionInfo.Text = ThisAppInfo.GetDotNetRuntimeInfo();
+            try
+            {
+                if (!(await _settingsService.IsFilePresent().ConfigureAwait(true)))
+                {
+                    await _settingsService.SaveSettings(_options).ConfigureAwait(true);
+                }
 
-            if (Convert.ToBoolean(App.StaticConfig["IsAppPackaged"], CultureInfo.InvariantCulture))
-            {
-                about.updateBtn.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                about.updateBtn.Visibility = Visibility.Collapsed;
-            }
-        }
+                _appState.SetConfig(await _settingsService.LoadSettings().ConfigureAwait(true) ?? throw new NullReferenceException("Settings Load Service Returned null"));
 
-        private void SettingsLinkClick(object sender, RoutedEventArgs e)
-        {
-            string filePath = ThisAppInfo.GetSettingsLocation();
-            if (!System.IO.File.Exists(filePath))
-            {
-                _logger.LogError("Settings File Not Found");
+                bool useWorkingHours = await _mediator.Send(new Core.WorkingHoursServices.UseWorkingHoursCommand());
+                bool IsInWorkingHours = await _mediator.Send(new Core.WorkingHoursServices.IsInWorkingHoursCommand());
             }
-            else
+            catch (Exception e)
             {
-                //Clean up file path so it can be navigated OK
-                filePath = System.IO.Path.GetFullPath(filePath);
-                System.Diagnostics.Process.Start("explorer.exe", string.Format("/select,\"{0}\"", filePath));
-            }
-        }
-
-        private async void CheckForUpdates(object sender, RoutedEventArgs e)
-        {
-            var result = await Package.Current.CheckUpdateAvailabilityAsync();
-            if (result.Availability == PackageUpdateAvailability.Available)
-            {
-                MessageBox.Show("There's a new update! Restart your app to install it");
+                _logger.LogError(e, "Error occured Loading Settings");
+                _diagClient.TrackException(e);
             }
         }
 
@@ -155,50 +162,13 @@ namespace PresenceLight
         {
             try
             {
-                CheckHue(true);
-                CheckLIFX();
-                CheckYeelight();
-                CheckWiz();
-                CheckAAD();
+                previousRemoteFlag = _appState.Config.LightSettings.Hue.UseRemoteApi;
 
-                previousRemoteFlag = Config.LightSettings.Hue.UseRemoteApi;
+                notificationIcon.Text = $"PresenceLight Status - {PresenceConstants.Inactive}";
+                notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(string.Empty, string.Empty)));
 
-                if (Config.IconType == "Transparent")
-                {
-                    settings.Transparent.IsChecked = true;
-                }
-                else
-                {
-                    settings.White.IsChecked = true;
-                }
-
-                switch (Config.LightSettings.HoursPassedStatus)
-                {
-                    case "Keep":
-                        settings.HourStatusKeep.IsChecked = true;
-                        break;
-                    case "White":
-                        settings.HourStatusWhite.IsChecked = true;
-                        break;
-                    case "Off":
-                        settings.HourStatusOff.IsChecked = true;
-                        break;
-                    default:
-                        settings.HourStatusKeep.IsChecked = true;
-                        break;
-                }
-
-                PopulateWorkingDays();
-
-                landingPage.notificationIcon.Text = PresenceConstants.Inactive;
-                landingPage.notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(String.Empty, IconConstants.Inactive)));
-
-                landingPage.turnOffButton.Visibility = Visibility.Collapsed;
-                landingPage.turnOnButton.Visibility = Visibility.Collapsed;
-
-                Config.LightSettings.WorkingHoursStartTimeAsDate = string.IsNullOrEmpty(Config.LightSettings.WorkingHoursStartTime) ? null : DateTime.Parse(Config.LightSettings.WorkingHoursStartTime, null);
-                Config.LightSettings.WorkingHoursEndTimeAsDate = string.IsNullOrEmpty(Config.LightSettings.WorkingHoursEndTime) ? null : DateTime.Parse(Config.LightSettings.WorkingHoursEndTime, null);
-
+                _appState.Config.LightSettings.WorkingHoursStartTimeAsDate = string.IsNullOrEmpty(_appState.Config.LightSettings.WorkingHoursStartTime) ? null : DateTime.Parse(_appState.Config.LightSettings.WorkingHoursStartTime, null);
+                _appState.Config.LightSettings.WorkingHoursEndTimeAsDate = string.IsNullOrEmpty(_appState.Config.LightSettings.WorkingHoursEndTime) ? null : DateTime.Parse(_appState.Config.LightSettings.WorkingHoursEndTime, null);
 
                 CallGraph().ConfigureAwait(true);
             }
@@ -208,46 +178,18 @@ namespace PresenceLight
             }
         }
 
-        private void SyncOptions()
-        {
-            PropertyInfo[] properties = typeof(BaseConfig).GetProperties();
-            foreach (PropertyInfo property in properties)
-            {
-                object value = property.GetValue(Config);
-
-                if (property.PropertyType == typeof(string) && value != null && string.IsNullOrEmpty(value.ToString()))
-                {
-                    property.SetValue(_options, value.ToString().Trim());
-                }
-                else
-                {
-                    property.SetValue(_options, value);
-                }
-            }
-        }
-
         #endregion
 
         #region Profile Panel
 
-        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
-        {
-            var url = e.Uri.AbsoluteUri;
-            Helpers.OpenBrowser(url);
-            e.Handled = true;
-        }
-
-        private async void SignIn_Click(object sender, RoutedEventArgs e)
+        private async void SignIn()
         {
             await CallGraph().ConfigureAwait(true);
         }
 
         private async Task CallGraph()
         {
-
-            lightMode = "Graph";
-            lightColors.syncTeamsButton.IsEnabled = false;
-            lightColors.syncThemeButton.IsEnabled = true;
+            _appState.SetLightMode("Graph");
 
             if (!await _mediator.Send(new Core.GraphServices.GetIsInitializedCommand()))
             {
@@ -258,87 +200,17 @@ namespace PresenceLight
 
             }
 
-
-            landingPage.signInPanel.Visibility = Visibility.Collapsed;
-            lightColors.lblTheme.Visibility = Visibility.Collapsed;
-            landingPage.loadingPanel.Visibility = Visibility.Visible;
+            _appState.SignedIn = true;
 
             try
             {
-                var (profile, presence) = await _mediator.Send(new Core.GraphServices.GetProfileAndPresenceCommand());
+                await _settingsService.SaveSettings(_appState.Config).ConfigureAwait(true);
 
-                var photo = await GetPhoto().ConfigureAwait(true);
-
-                if (photo == null)
+                if (!isInteractRunning)
                 {
-                    MapUI(presence, profile, new BitmapImage(new Uri("pack://application:,,,/PresenceLight;component/images/UnknownProfile.png")));
+                    await InteractWithLights().ConfigureAwait(true);
                 }
-                else
-                {
-                    MapUI(presence, profile, LoadImage(photo));
-                }
-
-
-                if (Config.LightSettings.SyncLights)
-                {
-                    if (!await _mediator.Send(new Core.WorkingHoursServices.UseWorkingHoursCommand()))
-                    {
-                        if (lightMode == "Graph")
-                        {
-                            await SetColor(presence.Availability, presence.Activity).ConfigureAwait(true);
-                        }
-                    }
-                    else
-                    {
-                        bool previousWorkingHours = await _mediator.Send(new Core.WorkingHoursServices.IsInWorkingHoursCommand());
-                        if (previousWorkingHours)
-                        {
-                            if (lightMode == "Graph")
-                            {
-                                await SetColor(presence.Availability, presence.Activity).ConfigureAwait(true);
-                            }
-                        }
-                        else
-                        {
-                            // check to see if working hours have passed
-                            if (previousWorkingHours)
-                            {
-                                if (lightMode == "Graph")
-                                {
-                                    switch (Config.LightSettings.HoursPassedStatus)
-                                    {
-                                        case "Keep":
-                                            await SetColor(presence.Availability, presence.Activity).ConfigureAwait(true);
-                                            break;
-                                        case "White":
-                                            await SetColor("Offline", presence.Activity).ConfigureAwait(true);
-                                            break;
-                                        case "Off":
-                                            await SetColor("Off", presence.Activity).ConfigureAwait(true);
-                                            break;
-                                        default:
-                                            await SetColor(presence.Availability, presence.Activity).ConfigureAwait(true);
-                                            break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                landingPage.loadingPanel.Visibility = Visibility.Collapsed;
-                landingPage.signInPanel.Visibility = Visibility.Collapsed;
-
-
-                landingPage.dataPanel.Visibility = Visibility.Visible;
-                await _settingsService.SaveSettings(Config).ConfigureAwait(true);
-
-                landingPage.turnOffButton.Visibility = Visibility.Visible;
-                landingPage.turnOnButton.Visibility = Visibility.Collapsed;
-
-                await InteractWithLights().ConfigureAwait(true);
             }
-
             catch (Exception e)
             {
             }
@@ -348,17 +220,17 @@ namespace PresenceLight
         {
             try
             {
-                if (!string.IsNullOrEmpty(Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(Config.LightSettings.Hue.SelectedItemId))
+                if (!string.IsNullOrEmpty(_appState.Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(_appState.Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(_appState.Config.LightSettings.Hue.SelectedItemId))
                 {
-                    if (Config.LightSettings.Hue.UseRemoteApi)
+                    if (_appState.Config.LightSettings.Hue.UseRemoteApi)
                     {
-                        if (!string.IsNullOrEmpty(Config.LightSettings.Hue.RemoteBridgeId))
+                        if (!string.IsNullOrEmpty(_appState.Config.LightSettings.Hue.RemoteBridgeId))
                         {
                             await _mediator.Send(new Core.RemoteHueServices.SetColorCommand
                             {
                                 Availability = color,
-                                LightId = Config.LightSettings.Hue.SelectedItemId,
-                                BridgeId = Config.LightSettings.Hue.RemoteBridgeId
+                                LightId = _appState.Config.LightSettings.Hue.SelectedItemId,
+                                BridgeId = _appState.Config.LightSettings.Hue.RemoteBridgeId
                             }).ConfigureAwait(true);
                         }
                     }
@@ -368,45 +240,32 @@ namespace PresenceLight
                         {
                             Activity = activity,
                             Availability = color,
-                            LightID = Config.LightSettings.Hue.SelectedItemId
+                            LightID = _appState.Config.LightSettings.Hue.SelectedItemId
                         }).ConfigureAwait(false);
                     }
                 }
 
-                if (Config.LightSettings.LIFX.IsEnabled && !string.IsNullOrEmpty(Config.LightSettings.LIFX.LIFXApiKey))
+                if (_appState.Config.LightSettings.LIFX.IsEnabled && !string.IsNullOrEmpty(_appState.Config.LightSettings.LIFX.LIFXApiKey))
                 {
-                    await _mediator.Send(new PresenceLight.Core.LifxServices.SetColorCommand { Activity = activity, Availability = color, LightId = Config.LightSettings.LIFX.SelectedItemId }).ConfigureAwait(true);
+                    await _mediator.Send(new PresenceLight.Core.LifxServices.SetColorCommand { Activity = activity, Availability = color, LightId = _appState.Config.LightSettings.LIFX.SelectedItemId }).ConfigureAwait(true);
 
                 }
 
-                if (Config.LightSettings.Wiz.IsEnabled)
+                if (_appState.Config.LightSettings.Wiz.IsEnabled)
                 {
-                    await _mediator.Send(new PresenceLight.Core.WizServices.SetColorCommand { Activity = activity, Availability = color, LightID = Config.LightSettings.Wiz.SelectedItemId }).ConfigureAwait(true);
+                    await _mediator.Send(new PresenceLight.Core.WizServices.SetColorCommand { Activity = activity, Availability = color, LightID = _appState.Config.LightSettings.Wiz.SelectedItemId }).ConfigureAwait(true);
 
                 }
 
-                if (Config.LightSettings.Yeelight.IsEnabled && !string.IsNullOrEmpty(Config.LightSettings.Yeelight.SelectedItemId))
+                if (_appState.Config.LightSettings.Yeelight.IsEnabled && !string.IsNullOrEmpty(_appState.Config.LightSettings.Yeelight.SelectedItemId))
                 {
-                    await _mediator.Send(new PresenceLight.Core.YeelightServices.SetColorCommand { Activity = activity, Availability = color, LightId = Config.LightSettings.Yeelight.SelectedItemId }).ConfigureAwait(true);
+                    await _mediator.Send(new PresenceLight.Core.YeelightServices.SetColorCommand { Activity = activity, Availability = color, LightId = _appState.Config.LightSettings.Yeelight.SelectedItemId }).ConfigureAwait(true);
 
                 }
 
-                if (Config.LightSettings.CustomApi.IsEnabled)
+                if (_appState.Config.LightSettings.CustomApi.IsEnabled)
                 {
                     string response = await _mediator.Send(new Core.CustomApiServices.SetColorCommand() { Activity = activity, Availability = color });
-                    this.Dispatcher.Invoke(() =>
-                    {
-                        customapi.customApiLastResponse.Content = response;
-                        if (response.Contains("Error:", StringComparison.OrdinalIgnoreCase))
-                        {
-                            customapi.customApiLastResponse.Foreground = new SolidColorBrush(Colors.Red);
-                        }
-                        else
-                        {
-                            customapi.customApiLastResponse.Foreground = new SolidColorBrush(Colors.Green);
-                        }
-                    });
-
                 }
             }
             catch (Exception e)
@@ -414,24 +273,21 @@ namespace PresenceLight
             }
         }
 
-        private async void SignOutButton_Click(object sender, RoutedEventArgs e)
+        private async void SignOut()
         {
             _logger.LogInformation("Signing out of Graph PresenceLight Sync");
 
-            lightMode = "Graph";
+            _appState.SetLightMode("Graph");
             var accounts = await WPFAuthorizationProvider.Application.GetAccountsAsync().ConfigureAwait(true);
             if (accounts.Any())
             {
                 try
                 {
                     await WPFAuthorizationProvider.Application.RemoveAsync(accounts.FirstOrDefault()).ConfigureAwait(true);
-
-                    landingPage.signInPanel.Visibility = Visibility.Visible;
-                    landingPage.dataPanel.Visibility = Visibility.Collapsed;
-
-                    landingPage.notificationIcon.Text = PresenceConstants.Inactive;
-                    landingPage.notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(string.Empty, IconConstants.Inactive)));
-
+                    _appState.SignedIn = false;
+                    _appState.SetUserInfo(null, null, null);
+                    notificationIcon.Text = $"PresenceLight Status - {PresenceConstants.Inactive}";
+                    notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(string.Empty, string.Empty)));
 
                     await SetColor("Off").ConfigureAwait(true);
                 }
@@ -439,7 +295,7 @@ namespace PresenceLight
                 {
                 }
             }
-            await _settingsService.SaveSettings(Config).ConfigureAwait(true);
+            await _settingsService.SaveSettings(_appState.Config).ConfigureAwait(true);
         }
         #endregion
 
@@ -470,75 +326,17 @@ namespace PresenceLight
             }
         }
 
-        public Media.Color MapColor(string hexColor)
-        {
-            return (Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(hexColor);
-        }
-
         public void MapUI(Presence presence, User? profile, BitmapImage? profileImageBit)
         {
             try
             {
                 SolidColorBrush mySolidColorBrush = new SolidColorBrush();
-                System.Windows.Media.Color color;
                 BitmapImage image;
-                switch (presence.Availability)
+                if (presence != null)
                 {
-                    case "Available":
-                        image = new BitmapImage(new Uri(IconConstants.GetIcon(Config.IconType, IconConstants.Available)));
-                        color = MapColor("#009933");
-                        landingPage.notificationIcon.Text = PresenceConstants.Available;
-                        break;
-                    case "Busy":
-                        image = new BitmapImage(new Uri(IconConstants.GetIcon(Config.IconType, IconConstants.Busy)));
-                        color = MapColor("#ff3300");
-                        landingPage.notificationIcon.Text = PresenceConstants.Busy;
-                        break;
-                    case "BeRightBack":
-                        image = new BitmapImage(new Uri(IconConstants.GetIcon(Config.IconType, IconConstants.BeRightBack)));
-                        color = MapColor("#ffff00");
-                        landingPage.notificationIcon.Text = PresenceConstants.BeRightBack;
-                        break;
-                    case "Away":
-                        image = new BitmapImage(new Uri(IconConstants.GetIcon(Config.IconType, IconConstants.Away)));
-                        color = MapColor("#ffff00");
-                        landingPage.notificationIcon.Text = PresenceConstants.Away;
-                        break;
-                    case "DoNotDisturb":
-                        image = new BitmapImage(new Uri(IconConstants.GetIcon(Config.IconType, IconConstants.DoNotDisturb)));
-                        color = MapColor("#B03CDE");
-                        landingPage.notificationIcon.Text = PresenceConstants.DoNotDisturb;
-                        break;
-                    case "OutOfOffice":
-                        image = new BitmapImage(new Uri(IconConstants.GetIcon(Config.IconType, IconConstants.OutOfOffice)));
-                        color = MapColor("#800080");
-                        landingPage.notificationIcon.Text = PresenceConstants.OutOfOffice;
-                        break;
-                    default:
-                        image = new BitmapImage(new Uri(IconConstants.GetIcon(string.Empty, IconConstants.Inactive)));
-                        color = MapColor("#FFFFFF");
-                        landingPage.notificationIcon.Text = PresenceConstants.Inactive;
-                        break;
+                    notificationIcon.Text = $"PresenceLight Status - {Helpers.HumanifyText(presence.Availability)}";
+                    notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(_appState.Config.IconType, presence.Availability)));
                 }
-
-                if (profileImageBit != null)
-                {
-                    landingPage.profileImage.Source = profileImageBit;
-                }
-
-                landingPage.notificationIcon.Icon = image;
-                mySolidColorBrush.Color = color;
-                landingPage.status.Fill = mySolidColorBrush;
-                landingPage.status.StrokeThickness = 1;
-                landingPage.status.Stroke = System.Windows.Media.Brushes.Black;
-
-                if (profile != null)
-                {
-                    landingPage.userName.Content = profile.DisplayName;
-                }
-
-                landingPage.activity.Content = "Activity: " + presence.Activity;
-                landingPage.availability.Content = "Availability: " + presence.Availability;
             }
             catch (Exception e)
             {
@@ -598,21 +396,12 @@ namespace PresenceLight
 
         #endregion
 
-        private void TabControl_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-        {
-            yeelight.lblYeelightSaved.Visibility = Visibility.Collapsed;
-            philipsHue.lblHueSaved.Visibility = Visibility.Collapsed;
-            lifx.lblLIFXSaved.Visibility = Visibility.Collapsed;
-            customapi.lblCustomApiSaved.Visibility = Visibility.Collapsed;
-            settings.lblSettingSaved.Visibility = Visibility.Collapsed;
-        }
-
         #region Tray Methods
 
         protected override async void OnClosing(System.ComponentModel.CancelEventArgs e)
         {
             e.Cancel = true;
-            await _settingsService.SaveSettings(Config).ConfigureAwait(true);
+            await _settingsService.SaveSettings(_appState.Config).ConfigureAwait(true);
             this.Hide();
         }
 
@@ -633,10 +422,7 @@ namespace PresenceLight
 
         private void OnTurnOnSyncClick(object sender, RoutedEventArgs e)
         {
-            lightMode = "Graph";
-
-            landingPage.turnOffButton.Visibility = Visibility.Visible;
-            landingPage.turnOnButton.Visibility = Visibility.Collapsed;
+            _appState.SetLightMode("Graph");
 
             this.WindowState = this.lastWindowState;
             _logger.LogInformation("Turning On PresenceLight Sync");
@@ -646,15 +432,11 @@ namespace PresenceLight
         {
             try
             {
-                lightMode = "Custom";
-
+                _appState.SetLightMode("Custom");
                 await SetColor("Off", "Off");
 
-                landingPage.turnOffButton.Visibility = Visibility.Collapsed;
-                landingPage.turnOnButton.Visibility = Visibility.Visible;
-
-                landingPage.notificationIcon.Text = PresenceConstants.Inactive;
-                landingPage.notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(string.Empty, IconConstants.Inactive)));
+                notificationIcon.Text = PresenceConstants.Inactive;
+                notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(string.Empty, string.Empty)));
 
                 this.WindowState = this.lastWindowState;
             }
@@ -671,7 +453,7 @@ namespace PresenceLight
             {
                 await SetColor("Off", "Off");
 
-                await _settingsService.SaveSettings(Config).ConfigureAwait(true);
+                await _settingsService.SaveSettings(_appState.Config).ConfigureAwait(true);
                 System.Windows.Application.Current.Shutdown();
             }
             catch (Exception ex)
@@ -687,7 +469,7 @@ namespace PresenceLight
             {
                 await SetColor("Off", "Off");
 
-                await _settingsService.SaveSettings(Config).ConfigureAwait(true);
+                await _settingsService.SaveSettings(_appState.Config).ConfigureAwait(true);
             }
             catch (Exception ex)
             {
@@ -704,123 +486,126 @@ namespace PresenceLight
             string previousLightMode = string.Empty;
             while (true)
             {
+                isInteractRunning = true;
                 try
                 {
-                    await Task.Delay(Convert.ToInt32(Config.LightSettings.PollingInterval * 1000)).ConfigureAwait(true);
-
-                    bool touchLight = false;
-                    string newColor = "";
-
-                    if (Config.LightSettings.SyncLights)
+                    if (_appState.SignedIn)
                     {
-                        if (!await _mediator.Send(new Core.WorkingHoursServices.UseWorkingHoursCommand()))
+                        if (_appState.User == null)
                         {
-                            if (lightMode == "Graph")
+                            var (profile, presence) = await _mediator.Send(new Core.GraphServices.GetProfileAndPresenceCommand());
+
+                            var photo = await GetPhoto().ConfigureAwait(true);
+
+                            _appState.SetLightMode("Graph");
+
+                            if (photo == null)
                             {
-                                touchLight = true;
+                                MapUI(presence, profile, new BitmapImage(new Uri("pack://application:,,,/PresenceLight;component/images/UnknownProfile.png")));
                             }
-                        }
-                        else
-                        {
-                            var isInWorkingHours = await _mediator.Send(new Core.WorkingHoursServices.IsInWorkingHoursCommand());
-                            if (isInWorkingHours)
+                            else
                             {
-                                previousWorkingHours = isInWorkingHours;
-                                if (lightMode == "Graph")
+                                MapUI(presence, profile, LoadImage(photo));
+                            }
+
+                            _appState.SetUserInfo(profile, $"data:image/gif;base64,{Convert.ToBase64String(photo)}", presence);
+                        }
+                        await Task.Delay(Convert.ToInt32(_appState.Config.LightSettings.PollingInterval * 1000)).ConfigureAwait(true);
+
+                        await LoadSettings();
+
+                        bool touchLight = false;
+                        string newColor = "";
+
+                        if (_appState.Config.LightSettings.SyncLights)
+                        {
+                            if (!await _mediator.Send(new Core.WorkingHoursServices.UseWorkingHoursCommand()))
+                            {
+                                if (_appState.LightMode == "Graph")
                                 {
                                     touchLight = true;
                                 }
                             }
                             else
                             {
-                                // check to see if working hours have passed
-                                if (previousWorkingHours)
+                                var isInWorkingHours = await _mediator.Send(new Core.WorkingHoursServices.IsInWorkingHoursCommand());
+                                if (isInWorkingHours)
                                 {
-                                    previousWorkingHours = false;
-                                    previousLightMode = lightMode;
-                                    switch (Config.LightSettings.HoursPassedStatus)
+                                    previousWorkingHours = isInWorkingHours;
+                                    if (_appState.LightMode == "Graph")
                                     {
-
-                                        case "White":
-                                            newColor = "Offline";
-                                            lightMode = "Manual";
-                                            break;
-                                        case "Off":
-                                            newColor = "Off";
-                                            lightMode = "Manual";
-                                            break;
-                                        case "Keep":
-                                        default:
-                                            break;
+                                        touchLight = true;
                                     }
-
-                                    touchLight = true;
-                                }
-                            }
-                        }
-                    }
-
-                    if (touchLight)
-                    {
-                        switch (lightMode)
-                        {
-                            case "Manual":
-                                // No need to check presence... if it's after hours, we just want to action upon it... 
-                                await SetColor(newColor, presence.Activity).ConfigureAwait(true);
-                                //Reset the light mode so that we don't potentially mess something up.
-                                lightMode = previousLightMode;
-                                break;
-                            case "Graph":
-                                _logger.LogInformation("PresenceLight Running in Teams Mode");
-                                presence = await System.Threading.Tasks.Task.Run(() => GetPresence()).ConfigureAwait(true);
-
-                                if (newColor == string.Empty)
-                                {
-                                    await SetColor(presence.Availability, presence.Activity).ConfigureAwait(true);
                                 }
                                 else
                                 {
-                                    await SetColor(newColor, presence.Activity).ConfigureAwait(true);
-                                }
-
-
-                                if (DateTime.Now.AddMinutes(-5) > settingsLastSaved)
-                                {
-                                    await _settingsService.SaveSettings(Config).ConfigureAwait(true);
-                                    settingsLastSaved = DateTime.Now;
-                                }
-
-                                MapUI(presence, null, null);
-                                break;
-                            case "Theme":
-                                _logger.LogInformation("PresenceLight Running in Theme Mode");
-                                try
-                                {
-                                    var theme = ((SolidColorBrush)SystemParameters.WindowGlassBrush).Color;
-                                    var color = $"#{theme.ToString().Substring(3)}";
-
-                                    lightColors.lblTheme.Content = $"Theme Color is {color}";
-                                    lightColors.lblTheme.Foreground = (SolidColorBrush)SystemParameters.WindowGlassBrush;
-                                    lightColors.lblTheme.Visibility = Visibility.Visible;
-
-                                    if (lightMode == "Theme")
+                                    // check to see if working hours have passed
+                                    if (previousWorkingHours)
                                     {
-                                        await SetColor(color).ConfigureAwait(true);
-                                    }
+                                        previousWorkingHours = false;
+                                        previousLightMode = _appState.LightMode;
+                                        switch (_appState.Config.LightSettings.HoursPassedStatus)
+                                        {
 
-                                    if (DateTime.Now.Minute % 5 == 0)
-                                    {
-                                        await _settingsService.SaveSettings(Config).ConfigureAwait(true);
+                                            case "White":
+                                                newColor = "Offline";
+                                                _appState.SetLightMode("Manual");
+                                                break;
+                                            case "Off":
+                                                newColor = "Off";
+                                                _appState.SetLightMode("Manual");
+                                                break;
+                                            case "Keep":
+                                            default:
+                                                break;
+                                        }
+
+                                        touchLight = true;
                                     }
                                 }
-                                catch (Exception ex)
-                                {
-                                    _logger.LogError(ex, "Error Occured Interacting with Lights");
-                                }
-                                break;
-                            default:
-                                break;
+                            }
                         }
+
+                        if (touchLight && _appState.SignedIn)
+                        {
+                            switch (_appState.LightMode)
+                            {
+                                case "Manual":
+                                    // No need to check presence... if it's after hours, we just want to action upon it... 
+                                    await SetColor(newColor, _appState.Presence.Activity).ConfigureAwait(true);
+                                    //Reset the light mode so that we don't potentially mess something up.
+                                    _appState.SetLightMode(previousLightMode);
+                                    break;
+                                case "Graph":
+                                    _logger.LogInformation("PresenceLight Running in Teams Mode");
+
+                                    _appState.SetPresence(await System.Threading.Tasks.Task.Run(() => GetPresence()).ConfigureAwait(true));
+
+                                    if (newColor == string.Empty)
+                                    {
+                                        await SetColor(_appState.Presence.Availability, _appState.Presence.Activity).ConfigureAwait(true);
+                                    }
+                                    else
+                                    {
+                                        await SetColor(newColor, _appState.Presence.Activity).ConfigureAwait(true);
+                                    }
+                                    if (DateTime.Now.AddMinutes(-5) > settingsLastSaved)
+                                    {
+                                        await _settingsService.SaveSettings(_appState.Config).ConfigureAwait(true);
+                                        settingsLastSaved = DateTime.Now;
+                                    }
+
+                                    MapUI(_appState.Presence, null, null);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        isInteractRunning = false;
+                        break;
                     }
                 }
                 catch (Exception e)

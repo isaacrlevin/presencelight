@@ -24,7 +24,7 @@ namespace PresenceLight.Web
     {
         public static IServiceCollection AddPresenceLight(this IServiceCollection services, IConfiguration Configuration)
         {
-            services.AddMediatR(typeof(App),
+            services.AddMediatR(typeof(PresenceLightClientApp),
                                 typeof(BaseConfig));
 
 
@@ -34,18 +34,20 @@ namespace PresenceLight.Web
             services.AddHttpContextAccessor();
 
             services.Configure<BaseConfig>(Configuration);
-            services.AddSingleton<SettingsService>();
+            services.AddSingleton<ISettingsService, WebAppSettingsService>();
 
             services.AddOptions();
             services.AddSingleton<AppState>();
+            services.AddSingleton<AppInfo, AppInfo>();
             services.AddPresenceServices();
             services.AddBlazoredModal();
 
             services.AddBlazorise(options =>
             {
                 options.ChangeTextOnKeyPress = true;
-            }).AddBootstrapProviders()
-.AddFontAwesomeIcons();
+            })
+            .AddBootstrapProviders()
+            .AddFontAwesomeIcons();
 
             return services;
         }
