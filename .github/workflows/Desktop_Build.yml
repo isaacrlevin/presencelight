@@ -458,8 +458,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: "/home/runner/work/presencelight/presencelight/ReleaseSigned/PresenceLight.Package_${{ env.VERSION }}.0_Test/PresenceLight.Package_${{ env.VERSION }}.0_x64_x86_arm64.appxbundle"
-          asset_name: "PresenceLight.Package_${{ env.VERSION }}.0_x64_x86_arm64.appxbundle"
+          asset_path: "/home/runner/work/presencelight/presencelight/ReleaseSigned/PresenceLight.Package_${{ env.VERSION }}.0_Test/PresenceLight.Package_${{ env.VERSION }}.0_x64_x86.appxbundle"
+          asset_name: "PresenceLight.Package_${{ env.VERSION }}.0_x64_x86.appxbundle"
           asset_content_type: application/zip
 
   Deploy_Choco:

@@ -43,7 +43,7 @@
     <AppxPackageSigningEnabled>false</AppxPackageSigningEnabled>
     <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
-    <AppxBundlePlatforms>x64|x86|arm64</AppxBundlePlatforms>
+    <AppxBundlePlatforms>x64|x86</AppxBundlePlatforms>
     <AppxPackageIncludePrivateSymbols>true</AppxPackageIncludePrivateSymbols>
     <UapAppxPackageBuildMode>SideLoadOnly</UapAppxPackageBuildMode>
     <UapAppxPackageBuildMode Condition="'$(ChannelName)' == 'Release'">CI</UapAppxPackageBuildMode>
