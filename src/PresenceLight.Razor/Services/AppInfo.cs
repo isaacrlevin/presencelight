@@ -28,18 +28,8 @@ namespace PresenceLight.Razor
 
         public string GetApplicationVersion()
         {
-            try
-            {
-                System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
-                FileVersionInfo fileVersion = FileVersionInfo.GetVersionInfo(assembly.Location);
-                return fileVersion.FileVersion;
-            }
-            catch
-            {
-                var fileVersion = Process.GetCurrentProcess().MainModule.FileVersionInfo;
-                return fileVersion.FileVersion;
-            }
-
+            var fileVersion = Process.GetCurrentProcess().MainModule.FileVersionInfo;
+            return fileVersion.FileVersion;
         }
 
         public string GetDotNetRuntimeInfo()

@@ -1,0 +1,17 @@
+version: '3.7'
+
+services:
+  presencelight:
+    image: isaaclevin/presencelight:latest
+    container_name: presencelight
+    restart: unless-stopped
+    ports:
+      - 5000:80
+      - 5001:443
+    volumes:
+      - /mnt/c/Users/isaac/.aspnet/https:/https:ro
+    environment:
+      ASPNETCORE_HTTPS_PORT: "5001"
+      ASPNETCORE_URLS: "https://+;http://+"
+      ASPNETCORE_Kestrel__Certificates__Default__Password: "presencelight"
+      ASPNETCORE_Kestrel__Certificates__Default__Path: "/https/presencelight.pfx"
