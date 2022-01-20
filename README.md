@@ -60,4 +60,3 @@ Presence Light would not be possible without the amazing work from the contribut
 - [BlazorPro.Spinkit](https://github.com/EdCharbeneau/BlazorPro.Spinkit)
 - [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json)
 - [IdentityModel.OidcClient](https://github.com/IdentityModel/IdentityModel.OidcClient)
-- [Nerdbank.GitVersioning](https://github.com/dotnet/Nerdbank.GitVersioning)

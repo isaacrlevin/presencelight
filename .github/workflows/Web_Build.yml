@@ -56,6 +56,11 @@ jobs:
       with:
         fetch-depth: 0
 
+    - name: Use .NET Core SDK 6.0.x
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
+
     - name: Nerdbank.GitVersioning
       uses: dotnet/nbgv@v0.3.1
       with:

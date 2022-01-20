@@ -44,14 +44,16 @@ jobs:
 
     - name: setup-msbuild
       uses: microsoft/setup-msbuild@v1
-      
+
+    - name: Use .NET Core SDK 6.0.x
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
+
     - name: Nerdbank.GitVersioning
       uses: dotnet/nbgv@v0.3.1
       with:
         setCommonVars: true
-
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
 
     - run: echo "BuildNumber - ${{ env.GitBuildVersionSimple }}"
 
@@ -132,6 +134,12 @@ jobs:
         $badge.Save("${{ github.workspace }}\${{ matrix.ChannelName }}\stable_badge.svg")
       shell: powershell
 
+    - name: Build Standalone Presence Light x86
+      run: |
+        dotnet restore .\src\DesktopClient\PresenceLight\PresenceLight.csproj
+        dotnet publish .\src\DesktopClient\PresenceLight\PresenceLight.csproj -c ${{ env.BuildConfiguration }} /p:PublishProfile=Properties/PublishProfiles/WinX86.pubxml
+      if:  ${{ success() && matrix.ChannelName  == 'Standalone' }}
+
     - name: Build Standalone Presence Light x64
       run: |
         dotnet restore .\src\DesktopClient\PresenceLight\PresenceLight.csproj
@@ -142,6 +150,13 @@ jobs:
       run: |
         dotnet restore .\src\DesktopClient\PresenceLight\PresenceLight.csproj
         dotnet publish .\src\DesktopClient\PresenceLight\PresenceLight.csproj -c ${{ env.BuildConfiguration }} /p:PublishProfile=Properties/PublishProfiles/WinARM64.pubxml
+      if:  ${{ success() && matrix.ChannelName  == 'Standalone' }}
+
+    - name: Zip Standalone PresenceLight x86 Files
+      run: |
+        Compress-Archive -Path '.\src\DesktopClient\PresenceLight\bin\${{ env.BuildConfiguration }}\${{ env.Win10RID }}\win-x86\publish\*' `
+        -DestinationPath ${{ github.workspace }}\${{ matrix.ChannelName }}\PresenceLight.${{ env.GitBuildVersionSimple }}-x86.zip
+      shell: powershell
       if:  ${{ success() && matrix.ChannelName  == 'Standalone' }}
 
     - name: Zip Standalone PresenceLight x64 Files
@@ -160,8 +175,7 @@ jobs:
 
     - name: Build Appx Package
       run: |
-        dotnet restore .\src\DesktopClient\PresenceLight\PresenceLight.csproj
-        msbuild /t:restore '.\src\DesktopClient\PresenceLight.Package\PresenceLight.Package.wapproj' /p:VersionNumber=${{ env.GitBuildVersionSimple }} `
+        msbuild '.\src\DesktopClient\PresenceLight.Package\PresenceLight.Package.wapproj' /p:VersionNumber=${{ env.GitBuildVersionSimple }} `
         /p:ChannelName=${{ matrix.ChannelName }} /p:configuration='${{ env.BuildConfiguration }}' /p:IncludeSymbols=true `
         /p:AppxPackageDir="${{ github.workspace }}\${{ matrix.ChannelName }}\\"
       if:  ${{ success() && matrix.ChannelName  != 'Standalone' }}
@@ -297,7 +311,7 @@ jobs:
     - name: Scale Down Sign Service
       uses: azure/cli@v1.0.0
       with:
-        inlineScript: az appservice plan update --name levin-signserv-asp-2dnwx6q6jwiay --resource-group SignService --sku S1
+        inlineScript: az appservice plan update --name levin-signserv-asp-2dnwx6q6jwiay --resource-group SignService --sku B1
         azcliversion: latest
 
     - name: Publish Signed Release Packages
@@ -388,7 +402,7 @@ jobs:
           version=$(<"${{ github.workspace }}/StandaloneSigned/version.txt")
           echo "VERSION=$version" >> $GITHUB_ENV
 
-      - name: Create Release
+      - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@latest
         env:
@@ -402,37 +416,48 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Upload Release Asset
+      - name: Upload Standalone x86 Release
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: "/home/runner/work/presencelight/presencelight/StandaloneSigned/PresenceLight.${{ env.VERSION }}-x86.zip"
+          asset_name: "PresenceLight.${{ env.VERSION }}-x86.zip"
+          asset_content_type: application/zip
+
+      - name: Upload Standalone x64 Release
+        id: upload-release-asset1
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: "/home/runner/work/presencelight/presencelight/StandaloneSigned/PresenceLight.${{ env.VERSION }}-x64.zip"
           asset_name: "PresenceLight.${{ env.VERSION }}-x64.zip"
           asset_content_type: application/zip
 
-      - name: Upload Release Asset
+      - name: Upload Standalone ARM Release
         id: upload-release-asset2
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: "/home/runner/work/presencelight/presencelight/StandaloneSigned/PresenceLight.${{ env.VERSION }}-win-arm64.zip"
           asset_name: "PresenceLight.${{ env.VERSION }}-win-arm64.zip"
           asset_content_type: application/zip
 
-      - name: Upload Release Asset
+      - name: Upload AppX Release
         id: upload-release-asset3
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: "/home/runner/work/presencelight/presencelight/ReleaseSigned/PresenceLight.Package_${{ env.VERSION }}.0_Test/PresenceLight.Package_${{ env.VERSION }}.0_x64.appxbundle"
-          asset_name: "PresenceLight.Package_${{ env.VERSION }}.0_x64.appxbundle"
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: "/home/runner/work/presencelight/presencelight/ReleaseSigned/PresenceLight.Package_${{ env.VERSION }}.0_Test/PresenceLight.Package_${{ env.VERSION }}.0_x64_x86.appxbundle"
+          asset_name: "PresenceLight.Package_${{ env.VERSION }}.0_x64_x86.appxbundle"
           asset_content_type: application/zip
 
   Deploy_Choco:
@@ -469,15 +494,19 @@ jobs:
           # Hash the Zip Files
           mkdir "${{ github.workspace }}\Download"
           Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-win-arm64.zip" -OutFile "${{ github.workspace }}\\Download\\PresenceLight.${{ env.VERSION }}-win-arm64.zip"
+          Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x86.zip" -OutFile "${{ github.workspace }}\\Download\\PresenceLight.${{ env.VERSION }}-x86.zip"
           Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x64.zip" -OutFile "${{ github.workspace }}\\Download\\PresenceLight.${{ env.VERSION }}-x64.zip"
+          $hash86=Get-Filehash ${{ github.workspace }}\\Download\\PresenceLight.${{ env.VERSION }}-x86.zip
           $hash64=Get-Filehash ${{ github.workspace }}\\Download\\PresenceLight.${{ env.VERSION }}-x64.zip
           $hashARM=Get-Filehash ${{ github.workspace }}\\Download\\PresenceLight.${{ env.VERSION }}-win-arm64.zip
 
           # Update ChocolateyInstall.ps1
           $installFile = Get-Content -path "${{ github.workspace }}\\Chocolatey\\tools\\ChocolateyInstall.ps1" -Raw
           $installFile = $installFile -replace '{ReplaceCheckSumARM}', $hashARM.Hash
+          $installFile = $installFile -replace '{ReplaceCheckSumx86}', $hash86.Hash
           $installFile = $installFile -replace '{ReplaceCheckSumx64}', $hash64.Hash
           $installFile = $installFile -replace '{ARMLink}' , "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-win-arm64.zip"
+          $installFile = $installFile -replace '{x86Link}' , "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x86.zip"
           $installFile = $installFile -replace '{x64Link}' , "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x64.zip"
           $installFile | Set-Content -Path "${{ github.workspace }}\\Chocolatey\\tools\\ChocolateyInstall.ps1"
 
@@ -485,7 +514,9 @@ jobs:
           $verificationFile = Get-Content -path "${{ github.workspace }}\\Chocolatey\\tools\\Verification.txt"
           $verificationFile = $verificationFile -replace '{ARMLink}' , "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-win-arm64.zip"
           $verificationFile = $verificationFile -replace '{x64Link}' , "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x64.zip"
+          $verificationFile = $verificationFile -replace '{x86Link}' , "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x86.zip"
           $verificationFile = $verificationFile -replace '{HASHx64}', $hash64.Hash
+          $verificationFile = $verificationFile -replace '{HASHx86}', $hash86.Hash
           $verificationFile = $verificationFile -replace '{HASHARM}', $hashARM.Hash
           $verificationFile | Set-Content -Path "${{ github.workspace }}\\Chocolatey\\tools\\Verification.txt"
         shell: powershell

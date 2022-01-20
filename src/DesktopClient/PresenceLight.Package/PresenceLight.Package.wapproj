@@ -12,6 +12,14 @@
       <Configuration>Release</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x86">
+      <Configuration>Debug</Configuration>
+      <Platform>x86</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x86">
+      <Configuration>Release</Configuration>
+      <Platform>x86</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|ARM64">
       <Configuration>Debug</Configuration>
       <Platform>ARM64</Platform>
@@ -35,9 +43,10 @@
     <AppxPackageSigningEnabled>false</AppxPackageSigningEnabled>
     <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
-    <AppxBundlePlatforms>x64|arm64</AppxBundlePlatforms>
+    <AppxBundlePlatforms>x64|x86</AppxBundlePlatforms>
     <AppxPackageIncludePrivateSymbols>true</AppxPackageIncludePrivateSymbols>
-    <UapAppxPackageBuildMode Condition="'$(ChannelName)' == 'Release'">StoreUpload</UapAppxPackageBuildMode>
+    <UapAppxPackageBuildMode>SideLoadOnly</UapAppxPackageBuildMode>
+    <UapAppxPackageBuildMode Condition="'$(ChannelName)' == 'Release'">CI</UapAppxPackageBuildMode>
     <EntryPointProjectUniqueName>..\PresenceLight\PresenceLight.csproj</EntryPointProjectUniqueName>
     <EntryPointExe Condition="'$(BuildingInsideVisualStudio)' != 'true' ">PresenceLight\PresenceLight.exe</EntryPointExe>
     <EntryPointProjectUniqueName Condition="'$(BuildingInsideVisualStudio)' == 'true' ">..\PresenceLight\PresenceLight.csproj</EntryPointProjectUniqueName>
@@ -70,12 +79,9 @@
     <ProjectReference Include="..\PresenceLight\PresenceLight.csproj">
       <SkipGetTargetFrameworkProperties>True</SkipGetTargetFrameworkProperties>
       <PublishProfile Condition="'$(Platform)'=='x64'">Properties\PublishProfiles\WinX64.pubxml</PublishProfile>
+      <PublishProfile Condition="'$(Platform)'=='x86'">Properties\PublishProfiles\WinX86.pubxml</PublishProfile>
       <PublishProfile Condition="'$(Platform)'=='ARM64'">Properties\PublishProfiles\WinARM64.pubxml</PublishProfile>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Update="Microsoft.SourceLink.GitHub" Version="1.1.1" />
-    <PackageReference Update="Nerdbank.GitVersioning" Version="3.4.255" />
   </ItemGroup>
   <Import Project="$(WapProjPath)\Microsoft.DesktopBridge.targets" />
   <Target Name="BuildRef" Condition="'$(BuildingInsideVisualStudio)' != 'true' " BeforeTargets="BeforeBuild">
@@ -86,7 +92,7 @@
     <Exec Command="$(NpeExecCmd)" />
     <Message Text="Built ref " />
     <ItemGroup>
-      <TheFiles Include="..\PresenceLight\bin\$(Configuration)\net6.0-windows10.0.19041\win-$(Platform)\**\*.*" />
+      <TheFiles Include="..\PresenceLight\bin\$(Configuration)\net6.0-windows10.0.19041\win-$(Platform)\publish\**\*.*" />
       <TheFiles TargetPath="PresenceLight\%(RecursiveDir)%(Filename)%(Extension)" />
       <File Include="@(TheFiles)">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
