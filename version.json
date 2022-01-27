@@ -1,5 +1,5 @@
 {
-  "version": "5.0.0",
+  "version": "5.0,
   "publicReleaseRefSpec": [
     "^refs/heads/main$",
     "^refs/heads/develop$",
