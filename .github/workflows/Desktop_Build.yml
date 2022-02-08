@@ -537,8 +537,8 @@ jobs:
     - uses: actions/download-artifact@v2
       name: Download Release Signed
       with:
-        name: ReleaseSigned
-        path: "${{ github.workspace }}/ReleaseSigned"
+        name: Release
+        path: "${{ github.workspace }}/Release"
 
     - name: Windows Store Publish
       uses: isaacrlevin/windows-store-action@1.0
@@ -547,4 +547,4 @@ jobs:
         client-id: ${{ secrets.STORE_CLIENT_ID }}
         client-secret: ${{ secrets.STORE_CLIENT_SECRET }}
         app-id: ${{ secrets.APP_ID }}
-        package-path: "${{ github.workspace }}/ReleaseSigned/"
+        package-path: "${{ github.workspace }}/Release/"
