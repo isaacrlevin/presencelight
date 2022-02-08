@@ -15,7 +15,7 @@
                     <br />
                     <br />
                     <div>
-                        <input type="checkbox" checked="@appState.Config.LightSettings.CustomApi.IsEnabled" @bind-value="@appState.Config.LightSettings.CustomApi.IsEnabled" /> Connect to Custom HTTP API
+                        <input type="checkbox" @onchange="CheckChanged" checked="@appState.Config.LightSettings.CustomApi.IsEnabled" /> Connect to Custom HTTP API
                     </div>
                     <br />
                     <br />
@@ -119,6 +119,13 @@
 </div>
 
 @code {
+
+    private void CheckChanged(ChangeEventArgs args)
+    {
+        appState.Config.LightSettings.CustomApi.IsEnabled = (bool)args.Value;
+        Save();
+    }
+
     private void Save()
     {
         try
