@@ -13,7 +13,7 @@
                     <br />
                     <br />
                     <div>
-                        <input type="checkbox" checked="@appState.Config.LightSettings.Yeelight.IsEnabled" @bind-value="@appState.Config.LightSettings.Yeelight.IsEnabled" /> Connect to Yeelight
+                        <input type="checkbox" @onchange="CheckChanged" checked="@appState.Config.LightSettings.Yeelight.IsEnabled" /> Connect to Yeelight
                     </div>
                     <br />
                     <br />
@@ -85,6 +85,13 @@
 </div>
 
 @code {
+
+    private void CheckChanged(ChangeEventArgs args)
+    {
+        appState.Config.LightSettings.Yeelight.IsEnabled = (bool)args.Value;
+        Save();
+    }
+
     private void Save()
     {
         try

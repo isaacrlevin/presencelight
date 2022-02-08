@@ -16,7 +16,7 @@
                     <br />
                     <div class="row">
                         <div class="col-12">
-                            <input type="checkbox" checked="@appState.Config.LightSettings.LIFX.IsEnabled" @bind-value="@appState.Config.LightSettings.LIFX.IsEnabled" /> Connect to LIFX
+                            <input type="checkbox" @onchange="CheckChanged" checked="@appState.Config.LightSettings.LIFX.IsEnabled" /> Connect to LIFX
                         </div>
                     </div>
                     <br />
@@ -156,6 +156,12 @@
     string lifxMessage;
     string lastType = "";
     bool isLoadingLights = false;
+
+    private void CheckChanged(ChangeEventArgs args)
+    {
+        appState.Config.LightSettings.LIFX.IsEnabled = (bool)args.Value;
+        Save();
+    }
 
     private void Save()
     {
