@@ -3,6 +3,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Documents;
@@ -92,7 +93,7 @@ namespace PresenceLight
             if (t.IsFaulted)
             { }
 
-            await Task.Run(() =>
+            await Task.Run(async () =>
             {
                 this.Dispatcher.Invoke(() =>
                 {
@@ -107,29 +108,34 @@ namespace PresenceLight
                     {
                         this.Hide();
                     }
+
                 });
 
                 while (true)
                 {
-                    if (_appState.SignInRequested)
+
+                    await Task.Run(async () =>
                     {
-                        _appState.SignInRequested = false;
-
-                        this.Dispatcher.Invoke(() =>
+                        Thread.Sleep(100);
+                        if (_appState.SignInRequested)
                         {
-                            SignIn();
-                        });
-                    }
+                            _appState.SignInRequested = false;
 
-                    if (_appState.SignOutRequested)
-                    {
-                        _appState.SignOutRequested = false;
-                        this.Dispatcher.Invoke(() =>
+                            this.Dispatcher.Invoke(() =>
+                            {
+                                SignIn();
+                            });
+                        }
+
+                        if (_appState.SignOutRequested)
                         {
-                            SignOut();
-                        });
-                    }
-
+                            _appState.SignOutRequested = false;
+                            this.Dispatcher.Invoke(() =>
+                            {
+                                SignOut();
+                            });
+                        }
+                    });
                 }
             });
 
