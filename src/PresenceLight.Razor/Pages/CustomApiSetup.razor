@@ -1,6 +1,6 @@
 ﻿@page "/customapi"
 @using PresenceLight.Core.Initialize;
-
+@inject NavigationManager NavManager
 @inject ISettingsService SettingsService
 @inject AppState appState
 @inject IModalService Modal
@@ -125,6 +125,10 @@
 
     protected override async Task OnInitializedAsync()
     {
+        if (!appState.SignedIn)
+        {
+            NavManager.NavigateTo("/");
+        }
         try
         {
 

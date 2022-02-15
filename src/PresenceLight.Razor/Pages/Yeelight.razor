@@ -3,7 +3,7 @@
 @inject ISettingsService SettingsService
 @inject AppState appState
 @inject ILogger<CustomApiSetup> _logger;
-
+@inject NavigationManager NavManager
 <div class="container text-body" style="overflow:hidden">
     <div class="row">
         <div class="container-fluid">
@@ -94,6 +94,11 @@
         try
         {
             appState.OnChange += RaiseStateHasChanged;
+
+            if (!appState.SignedIn)
+            {
+                NavManager.NavigateTo("/");
+            }
         }
         catch (Exception e)
         {

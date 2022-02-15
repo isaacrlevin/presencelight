@@ -1,4 +1,5 @@
 ﻿@inject AppState appState
+@inject NavigationManager NavManager
 
 @if (appState.Config.AppType == "Desktop")
 {
@@ -38,6 +39,7 @@ else
     private void SignOut()
     {
         appState.SignOutRequested = true;
+        NavManager.NavigateTo("/");
     }
 
     public void Dispose()
