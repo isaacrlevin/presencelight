@@ -1,6 +1,9 @@
 ![Logo](https://github.com/isaacrlevin/PresenceLight/raw/main/Icon.png)
 # PresenceLight
 
+# NOTE: I am tracking down an issue where users cannot get the app to update after logging in from the browser. Before you open a new issue, take a look at the steps in [this one](https://github.com/isaacrlevin/presencelight/issues/589)
+
+
 ![.github/workflows/Web_Build.yml](https://github.com/isaacrlevin/presencelight/workflows/.github/workflows/Web_Build.yml/badge.svg)
 ![.github/workflows/Desktop_Build.yml](https://github.com/isaacrlevin/presencelight/workflows/.github/workflows/Desktop_Build.yml/badge.svg)
 
