@@ -4,7 +4,7 @@
 @inject AppState appState
 @inject IModalService Modal
 @inject ILogger<HueSetup> _logger;
-
+@inject NavigationManager NavManager
 <div class="container text-body" style="overflow:hidden">
     <div class="row">
         <div class="container-fluid">
@@ -134,7 +134,10 @@
     {
         try
         {
-
+            if (!appState.SignedIn)
+            {
+                NavManager.NavigateTo("/");
+            }
             if (!string.IsNullOrEmpty(appState.Config.LightSettings.Hue.HueApiKey))
             {
                 if (appState.Config.LightSettings.LIFX.SelectedItemId.Contains("group"))

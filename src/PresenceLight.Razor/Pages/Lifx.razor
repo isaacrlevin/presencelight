@@ -5,7 +5,7 @@
 @inject IModalService Modal
 @inject ILogger<Lifx> _logger;
 @inject LIFXOAuthHelper _lIFXOAuthHelper;
-
+@inject NavigationManager NavManager
 <div class="container text-body" style="overflow:hidden">
     <div class="row">
         <div class="container-fluid">
@@ -163,6 +163,10 @@
         {
             appState.OnChange += RaiseStateHasChanged;
 
+            if (!appState.SignedIn)
+            {
+                NavManager.NavigateTo("/");
+            }
 
             if (appState.Config.LightSettings.LIFX.IsEnabled
             && !string.IsNullOrEmpty(appState.Config.LightSettings.LIFX.LIFXApiKey)
