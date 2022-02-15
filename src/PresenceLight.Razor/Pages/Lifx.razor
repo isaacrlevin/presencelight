@@ -16,7 +16,7 @@
                     <br />
                     <div class="row">
                         <div class="col-12">
-                            <input type="checkbox" @onchange="CheckChanged" checked="@appState.Config.LightSettings.LIFX.IsEnabled" /> Connect to LIFX
+                            <input type="checkbox" @bind-value="@appState.Config.LightSettings.LIFX.IsEnabled" checked="@appState.Config.LightSettings.LIFX.IsEnabled" /> Connect to LIFX
                         </div>
                     </div>
                     <br />
@@ -157,10 +157,43 @@
     string lastType = "";
     bool isLoadingLights = false;
 
-    private void CheckChanged(ChangeEventArgs args)
+    protected override async Task OnInitializedAsync()
     {
-        appState.Config.LightSettings.LIFX.IsEnabled = (bool)args.Value;
-        Save();
+        try
+        {
+            appState.OnChange += RaiseStateHasChanged;
+
+
+            if (appState.Config.LightSettings.LIFX.IsEnabled
+            && !string.IsNullOrEmpty(appState.Config.LightSettings.LIFX.LIFXApiKey)
+            && !string.IsNullOrEmpty(appState.Config.LightSettings.LIFX.SelectedItemId))
+            {
+                isLoadingLights = true;
+                if (appState.Config.LightSettings.LIFX.SelectedItemId.Contains("group"))
+                {
+
+                    appState.SetLIFXLights(await _mediator.Send(new Core.LifxServices.GetAllGroupsCommand() { ApiKey = appState.Config.LightSettings.LIFX.LIFXApiKey }));
+
+                    lastType = "Groups";
+                }
+                else
+                {
+                    appState.SetLIFXLights(await _mediator.Send(new Core.LifxServices.GetAllLightsCommand() { ApiKey = appState.Config.LightSettings.LIFX.LIFXApiKey }));
+
+                    lastType = "Lights";
+                }
+
+                showLifxMessage = true;
+                lifxMessage = "Connected to LIFX Cloud";
+                lifxMessageClass = "text-success";
+                isLoadingLights = false;
+            }
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error Occured loading LIFX Setup");
+            throw;
+        }
     }
 
     private void Save()
@@ -258,45 +291,6 @@
         var light = e.Value.ToString();
         appState.Config.LightSettings.LIFX.SelectedItemId = light;
         appState.SetLIFXLight(light);
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-        try
-        {
-            appState.OnChange += RaiseStateHasChanged;
-
-
-            if (appState.Config.LightSettings.LIFX.IsEnabled
-            && !string.IsNullOrEmpty(appState.Config.LightSettings.LIFX.LIFXApiKey)
-            && !string.IsNullOrEmpty(appState.Config.LightSettings.LIFX.SelectedItemId))
-            {
-                isLoadingLights = true;
-                if (appState.Config.LightSettings.LIFX.SelectedItemId.Contains("group"))
-                {
-
-                    appState.SetLIFXLights(await _mediator.Send(new Core.LifxServices.GetAllGroupsCommand() { ApiKey = appState.Config.LightSettings.LIFX.LIFXApiKey }));
-
-                    lastType = "Groups";
-                }
-                else
-                {
-                    appState.SetLIFXLights(await _mediator.Send(new Core.LifxServices.GetAllLightsCommand() { ApiKey = appState.Config.LightSettings.LIFX.LIFXApiKey }));
-
-                    lastType = "Lights";
-                }
-
-                showLifxMessage = true;
-                lifxMessage = "Connected to LIFX Cloud";
-                lifxMessageClass = "text-success";
-                isLoadingLights = false;
-            }
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "Error Occured loading LIFX Setup");
-            throw;
-        }
     }
 
     public void Dispose()

@@ -13,7 +13,7 @@
                     <br />
                     <br />
                     <div>
-                        <input type="checkbox" @onchange="CheckChanged" checked="@appState.Config.LightSettings.Yeelight.IsEnabled" /> Connect to Yeelight
+                        <input type="checkbox" @bind-value="@appState.Config.LightSettings.Yeelight.IsEnabled" checked="@appState.Config.LightSettings.Yeelight.IsEnabled" /> Connect to Yeelight
                     </div>
                     <br />
                     <br />
@@ -86,27 +86,6 @@
 
 @code {
 
-    private void CheckChanged(ChangeEventArgs args)
-    {
-        appState.Config.LightSettings.Yeelight.IsEnabled = (bool)args.Value;
-        Save();
-    }
-
-    private void Save()
-    {
-        try
-        {
-            SettingsService.SaveSettings(appState.Config);
-            message = "Settings Saved";
-            settingsSaved = true;
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "Error Occured Saving Yeelight Settings");
-            throw;
-        }
-    }
-
     bool settingsSaved = false;
     string message;
 
@@ -122,6 +101,21 @@
             throw;
         }
         await Task.CompletedTask;
+    }
+
+    private void Save()
+    {
+        try
+        {
+            SettingsService.SaveSettings(appState.Config);
+            message = "Settings Saved";
+            settingsSaved = true;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error Occured Saving Yeelight Settings");
+            throw;
+        }
     }
 
     private void OnChange(ChangeEventArgs e)

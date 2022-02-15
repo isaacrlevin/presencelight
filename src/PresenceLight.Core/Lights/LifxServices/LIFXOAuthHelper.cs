@@ -24,13 +24,13 @@ namespace PresenceLight.Core
         private const string LIFXAuthority = "https://cloud.lifx.com/oauth";
         private readonly string _lIFXTokenEndpoint = $"{LIFXAuthority}/token";
         private readonly string _lIFXAuthorizationEndpoint = $"{LIFXAuthority}/authorize";
-        private readonly BaseConfig _options;
+        private readonly AppState _appState;
         private readonly ILogger<LIFXOAuthHelper> _logger;
 
-        public LIFXOAuthHelper(Microsoft.Extensions.Options.IOptionsMonitor<BaseConfig> optionsAccessor, ILogger<LIFXOAuthHelper> logger)
+        public LIFXOAuthHelper(AppState appState, ILogger<LIFXOAuthHelper> logger)
         {
             _logger = logger;
-            _options = optionsAccessor.CurrentValue;
+            _appState = appState;
 
         }
 
@@ -98,7 +98,7 @@ namespace PresenceLight.Core
 
             string authorizationRequest = string.Format("{0}?response_type=code&scope=remote_control:all&client_id={1}&state={2}&redirect_uri={3}",
                 _lIFXAuthorizationEndpoint,
-                _options.LightSettings.LIFX.LIFXClientId,
+                _appState.Config.LightSettings.LIFX.LIFXClientId,
                 state,
               HttpUtility.UrlEncode(redirectUri)
                 );
@@ -115,8 +115,8 @@ namespace PresenceLight.Core
             var formContent = new FormUrlEncodedContent(new[]
             {
                 new KeyValuePair<string, string>("code", code.ToString()),
-                new KeyValuePair<string, string>("client_id", _options.LightSettings.LIFX.LIFXClientId),
-                new KeyValuePair<string, string>("client_secret",  _options.LightSettings.LIFX.LIFXClientSecret),
+                new KeyValuePair<string, string>("client_id", _appState.Config.LightSettings.LIFX.LIFXClientId),
+                new KeyValuePair<string, string>("client_secret",  _appState.Config.LightSettings.LIFX.LIFXClientSecret),
                 new KeyValuePair<string, string>("grant_type", "authorization_code")
             });
 

@@ -13,7 +13,7 @@
                     <br />
                     <br />
                     <div>
-                        <input type="checkbox" @onchange="CheckChanged" checked="@appState.Config.LightSettings.Wiz.IsEnabled" /> Connect to Wiz
+                        <input type="checkbox" @bind-value="@appState.Config.LightSettings.Wiz.IsEnabled" checked="@appState.Config.LightSettings.Wiz.IsEnabled" /> Connect to Wiz
                     </div>
                     <br />
                     <br />
@@ -87,27 +87,6 @@
 
 @code {
 
-    private void CheckChanged(ChangeEventArgs args)
-    {
-        appState.Config.LightSettings.Wiz.IsEnabled = (bool)args.Value;
-        Save();
-    }
-
-    private void Save()
-    {
-        try
-        {
-            SettingsService.SaveSettings(appState.Config);
-            message = "Settings Saved";
-            settingsSaved = true;
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "Error Occured Saving Wiz Settings");
-            throw;
-        }
-    }
-
     bool settingsSaved = false;
     string message;
     string wizMessageClass;
@@ -137,6 +116,21 @@
             throw;
         }
         await Task.CompletedTask;
+    }
+
+    private void Save()
+    {
+        try
+        {
+            SettingsService.SaveSettings(appState.Config);
+            message = "Settings Saved";
+            settingsSaved = true;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error Occured Saving Wiz Settings");
+            throw;
+        }
     }
 
     private void OnChange(ChangeEventArgs e)

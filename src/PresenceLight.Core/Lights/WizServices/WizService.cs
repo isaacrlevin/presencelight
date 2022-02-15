@@ -1,14 +1,9 @@
 ﻿using System;
-using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using OpenWiz;
 using System.Net;
-using System.Net.NetworkInformation;
-using System.Net.Sockets;
-using System.Text;
 using Microsoft.Extensions.Logging;
 using Q42.HueApi.ColorConverters;
 using PresenceLight.Core.WizServices;
