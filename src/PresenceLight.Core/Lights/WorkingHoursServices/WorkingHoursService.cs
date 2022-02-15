@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Globalization;
 
-using Microsoft.Extensions.Options;
-
 namespace PresenceLight.Core
 {
     public interface IWorkingHoursService

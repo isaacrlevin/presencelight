@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
-using System.Threading;
 using YeelightAPI;
-using System.Drawing;
 using Q42.HueApi.ColorConverters;
 using Microsoft.Extensions.Logging;
 

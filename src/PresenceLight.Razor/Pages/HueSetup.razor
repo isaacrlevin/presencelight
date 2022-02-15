@@ -15,7 +15,7 @@
                     <br />
                     <div class="row">
                         <div class="col-4">
-                           <input type="checkbox" @onchange="CheckChanged" checked="@appState.Config.LightSettings.Hue.IsEnabled" /> Connect to Philips Hue
+                            <input type="checkbox" @bind-value="@appState.Config.LightSettings.Hue.IsEnabled" checked="@appState.Config.LightSettings.Hue.IsEnabled" /> Connect to Philips Hue
                         </div>
                         @if (appState.Config.LightSettings.Hue.IsEnabled)
                         {
@@ -119,10 +119,45 @@
 
 @code {
 
-    private void CheckChanged(ChangeEventArgs args)
+    bool settingsSaved = false;
+    string message;
+    string hueMessageClass;
+
+    bool showHueMessage = false;
+    string hueMessage;
+
+    bool showAvail = false;
+    bool showAct = false;
+    string lastType = "";
+
+    protected override async Task OnInitializedAsync()
     {
-        appState.Config.LightSettings.Hue.IsEnabled = (bool)args.Value;
-        Save();
+        try
+        {
+
+            if (!string.IsNullOrEmpty(appState.Config.LightSettings.Hue.HueApiKey))
+            {
+                if (appState.Config.LightSettings.LIFX.SelectedItemId.Contains("group"))
+                {
+                    appState.SetHueLights(await _mediator.Send(new PresenceLight.Core.HueServices.GetGroupsCommand()));
+
+                    lastType = "Groups";
+                }
+                else
+                {
+                    appState.SetHueLights(await _mediator.Send(new PresenceLight.Core.HueServices.GetLightsCommand()));
+
+                    lastType = "Lights";
+                }
+            }
+
+            appState.OnChange += RaiseStateHasChanged;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error Occured loading Hue Setup");
+            throw;
+        }
     }
 
 
@@ -164,17 +199,6 @@
         }
     }
 
-
-    bool settingsSaved = false;
-    string message;
-    string hueMessageClass;
-
-    bool showHueMessage = false;
-    string hueMessage;
-
-    bool showAvail = false;
-    bool showAct = false;
-    string lastType = "";
     void ToggleAvail()
     {
         showAvail = !showAvail;
@@ -235,7 +259,7 @@
 
                     if (string.IsNullOrEmpty(appState.Config.LightSettings.Hue.SelectedItemId) && appState.HueLights.Count() > 0)
                     {
-                       appState.Config.LightSettings.Hue.SelectedItemId = ((Q42.HueApi.Light)appState.HueLights.FirstOrDefault()).Id;
+                        appState.Config.LightSettings.Hue.SelectedItemId = ((Q42.HueApi.Light)appState.HueLights.FirstOrDefault()).Id;
                     }
                 }
                 catch (Exception e)
@@ -320,36 +344,6 @@
         appState.Config.LightSettings.Hue.SelectedItemId = light;
         appState.Config.LightSettings.Hue.SelectedItemId = light;
         appState.SetHueLight(light);
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-        try
-        {
-
-            if (!string.IsNullOrEmpty(appState.Config.LightSettings.Hue.HueApiKey))
-            {
-                if (appState.Config.LightSettings.LIFX.SelectedItemId.Contains("group"))
-                {
-                    appState.SetHueLights(await _mediator.Send(new PresenceLight.Core.HueServices.GetGroupsCommand()));
-
-                    lastType = "Groups";
-                }
-                else
-                {
-                    appState.SetHueLights(await _mediator.Send(new PresenceLight.Core.HueServices.GetLightsCommand()));
-
-                    lastType = "Lights";
-                }
-            }
-
-            appState.OnChange += RaiseStateHasChanged;
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "Error Occured loading Hue Setup");
-            throw;
-        }
     }
 
     public void Dispose()

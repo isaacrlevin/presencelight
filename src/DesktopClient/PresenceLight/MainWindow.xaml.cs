@@ -518,8 +518,6 @@ namespace PresenceLight
                         }
                         await Task.Delay(Convert.ToInt32(_appState.Config.LightSettings.PollingInterval * 1000)).ConfigureAwait(true);
 
-                        await LoadSettings();
-
                         bool touchLight = false;
                         string newColor = "";
 

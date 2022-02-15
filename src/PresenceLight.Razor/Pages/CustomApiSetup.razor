@@ -15,7 +15,7 @@
                     <br />
                     <br />
                     <div>
-                        <input type="checkbox" @onchange="CheckChanged" checked="@appState.Config.LightSettings.CustomApi.IsEnabled" /> Connect to Custom HTTP API
+                        <input type="checkbox" @bind-value="@appState.Config.LightSettings.CustomApi.IsEnabled" checked="@appState.Config.LightSettings.CustomApi.IsEnabled" /> Connect to Custom HTTP API
                     </div>
                     <br />
                     <br />
@@ -120,10 +120,22 @@
 
 @code {
 
-    private void CheckChanged(ChangeEventArgs args)
+    bool settingsSaved = false;
+    string message;
+
+    protected override async Task OnInitializedAsync()
     {
-        appState.Config.LightSettings.CustomApi.IsEnabled = (bool)args.Value;
-        Save();
+        try
+        {
+
+            appState.OnChange += RaiseStateHasChanged;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error Occured loading Hue Setup");
+            throw;
+        }
+        await Task.CompletedTask;
     }
 
     private void Save()
@@ -143,28 +155,10 @@
         }
     }
 
-    bool settingsSaved = false;
-    string message;
-
     private void OnChange(ChangeEventArgs e, object setting, object customApiSettingValue)
     {
         var newSetting = e.Value;
         ((PropertyInfo)setting).SetValue(customApiSettingValue, newSetting);
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-        try
-        {
-
-            appState.OnChange += RaiseStateHasChanged;
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "Error Occured loading Hue Setup");
-            throw;
-        }
-        await Task.CompletedTask;
     }
 
     public void Dispose()
