@@ -15,12 +15,12 @@ namespace PresenceLight.Razor
             _config = Configuration;
         }
 
-        public string GetInstallLocation()
+        public static string GetInstallLocation()
         {
             return System.AppContext.BaseDirectory;
         }
 
-        public string GetInstallationDate()
+        public static string GetInstallationDate()
         {
             var date = System.IO.File.GetLastWriteTime(System.AppContext.BaseDirectory);
             return $"{date.ToShortDateString()} {date.ToShortTimeString()}";
@@ -31,7 +31,7 @@ namespace PresenceLight.Razor
             return _config["AppVersion"];
         }
 
-        public string GetDotNetRuntimeInfo()
+        public static string GetDotNetRuntimeInfo()
         {
             return typeof(object).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
         }

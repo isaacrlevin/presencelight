@@ -29,6 +29,9 @@
                     </div>
                     <br />
                     <br />
+                    <button class="btn btn-primary" @onclick="FindBridge">Find Bridge</button>
+                    <br />
+                    <br />
                     @if (appState.Config.LightSettings.Hue.IsEnabled)
                     {
                         <EditForm Model="@appState.Config" OnValidSubmit="RegisterBridge">
@@ -38,6 +41,7 @@
                             <Microsoft.AspNetCore.Components.Forms.ValidationSummary />
                             <br />
                             <br />
+
                             <button class="btn btn-primary" type="submit">Register Bridge</button>
                         </EditForm>
 
@@ -100,7 +104,7 @@
 
                         <br />
                         <br />
-                        @if (!string.IsNullOrEmpty(appState.Config.LightSettings.Hue.HueApiKey))
+                        @if (appState.Config.LightSettings.Hue.IsEnabled)
                         {
                             <button class="btn btn-primary" @onclick="Save">Save Hue Settings</button>
                         }
@@ -126,8 +130,6 @@
     bool showHueMessage = false;
     string hueMessage;
 
-    bool showAvail = false;
-    bool showAct = false;
     string lastType = "";
 
     protected override async Task OnInitializedAsync()
@@ -143,13 +145,11 @@
                 if (appState.Config.LightSettings.LIFX.SelectedItemId.Contains("group"))
                 {
                     appState.SetHueLights(await _mediator.Send(new PresenceLight.Core.HueServices.GetGroupsCommand()));
-
                     lastType = "Groups";
                 }
                 else
                 {
                     appState.SetHueLights(await _mediator.Send(new PresenceLight.Core.HueServices.GetLightsCommand()));
-
                     lastType = "Lights";
                 }
             }
@@ -158,22 +158,23 @@
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Error Occured loading Hue Setup");
+            _logger.LogError(e, "Error Occured loading Hue Page");
             throw;
         }
     }
 
 
-    private void Save()
+    private async Task Save()
     {
         try
         {
-            SettingsService.SaveSettings(appState.Config);
+            await SettingsService.SaveSettings(appState.Config);
 
             _mediator.Send(new Core.HueServices.InitializeCommand() { AppState = appState }).Wait();
 
             message = "Settings Saved";
             settingsSaved = true;
+            _logger.LogInformation("Settings Saved from Hue Page");
         }
         catch (Exception e)
         {
@@ -182,64 +183,59 @@
         }
     }
 
-    private async void LoginRemoteApi()
+    private async Task LoginRemoteApi()
     {
         try
         {
+            _logger.LogInformation("Cloud Hue Login Initialized");
             var (bridgeId, apiKey, bridgeIp) = await _mediator.Send(new PresenceLight.Core.RemoteHueServices.RegisterBridgeCommand());
             if (!string.IsNullOrEmpty(apiKey) && !string.IsNullOrEmpty(bridgeId) && !string.IsNullOrEmpty(bridgeIp))
             {
                 appState.Config.LightSettings.Hue.HueApiKey = apiKey;
                 appState.Config.LightSettings.Hue.RemoteBridgeId = bridgeId;
                 appState.Config.LightSettings.Hue.HueIpAddress = bridgeIp;
-
-                SettingsService.SaveSettings(appState.Config);
+                _logger.LogInformation("Cloud Hue Login Successful");
+                await Save();
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error Occured Getting Hue Api Key");
+            _logger.LogError(ex, "Error Occured Getting Cloud Hue Api Key");
         }
     }
 
-    void ToggleAvail()
+    async Task FindBridge()
     {
-        showAvail = !showAvail;
-
-        if (showAct)
+        try
         {
-            showAct = !showAct;
+            _logger.LogInformation("Hue Bridge Lookup Initialized");
+            appState.Config.LightSettings.Hue.HueIpAddress = await _mediator.Send(new PresenceLight.Core.HueServices.FindBridgeCommand());
+            _logger.LogInformation("Hue Bridge Lookup Successful");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error Occured Getting Finding Hue Bridge");
         }
     }
 
-    void ToggleAct()
-    {
-        showAct = !showAct;
-
-        if (showAvail)
-        {
-            showAvail = !showAvail;
-        }
-    }
 
     async Task RegisterBridge()
     {
-        Save();
+        _logger.LogInformation("Hue Bridge Registration Initialized");
         var formModal = Modal.Show<Confirm>("Please press the sync button on your Philips Hue Bridge");
         var result = await formModal.Result;
 
         if (result.Cancelled)
         {
-            Console.WriteLine("Modal was cancelled");
+            _logger.LogInformation("Hue Bridge Registration Cancelled");
         }
         else
         {
             try
             {
-
                 appState.Config.LightSettings.Hue.HueApiKey = await _mediator.Send(new Core.HueServices.RegisterBridgeCommand());
-                Save();
-
+                _logger.LogInformation("Hue Bridge Registration Successful");
+                await Save();
             }
             catch (Exception ex)
             {
@@ -271,8 +267,7 @@
                     throw;
                 }
 
-
-                Save();
+                await Save();
             }
 
             else
@@ -293,13 +288,12 @@
             lastType = type;
         }
 
+        _logger.LogInformation($"Get Hue {type} Initialized");
+
         if (!string.IsNullOrEmpty(appState.Config.LightSettings.Hue.HueApiKey))
         {
             try
             {
-                Save();
-
-
                 if (type == "Groups")
                 {
 
@@ -322,11 +316,13 @@
                     }
                 }
 
-                Save();
+                await Save();
 
                 showHueMessage = true;
                 hueMessage = "Connected to Hue";
                 hueMessageClass = "text-success";
+
+                _logger.LogInformation($"Get Hue {type} Successful");
             }
             catch (Exception e)
             {
@@ -345,8 +341,8 @@
     {
         var light = e.Value.ToString();
         appState.Config.LightSettings.Hue.SelectedItemId = light;
-        appState.Config.LightSettings.Hue.SelectedItemId = light;
         appState.SetHueLight(light);
+        _logger.LogInformation($"Selected Hue Light Set: {light}");
     }
 
     public void Dispose()

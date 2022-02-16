@@ -20,10 +20,9 @@ namespace PresenceLight.Core
     {
         private AppState _appState;
         private readonly ILogger<WizService> _logger;
-        MediatR.IMediator _mediator;
-        public WizService(AppState appState, MediatR.IMediator mediator, ILogger<WizService> logger)
+        
+        public WizService(AppState appState, ILogger<WizService> logger)
         {
-            _mediator = mediator;
             _logger = logger;
             _appState = appState;
         }
@@ -138,7 +137,7 @@ namespace PresenceLight.Core
             }
         }
 
-        private IEnumerable<(string LightName, string MacAddress)> GetHomeIds()
+        private static IEnumerable<(string LightName, string MacAddress)> GetHomeIds()
         {
             WizSocket socket = new WizSocket();
             socket.GetSocket().EnableBroadcast = true; // This will enable sending to the broadcast address
@@ -187,7 +186,7 @@ namespace PresenceLight.Core
 
             var command = new WizParams();
 
-            if (presence.Contains("#"))
+            if (presence.Contains('#'))
             {
                 // provided presence is actually a custom color
                 color = presence;
@@ -219,7 +218,7 @@ namespace PresenceLight.Core
             }
             return (color, command, false);
         }
-        private WizResult UpdateLight(WizParams wizParams, string lightId)
+        private static WizResult UpdateLight(WizParams wizParams, string lightId)
         {
             WizSocket socket = new WizSocket();
             socket.GetSocket().EnableBroadcast = true; // This will enable sending to the broadcast address

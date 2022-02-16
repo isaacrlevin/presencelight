@@ -91,9 +91,9 @@
     protected override void OnInitialized()
     {
         appType = _appInfo.GetAppInstallType();
-        installLocation = _appInfo.GetInstallLocation();
-        installedDate = _appInfo.GetInstallationDate();
-        RuntimeVersionInfo = _appInfo.GetDotNetRuntimeInfo();
+        installLocation = AppInfo.GetInstallLocation();
+        installedDate = AppInfo.GetInstallationDate();
+        RuntimeVersionInfo = AppInfo.GetDotNetRuntimeInfo();
         assemblyVersion = _appInfo.GetApplicationVersion();
         localConfigurationPath = new System.IO.FileInfo(SettingsService.GetSettingsFileLocation()).FullName;
     }

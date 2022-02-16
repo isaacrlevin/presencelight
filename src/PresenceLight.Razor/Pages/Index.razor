@@ -53,9 +53,6 @@ else
     protected override async Task OnInitializedAsync()
     {
         appState.OnChange += RaiseStateHasChanged;
-
-        _logger.LogInformation("Error occured Loading Settings");
-
         bool isUserAuth = await _userAuthService.IsUserAuthenticated();
         if (!isUserAuth && appState.User == null)
         {
@@ -72,12 +69,14 @@ else
             {
                 appState.SignedIn = true;
                 appState.SetLightMode("Graph");
+                _logger.LogInformation("Light Mode: Graph");
             }
         }
     }
 
     void SignIn()
     {
+        _logger.LogInformation("Sign In Requested");
         appState.SignInRequested = true;
     }
 

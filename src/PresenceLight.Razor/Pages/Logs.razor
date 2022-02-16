@@ -92,11 +92,11 @@
     static object logsLockObject = new();
     static object logFilesLockObject = new();
 
-    public string? LogFilePath { get; set; }
+    public string LogFilePath { get; set; }
 
     private Queue<Serilog.Events.LogEvent> InformationLogs = new(25);
     List<System.IO.FileInfo> LogFiles = new();
-    private string _logFilePath;
+
     private System.IO.FileSystemWatcher _watcher;
 
     protected override Task OnInitializedAsync()
@@ -112,7 +112,6 @@
         selectedTab = name;
     }
 
-    bool fileWatcherInitialized = false;
 
     private void InitializeFileWatcher()
     {
@@ -133,7 +132,6 @@
             LogFilePath = fi.DirectoryName;
         }
 
-        fileWatcherInitialized = true;
         var di = new System.IO.DirectoryInfo(LogFilePath);
 
         if (di.Exists)
@@ -187,7 +185,7 @@
 
     }
 
-    private void Handler(object? sender, Serilog.Events.LogEvent e)
+    private void Handler(object sender, Serilog.Events.LogEvent e)
     {
         lock (logsLockObject)
         {

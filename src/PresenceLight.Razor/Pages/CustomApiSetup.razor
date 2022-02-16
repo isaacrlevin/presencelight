@@ -136,7 +136,7 @@
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Error Occured loading Hue Setup");
+            _logger.LogError(e, "Error Occured loading Custom API Page");
             throw;
         }
         await Task.CompletedTask;
@@ -151,10 +151,11 @@
 
             message = "Settings Saved";
             settingsSaved = true;
+            _logger.LogInformation("Settings Saved from Custom API Page");
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Error Occured Saving Custom Api Settings");
+            _logger.LogError(e, "Error Occured Saving Custom API Settings");
             throw;
         }
     }

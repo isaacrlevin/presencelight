@@ -23,17 +23,13 @@ namespace PresenceLight.Web
         UserAuthService _userAuthService;
         private readonly GraphServiceClient _graphClient;
         private MediatR.IMediator _mediator;
-        private IWorkingHoursService _workingHoursService;
-
 
         public Worker(ILogger<Worker> logger,
-            IOptionsMonitor<BaseConfig> optionsAccessor,
+                      IOptionsMonitor<BaseConfig> optionsAccessor,
                       AppState appState,
                       UserAuthService userAuthService,
-                     MediatR.IMediator mediator,
-                      IWorkingHoursService workingHoursService)
+                      MediatR.IMediator mediator)
         {
-            _workingHoursService = workingHoursService;
             _mediator = mediator;
             _userAuthService = userAuthService;
             _logger = logger;
@@ -294,6 +290,8 @@ namespace PresenceLight.Web
             }
             catch (Exception e)
             {
+                _logger.LogError(e, "Exception setting color");
+                throw;
             }
         }
     }
