@@ -29,11 +29,11 @@
                     </div>
                     <br />
                     <br />
-                    <button class="btn btn-primary" @onclick="FindBridge">Find Bridge</button>
-                    <br />
-                    <br />
                     @if (appState.Config.LightSettings.Hue.IsEnabled)
                     {
+                        <button class="btn btn-primary" @onclick="FindBridge">Find Bridge</button>
+                        <br />
+                        <br />
                         <EditForm Model="@appState.Config" OnValidSubmit="RegisterBridge">
                             <InputText id="name" @bind-Value="@appState.Config.LightSettings.Hue.HueIpAddress" />
                             <br />
