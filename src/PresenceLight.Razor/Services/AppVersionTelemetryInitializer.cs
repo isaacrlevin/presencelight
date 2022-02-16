@@ -6,8 +6,7 @@ using Microsoft.ApplicationInsights.Extensibility;
 namespace PresenceLight.Razor.Services
 {
     public class AppVersionTelemetryInitializer : ITelemetryInitializer
-    {
-        private readonly string _appVersion;
+    {   
         private readonly AppInfo _appInfo;
 
         public AppVersionTelemetryInitializer(AppInfo appInfo)

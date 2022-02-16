@@ -25,11 +25,9 @@ namespace PresenceLight.Core
         private readonly string _lIFXTokenEndpoint = $"{LIFXAuthority}/token";
         private readonly string _lIFXAuthorizationEndpoint = $"{LIFXAuthority}/authorize";
         private readonly AppState _appState;
-        private readonly ILogger<LIFXOAuthHelper> _logger;
 
-        public LIFXOAuthHelper(AppState appState, ILogger<LIFXOAuthHelper> logger)
+        public LIFXOAuthHelper(AppState appState)
         {
-            _logger = logger;
             _appState = appState;
 
         }
@@ -142,9 +140,9 @@ namespace PresenceLight.Core
         /// </summary>
         /// <param name="length">Input length (nb. output will be longer)</param>
         /// <returns></returns>
-        private string RandomDataBase64Url(uint length)
+        private static string RandomDataBase64Url(uint length)
         {
-            RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
+            var rng = RandomNumberGenerator.Create();
             byte[] bytes = new byte[length];
             rng.GetBytes(bytes);
             return Base64UrlEncodeNoPadding(bytes);
@@ -155,7 +153,7 @@ namespace PresenceLight.Core
         /// </summary>
         /// <param name="buffer"></param>
         /// <returns></returns>
-        private string Base64UrlEncodeNoPadding(byte[] buffer)
+        private static string Base64UrlEncodeNoPadding(byte[] buffer)
         {
             string base64 = Convert.ToBase64String(buffer);
 

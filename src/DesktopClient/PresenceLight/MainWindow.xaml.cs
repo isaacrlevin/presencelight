@@ -1,20 +1,13 @@
 ﻿using System;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 
-using LifxCloud.NET.Models;
-
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Graph;
@@ -22,14 +15,7 @@ using Microsoft.Identity.Client;
 
 using PresenceLight.Core;
 using PresenceLight.Graph;
-using PresenceLight.Razor;
-using PresenceLight.Services;
 using PresenceLight.Telemetry;
-
-using Windows.ApplicationModel;
-
-using Media = System.Windows.Media;
-using Package = Windows.ApplicationModel.Package;
 
 namespace PresenceLight
 {
@@ -45,24 +31,19 @@ namespace PresenceLight
         private DateTime settingsLastSaved = DateTime.MinValue;
 
         private MediatR.IMediator _mediator;
-        private LIFXOAuthHelper _lIFXOAuthHelper;
 
         private readonly IGraphService _graphservice;
         private DiagnosticsClient _diagClient;
         private ISettingsService _settingsService;
-        private IWorkingHoursService _workingHoursService;
         private WindowState lastWindowState;
-        private bool previousRemoteFlag;
         private bool isInteractRunning;
         private readonly ILogger<MainWindow> _logger;
         private readonly AppState _appState;
 
         #region Init
         public MainWindow(IGraphService graphService,
-                          IWorkingHoursService workingHoursService,
                           MediatR.IMediator mediator,
                           IOptionsMonitor<BaseConfig> optionsAccessor,
-                          LIFXOAuthHelper lifxOAuthHelper,
                           DiagnosticsClient diagClient,
                           ILogger<MainWindow> logger,
                           ISettingsService settingsService,
@@ -77,13 +58,11 @@ namespace PresenceLight
             InitializeComponent();
             System.Windows.Application.Current.SessionEnding += new SessionEndingCancelEventHandler(Current_SessionEnding);
 
-            _workingHoursService = workingHoursService;
             _graphservice = graphService;
 
 
             _mediator = mediator;
             _options = optionsAccessor != null ? optionsAccessor.CurrentValue : throw new NullReferenceException("Options Accessor is null");
-            _lIFXOAuthHelper = lifxOAuthHelper;
             _diagClient = diagClient;
             _settingsService = settingsService;
 
@@ -121,19 +100,19 @@ namespace PresenceLight
                         {
                             _appState.SignInRequested = false;
 
-                            this.Dispatcher.Invoke(() =>
-                            {
-                                SignIn();
-                            });
+                            await this.Dispatcher.Invoke(async () =>
+                             {
+                                 await SignIn();
+                             });
                         }
 
                         if (_appState.SignOutRequested)
                         {
                             _appState.SignOutRequested = false;
-                            this.Dispatcher.Invoke(() =>
-                            {
-                                SignOut();
-                            });
+                            await this.Dispatcher.Invoke(async () =>
+                             {
+                                 await SignOut();
+                             });
                         }
                     });
                 }
@@ -147,6 +126,7 @@ namespace PresenceLight
         {
             try
             {
+                _logger.LogInformation("Load Settings Initialized");
                 if (!(await _settingsService.IsFilePresent().ConfigureAwait(true)))
                 {
                     await _settingsService.SaveSettings(_options).ConfigureAwait(true);
@@ -156,6 +136,7 @@ namespace PresenceLight
 
                 bool useWorkingHours = await _mediator.Send(new Core.WorkingHoursServices.UseWorkingHoursCommand());
                 bool IsInWorkingHours = await _mediator.Send(new Core.WorkingHoursServices.IsInWorkingHoursCommand());
+                _logger.LogInformation("Load Settings Successfull");
             }
             catch (Exception e)
             {
@@ -168,8 +149,6 @@ namespace PresenceLight
         {
             try
             {
-                previousRemoteFlag = _appState.Config.LightSettings.Hue.UseRemoteApi;
-
                 notificationIcon.Text = $"PresenceLight Status - {PresenceConstants.Inactive}";
                 notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(string.Empty, string.Empty)));
 
@@ -188,7 +167,7 @@ namespace PresenceLight
 
         #region Profile Panel
 
-        private async void SignIn()
+        private async Task SignIn()
         {
             await CallGraph().ConfigureAwait(true);
         }
@@ -196,7 +175,7 @@ namespace PresenceLight
         private async Task CallGraph()
         {
             _appState.SetLightMode("Graph");
-
+            _logger.LogInformation("Light Mode Set: Graph");
             if (!await _mediator.Send(new Core.GraphServices.GetIsInitializedCommand()))
             {
                 await _mediator.Send(new Core.GraphServices.InitializeCommand()
@@ -219,6 +198,7 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
+                _logger.LogError(e, "Error occured calling Graph");
             }
         }
 
@@ -276,10 +256,11 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
+                _logger.LogError(e, "Error occured Getting Photo");
             }
         }
 
-        private async void SignOut()
+        private async Task SignOut()
         {
             _logger.LogInformation("Signing out of Graph PresenceLight Sync");
 
@@ -337,7 +318,6 @@ namespace PresenceLight
             try
             {
                 SolidColorBrush mySolidColorBrush = new SolidColorBrush();
-                BitmapImage image;
                 if (presence != null)
                 {
                     notificationIcon.Text = $"PresenceLight Status - {Helpers.HumanifyText(presence.Availability)}";
@@ -361,6 +341,7 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
+                _logger.LogError(e, "Error occured Getting Presence");
                 throw;
             }
         }
@@ -382,11 +363,12 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
+                _logger.LogError(e, "Error occured Getting Photo");
                 return null;
             }
         }
 
-        public byte[] ReadFully(Stream input)
+        public static byte[] ReadFully(Stream input)
         {
             byte[] buffer = new byte[16 * 1024];
             using (MemoryStream ms = new MemoryStream())
@@ -614,6 +596,7 @@ namespace PresenceLight
                 }
                 catch (Exception e)
                 {
+                    _logger.LogError(e, "Error occured interacting with lights");
                 }
             }
         }

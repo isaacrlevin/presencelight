@@ -29,10 +29,9 @@ namespace PresenceLight.Core
         private AppState _appState;
         private LocalHueClient _client;
         private readonly ILogger<HueService> _logger;
-        MediatR.IMediator _mediator;
-        public HueService(AppState appState, MediatR.IMediator mediator, ILogger<HueService> logger)
+
+        public HueService(AppState appState, ILogger<HueService> logger)
         {
-            _mediator = mediator;
             _logger = logger;
             _appState = appState;
         }
@@ -248,7 +247,7 @@ namespace PresenceLight.Core
             string message;
             var command = new LightCommand();
 
-            if (presence.Contains("#"))
+            if (presence.Contains('#'))
             {
                 // provided presence is actually a custom color
                 color = presence;

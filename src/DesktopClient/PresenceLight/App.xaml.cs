@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using System.Threading;
 using System.Windows;
 
 using Blazored.Modal;
@@ -43,7 +42,7 @@ namespace PresenceLight
 
         public App()
         {
-            
+
 
         }
 
@@ -74,6 +73,9 @@ namespace PresenceLight
 
         private void ContinueStartup()
         {
+            IServiceCollection services = new ServiceCollection();
+
+            // Configuration Section
             var builder = new Microsoft.Extensions.Configuration.ConfigurationBuilder()
                  .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                  .AddJsonFile($"appsettings.Development.json", optional: true, reloadOnChange: true);
@@ -98,6 +100,12 @@ namespace PresenceLight
 
             }
 
+            services.Configure<BaseConfig>(Configuration);
+            services.AddSingleton(Configuration);
+            services.AddOptions();
+            services.Configure<AADSettings>(Configuration.GetSection("AADSettings"));
+
+            //Logging
             var telemetryConfiguration = TelemetryConfiguration.CreateDefault();
             telemetryConfiguration.InstrumentationKey = Configuration["ApplicationInsights:InstrumentationKey"];
             var loggerConfig =
@@ -111,77 +119,52 @@ namespace PresenceLight
             Log.Logger = loggerConfig.CreateLogger();
             Log.Debug("Starting PresenceLight");
 
-            IServiceCollection services = new ServiceCollection();
-
-            services.AddBlazoredModal();
-            services.AddBlazorise(options =>
-            {
-                options.ChangeTextOnKeyPress = true;
-            }).AddBootstrapProviders()
-.AddFontAwesomeIcons();
-
-
-            services.AddMediatR(typeof(App),
-                     typeof(BaseConfig));
-
-
-
-            services.AddHttpClient();
-
-            services.AddHttpContextAccessor();
-
-            services.Configure<BaseConfig>(Configuration);
-            services.AddSingleton(Configuration);
-            services.AddOptions();
-            services.AddSingleton<AppState>();
-            services.AddSingleton<AppInfo, AppInfo>();
-            services.AddSingleton<ITelemetryInitializer, AppVersionTelemetryInitializer>();
-            services.AddPresenceServices();
-            services.AddBlazoredModal();
-
-            services.AddBlazorise(options =>
-            {
-                options.ChangeTextOnKeyPress = true;
-            }).AddBootstrapProviders()
-.AddFontAwesomeIcons();
-
-            services.AddBlazorWebView();
-            services.AddOptions();
             services.AddLogging(logging =>
             {
                 logging.AddSerilog();
             });
 
-            //Need to tell MediatR what Assemblies to look in for Command Event Handlers
+            services.Configure<TelemetryConfiguration>((o) =>
+            {
+                o.InstrumentationKey = Configuration["ApplicationInsights:InstrumentationKey"];
+                o.TelemetryInitializers.Add(new OperationCorrelationTelemetryInitializer());
+                //o.TelemetryInitializers.Add(AppVersionTelemetryInitializer);
+            });
+            services.AddApplicationInsightsTelemetryWorkerService(options =>
+            {
+                options.EnablePerformanceCounterCollectionModule = false;
+                options.EnableDependencyTrackingTelemetryModule = false;
+            });
+
+
+
+            //Blazor
+            services.AddHttpClient();
+            services.AddHttpContextAccessor();
+            services.AddBlazoredModal();
+            services.AddBlazorWebView();
+            services.AddBlazorise(options =>
+            {
+                options.ChangeTextOnKeyPress = true;
+            }).AddBootstrapProviders().AddFontAwesomeIcons();
+
+
             services.AddMediatR(typeof(App),
-                                typeof(PresenceLight.Core.BaseConfig));
+                     typeof(BaseConfig));
 
-            services.Configure<AADSettings>(Configuration.GetSection("AADSettings"));
-
+            //Singleton Services
+            services.AddSingleton<AppState>();
+            services.AddSingleton<AppInfo, AppInfo>();
 
             var userAuthService = new UserAuthService(Configuration);
             services.AddSingleton(userAuthService);
-
-
-            services.Configure<TelemetryConfiguration>(
-    (o) =>
-    {
-        o.InstrumentationKey = Configuration["ApplicationInsights:InstrumentationKey"];
-        o.TelemetryInitializers.Add(new OperationCorrelationTelemetryInitializer());
-        //o.TelemetryInitializers.Add(AppVersionTelemetryInitializer);
-    });
-            services.AddApplicationInsightsTelemetryWorkerService(options =>
-        {
-            options.EnablePerformanceCounterCollectionModule = false;
-            options.EnableDependencyTrackingTelemetryModule = false;
-        });
-
             services.AddSingleton<IGraphService, GraphService>();
 
             services.AddPresenceServices();
 
             services.AddSingleton<LIFXOAuthHelper, LIFXOAuthHelper>();
             services.AddSingleton<MainWindow>();
+            services.AddTransient<DiagnosticsClient, DiagnosticsClient>();
 
             if (Convert.ToBoolean(Configuration["IsAppPackaged"], CultureInfo.InvariantCulture))
             {
@@ -192,8 +175,9 @@ namespace PresenceLight
                 services.AddSingleton<ISettingsService, StandaloneSettingsService>();
             }
 
-            services.AddTransient<DiagnosticsClient, DiagnosticsClient>();
-
+            services.AddSingleton<ITelemetryInitializer, AppVersionTelemetryInitializer>();
+            
+            //Inject Services Into MainWindow
             ServiceProvider = services.BuildServiceProvider();
 
             var configuration = ServiceProvider.GetService<TelemetryConfiguration>();

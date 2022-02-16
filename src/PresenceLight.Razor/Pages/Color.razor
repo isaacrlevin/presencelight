@@ -38,11 +38,13 @@
             color = await jsRuntime.InvokeAsync<string>("getColor");
 
             appState.SetLightMode("Custom");
+            _logger.LogInformation("Light Mode: Custom");
             isGraphDisabled = false;
 
             if (appState.LightMode == "Custom")
             {
                 appState.SetCustomColor(color);
+                _logger.LogInformation($"Custom Color: {color}");
             }
 
             if (appState.LightMode == "Custom")
@@ -100,7 +102,7 @@
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Error Occured Setting Custom Color");
+            _logger.LogError(e, $"Error Occured Setting Custom Color {color}");
             throw;
         }
     }
@@ -118,6 +120,7 @@
     {
         isGraphDisabled = true;
         appState.SetLightMode("Graph");
+        _logger.LogInformation("Light Mode: Graph");
     }
 
     protected override void OnInitialized()
