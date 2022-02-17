@@ -16,37 +16,27 @@
             </div>
         </LoadingTemplate>
         <ContentTemplate>
-            <div class="container text-body">
-                <div class="row">
-                    <div class="container-fluid">
-                        <div class="row-fluid">
-                            <div>
-                                <h1>@appState.User?.DisplayName</h1>
-                                <br />
-                                <br />
-                                <div>
-                                    <img class="image" src="@appState.ProfileImage" />
-                                    <div class="circle bottom-right @appState.Presence?.Availability"></div>
-                                </div>
-                                <h3>Availability: @Helpers.HumanifyText(appState.Presence?.Availability)</h3>
-                                <h3>Activity: @Helpers.HumanifyText(appState.Presence?.Activity)</h3>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <MudPaper Height="500px" Width="100%">
+                <MudContainer MaxWidth="MaxWidth.Small" Style="text-align:center">
+                    <MudText Typo="Typo.h1">@appState.User?.DisplayName</MudText>
+                    <MudBadge Color="MudBlazor.Color.Success" Overlap="true" Bordered="true" Style="height:300px; width:300px">
+                        <MudAvatar Image="@appState.ProfileImage" Style="height:300px; width:300px"></MudAvatar>
+                    </MudBadge>
+                    <MudText Typo="Typo.h3">Availability: @Helpers.HumanifyText(appState.Presence?.Availability)</MudText>
+                    <MudText Typo="Typo.h3">Activity: @Helpers.HumanifyText(appState.Presence?.Activity)</MudText>
+                </MudContainer>
+            </MudPaper>
         </ContentTemplate>
     </SpinLoader>
 }
 else
 {
-    <div style="height:400px; position:relative; ">
-        <br /> <br />
-        <br /> <br />
-        Login to Microsoft Account to Sync Presence
-        <br /> <br />
-        <button @onclick=@SignIn>Sign In</button>
-    </div>
+    <MudPaper Height="500px" Width="100%">
+        <MudContainer MaxWidth="MaxWidth.Small" Style="text-align:center">
+            <MudText Typo="Typo.h6"> Login to Microsoft Account to Sync Presence</MudText>
+            <MudButton OnClick="SignIn" Variant="Variant.Filled">Sign In</MudButton>
+        </MudContainer>
+    </MudPaper>
 }
 
 @code {

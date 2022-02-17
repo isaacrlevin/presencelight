@@ -5,7 +5,7 @@ using System.Globalization;
 using System.Windows;
 
 using Blazored.Modal;
-
+using MudBlazor;
 using Blazorise;
 using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
@@ -26,6 +26,7 @@ using PresenceLight.Telemetry;
 using Serilog;
 
 using Windows.Storage;
+using MudBlazor.Services;
 
 namespace PresenceLight
 {
@@ -139,6 +140,9 @@ namespace PresenceLight
 
 
             //Blazor
+
+            services.AddMudServices();
+
             services.AddHttpClient();
             services.AddHttpContextAccessor();
             services.AddBlazoredModal();

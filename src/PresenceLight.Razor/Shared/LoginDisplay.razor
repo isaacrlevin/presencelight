@@ -5,8 +5,14 @@
 {
     @if (appState.SignedIn && appState.User != null)
     {
-        <span> Hello, @appState.User.DisplayName!</span>
-        <a href="" @onclick="@SignOut" @onclick:preventDefault>Log out</a>
+        <MudMenu Direction="MudBlazor.Direction.Right" OffsetX="true" Dense="true" Class="mt-1 ml-4">
+            <ActivatorContent>
+                <MudText Typo="Typo.body2" Class="px-4 py-2"> Hello, @appState.User.DisplayName!</MudText>
+            </ActivatorContent>
+            <ChildContent>
+                <MudListItem Text="Logout" Icon="@Icons.Material.Filled.Logout" OnClick="SignOut" />
+            </ChildContent>
+        </MudMenu>
     }
     else
     { }
@@ -15,11 +21,17 @@ else
 {
     <AuthorizeView>
         <Authorized>
-            Hello, @context.User.Identity.Name!
-            <a href="MicrosoftIdentity/Account/SignOut">Log out</a>
+            <MudMenu Direction="MudBlazor.Direction.Right" OffsetX="true" Dense="true" Class="mt-1 ml-4">
+                <ActivatorContent>
+                    <MudText Typo="Typo.body2" Class="px-4 py-2"> Hello, @context.User.Identity.Name!</MudText>
+                </ActivatorContent>
+                <ChildContent>
+                    <MudListItem Text="Logout" Icon="@Icons.Material.Filled.Logout" OnClick="SignOut" />
+                </ChildContent>
+            </MudMenu>
         </Authorized>
         <NotAuthorized>
-            <a href="MicrosoftIdentity/Account/SignIn">Log in</a>
+            <MudLink Href="MicrosoftIdentity/Account/SignIn">Log in</MudLink>
         </NotAuthorized>
     </AuthorizeView>
 }
