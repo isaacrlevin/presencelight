@@ -4,164 +4,108 @@
 @inject AppState appState;
 @inject ILogger<Settings> _logger;
 
-<div class="container text-body" style="overflow:hidden">
-    <h1>Settings</h1>
-    <br />
-    <br />
-    <div class="row">
-        <div class="col-5">
-            <input type="checkbox" checked="@appState.Config.LightSettings.SyncLights" @bind-value="@appState.Config.LightSettings.SyncLights" /> <strong>Light Sync Enabled</strong>
-        </div><div class="col-5">
-            <input type="checkbox" checked="@appState.Config.LightSettings.UseWorkingHours" @bind-value="@appState.Config.LightSettings.UseWorkingHours" /> <strong>Configure Working Hours</strong>
-        </div>
-    </div>
-    <br />
-    <br />
-    <div style="height: 300px ">
-        @if (appState.Config.LightSettings.UseWorkingHours)
-        {
-            <h5><strong>Working Days</strong></h5>
-            <br />
-            <div class="row">
-                <div class="col-1_5 ">
-                    <input @bind-value="Sunday" checked="@Sunday" type="checkbox" /> Sunday
-                </div>
-                <div class="col-1_5 ">
-                    <input @bind-value="Monday" checked="@Monday" type="checkbox" /> Monday
-                </div>
-                <div class="col-1_5 ">
-                    <input @bind-value="Tuesday" checked="@Tuesday" type="checkbox" /> Tuesday
-                </div>
-                <div class="col-1_5 ">
-                    <input @bind-value="Wednesday" checked="@Wednesday" type="checkbox" /> Wednesday
-                </div>
-                <div class="col-1_5 ">
-                    <input @bind-value="Thursday" checked="@Thursday" type="checkbox" /> Thursday
-                </div>
-                <div class="col-1_5 ">
-                    <input @bind-value="Friday" checked="@Friday" type="checkbox" /> Friday
-                </div>
-                <div class="col-1_5 ">
-                    <input @bind-value="Saturday" checked="@Saturday" type="checkbox" /> Saturday
-                </div>
-            </div>
-            <br />
-            <br />
-
-            <div class="row">
-                <div class="col-4">
-                    <h5><strong>Light Syncing Schedule (Working Hours)</strong></h5>
-                </div>
-
-                <div class="col-3">
-                    @{
-                        TimeSpan? startTimeSpan = appState.Config.LightSettings.WorkingHoursStartTimeAsDate == null ? null : appState.Config.LightSettings.WorkingHoursStartTimeAsDate.Value.TimeOfDay;
-
-                        <input style="width:75%" type="time" value="@startTimeSpan" @onchange="@((ChangeEventArgs e) => OnTimeChanged(e, "start"))" />
-                    }
-                </div>
-                <div class="col-3">
-                    @{
-                        TimeSpan? endTimeSpan = appState.Config.LightSettings.WorkingHoursEndTimeAsDate == null ? null : appState.Config.LightSettings.WorkingHoursEndTimeAsDate.Value.TimeOfDay;
-
-                        <input style="width:75%" type="time" value="@endTimeSpan" @onchange="@((ChangeEventArgs e) => OnTimeChanged(e, "end"))" />
-                    }
-                </div>
-            </div>
-
-            <br />
-            <br />
-
-            <div class="row">
-                <div class="col-4">
-                    <h5><strong>Light Status When After Hours Are Reached</strong></h5>
-                </div>
-                <div class="col-4">
-                    <input type="radio" checked="@statusOff" @onchange="@((ChangeEventArgs e) => OnStatusChanged(e))" value="Off" name="reached" /> Off
-                    <br />
-                    <input type="radio" checked="@statusWhite" @onchange="@((ChangeEventArgs e) => OnStatusChanged(e))" value="White" name="reached" /> White
-                    <br />
-                    <input type="radio" checked="@statusKeep" @onchange="@((ChangeEventArgs e) => OnStatusChanged(e))" value="Keep" name="reached" /> Keep
-                </div>
-            </div>
-            <br />
-            <br />
-        }
-    </div>
-    <div class="row">
-        <div class="col-3">
-            <input type="checkbox" checked="@appState.Config.LightSettings.UseDefaultBrightness" @bind-value="@appState.Config.LightSettings.UseDefaultBrightness" /> Lights Use Same Brightness
-        </div>
-    </div>
-    <br />
-    <br />
-    <div style="height: 100px ">
-        @if (appState.Config.LightSettings.UseDefaultBrightness)
-        {
-            <div class="row">
-                <div class="col-4">
-                    <h5>Brightness</h5>
-                </div>
-                <div class="col-4">
-                    <Slider TValue="int" @bind-Value="@appState.Config.LightSettings.DefaultBrightness" Step="1" Min="0" Max="100" />
-                </div>
-                <div class="col-1">
-                    <input style="width:50px" @bind-value="@appState.Config.LightSettings.DefaultBrightness" type="text" />
-                </div>
-            </div>
-            <br />
-            <br />
-        }
-    </div>
-    <div class="row">
-        <div class="col-4">
-            <h5>Teams Presence Polling Interval</h5>
-        </div>
-        <div class="col-4">
-            <Slider TValue="double" @bind-Value="@appState.Config.LightSettings.PollingInterval" Step=".1" Min="1.0" Max="5.0" />
-        </div>
-        <div class="col-1">
-            <input style="width:50px" @bind-value="@appState.Config.LightSettings.PollingInterval" type="text" />
-        </div>
-    </div>
-    <br />
-    <br />
-    @if (appState.Config.AppType == "Desktop")
-    {
-        <div class="row">
-            <div class="col-4">
-                <h5><strong>Icon Type</strong></h5>
-            </div>
-            <div class="col-4">
-                <RadioGroup TValue="string" Name="iconType" @bind-CheckedValue="@appState.Config.IconType">
-                    <Radio TValue="string" Value="@("Transparent")">Transparent</Radio>
-                    <br />
-                    <Radio TValue="string" Value="@("White")">White</Radio>
-                </RadioGroup>
-            </div>
-        </div>
-        <br />
-        <br />
-    <div class="row">
-        <div class="col-3">
-            <input type="checkbox" checked="@appState.Config.LightSettings.UseDefaultBrightness" @bind-value="@appState.Config.StartMinimized" /> Start Minimized
-        </div>
-    </div>
-        <br />
-        <br />
-    }
-
-    <div>
-        <button @onclick="SaveSettings" class="btn btn-primary">Save Settings</button>
-        <br />
-        <br />
-        @if (settingsSaved)
-        {
-            <span class="text-success">@message</span>
-        }
-    </div>
-</div>
-
+<MudPaper Width="100%" Elevation="0">
+    <MudContainer MaxWidth="MaxWidth.Large" Style="text-align:center">
+        <MudText Typo="Typo.h1">Settings</MudText>
+        <MudGrid Class="mt-10" Justify="Justify.Center">
+            <MudItem lg="6" xs="6">
+                <MudCheckBox @bind-Checked="@appState.Config.LightSettings.SyncLights" Label="Light Sync Enabled"></MudCheckBox>
+            </MudItem>
+            <MudItem lg="6">
+                <MudCheckBox @bind-Checked="@appState.Config.LightSettings.UseWorkingHours" Label="Configure Working Hours"></MudCheckBox>
+            </MudItem>
+            @if (appState.Config.LightSettings.UseWorkingHours)
+            {
+                <MudItem lg="12">
+                    <MudText Typo="Typo.h5">Working Days</MudText>
+                </MudItem>
+                <MudItem lg="3">
+                    <MudCheckBox @bind-Checked="@Sunday" Label="Sunday"></MudCheckBox>
+                </MudItem>
+                <MudItem lg="3">
+                    <MudCheckBox @bind-Checked="@Monday" Label="Monday"></MudCheckBox>
+                </MudItem>
+                <MudItem lg="3">
+                    <MudCheckBox @bind-Checked="@Tuesday" Label="Tuesday"></MudCheckBox>
+                </MudItem>
+                <MudItem lg="3">
+                    <MudCheckBox @bind-Checked="@Wednesday" Label="Wednesday"></MudCheckBox>
+                </MudItem>
+                <MudItem lg="3">
+                    <MudCheckBox @bind-Checked="@Thursday" Label="Thursday"></MudCheckBox>
+                </MudItem>
+                <MudItem lg="3">
+                    <MudCheckBox @bind-Checked="@Friday" Label="Friday"></MudCheckBox>
+                </MudItem>
+                <MudItem lg="3">
+                    <MudCheckBox @bind-Checked="@Saturday" Label="Saturday"></MudCheckBox>
+                </MudItem>
+                <MudItem lg="4">
+                    <MudText Typo="Typo.h5">Light Syncing Schedule (Working Hours)</MudText>
+                </MudItem>
+                <MudItem lg="3">
+                    <MudTimePicker Label="Start Time" AmPm="true" @bind-Time="startTimeSpan" />
+                </MudItem>
+                <MudItem lg="3">
+                    <MudTimePicker Label="End Time" AmPm="true" @bind-Time="endTimeSpan" />
+                </MudItem>
+                <MudItem lg="4">
+                    <MudText Typo="Typo.h5">Light Status When After Hours Are Reached</MudText>
+                </MudItem>
+                <MudItem lg="4">
+                    <MudRadioGroup @bind-SelectedOption="@appState.Config.LightSettings.HoursPassedStatus">
+                        <MudRadio Option="@("Off")" Color="MudBlazor.Color.Default" Dense="true">Off</MudRadio>
+                        <MudRadio Option="@("White")" Color="MudBlazor.Color.Default" Dense="true">White</MudRadio>
+                        <MudRadio Option="@("Keep")" Color="MudBlazor.Color.Default" Dense="true">Keep</MudRadio>
+                    </MudRadioGroup>
+                </MudItem>
+            }
+            <MudItem lg="12">
+                <MudCheckBox @bind-Checked="@appState.Config.LightSettings.UseDefaultBrightness" Label="Lights Use Same Brightness"></MudCheckBox>
+            </MudItem>
+            @if (appState.Config.LightSettings.UseDefaultBrightness)
+            {
+                <MudItem lg="3">
+                    <MudText Typo="Typo.h5">Brightness</MudText>
+                </MudItem>
+                <MudItem lg="6">
+                    <MudSlider @bind-Value="appState.Config.LightSettings.DefaultBrightness" Min="0" Max="100"></MudSlider>
+                </MudItem>
+                <MudItem lg="1">
+                    <MudNumericField @bind-Value="appState.Config.LightSettings.DefaultBrightness" Variant="Variant.Outlined" Min="0" Max="100" Step="1" />
+                </MudItem>
+            }
+            <MudItem lg="3">
+                <MudText Typo="Typo.h5">Polling Interval</MudText>
+            </MudItem>
+            <MudItem lg="6">
+                <MudSlider @bind-Value="appState.Config.LightSettings.PollingInterval" Step=".1" Min="1" Max="5"></MudSlider>
+            </MudItem>
+            <MudItem lg="1">
+                <MudNumericField @bind-Value="appState.Config.LightSettings.PollingInterval" Variant="Variant.Outlined" Format="F1" Min="1.0" Max="5.0" Step=".1" />
+            </MudItem>
+            @if (appState.Config.AppType == "Desktop")
+            {
+                <MudItem lg="3">
+                    <MudText Typo="Typo.h5">Icon Type</MudText>
+                </MudItem>
+                <MudItem lg="4">
+                    <MudRadioGroup @bind-SelectedOption="@appState.Config.IconType">
+                        <MudRadio Option="@("Transparent")" Color="MudBlazor.Color.Default" Dense="true">Transparent</MudRadio>
+                        <MudRadio Option="@("White")" Color="MudBlazor.Color.Default" Dense="true">White</MudRadio>
+                    </MudRadioGroup>
+                </MudItem>
+            <MudItem lg="12">
+                <MudCheckBox @bind-Checked="@appState.Config.StartMinimized" Label="Start Minimized"></MudCheckBox>
+            </MudItem>
+            }
+            <MudItem lg="12">
+                <MudButton Class="mb-10" OnClick="SaveSettings" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">Save Settings</MudButton>
+                <MudText Color="MudBlazor.Color.Success">@message</MudText>
+            </MudItem>
+        </MudGrid>
+    </MudContainer>
+</MudPaper>
 
 @code {
     bool settingsSaved = false;
@@ -179,26 +123,31 @@
     bool statusWhite;
     bool statusKeep;
 
-    void SaveSettings()
+    TimeSpan? startTimeSpan;
+    TimeSpan? endTimeSpan;
+
+    protected override async Task OnInitializedAsync()
+    {
+        appState.Config.LightSettings.WorkingHoursStartTimeAsDate = string.IsNullOrEmpty(appState.Config.LightSettings.WorkingHoursStartTime) ? null : DateTime.Parse(appState.Config.LightSettings.WorkingHoursStartTime, null);
+        appState.Config.LightSettings.WorkingHoursEndTimeAsDate = string.IsNullOrEmpty(appState.Config.LightSettings.WorkingHoursEndTime) ? null : DateTime.Parse(appState.Config.LightSettings.WorkingHoursEndTime, null);
+
+        PopulateWorkingDays();
+
+        startTimeSpan = appState.Config.LightSettings.WorkingHoursStartTimeAsDate == null ? null : appState.Config.LightSettings.WorkingHoursStartTimeAsDate.Value.TimeOfDay;
+        startTimeSpan = appState.Config.LightSettings.WorkingHoursEndTimeAsDate == null ? null : appState.Config.LightSettings.WorkingHoursStartTimeAsDate.Value.TimeOfDay;
+
+        await Task.CompletedTask;
+    }
+
+        void SaveSettings()
     {
         try
         {
             SetWorkingDays();
 
-            if (statusOff)
-            {
-                appState.Config.LightSettings.HoursPassedStatus = "Off";
-            }
 
-            if (statusWhite)
-            {
-                appState.Config.LightSettings.HoursPassedStatus = "White";
-            }
-
-            if (statusKeep)
-            {
-                appState.Config.LightSettings.HoursPassedStatus = "Keep";
-            }
+            appState.Config.LightSettings.WorkingHoursStartTime = startTimeSpan.ToString();
+            appState.Config.LightSettings.WorkingHoursEndTime = endTimeSpan.ToString();
 
             SettingsService.SaveSettings(appState.Config);
             message = "Settings Saved";
@@ -212,71 +161,6 @@
         }
     }
 
-    protected override async Task OnInitializedAsync()
-    {
-        appState.Config.LightSettings.WorkingHoursStartTimeAsDate = string.IsNullOrEmpty(appState.Config.LightSettings.WorkingHoursStartTime) ? null : DateTime.Parse(appState.Config.LightSettings.WorkingHoursStartTime, null);
-        appState.Config.LightSettings.WorkingHoursEndTimeAsDate = string.IsNullOrEmpty(appState.Config.LightSettings.WorkingHoursEndTime) ? null : DateTime.Parse(appState.Config.LightSettings.WorkingHoursEndTime, null);
-
-        switch (appState.Config.LightSettings.HoursPassedStatus)
-        {
-            case "Keep":
-                statusKeep = true;
-                break;
-            case "White":
-                statusWhite = true;
-                break;
-            case "Off":
-                statusOff = true;
-                break;
-            default:
-                statusKeep = true;
-                break;
-        }
-
-
-        PopulateWorkingDays();
-        await Task.CompletedTask;
-    }
-
-    void OnStatusChanged(ChangeEventArgs e)
-    {
-        switch (e.Value)
-        {
-            case "Keep":
-                statusKeep = true;
-                statusWhite = false;
-                statusOff = false;
-                break;
-            case "White":
-                statusKeep = false;
-                statusWhite = true;
-                statusOff = false;
-                break;
-            case "Off":
-                statusKeep = false;
-                statusWhite = false;
-                statusOff = true;
-                break;
-            default:
-                statusKeep = true;
-                statusWhite = false;
-                statusKeep = false;
-                break;
-        }
-    }
-
-    void OnTimeChanged(ChangeEventArgs e, object setting)
-    {
-        if (setting.ToString() == "start")
-        {
-            appState.Config.LightSettings.WorkingHoursStartTime = e.Value.ToString();
-        }
-
-        if (setting.ToString() == "end")
-        {
-            appState.Config.LightSettings.WorkingHoursEndTime = e.Value.ToString();
-        }
-    }
 
     private void PopulateWorkingDays()
     {

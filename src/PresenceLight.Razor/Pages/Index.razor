@@ -16,7 +16,7 @@
             </div>
         </LoadingTemplate>
         <ContentTemplate>
-            <MudPaper Height="500px" Width="100%">
+            <MudPaper Height="500px" Width="100%" Elevation="0">
                 <MudContainer MaxWidth="MaxWidth.Small" Style="text-align:center">
                     <MudText Typo="Typo.h1">@appState.User?.DisplayName</MudText>
                     <MudBadge Color="MudBlazor.Color.Success" Overlap="true" Bordered="true" Style="height:300px; width:300px">
@@ -31,7 +31,7 @@
 }
 else
 {
-    <MudPaper Height="500px" Width="100%">
+    <MudPaper Height="500px" Width="100%" Elevation="0">
         <MudContainer MaxWidth="MaxWidth.Small" Style="text-align:center">
             <MudText Typo="Typo.h6"> Login to Microsoft Account to Sync Presence</MudText>
             <MudButton OnClick="SignIn" Variant="Variant.Filled">Sign In</MudButton>
