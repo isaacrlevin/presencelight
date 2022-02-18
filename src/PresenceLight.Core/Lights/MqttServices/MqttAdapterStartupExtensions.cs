@@ -28,26 +28,41 @@ public static class MqttAdapterStartupExtensions
 
     internal static IMqttClient CreateClient(MqttSettings settings)
     {
-        var messageBuilder = new MqttClientOptionsBuilder()
+        IMqttClient client;
+        if (settings != null && Uri.IsWellFormedUriString(settings.BrokerUrl, UriKind.RelativeOrAbsolute))
+        {
+            try
+            {
+                var messageBuilder = new MqttClientOptionsBuilder()
             .WithClientId(settings.ClientId ?? Guid.NewGuid().ToString())
             .WithCredentials(settings.UserName, settings.Password)
             .WithConnectionUri(settings.BrokerUrl)
             .WithCleanSession();
 
-        var options = settings.Secure
-            ? messageBuilder
-                .WithTls()
-                .Build()
-            : messageBuilder
-                .Build();
+                var options = settings.Secure
+                    ? messageBuilder
+                        .WithTls()
+                        .Build()
+                    : messageBuilder
+                        .Build();
 
-        var managedOptions = new ManagedMqttClientOptionsBuilder()
-            .WithAutoReconnectDelay(TimeSpan.FromSeconds(settings.ReconnectDelaySeconds))
-            .WithClientOptions(options)
-            .Build();
+                var managedOptions = new ManagedMqttClientOptionsBuilder()
+                    .WithAutoReconnectDelay(TimeSpan.FromSeconds(settings.ReconnectDelaySeconds))
+                    .WithClientOptions(options)
+                    .Build();
 
-        var client = new MqttFactory().CreateMqttClient();
-        client.ConnectAsync(messageBuilder.Build()).Wait();
+                client = new MqttFactory().CreateMqttClient();
+                client.ConnectAsync(messageBuilder.Build()).Wait();
+            }
+            catch
+            {
+                client = null;
+            }
+        }
+        else
+        {
+            client = null;
+        }
 
         return client;
     }

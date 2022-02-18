@@ -297,7 +297,7 @@ namespace PresenceLight.Web
                     });
                 }
 
-                if (Config.MqttSettings.IsEnabled && !string.IsNullOrEmpty(Config.MqttSettings.BrokerUrl))
+                if (Config.MqttSettings.IsEnabled && !string.IsNullOrEmpty(Config.MqttSettings.BrokerUrl) && Uri.IsWellFormedUriString(Config.MqttSettings.BrokerUrl, UriKind.RelativeOrAbsolute))
                 {
                     await _mediator.Send(new SetColorCommand { Activity = activity, Availability = color, UserName = _appState.User?.DisplayName }).ConfigureAwait(true);
                 }
