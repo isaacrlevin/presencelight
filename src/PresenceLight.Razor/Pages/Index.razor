@@ -18,12 +18,12 @@
         <ContentTemplate>
             <MudPaper Height="500px" Width="100%" Elevation="0">
                 <MudContainer MaxWidth="MaxWidth.Small" Style="text-align:center">
-                    <MudText Typo="Typo.h1">@appState.User?.DisplayName</MudText>
+                    <MudText Typo="Typo.h3">@appState.User?.DisplayName</MudText>
                     <MudBadge Color="MudBlazor.Color.Success" Overlap="true" Bordered="true" Style="height:300px; width:300px">
                         <MudAvatar Image="@appState.ProfileImage" Style="height:300px; width:300px"></MudAvatar>
                     </MudBadge>
-                    <MudText Typo="Typo.h3">Availability: @Helpers.HumanifyText(appState.Presence?.Availability)</MudText>
-                    <MudText Typo="Typo.h3">Activity: @Helpers.HumanifyText(appState.Presence?.Activity)</MudText>
+                    <MudText Typo="Typo.h5">Availability: @Helpers.HumanifyText(appState.Presence?.Availability)</MudText>
+                    <MudText Typo="Typo.h5">Activity: @Helpers.HumanifyText(appState.Presence?.Activity)</MudText>
                 </MudContainer>
             </MudPaper>
         </ContentTemplate>

@@ -14,6 +14,8 @@ using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
+using MudBlazor.Services;
+
 using PresenceLight.Core;
 using PresenceLight.Razor;
 using PresenceLight.Razor.Services;
@@ -48,6 +50,8 @@ namespace PresenceLight.Web
             })
             .AddBootstrapProviders()
             .AddFontAwesomeIcons();
+
+            services.AddMudServices();
 
             return services;
         }

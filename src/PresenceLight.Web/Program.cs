@@ -6,6 +6,7 @@ using Microsoft.Identity.Web.UI;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 
+using MudBlazor;
 using MudBlazor.Services;
 
 using PresenceLight.Core;
@@ -122,11 +123,9 @@ builder.Services.AddAuthorization(options =>
 });
 
 builder.Services.AddPresenceLight(builder.Configuration);
-builder.Services.AddMudServices();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor()
     .AddMicrosoftIdentityConsentHandler();
-
 
 var app = builder.Build();
 

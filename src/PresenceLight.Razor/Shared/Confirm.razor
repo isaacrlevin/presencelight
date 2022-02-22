@@ -1,10 +1,10 @@
-﻿<div>
-    <button @onclick="Close" class="btn btn-primary">Ok</button>
-</div>
-
+﻿<MudDialog>
+    <DialogActions>
+        <MudButton Color="MudBlazor.Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
 @code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
-    [CascadingParameter] BlazoredModalInstance BlazoredModal { get; set; }
-
-    void Close() => BlazoredModal.CloseAsync(ModalResult.Ok(true));
+    void Submit() => MudDialog.Close(DialogResult.Ok(true));
 }

@@ -4,21 +4,6 @@
 <MudDialogProvider />
 <MudSnackbarProvider />
 
-@*<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
-
-    <main>
-        <div class="top-row px-4 auth">
-            <LoginDisplay />
-        </div>
-
-        <article class="content px-4 centering text-center">
-            @Body
-        </article>
-    </main>
-</div>*@
 <MudLayout>
     <MudAppBar Elevation="0">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="MudBlazor.Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />

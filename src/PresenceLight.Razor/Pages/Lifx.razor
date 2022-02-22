@@ -6,146 +6,108 @@
 @inject ILogger<Lifx> _logger;
 @inject LIFXOAuthHelper _lIFXOAuthHelper;
 @inject NavigationManager NavManager
-<div class="container text-body" style="overflow:hidden">
-    <div class="row">
-        <div class="container-fluid">
-            <div class="row-fluid">
-                <div>
-                    <h1>Configure LIFX</h1>
-                    <br />
-                    <br />
-                    <div class="row">
-                        <div class="col-12">
-                            <input type="checkbox" @bind-value="@appState.Config.LightSettings.LIFX.IsEnabled" checked="@appState.Config.LightSettings.LIFX.IsEnabled" /> Connect to LIFX
-                        </div>
-                    </div>
-                    <br />
-                    <br />
-                    @if (appState.Config.LightSettings.LIFX.IsEnabled)
-                    {
-                        <div class="row">
-                            <div class="col-4">
-                                <h5>LIFX Token</h5>
-                            </div>
-                            <div class="col-4">
-                                <input style="width: 100%" @bind-value="@appState.Config.LightSettings.LIFX.LIFXApiKey" type="text">
-                                <a href="#" @onclick:preventDefault @onclick="@GetToken">Get Token</a>
-                            </div>
-                        </div>
-                        <br />
 
-                        <br />
-                        @if (!string.IsNullOrEmpty(appState.Config.LightSettings.LIFX.LIFXApiKey))
-                        {
-                            <button @onclick="@((ev) => CheckLIFX("Lights"))" class="btn btn-primary" type="submit">Get Lights</button>
-                            <span>&nbsp;&nbsp;</span>
-                            <button @onclick="@((ev) => CheckLIFX("Groups"))" class="btn btn-primary" type="submit">Get Groups</button>
-                        }
-                        <br />
 
-                        <br />
-                        if (isLoadingLights)
-                        {
-                            <br />
+<MudPaper Width="100%" Elevation="0">
+    <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Style="text-align:center">
+        <MudText Typo="Typo.h3">Configure LIFX</MudText>
+        <MudGrid Class="mt-10" Justify="Justify.Center">
+            <MudItem xs="12">
+                <MudCheckBox @bind-Checked="@appState.Config.LightSettings.LIFX.IsEnabled" Label="Connect to LIFX"></MudCheckBox>
+            </MudItem>
+        </MudGrid>
+        @if (appState.Config.LightSettings.LIFX.IsEnabled)
+        {
+            <MudGrid Class="mt-10" Justify="Justify.FlexStart">
+                <MudItem xs="3">
+                    <h5>LIFX Token</h5>
+                </MudItem>
+                <MudItem xs="7">
+                    <MudTextField Variant="Variant.Outlined" Value="@appState.Config.LightSettings.LIFX.LIFXApiKey"></MudTextField>
+                    <a href="#" @onclick:preventDefault @onclick="@GetToken">Get Token</a>
+                </MudItem>
+            </MudGrid>
 
-                            <br />
-                            <Circle Center="true" />
-                        }
-                        else
-                        {
-                            @if (appState.LIFXLights != null)
-                            {
-                                <br />
+            <MudGrid Class="mt-10" Justify="Justify.Center">
+                <MudItem xs="12">
+                    <MudButton OnClick="@((ev) => CheckLIFX("Lights"))" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">Find LIFX Lights</MudButton>
+                    <MudButton OnClick="@((ev) => CheckLIFX("Groups"))" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">Find LIFX Groups</MudButton>
+                </MudItem>
+            </MudGrid>
+            if (isLoadingLights)
+            {
+                <br />
 
-                                <br />
-
-                                @if (showLifxMessage)
+                <br />
+                <Circle Center="true" />
+            }
+            else
+            {
+                @if (appState.LIFXLights != null)
+                {
+                    <MudGrid Class="mt-10" Justify="Justify.Center">
+                        <MudItem xs="4">
+                            <MudSelect Dense="true" T="string" Variant="Variant.Outlined" ValueChanged="OnChange">
+                                <MudSelectItem Disabled="true" Value="@("Select")" />
+                                @foreach (var light in appState.LIFXLights)
                                 {
-                                    <span class="@lifxMessageClass">@lifxMessage</span>
-                                }
+                                    if (light.GetType() == typeof(LifxCloud.NET.Models.Group))
+                                    {
+                                        var obj = (LifxCloud.NET.Models.Group)light;
 
-                                <br />
-
-                                <br />
-                                <span><strong>@lastType</strong></span>
-                                <div class="form-group col-3 centering text-center">
-                                    <select class="form-control" @onchange="OnChange">
-                                        <option disabled="disabled">Select</option>
-                                        @foreach (var light in appState.LIFXLights)
+                                        @if (appState.Config.LightSettings.LIFX.SelectedItemId == $"group_id:{obj.Id}")
                                         {
-                                            if (light.GetType() == typeof(LifxCloud.NET.Models.Group))
-                                            {
-                                                var obj = (LifxCloud.NET.Models.Group)light;
-
-                                                @if (appState.Config.LightSettings.LIFX.SelectedItemId == $"group_id:{obj.Id}")
-                                                {
-                                                    <option selected="selected" value=group_id:@obj.Id>@obj.Label</option>
-                                                }
-                                                else
-                                                {
-                                                    <option value=group_id:@obj.Id>@obj.Label</option>
-                                                }
-                                            }
-                                            else
-                                            {
-                                                var obj = (LifxCloud.NET.Models.Light)light;
-
-                                                @if (appState.Config.LightSettings.LIFX.SelectedItemId == $"id:{obj.Id}")
-                                                {
-                                                    <option selected="selected" value=id:@obj.Id>@obj.Label</option>
-                                                }
-                                                else
-                                                {
-                                                    <option value=id:@obj.Id>@obj.Label</option>
-                                                }
-                                            }
-
+                                            <MudSelectItem Value="@("group_id:{@obj.Id}")">@obj.Label</MudSelectItem>
                                         }
-                                    </select>
-                                </div>
+                                        else
+                                        {
+                                            <MudSelectItem Value="@("group_id:{@obj.Id}")">@obj.Label</MudSelectItem>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        var obj = (LifxCloud.NET.Models.Light)light;
 
-                                <br />
-                                <br />
+                                        @if (appState.Config.LightSettings.LIFX.SelectedItemId == $"id:{obj.Id}")
+                                        {
+                                            <MudSelectItem Value="@("id:{@obj.Id}")">@obj.Label</MudSelectItem>
+                                        }
+                                        else
+                                        {
+                                            <MudSelectItem Value="@("id:{@obj.Id}")">@obj.Label</MudSelectItem>
+                                        }
+                                    }
 
-                                <div class="row">
-                                    <div class="col-4">
-                                        <h5>Brightness</h5>
-                                    </div>
-                                    <div class="col-4">
-                                        <Slider TValue="int" @bind-Value="@appState.Config.LightSettings.Hue.Brightness" Step="1" Min="0" Max="100" />
-                                    </div>
-                                    <div class="col-4">
-                                        <input style="width:50px" @bind-value="@appState.Config.LightSettings.Hue.Brightness" type="text" />
-                                    </div>
-                                </div>
+                                }
+                            </MudSelect>
+                        </MudItem>
+                    </MudGrid>
 
-                                <br />
-                                <br />
+                    <MudGrid Class="mt-10" Justify="Justify.FlexStart">
+                        <MudItem xs="3">
+                            <MudText Typo="Typo.h5">Brightness</MudText>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudSlider @bind-Value="appState.Config.LightSettings.LIFX.Brightness" Min="0" Max="100"></MudSlider>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudNumericField @bind-Value="appState.Config.LightSettings.LIFX.Brightness" Variant="Variant.Outlined" Min="0" Max="100" Step="1" />
+                        </MudItem>
+                    </MudGrid>
 
-                                <Statuses Light="@appState.Config.LightSettings.LIFX"></Statuses>
-
-                                <br />
-                                <br />
-                            }
-                            <br />
-                            <br />
-                            @if (appState.Config.LightSettings.LIFX.IsEnabled)
-                            {
-                                <button class="btn btn-primary" @onclick="Save">Save LIFX Settings</button>
-                            }
-                            <br />
-                            <br />
-                            @if (settingsSaved)
-                            {
-                                <span class="text-success">@message</span>
-                            }
-                        }
-                    }
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+                    <Statuses Light="@appState.Config.LightSettings.LIFX"></Statuses>
+                }
+            }
+        }
+        <MudItem Class="mt-10" xs="12">
+            <MudButton Class="mb-10" OnClick="Save" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">Save</MudButton>
+            @if (settingsSaved)
+            {
+                <MudText Color="MudBlazor.Color.Success">@message</MudText>
+            }
+        </MudItem>
+    </MudContainer>
+</MudPaper>
 
 @code {
     bool settingsSaved = false;
@@ -168,30 +130,7 @@
                 NavManager.NavigateTo("/");
             }
 
-            if (appState.Config.LightSettings.LIFX.IsEnabled
-            && !string.IsNullOrEmpty(appState.Config.LightSettings.LIFX.LIFXApiKey)
-            && !string.IsNullOrEmpty(appState.Config.LightSettings.LIFX.SelectedItemId))
-            {
-                isLoadingLights = true;
-                if (appState.Config.LightSettings.LIFX.SelectedItemId.Contains("group"))
-                {
-
-                    appState.SetLIFXLights(await _mediator.Send(new Core.LifxServices.GetAllGroupsCommand() { ApiKey = appState.Config.LightSettings.LIFX.LIFXApiKey }));
-
-                    lastType = "Groups";
-                }
-                else
-                {
-                    appState.SetLIFXLights(await _mediator.Send(new Core.LifxServices.GetAllLightsCommand() { ApiKey = appState.Config.LightSettings.LIFX.LIFXApiKey }));
-
-                    lastType = "Lights";
-                }
-
-                showLifxMessage = true;
-                lifxMessage = "Connected to LIFX Cloud";
-                lifxMessageClass = "text-success";
-                isLoadingLights = false;
-            }
+            await CheckLIFX();
         }
         catch (Exception e)
         {
@@ -216,64 +155,67 @@
         }
     }
 
-    async Task CheckLIFX(string type)
+    async Task CheckLIFX(string type = null)
     {
-        isLoadingLights = true;
-        if (string.IsNullOrEmpty(lastType) || type != lastType)
+        if (@appState.Config.LightSettings.LIFX.IsEnabled)
         {
-            appState.Config.LightSettings.LIFX.SelectedItemId = string.Empty;
-            lastType = type;
-        }
-
-        _logger.LogInformation($"Get LIFX {type} Initialized");
-
-        if (!string.IsNullOrEmpty(appState.Config.LightSettings.LIFX.LIFXApiKey))
-        {
-            try
+            isLoadingLights = true;
+            if (string.IsNullOrEmpty(lastType) || type != lastType)
             {
-                if (type == "Groups")
-                {
-
-                    appState.SetLIFXLights(await _mediator.Send(new Core.LifxServices.GetAllGroupsCommand() { ApiKey = appState.Config.LightSettings.LIFX.LIFXApiKey }));
-
-                    if (string.IsNullOrEmpty(appState.Config.LightSettings.LIFX.SelectedItemId) && appState.LIFXLights.Count() > 0)
-                    {
-                        var obj = (LifxCloud.NET.Models.Group)appState.LIFXLights.FirstOrDefault();
-                        appState.Config.LightSettings.LIFX.SelectedItemId = $"group_id:{obj.Id}";
-                    }
-                }
-                else
-                {
-                    appState.SetLIFXLights(await _mediator.Send(new Core.LifxServices.GetAllLightsCommand() { ApiKey = appState.Config.LightSettings.LIFX.LIFXApiKey }));
-
-                    if (string.IsNullOrEmpty(appState.Config.LightSettings.LIFX.SelectedItemId) && appState.LIFXLights.Count() > 0)
-                    {
-                        var obj = (LifxCloud.NET.Models.Light)appState.LIFXLights.FirstOrDefault();
-                        appState.Config.LightSettings.LIFX.SelectedItemId = $"id:{obj.Id}";
-                    }
-                }
-
-                await Save();
-
-                showLifxMessage = true;
-                lifxMessage = "Connected to LIFX Cloud";
-                lifxMessageClass = "text-success";
-
-                _logger.LogInformation($"Get Hue {type} Successful");
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "Error Occured Getting LIFX Lights");
-                showLifxMessage = true;
-                lifxMessage = "Error Occured Connecting to LIFX, please try again";
-                lifxMessageClass = "text-danger";
-                this.StateHasChanged();
-                appState.SetLIFXLights(new List<LifxCloud.NET.Models.Light>());
+                appState.Config.LightSettings.LIFX.SelectedItemId = string.Empty;
+                lastType = type;
             }
 
-        }
+            _logger.LogInformation($"Get LIFX {type} Initialized");
 
-        isLoadingLights = false;
+            if (!string.IsNullOrEmpty(appState.Config.LightSettings.LIFX.LIFXApiKey))
+            {
+                try
+                {
+                    if (type == "Groups")
+                    {
+
+                        appState.SetLIFXLights(await _mediator.Send(new Core.LifxServices.GetAllGroupsCommand() { ApiKey = appState.Config.LightSettings.LIFX.LIFXApiKey }));
+
+                        if (string.IsNullOrEmpty(appState.Config.LightSettings.LIFX.SelectedItemId) && appState.LIFXLights.Count() > 0)
+                        {
+                            var obj = (LifxCloud.NET.Models.Group)appState.LIFXLights.FirstOrDefault();
+                            appState.Config.LightSettings.LIFX.SelectedItemId = $"group_id:{obj.Id}";
+                        }
+                    }
+                    else
+                    {
+                        appState.SetLIFXLights(await _mediator.Send(new Core.LifxServices.GetAllLightsCommand() { ApiKey = appState.Config.LightSettings.LIFX.LIFXApiKey }));
+
+                        if (string.IsNullOrEmpty(appState.Config.LightSettings.LIFX.SelectedItemId) && appState.LIFXLights.Count() > 0)
+                        {
+                            var obj = (LifxCloud.NET.Models.Light)appState.LIFXLights.FirstOrDefault();
+                            appState.Config.LightSettings.LIFX.SelectedItemId = $"id:{obj.Id}";
+                        }
+                    }
+
+                    await Save();
+
+                    showLifxMessage = true;
+                    lifxMessage = "Connected to LIFX Cloud";
+                    lifxMessageClass = "text-success";
+
+                    _logger.LogInformation($"Get Hue {type} Successful");
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "Error Occured Getting LIFX Lights");
+                    showLifxMessage = true;
+                    lifxMessage = "Error Occured Connecting to LIFX, please try again";
+                    lifxMessageClass = "text-danger";
+                    this.StateHasChanged();
+                    appState.SetLIFXLights(new List<LifxCloud.NET.Models.Light>());
+                }
+
+            }
+
+            isLoadingLights = false;
+        }
     }
 
     async Task GetToken()
@@ -295,9 +237,9 @@
         _logger.LogInformation("LIFX Token Retrieveal Successful");
     }
 
-    private void OnChange(ChangeEventArgs e)
+    private void OnChange(string e)
     {
-        var light = e.Value.ToString();
+        var light = e;
         appState.Config.LightSettings.LIFX.SelectedItemId = light;
         appState.SetLIFXLight(light);
         _logger.LogInformation($"Selected LIFX Light Set: {light}");

@@ -1,107 +1,135 @@
 ﻿@page "/settings"
+@using MudBlazor
 
 @inject ISettingsService SettingsService
 @inject AppState appState;
 @inject ILogger<Settings> _logger;
 
 <MudPaper Width="100%" Elevation="0">
-    <MudContainer MaxWidth="MaxWidth.Large" Style="text-align:center">
-        <MudText Typo="Typo.h1">Settings</MudText>
+    <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Style="text-align:center">
+        <MudText Typo="Typo.h3">Settings</MudText>
         <MudGrid Class="mt-10" Justify="Justify.Center">
-            <MudItem lg="6" xs="6">
+            <MudItem xs="6">
                 <MudCheckBox @bind-Checked="@appState.Config.LightSettings.SyncLights" Label="Light Sync Enabled"></MudCheckBox>
             </MudItem>
-            <MudItem lg="6">
+            <MudItem xs="6">
                 <MudCheckBox @bind-Checked="@appState.Config.LightSettings.UseWorkingHours" Label="Configure Working Hours"></MudCheckBox>
             </MudItem>
             @if (appState.Config.LightSettings.UseWorkingHours)
             {
-                <MudItem lg="12">
+                <MudItem xs="12">
                     <MudText Typo="Typo.h5">Working Days</MudText>
                 </MudItem>
-                <MudItem lg="3">
-                    <MudCheckBox @bind-Checked="@Sunday" Label="Sunday"></MudCheckBox>
+                <MudItem xs="12">
+                    <MudGrid Justify="Justify.Center">
+                        <MudItem xs="1">
+                            <MudToggleIconButton Style=@(@Sunday ? "background-color: #594ae2ff; color: white" : "") @bind-Toggled="@Sunday" Color="@MudBlazor.Color.Default" ToggledColor="@MudBlazor.Color.Primary">Sun</MudToggleIconButton>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudToggleIconButton Style=@(@Monday ? "background-color: #594ae2ff; color: white" : "") @bind-Toggled="@Monday" Color="@MudBlazor.Color.Default" ToggledColor="@MudBlazor.Color.Primary">Mon</MudToggleIconButton>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudToggleIconButton Style=@(@Tuesday ? "background-color: #594ae2ff; color: white" : "") @bind-Toggled="@Tuesday" Color="@MudBlazor.Color.Default" ToggledColor="@MudBlazor.Color.Primary">Tues</MudToggleIconButton>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudToggleIconButton Style=@(@Wednesday ? "background-color: #594ae2ff; color: white" : "") @bind-Toggled="@Wednesday" Color="@MudBlazor.Color.Default" ToggledColor="@MudBlazor.Color.Primary">Wed</MudToggleIconButton>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudToggleIconButton Style=@(@Thursday ? "background-color: #594ae2ff; color: white" : "") @bind-Toggled="@Thursday" Color="@MudBlazor.Color.Default" ToggledColor="@MudBlazor.Color.Primary">Thu</MudToggleIconButton>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudToggleIconButton Style=@(@Friday ? "background-color: #594ae2ff; color: white" : "") @bind-Toggled="@Friday" Color="@MudBlazor.Color.Default" ToggledColor="@MudBlazor.Color.Primary">Fri</MudToggleIconButton>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudToggleIconButton Style=@(@Saturday ? "background-color: #594ae2ff; color: white" : "") @bind-Toggled="@Saturday" Color="@MudBlazor.Color.Default" ToggledColor="@MudBlazor.Color.Primary">Sat</MudToggleIconButton>
+                        </MudItem>
+                    </MudGrid>
                 </MudItem>
-                <MudItem lg="3">
-                    <MudCheckBox @bind-Checked="@Monday" Label="Monday"></MudCheckBox>
+                <MudItem xs="12">
+                    <MudGrid Justify="Justify.FlexStart">
+                        <MudItem xs="4">
+                            <MudText Typo="Typo.h5">Light Syncing Schedule (Working Hours)</MudText>
+                        </MudItem>
+                        <MudItem xs="3">
+                            <MudTimePicker Label="Start Time" AmPm="true" @bind-Time="startTimeSpan" />
+                        </MudItem>
+                        <MudItem xs="3">
+                            <MudTimePicker Label="End Time" AmPm="true" @bind-Time="endTimeSpan" />
+                        </MudItem>
+                    </MudGrid>
                 </MudItem>
-                <MudItem lg="3">
-                    <MudCheckBox @bind-Checked="@Tuesday" Label="Tuesday"></MudCheckBox>
-                </MudItem>
-                <MudItem lg="3">
-                    <MudCheckBox @bind-Checked="@Wednesday" Label="Wednesday"></MudCheckBox>
-                </MudItem>
-                <MudItem lg="3">
-                    <MudCheckBox @bind-Checked="@Thursday" Label="Thursday"></MudCheckBox>
-                </MudItem>
-                <MudItem lg="3">
-                    <MudCheckBox @bind-Checked="@Friday" Label="Friday"></MudCheckBox>
-                </MudItem>
-                <MudItem lg="3">
-                    <MudCheckBox @bind-Checked="@Saturday" Label="Saturday"></MudCheckBox>
-                </MudItem>
-                <MudItem lg="4">
-                    <MudText Typo="Typo.h5">Light Syncing Schedule (Working Hours)</MudText>
-                </MudItem>
-                <MudItem lg="3">
-                    <MudTimePicker Label="Start Time" AmPm="true" @bind-Time="startTimeSpan" />
-                </MudItem>
-                <MudItem lg="3">
-                    <MudTimePicker Label="End Time" AmPm="true" @bind-Time="endTimeSpan" />
-                </MudItem>
-                <MudItem lg="4">
-                    <MudText Typo="Typo.h5">Light Status When After Hours Are Reached</MudText>
-                </MudItem>
-                <MudItem lg="4">
-                    <MudRadioGroup @bind-SelectedOption="@appState.Config.LightSettings.HoursPassedStatus">
-                        <MudRadio Option="@("Off")" Color="MudBlazor.Color.Default" Dense="true">Off</MudRadio>
-                        <MudRadio Option="@("White")" Color="MudBlazor.Color.Default" Dense="true">White</MudRadio>
-                        <MudRadio Option="@("Keep")" Color="MudBlazor.Color.Default" Dense="true">Keep</MudRadio>
-                    </MudRadioGroup>
+                <MudItem xs="12">
+                    <MudGrid Justify="Justify.FlexStart">
+                        <MudItem xs="4">
+                            <MudText Typo="Typo.h5">Light Status When After Hours Are Reached</MudText>
+                        </MudItem>
+                        <MudItem xs="4">
+                            <MudRadioGroup @bind-SelectedOption="@appState.Config.LightSettings.HoursPassedStatus">
+                                <MudRadio Option="@("Off")" Color="MudBlazor.Color.Default" Dense="true">Off</MudRadio>
+                                <MudRadio Option="@("White")" Color="MudBlazor.Color.Default" Dense="true">White</MudRadio>
+                                <MudRadio Option="@("Keep")" Color="MudBlazor.Color.Default" Dense="true">Keep</MudRadio>
+                            </MudRadioGroup>
+                        </MudItem>
+                    </MudGrid>
                 </MudItem>
             }
-            <MudItem lg="12">
+            <MudItem xs="12">
                 <MudCheckBox @bind-Checked="@appState.Config.LightSettings.UseDefaultBrightness" Label="Lights Use Same Brightness"></MudCheckBox>
             </MudItem>
             @if (appState.Config.LightSettings.UseDefaultBrightness)
             {
-                <MudItem lg="3">
-                    <MudText Typo="Typo.h5">Brightness</MudText>
-                </MudItem>
-                <MudItem lg="6">
-                    <MudSlider @bind-Value="appState.Config.LightSettings.DefaultBrightness" Min="0" Max="100"></MudSlider>
-                </MudItem>
-                <MudItem lg="1">
-                    <MudNumericField @bind-Value="appState.Config.LightSettings.DefaultBrightness" Variant="Variant.Outlined" Min="0" Max="100" Step="1" />
+                <MudItem xs="12">
+                    <MudGrid Justify="Justify.FlexStart">
+                        <MudItem xs="3">
+                            <MudText Typo="Typo.h5">Brightness</MudText>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudSlider @bind-Value="appState.Config.LightSettings.DefaultBrightness" Min="0" Max="100"></MudSlider>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudNumericField @bind-Value="appState.Config.LightSettings.DefaultBrightness" Variant="Variant.Outlined" Min="0" Max="100" Step="1" />
+                        </MudItem>
+                    </MudGrid>
                 </MudItem>
             }
-            <MudItem lg="3">
-                <MudText Typo="Typo.h5">Polling Interval</MudText>
-            </MudItem>
-            <MudItem lg="6">
-                <MudSlider @bind-Value="appState.Config.LightSettings.PollingInterval" Step=".1" Min="1" Max="5"></MudSlider>
-            </MudItem>
-            <MudItem lg="1">
-                <MudNumericField @bind-Value="appState.Config.LightSettings.PollingInterval" Variant="Variant.Outlined" Format="F1" Min="1.0" Max="5.0" Step=".1" />
+            <MudItem xs="12">
+                <MudGrid Justify="Justify.FlexStart">
+                    <MudItem xs="3">
+                        <MudText Typo="Typo.h5">Polling Interval</MudText>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudSlider @bind-Value="appState.Config.LightSettings.PollingInterval" Step=".1" Min="1" Max="5"></MudSlider>
+                    </MudItem>
+                    <MudItem xs="1">
+                        <MudNumericField @bind-Value="appState.Config.LightSettings.PollingInterval" Variant="Variant.Outlined" Format="F1" Min="1.0" Max="5.0" Step=".1" />
+                    </MudItem>
+                </MudGrid>
             </MudItem>
             @if (appState.Config.AppType == "Desktop")
             {
-                <MudItem lg="3">
-                    <MudText Typo="Typo.h5">Icon Type</MudText>
+                <MudItem xs="12">
+                    <MudGrid Justify="Justify.Center">
+                        <MudItem xs="3">
+                            <MudText Typo="Typo.h5">Icon Type</MudText>
+                        </MudItem>
+                        <MudItem xs="4">
+                            <MudRadioGroup @bind-SelectedOption="@appState.Config.IconType">
+                                <MudRadio Option="@("Transparent")" Color="MudBlazor.Color.Default" Dense="true">Transparent</MudRadio>
+                                <MudRadio Option="@("White")" Color="MudBlazor.Color.Default" Dense="true">White</MudRadio>
+                            </MudRadioGroup>
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudCheckBox @bind-Checked="@appState.Config.StartMinimized" Label="Start Minimized"></MudCheckBox>
+                        </MudItem>
+                    </MudGrid>
                 </MudItem>
-                <MudItem lg="4">
-                    <MudRadioGroup @bind-SelectedOption="@appState.Config.IconType">
-                        <MudRadio Option="@("Transparent")" Color="MudBlazor.Color.Default" Dense="true">Transparent</MudRadio>
-                        <MudRadio Option="@("White")" Color="MudBlazor.Color.Default" Dense="true">White</MudRadio>
-                    </MudRadioGroup>
-                </MudItem>
-            <MudItem lg="12">
-                <MudCheckBox @bind-Checked="@appState.Config.StartMinimized" Label="Start Minimized"></MudCheckBox>
-            </MudItem>
             }
-            <MudItem lg="12">
+            <MudItem xs="12">
                 <MudButton Class="mb-10" OnClick="SaveSettings" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">Save Settings</MudButton>
-                <MudText Color="MudBlazor.Color.Success">@message</MudText>
+                @if (settingsSaved)
+                {
+                    <MudText Color="MudBlazor.Color.Success">@message</MudText>
+                }
             </MudItem>
         </MudGrid>
     </MudContainer>
@@ -139,7 +167,7 @@
         await Task.CompletedTask;
     }
 
-        void SaveSettings()
+    void SaveSettings()
     {
         try
         {

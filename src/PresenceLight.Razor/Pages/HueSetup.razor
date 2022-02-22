@@ -5,125 +5,132 @@
 @inject IModalService Modal
 @inject ILogger<HueSetup> _logger;
 @inject NavigationManager NavManager
-<div class="container text-body" style="overflow:hidden">
-    <div class="row">
-        <div class="container-fluid">
-            <div class="row-fluid">
-                <div>
-                    <h1>Configure Philips Hue</h1>
-                    <br />
-                    <br />
-                    <div class="row">
-                        <div class="col-4">
-                            <input type="checkbox" @bind-value="@appState.Config.LightSettings.Hue.IsEnabled" checked="@appState.Config.LightSettings.Hue.IsEnabled" /> Connect to Philips Hue
-                        </div>
-                        @if (appState.Config.LightSettings.Hue.IsEnabled)
-                        {
-                            <div class="col-4">
-                                <input type="checkbox" checked="@appState.Config.LightSettings.Hue.UseRemoteApi" @bind-value="@appState.Config.LightSettings.Hue.UseRemoteApi" /> Use Remote Api
-                            </div>
-                            <div class="col-4">
-                                <button class="btn btn-primary" disabled="@(!appState.Config.LightSettings.Hue.UseRemoteApi)" @onclick="LoginRemoteApi">Login to Hue Cloud</button>
-                            </div>
-                        }
-                    </div>
-                    <br />
-                    <br />
-                    @if (appState.Config.LightSettings.Hue.IsEnabled)
-                    {
-                        <button class="btn btn-primary" @onclick="FindBridge">Find Bridge</button>
-                        <br />
-                        <br />
-                        <EditForm Model="@appState.Config" OnValidSubmit="RegisterBridge">
-                            <InputText id="name" @bind-Value="@appState.Config.LightSettings.Hue.HueIpAddress" />
-                            <br />
-                            <DataAnnotationsValidator />
-                            <Microsoft.AspNetCore.Components.Forms.ValidationSummary />
-                            <br />
-                            <br />
+@inject DialogService DialogService;
 
-                            <button class="btn btn-primary" type="submit">Register Bridge</button>
-                        </EditForm>
 
-                        <br />
 
-                        @if (showHueMessage)
-                        {
-                            <span class="@hueMessageClass">@hueMessage</span>
-                        }
+
+<MudPaper Width="100%" Elevation="0">
+    <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Style="text-align:center">
+        <MudText Typo="Typo.h3">Configure Phlips Hue</MudText>
+        <MudGrid Class="mt-10" Justify="Justify.Center">
+            <MudItem xs="4">
+                <MudCheckBox @bind-Checked="@appState.Config.LightSettings.Hue.IsEnabled" Label="Connect to Philips Hue"></MudCheckBox>
+            </MudItem>
+            <MudItem xs="4">
+                <MudCheckBox @bind-Checked="@appState.Config.LightSettings.Hue.UseRemoteApi" Label="Use Remote API"></MudCheckBox>
+            </MudItem>
+            <MudItem xs="4">
+                <MudButton Disabled="@(!appState.Config.LightSettings.Hue.UseRemoteApi)" OnClick="LoginRemoteApi" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">Login to Hue Cloud</MudButton>
+            </MudItem>
+        </MudGrid>
+        @if (appState.Config.LightSettings.Hue.IsEnabled)
+        {
+            <MudGrid Class="mt-10" Justify="Justify.Center">
+                <MudItem xs="12">
+                    <MudButton OnClick="FindBridge" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">Find Hue Bridge</MudButton>
+                </MudItem>
+                <MudItem xs="12">
+                    <EditForm Model="@appState.Config" OnValidSubmit="RegisterBridge">
+                        <MudTextField @bind-Value="@appState.Config.LightSettings.Hue.HueIpAddress" />
+                        <br />
+                        <DataAnnotationsValidator />
+                        <Microsoft.AspNetCore.Components.Forms.ValidationSummary />
                         <br />
                         <br />
-                        <button @onclick="@((ev) => CheckHue("Lights"))" class="btn btn-primary" type="submit">Get Lights</button>
-                        <span>&nbsp;&nbsp;</span>
-                        <button @onclick="@((ev) => CheckHue("Groups"))" class="btn btn-primary" type="submit">Get Groups</button>
-                        <br />
-                        <br />
-                        @if (appState.HueLights != null)
-                        {
+                        <MudButton ButtonType="MudBlazor.ButtonType.Submit" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">Register Bridge</MudButton>
+                    </EditForm>
+                </MudItem>
+            </MudGrid>
+            @if (showHueMessage)
+            {
+                <MudGrid Class="mt-10" Justify="Justify.Center">
+                    <MudItem xs="12">
+                        <MudText Class=@hueMessageClass Typo="Typo.body1">@hueMessage</MudText>
+                    </MudItem>
+                </MudGrid>
+            }
+            <MudGrid Class="mt-10" Justify="Justify.Center">
+                <MudItem xs="12">
+                    <MudButton @onclick="@((ev) => CheckHue("Lights"))" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">Get Lights</MudButton>
+                    <span>&nbsp;&nbsp;</span>
+                    <MudButton @onclick="@((ev) => CheckHue("Groups"))" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">Get Groups</MudButton>
+                </MudItem>
+            </MudGrid>
+            if (isLoadingLights)
+            {
+                <br />
+
+                <br />
+                <Circle Center="true" />
+            }
+            else
+            {
+                @if (appState.HueLights != null)
+                {
+                    <MudGrid Class="mt-10" Justify="Justify.Center">
+                        <MudItem xs="12">
                             <span><strong>@lastType</strong></span>
-                            <div class="form-group col-3  centering text-center">
-                                <select class="form-control" @onchange="OnChange">
-                                    <option disabled="disabled">Select</option>
-                                    @foreach (var light in appState.HueLights)
-                                    {
-                                        if (light.GetType() == typeof(Q42.HueApi.Models.Groups.Group))
-                                        {
-                                            var obj = (Q42.HueApi.Models.Groups.Group)light;
+                        </MudItem>
+                    </MudGrid>
 
-                                            @if (appState.Config.LightSettings.LIFX.SelectedItemId == $"group_id:{obj.Id}")
-                                            {
-                                                <option selected="selected" value=group_id:@obj.Id>@obj.Name</option>
-                                            }
-                                            else
-                                            {
-                                                <option value=group_id:@obj.Id>@obj.Name</option>
-                                            }
+                    <MudGrid Class="mt-10" Justify="Justify.Center">
+                        <MudItem xs="4">
+                            <MudSelect Dense="true" T="string" Variant="Variant.Outlined" ValueChanged="OnChange">
+                                <MudSelectItem Disabled="true" Value="@("Select")" />
+                                @foreach (var light in appState.HueLights)
+                                {
+                                    if (light.GetType() == typeof(Q42.HueApi.Models.Groups.Group))
+                                    {
+                                        var obj = (Q42.HueApi.Models.Groups.Group)light;
+
+                                        @if (appState.Config.LightSettings.Hue.SelectedItemId == $"group_id:{obj.Id}")
+                                        {
+                                            <MudSelectItem Value="@("group_id:{@obj.Id}")">@obj.Name</MudSelectItem>
                                         }
                                         else
                                         {
-                                            var obj = (Q42.HueApi.Light)light;
-
-                                            @if (appState.Config.LightSettings.LIFX.SelectedItemId == $"id:{obj.Id}")
-                                            {
-                                                <option selected="selected" value=id:@obj.Id>@obj.Name</option>
-                                            }
-                                            else
-                                            {
-                                                <option value=id:@obj.Id>@obj.Name</option>
-                                            }
+                                            <MudSelectItem Value="@("group_id:{@obj.Id}")">@obj.Name</MudSelectItem>
                                         }
                                     }
-                                </select>
-                            </div>
-                        }
+                                    else
+                                    {
+                                        var obj = (Q42.HueApi.Light)light;
 
-                        <br />
-                        <br />
+                                        @if (appState.Config.LightSettings.Hue.SelectedItemId == $"id:{obj.Id}")
+                                        {
+                                            <MudSelectItem Value="@("id:{@obj.Id}")">@obj.Name</MudSelectItem>
+                                        }
+                                        else
+                                        {
+                                            <MudSelectItem Value="@("id:{@obj.Id}")">@obj.Name</MudSelectItem>
+                                        }
+                                    }
 
-                        <Statuses Light="@appState.Config.LightSettings.Hue"></Statuses>
+                                }
+                            </MudSelect>
+                        </MudItem>
+                    </MudGrid>
 
-                        <br />
-                        <br />
-                        @if (appState.Config.LightSettings.Hue.IsEnabled)
-                        {
-                            <button class="btn btn-primary" @onclick="Save">Save Hue Settings</button>
-                        }
-                        <br />
-                        <br />
-                        @if (settingsSaved)
-                        {
-                            <span class="text-success">@message</span>
-                        }
-                    }
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+
+                    <Statuses Light="@appState.Config.LightSettings.Hue"></Statuses>
+                }
+            }
+        }
+        <MudItem Class="mt-10" xs="12">
+            <MudButton Class="mb-10" OnClick="Save" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">Save</MudButton>
+            @if (settingsSaved)
+            {
+                <MudText Color="MudBlazor.Color.Success">@message</MudText>
+            }
+        </MudItem>
+    </MudContainer>
+</MudPaper>
 
 @code {
 
     bool settingsSaved = false;
+    bool isLoadingLights = false;
     string message;
     string hueMessageClass;
 
@@ -140,19 +147,8 @@
             {
                 NavManager.NavigateTo("/");
             }
-            if (!string.IsNullOrEmpty(appState.Config.LightSettings.Hue.HueApiKey))
-            {
-                if (appState.Config.LightSettings.LIFX.SelectedItemId.Contains("group"))
-                {
-                    appState.SetHueLights(await _mediator.Send(new PresenceLight.Core.HueServices.GetGroupsCommand()));
-                    lastType = "Groups";
-                }
-                else
-                {
-                    appState.SetHueLights(await _mediator.Send(new PresenceLight.Core.HueServices.GetLightsCommand()));
-                    lastType = "Lights";
-                }
-            }
+
+            await CheckHue();
 
             appState.OnChange += RaiseStateHasChanged;
         }
@@ -222,8 +218,12 @@
     async Task RegisterBridge()
     {
         _logger.LogInformation("Hue Bridge Registration Initialized");
-        var formModal = Modal.Show<Confirm>("Please press the sync button on your Philips Hue Bridge");
-        var result = await formModal.Result;
+
+
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+        var dialog = DialogService.Show<Confirm>("Please press the sync button on your Philips Hue Bridge", options);
+
+        var result = await dialog.Result;
 
         if (result.Cancelled)
         {
@@ -280,66 +280,86 @@
         }
     }
 
-    async Task CheckHue(string type)
+    async Task CheckHue(string type = null)
     {
-        if (string.IsNullOrEmpty(lastType) || type != lastType)
+        isLoadingLights = true;
+        if (appState.Config.LightSettings.Hue.IsEnabled)
         {
-            appState.Config.LightSettings.Hue.SelectedItemId = string.Empty;
-            lastType = type;
-        }
-
-        _logger.LogInformation($"Get Hue {type} Initialized");
-
-        if (!string.IsNullOrEmpty(appState.Config.LightSettings.Hue.HueApiKey))
-        {
-            try
+            if (string.IsNullOrEmpty(lastType) || type != lastType)
             {
-                if (type == "Groups")
-                {
-
-                    appState.SetHueLights(await _mediator.Send(new Core.HueServices.GetGroupsCommand()));
-
-                    if (string.IsNullOrEmpty(appState.Config.LightSettings.Hue.SelectedItemId) && appState.HueLights.Count() > 0)
-                    {
-                        var obj = (Q42.HueApi.Models.Groups.Group)appState.HueLights.FirstOrDefault();
-                        appState.Config.LightSettings.Hue.SelectedItemId = $"group_id:{obj.Id}";
-                    }
-                }
-                else
-                {
-                    appState.SetHueLights(await _mediator.Send(new Core.HueServices.GetLightsCommand()));
-
-                    if (string.IsNullOrEmpty(appState.Config.LightSettings.Hue.SelectedItemId) && appState.HueLights.Count() > 0)
-                    {
-                        var obj = (Q42.HueApi.Light)appState.HueLights.FirstOrDefault();
-                        appState.Config.LightSettings.Hue.SelectedItemId = $"id:{obj.Id}";
-                    }
-                }
-
-                await Save();
-
-                showHueMessage = true;
-                hueMessage = "Connected to Hue";
-                hueMessageClass = "text-success";
-
-                _logger.LogInformation($"Get Hue {type} Successful");
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "Error Occured Getting Hue Lights");
-                showHueMessage = true;
-                hueMessage = "Error Occured Connecting to Hue, please try again";
-                hueMessageClass = "text-danger";
-                this.StateHasChanged();
-                appState.SetHueLights(new List<Q42.HueApi.Light>());
+                appState.Config.LightSettings.Hue.SelectedItemId = string.Empty;
+                lastType = type;
             }
 
+            _logger.LogInformation($"Get Hue {type} Initialized");
+
+            if (!string.IsNullOrEmpty(appState.Config.LightSettings.Hue.HueApiKey))
+            {
+                try
+                {
+                    if (type == "Groups")
+                    {
+                        if (appState.Config.LightSettings.Hue.UseRemoteApi)
+                        {
+                            appState.SetHueLights(await _mediator.Send(new Core.RemoteHueServices.GetGroupsCommand()));
+                        }
+                        else
+                        {
+                            appState.SetHueLights(await _mediator.Send(new Core.HueServices.GetGroupsCommand()));
+                        }
+
+
+                        if (string.IsNullOrEmpty(appState.Config.LightSettings.Hue.SelectedItemId) && appState.HueLights.Count() > 0)
+                        {
+                            var obj = (Q42.HueApi.Models.Groups.Group)appState.HueLights.FirstOrDefault();
+                            appState.Config.LightSettings.Hue.SelectedItemId = $"group_id:{obj.Id}";
+                        }
+                    }
+                    else
+                    {
+                        if (appState.Config.LightSettings.Hue.UseRemoteApi)
+                        {
+                            appState.SetHueLights(await _mediator.Send(new Core.RemoteHueServices.GetLightsCommand()));
+                        }
+                        else
+                        {
+                            appState.SetHueLights(await _mediator.Send(new Core.HueServices.GetLightsCommand()));
+                        }
+
+
+                        if (string.IsNullOrEmpty(appState.Config.LightSettings.Hue.SelectedItemId) && appState.HueLights.Count() > 0)
+                        {
+                            var obj = (Q42.HueApi.Light)appState.HueLights.FirstOrDefault();
+                            appState.Config.LightSettings.Hue.SelectedItemId = $"id:{obj.Id}";
+                        }
+                    }
+
+                    await Save();
+
+                    showHueMessage = true;
+                    hueMessage = "Connected to Hue";
+                    hueMessageClass = "text-success";
+
+                    _logger.LogInformation($"Get Hue {type} Successful");
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "Error Occured Getting Hue Lights");
+                    showHueMessage = true;
+                    hueMessage = "Error Occured Connecting to Hue, please try again";
+                    hueMessageClass = "text-danger";
+                    this.StateHasChanged();
+                    appState.SetHueLights(new List<Q42.HueApi.Light>());
+                }
+
+            }
+            isLoadingLights = false;
         }
     }
 
-    private void OnChange(ChangeEventArgs e)
+    private void OnChange(string e)
     {
-        var light = e.Value.ToString();
+        var light = e;
         appState.Config.LightSettings.Hue.SelectedItemId = light;
         appState.SetHueLight(light);
         _logger.LogInformation($"Selected Hue Light Set: {light}");
@@ -354,4 +374,4 @@
     {
         InvokeAsync(StateHasChanged);
     }
-}
+    }

@@ -1,16 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
+
+using Microsoft.Extensions.Logging;
+
 using Q42.HueApi;
 using Q42.HueApi.ColorConverters;
 using Q42.HueApi.ColorConverters.HSB;
 using Q42.HueApi.Interfaces;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Diagnostics;
-using System.Net.Sockets;
-using System.Net;
-using Microsoft.Extensions.Logging;
+using Q42.HueApi.Models.Groups;
 
 namespace PresenceLight.Core
 {
@@ -19,6 +21,7 @@ namespace PresenceLight.Core
         Task SetColor(string availability, string activity, string lightId);
         Task<(string bridgeId, string apiKey, string bridgeIp)> RegisterBridge();
         Task<IEnumerable<Light>> GetLights();
+        Task<IEnumerable<Group>> GetGroups();
         void Initialize(AppState _appState);
     }
     public class RemoteHueService : IRemoteHueService
@@ -293,6 +296,25 @@ namespace PresenceLight.Core
                     lights = await _client.GetNewLightsAsync();
                 }
                 return lights;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Error Getting Lights", e);
+                throw;
+            }
+        }
+
+        public async Task<IEnumerable<Group>> GetGroups()
+        {
+            try
+            {
+                if (_client == null || !_client.IsInitialized)
+                {
+                    _client = new RemoteHueClient(_authClient.GetValidToken);
+                    _client.Initialize(_appState.Config.LightSettings.Hue.RemoteBridgeId, _appState.Config.LightSettings.Hue.HueApiKey);
+                }
+
+                return await _client.GetGroupsAsync();
             }
             catch (Exception e)
             {
