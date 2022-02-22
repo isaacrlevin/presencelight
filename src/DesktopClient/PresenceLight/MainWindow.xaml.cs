@@ -313,7 +313,7 @@ namespace PresenceLight
             }
         }
 
-        public void MapUI(Presence presence, User? profile, BitmapImage? profileImageBit)
+        public void MapUI(Presence presence)
         {
             try
             {
@@ -489,14 +489,14 @@ namespace PresenceLight
 
                             if (photo == null)
                             {
-                                MapUI(presence, profile, new BitmapImage(new Uri("pack://application:,,,/PresenceLight;component/images/UnknownProfile.png")));
+                                MapUI(presence);
+                                _appState.SetUserInfo(profile, presence);
                             }
                             else
                             {
-                                MapUI(presence, profile, LoadImage(photo));
+                                MapUI(presence);
+                                _appState.SetUserInfo(profile, presence, $"data:image/gif;base64,{Convert.ToBase64String(photo)}");
                             }
-
-                            _appState.SetUserInfo(profile, $"data:image/gif;base64,{Convert.ToBase64String(photo)}", presence);
                         }
                         await Task.Delay(Convert.ToInt32(_appState.Config.LightSettings.PollingInterval * 1000)).ConfigureAwait(true);
 
@@ -581,7 +581,7 @@ namespace PresenceLight
                                         settingsLastSaved = DateTime.Now;
                                     }
 
-                                    MapUI(_appState.Presence, null, null);
+                                    MapUI(_appState.Presence);
                                     break;
                                 default:
                                     break;

@@ -25,7 +25,7 @@
                                 <br />
                                 <br />
                                 <div>
-                                    <img class="image" src="@appState.ProfileImage" />
+                                    <img class="image" src="@image" />
                                     <div class="circle bottom-right @appState.Presence?.Availability"></div>
                                 </div>
                                 <h3>Availability: @Helpers.HumanifyText(appState.Presence?.Availability)</h3>
@@ -50,6 +50,7 @@ else
 }
 
 @code {
+    string image;
     protected override async Task OnInitializedAsync()
     {
         appState.OnChange += RaiseStateHasChanged;
@@ -72,6 +73,8 @@ else
                 _logger.LogInformation("Light Mode: Graph");
             }
         }
+
+        image = @appState.ProfileImage != null ? @appState.ProfileImage : "/_content/PresenceLight.Razor/images/unknownprofile.png";
     }
 
     void SignIn()
