@@ -70,7 +70,7 @@
                                         {
                                             var obj = (Q42.HueApi.Models.Groups.Group)light;
 
-                                            @if (appState.Config.LightSettings.LIFX.SelectedItemId == $"group_id:{obj.Id}")
+                                            @if (appState.Config.LightSettings.Hue.SelectedItemId == $"group_id:{obj.Id}")
                                             {
                                                 <option selected="selected" value=group_id:@obj.Id>@obj.Name</option>
                                             }
@@ -83,7 +83,7 @@
                                         {
                                             var obj = (Q42.HueApi.Light)light;
 
-                                            @if (appState.Config.LightSettings.LIFX.SelectedItemId == $"id:{obj.Id}")
+                                            @if (appState.Config.LightSettings.Hue.SelectedItemId == $"id:{obj.Id}")
                                             {
                                                 <option selected="selected" value=id:@obj.Id>@obj.Name</option>
                                             }
@@ -142,7 +142,7 @@
             }
             if (!string.IsNullOrEmpty(appState.Config.LightSettings.Hue.HueApiKey))
             {
-                if (appState.Config.LightSettings.LIFX.SelectedItemId.Contains("group"))
+                if (appState.Config.LightSettings.Hue.SelectedItemId.Contains("group"))
                 {
                     appState.SetHueLights(await _mediator.Send(new PresenceLight.Core.HueServices.GetGroupsCommand()));
                     lastType = "Groups";

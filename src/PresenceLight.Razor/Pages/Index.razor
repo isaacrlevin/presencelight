@@ -25,7 +25,7 @@
                                 <br />
                                 <br />
                                 <div>
-                                    <img class="image" src="@image" />
+                                    <img class="image" src="@(@appState.ProfileImage != null ? @appState.ProfileImage : "/_content/PresenceLight.Razor/images/unknownprofile.png")" />
                                     <div class="circle bottom-right @appState.Presence?.Availability"></div>
                                 </div>
                                 <h3>Availability: @Helpers.HumanifyText(appState.Presence?.Availability)</h3>
@@ -70,11 +70,10 @@ else
             {
                 appState.SignedIn = true;
                 appState.SetLightMode("Graph");
+                //image = 
                 _logger.LogInformation("Light Mode: Graph");
             }
         }
-
-        image = @appState.ProfileImage != null ? @appState.ProfileImage : "/_content/PresenceLight.Razor/images/unknownprofile.png";
     }
 
     void SignIn()

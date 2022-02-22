@@ -112,10 +112,10 @@
                                         <h5>Brightness</h5>
                                     </div>
                                     <div class="col-4">
-                                        <Slider TValue="int" @bind-Value="@appState.Config.LightSettings.Hue.Brightness" Step="1" Min="0" Max="100" />
+                                        <Slider TValue="int" @bind-Value="@appState.Config.LightSettings.LIFX.Brightness" Step="1" Min="0" Max="100" />
                                     </div>
                                     <div class="col-4">
-                                        <input style="width:50px" @bind-value="@appState.Config.LightSettings.Hue.Brightness" type="text" />
+                                        <input style="width:50px" @bind-value="@appState.Config.LightSettings.LIFX.Brightness" type="text" />
                                     </div>
                                 </div>
 
@@ -259,7 +259,7 @@
                 lifxMessage = "Connected to LIFX Cloud";
                 lifxMessageClass = "text-success";
 
-                _logger.LogInformation($"Get Hue {type} Successful");
+                _logger.LogInformation($"Get LIFX {type} Successful");
             }
             catch (Exception e)
             {
