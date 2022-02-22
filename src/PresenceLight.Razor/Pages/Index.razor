@@ -20,7 +20,7 @@
                 <MudContainer MaxWidth="MaxWidth.Small" Style="text-align:center">
                     <MudText Typo="Typo.h3">@appState.User?.DisplayName</MudText>
                     <MudBadge Color="MudBlazor.Color.Success" Overlap="true" Bordered="true" Style="height:300px; width:300px">
-                        <MudAvatar Image="@appState.ProfileImage" Style="height:300px; width:300px"></MudAvatar>
+                        <MudAvatar Image="@image" Style="height:300px; width:300px"></MudAvatar>
                     </MudBadge>
                     <MudText Typo="Typo.h5">Availability: @Helpers.HumanifyText(appState.Presence?.Availability)</MudText>
                     <MudText Typo="Typo.h5">Activity: @Helpers.HumanifyText(appState.Presence?.Activity)</MudText>
@@ -40,6 +40,7 @@ else
 }
 
 @code {
+    string image;
     protected override async Task OnInitializedAsync()
     {
         appState.OnChange += RaiseStateHasChanged;
@@ -58,6 +59,7 @@ else
             if (appState.LightMode != "Custom")
             {
                 appState.SignedIn = true;
+                image = @appState.ProfileImage != null ? @appState.ProfileImage : "/_content/PresenceLight.Razor/images/unknownprofile.png";
                 appState.SetLightMode("Graph");
                 _logger.LogInformation("Light Mode: Graph");
             }

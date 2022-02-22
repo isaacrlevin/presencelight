@@ -77,7 +77,7 @@ namespace PresenceLight.Web
                 using (Serilog.Context.LogContext.PushProperty("Availability", presence.Availability))
                 using (Serilog.Context.LogContext.PushProperty("Activity", presence.Activity))
                 {
-                    _appState.SetUserInfo(user, photo, presence);
+                    _appState.SetUserInfo(user, presence, photo);
 
                     await SetColor(_appState.Presence.Availability, _appState.Presence.Activity);
                     await InteractWithLights();
@@ -209,7 +209,7 @@ namespace PresenceLight.Web
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Exception getting photo");
-                throw;
+                return null;
             }
         }
 

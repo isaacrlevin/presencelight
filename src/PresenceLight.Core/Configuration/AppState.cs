@@ -1,15 +1,16 @@
 ﻿using System;
-using Microsoft.Graph;
 using System.Collections.Generic;
-using YeelightAPI;
-using Device = YeelightAPI.Device;
+
+using Microsoft.Graph;
+
 using PresenceLight.Core.WizServices;
-using PresenceLight.Core;
+
+using Device = YeelightAPI.Device;
 
 namespace PresenceLight.Core
 {
     public class AppState
-    {       
+    {
         private void NotifyStateChanged() => OnChange?.Invoke();
 
         public event Action OnChange;
@@ -48,22 +49,12 @@ namespace PresenceLight.Core
 
         public BaseConfig Config { get; set; }
 
-        //public bool IsUserAuthenticated { get; set; }
-
-        //public GraphServiceClient GraphServiceClient { get; set; }
-
-        //public void SetGraphServiceClient(GraphServiceClient graphServiceClient)
-        //{
-        //    GraphServiceClient = graphServiceClient;
-        //    NotifyStateChanged();
-        //}
-
         public void SetConfig(BaseConfig config)
         {
             Config = config;
         }
 
-        public void SetUserInfo(User user, string photo, Presence presence)
+        public void SetUserInfo(User user, Presence presence, string photo = null)
         {
             User = user;
             Presence = presence;
@@ -77,11 +68,7 @@ namespace PresenceLight.Core
             NotifyStateChanged();
         }
 
-        //public void SetUserAuthentication(bool isAuthenticated)
-        //{
-        //    IsUserAuthenticated = isAuthenticated;
-        //    NotifyStateChanged();
-        //}
+
 
         public void SetCustomColor(string color)
         {
