@@ -76,8 +76,7 @@
 
                     <MudGrid Class="mt-10" Justify="Justify.Center">
                         <MudItem xs="4">
-                            <MudSelect Dense="true" T="string" Variant="Variant.Outlined" ValueChanged="OnChange">
-                                <MudSelectItem Disabled="true" Value="@("Select")" />
+                            <MudSelect Dense="true" Label="@("Select Hue {lastType}")" T="string" Variant="Variant.Outlined" ValueChanged="OnChange">
                                 @foreach (var light in appState.HueLights)
                                 {
                                     if (light.GetType() == typeof(Q42.HueApi.Models.Groups.Group))

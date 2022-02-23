@@ -47,8 +47,7 @@
                 {
                     <MudGrid Class="mt-10" Justify="Justify.Center">
                         <MudItem xs="4">
-                            <MudSelect Dense="true" T="string" Variant="Variant.Outlined" ValueChanged="OnChange">
-                                <MudSelectItem Disabled="true" Value="@("Select")" />
+                            <MudSelect Dense="true"  Label="@($"Select LIFX {lastType}")"  T="string" Variant="Variant.Outlined" ValueChanged="OnChange">
                                 @foreach (var light in appState.LIFXLights)
                                 {
                                     if (light.GetType() == typeof(LifxCloud.NET.Models.Group))
