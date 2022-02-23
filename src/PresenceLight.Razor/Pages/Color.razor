@@ -6,14 +6,18 @@
 
 <MudPaper Height="500px" Width="100%" Elevation="0">
     <MudContainer MaxWidth="MaxWidth.Small" Style="text-align:center">
-        <MudText Typo="Typo.h3">Set Light Color</MudText>
-        <MudColorPicker PickerVariant="PickerVariant.Static" Label="Basic Color Picker" @bind-Text="color" Style="@($"color: {color}")" Placeholder="Select Color" />
-        <MudGrid Class="mt-10" Justify="Justify.FlexStart">
-            <MudItem xs="6">
-                <MudButton OnClick="SetColor" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">Set Color</MudButton>
+        <MudGrid Class="mt-10" Justify="Justify.Center">
+            <MudItem xs="12">
+                <MudText Typo="Typo.h3">Set Light Color</MudText>
+            </MudItem>
+            <MudItem xs="12" >
+                <MudColorPicker PickerVariant="PickerVariant.Static" Label="Basic Color Picker" @bind-Text="color" Style="@($"color: {color}")" Placeholder="Select Color" />
+            </MudItem>
+            <MudItem xs="6" >
+                <MudButton OnClick="SetColor" Variant="Variant.Filled" Color="MudBlazor.Color.Primary" Style="width:75%">Set Color</MudButton>
             </MudItem>
             <MudItem xs="6">
-                <MudButton OnClick="SyncTeamsPresence" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">Sync Teams Presence</MudButton>
+                <MudButton OnClick="SyncTeamsPresence" Variant="Variant.Filled" Color="MudBlazor.Color.Primary" Style="width:75%">Sync Teams Presence</MudButton>
             </MudItem>
         </MudGrid>
     </MudContainer>

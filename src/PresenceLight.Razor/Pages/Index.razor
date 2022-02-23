@@ -19,9 +19,11 @@
             <MudPaper Height="500px" Width="100%" Elevation="0">
                 <MudContainer MaxWidth="MaxWidth.Small" Style="text-align:center">
                     <MudText Typo="Typo.h3">@appState.User?.DisplayName</MudText>
-                    <MudBadge Color="MudBlazor.Color.Success" Overlap="true" Bordered="true" Style="height:300px; width:300px">
+                    @*  <MudBadge Class="mt-10" Color="MudBlazor.Color.Success" Overlap="true" Bordered="true" Origin="Origin.BottomRight" >
                         <MudAvatar Image="@image" Style="height:300px; width:300px"></MudAvatar>
-                    </MudBadge>
+                        </MudBadge>*@
+                    <MudAvatar Image="@image" Style="height:300px; width:300px"></MudAvatar>
+                    <div class="circle bottom-right @appState.Presence?.Availability"></div>
                     <MudText Typo="Typo.h5">Availability: @Helpers.HumanifyText(appState.Presence?.Availability)</MudText>
                     <MudText Typo="Typo.h5">Activity: @Helpers.HumanifyText(appState.Presence?.Activity)</MudText>
                 </MudContainer>
