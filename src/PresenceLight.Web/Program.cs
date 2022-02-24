@@ -1,5 +1,6 @@
 ﻿using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Graph.ExternalConnectors;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
