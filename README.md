@@ -1,7 +1,7 @@
 ![Logo](https://github.com/isaacrlevin/PresenceLight/raw/main/Icon.png)
 # PresenceLight
 
-# NOTE: I am tracking down an issue where users cannot get the app to update after logging in from the browser. Before you open a new issue, take a look at the steps in [this one](https://github.com/isaacrlevin/presencelight/issues/589)
+### NOTE: The new version of PresenceLight for now has a requirement on WebView2. If you experience issues with PresenceLight, please install from this [location](https://go.microsoft.com/fwlink/p/?LinkId=2124703)
 
 
 ![.github/workflows/Web_Build.yml](https://github.com/isaacrlevin/presencelight/workflows/.github/workflows/Web_Build.yml/badge.svg)
