@@ -3,6 +3,7 @@ on:
     branches: [ main ]
     paths-ignore:
     - '.github/workflows/Web_Build.yml'
+    - '.github/workflows/Test_WinGet.yml'
     - 'src/PresenceLight.Web/**'
     - 'src/DockerFiles/**'
     - '*.md'
