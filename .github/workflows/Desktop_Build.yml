@@ -93,7 +93,6 @@ jobs:
         # Update AppSettings.json. This must be done before build.
         $appsettings= get-content ".\src\DesktopClient\PresenceLight\appsettings.json" -raw | ConvertFrom-Json
         $appsettings.isAppPackaged = "false"
-        $appsettings.appVersion = "${{ env.GitBuildVersionSimple }}"
         $appsettings | ConvertTo-Json -depth 32| set-content '.\src\DesktopClient\PresenceLight\appsettings.json'
       shell: powershell
       if:  ${{ success() && matrix.ChannelName  == 'Standalone' }}
@@ -103,7 +102,6 @@ jobs:
         # Update AppSettings.json. This must be done before build.
         $appsettings= get-content ".\src\DesktopClient\PresenceLight\appsettings.json" -raw | ConvertFrom-Json
         $appsettings.isAppPackaged = "true"
-        $appsettings.appVersion = "${{ env.GitBuildVersionSimple }}"
         $appsettings | ConvertTo-Json -depth 32| set-content '.\src\DesktopClient\PresenceLight\appsettings.json'
       shell: powershell
       if:  ${{ success() && matrix.ChannelName  != 'Standalone' }}
@@ -177,6 +175,8 @@ jobs:
 
     - name: Build Appx Package
       run: |
+        #dotnet restore .\src\DesktopClient\PresenceLight\PresenceLight.csproj
+        #msbuild /t:restore .\src\DesktopClient\PresenceLight.Package\PresenceLight.Package.wapproj
         msbuild '.\src\DesktopClient\PresenceLight.Package\PresenceLight.Package.wapproj' /p:VersionNumber=${{ env.GitBuildVersionSimple }} `
         /p:ChannelName=${{ matrix.ChannelName }} /p:configuration='${{ env.BuildConfiguration }}' /p:IncludeSymbols=true `
         /p:AppxPackageDir="${{ github.workspace }}\${{ matrix.ChannelName }}\\"
@@ -256,7 +256,7 @@ jobs:
           --descriptionUrl "https://github.com/isaacrlevin/presencelight"
 
     - uses: nick-invision/retry@v2
-      name: Authenticode Sign AppXUpload Release
+      name: Authenticode Sign AppXBundle Release
       with:
         timeout_minutes: 5
         max_attempts: 5
@@ -265,7 +265,7 @@ jobs:
         command: |
           .\SignClient "Sign" `
           --baseDirectory "${{ github.workspace }}/ToSign/Release" `
-          --input "**/*.appxupload" `
+          --input "**/*.appxbundle" `
           --config "${{ github.workspace }}/SigningScripts/appsettings.json" `
           --filelist "${{ github.workspace }}/SigningScripts/filelist.txt" `
           --user "${{ secrets.SignClientUser }}" `
@@ -451,6 +451,17 @@ jobs:
           asset_name: "PresenceLight.${{ env.VERSION }}-win-arm64.zip"
           asset_content_type: application/zip
 
+      - name: Upload AppX Release
+        id: upload-release-asset3
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: "/home/runner/work/presencelight/presencelight/ReleaseSigned/PresenceLight.Package_${{ env.VERSION }}.0_Test/PresenceLight.Package_${{ env.VERSION }}.0_x64_x86.appxbundle"
+          asset_name: "PresenceLight.Package_${{ env.VERSION }}.0_x64_x86.appxbundle"
+          asset_content_type: application/zip
+
   Deploy_Choco:
     needs: Deploy_GitHub_Release
     if: ${{ github.event_name != 'pull_request' }}
@@ -537,8 +548,8 @@ jobs:
     - uses: actions/download-artifact@v2
       name: Download Release Signed
       with:
-        name: Release
-        path: "${{ github.workspace }}/Release"
+        name: ReleaseSigned
+        path: "${{ github.workspace }}/ReleaseSigned"
 
     - name: Windows Store Publish
       uses: isaacrlevin/windows-store-action@1.0
@@ -547,4 +558,38 @@ jobs:
         client-id: ${{ secrets.STORE_CLIENT_ID }}
         client-secret: ${{ secrets.STORE_CLIENT_SECRET }}
         app-id: ${{ secrets.APP_ID }}
-        package-path: "${{ github.workspace }}/Release/"
+        package-path: "${{ github.workspace }}/ReleaseSigned/"
+
+  Deploy_WinGet:
+    needs: Deploy_GitHub_Release
+    if: ${{ github.event_name != 'pull_request' }}
+    environment:
+        name: Deploy_WinGet
+        url: ${{ steps.deploy_staging.outputs.webapp-url }}
+    name: Deploy WinGet
+    runs-on: windows-latest
+    env:
+      GitHubReleaseUrl: https://github.com/isaacrlevin/presencelight/releases/download/Desktop-
+    steps:
+      - uses: actions/download-artifact@v2
+        name: Download Chocolatey Artifacts
+        with:
+          name: Chocolatey
+          path: "${{ github.workspace }}\\Chocolatey"
+
+      - name: Get Version from File
+        run: |
+          version=$(<"${{ github.workspace }}\\Chocolatey\\version.txt")
+          echo "VERSION=$version" >> $GITHUB_ENV
+        shell: bash
+
+      - uses: actions/download-artifact@v2
+        name: Download Signing Scripts Artifacts
+        with:
+          name: SigningScripts
+          path: "${{ github.workspace }}/SigningScripts"        
+
+      - name: Create manifest and submit PR
+        working-directory: ${{ github.workspace }}/SigningScripts/winget
+        run: |
+          ./build.ps1 -Version "${{ env.VERSION }}" -Token "${{ secrets.WINGETCREATE_TOKEN }}"
