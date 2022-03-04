@@ -18,8 +18,8 @@ function Get-HashForArchitecture {
         [string]
         $Version
     )
-    Invoke-WebRequest -Uri "https://github.com/isaacrlevin/presencelight/releases/download/Desktop-v$Version/PresenceLight.$Version-$Architecture.zip"  -OutFile "download.zip"
-    $hash=Get-Filehash -OutFile "download.zip"
+    Invoke-WebRequest -Uri "https://github.com/isaacrlevin/presencelight/releases/download/Desktop-v$Version/PresenceLight.$Version-$Architecture.zip"  -OutFile "download$Architecture.zip"
+    $hash=Get-Filehash "download$Architecture.zip"
    
     return $hash
 }
