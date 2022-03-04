@@ -12,41 +12,41 @@
 
 
         <MudGrid Class="mt-10" Justify="Justify.FlexStart">
-            <MudItem xs="6">
+            <MudItem xs="4">
                 <MudText Typo="Typo.h6" Align="Align.Left">Application Type</MudText>
             </MudItem>
-            <MudItem xs="6">
+            <MudItem xs="8">
                 <MudText Typo="Typo.h6" Align="Align.Left">@appType</MudText>
             </MudItem>
-            <MudItem xs="6">
+            <MudItem xs="4">
                 <MudText Typo="Typo.h6" Align="Align.Left">Application Version</MudText>
             </MudItem>
-            <MudItem xs="6">
+            <MudItem xs="8">
                 <MudText Typo="Typo.h6" Align="Align.Left">@assemblyVersion</MudText>
             </MudItem>
-            <MudItem xs="6">
+            <MudItem xs="4">
                 <MudText Typo="Typo.h6" Align="Align.Left">Install Location</MudText>
             </MudItem>
-            <MudItem xs="6">
+            <MudItem xs="8">
                 <MudText Typo="Typo.h6" Align="Align.Left">@installLocation</MudText>
             </MudItem>
-            <MudItem xs="6">
+            <MudItem xs="4">
                 <MudText Typo="Typo.h6" Align="Align.Left">Install Date</MudText>
             </MudItem>
-            <MudItem xs="6">
+            <MudItem xs="8">
                 <MudText Typo="Typo.h6" Align="Align.Left">@installedDate</MudText>
             </MudItem>
-            <MudItem xs="6">
+            <MudItem xs="4">
                 <MudText Typo="Typo.h6" Align="Align.Left">Runtime Version</MudText>
             </MudItem>
-            <MudItem xs="6">
+            <MudItem xs="8">
                 <MudText Typo="Typo.h6" Align="Align.Left">@RuntimeVersionInfo</MudText>
             </MudItem>
-            <MudItem xs="6">
-                <MudText Typo="Typo.h6" Align="Align.Left">Local Configuration Path</MudText>
+            <MudItem xs="4">
+                <MudText Typo="Typo.h6" Align="Align.Left">Settings Path</MudText>
             </MudItem>
-            <MudItem xs="6">
-                <MudLink Href="" title="Click to download configuration file" @onclick="@((ev) => DownloadSettings(@localConfigurationPath))">@localConfigurationPath</MudLink>
+            <MudItem xs="8">
+                <MudLink Typo="Typo.h6" Href="" title="Click to download configuration file" @onclick="@((ev) => DownloadSettings(@localConfigurationPath))" Align="Align.Left">@localConfigurationPath</MudLink>
             </MudItem>
         </MudGrid>
         <br />

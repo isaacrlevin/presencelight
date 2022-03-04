@@ -47,7 +47,7 @@
                 {
                     <MudGrid Class="mt-10" Justify="Justify.Center">
                         <MudItem xs="4">
-                            <MudSelect Dense="true"  Label="@($"Select LIFX {lastType}")"  T="string" Variant="Variant.Outlined" ValueChanged="OnChange">
+                            <MudSelect Dense="true" Label="@($"Select LIFX {lastType}")" T="string" Variant="Variant.Outlined" ValueChanged="OnChange">
                                 @foreach (var light in appState.LIFXLights)
                                 {
                                     if (light.GetType() == typeof(LifxCloud.NET.Models.Group))
@@ -156,12 +156,30 @@
 
     async Task CheckLIFX(string type = null)
     {
+        isLoadingLights = true;
         if (@appState.Config.LightSettings.LIFX.IsEnabled)
         {
-            isLoadingLights = true;
             if (string.IsNullOrEmpty(lastType) || type != lastType)
             {
-                appState.Config.LightSettings.LIFX.SelectedItemId = string.Empty;
+                if (string.IsNullOrEmpty(type))
+                {
+                    if (!string.IsNullOrEmpty(appState.Config.LightSettings.LIFX.SelectedItemId))
+                    {
+                        if (appState.Config.LightSettings.LIFX.SelectedItemId.Contains("group"))
+                        {
+                            type = "Groups";
+                        }
+                        else
+                        {
+                            type = "Lights";
+                        }
+                    }
+                    else
+                    {
+                        appState.Config.LightSettings.LIFX.SelectedItemId = string.Empty;
+                        type = "Lights";
+                    }
+                }
                 lastType = type;
             }
 

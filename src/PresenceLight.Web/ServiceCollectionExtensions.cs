@@ -29,7 +29,7 @@ namespace PresenceLight.Web
             services.AddMediatR(typeof(PresenceLightClientApp),
                                 typeof(BaseConfig));
 
-
+            services.AddMudServices();
 
             services.AddHttpClient();
 
@@ -51,7 +51,7 @@ namespace PresenceLight.Web
             .AddBootstrapProviders()
             .AddFontAwesomeIcons();
 
-            services.AddMudServices();
+
 
             return services;
         }

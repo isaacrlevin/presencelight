@@ -29,7 +29,7 @@
 
                     <MudGrid Class="mt-10" Justify="Justify.Center">
                         <MudItem xs="3">
-                            <label for="@lab">@Helpers.HumanifyText(customApiSetting.Name.Replace("CustomApi","")):</label>
+                            <strong><label for="@lab">@Helpers.HumanifyText(customApiSetting.Name.Replace("CustomApi","")):</label></strong>
                         </MudItem>
                         @if (customApiSettingValue != null)
                         {

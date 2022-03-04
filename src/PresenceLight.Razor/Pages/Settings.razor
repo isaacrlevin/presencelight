@@ -20,6 +20,7 @@
                 <MudItem xs="12">
                     <MudText Typo="Typo.h5">Working Days</MudText>
                 </MudItem>
+                <br /><br />
                 <MudItem xs="12">
                     <MudGrid Justify="Justify.Center">
                         <MudItem xs="1">
@@ -45,6 +46,7 @@
                         </MudItem>
                     </MudGrid>
                 </MudItem>
+                <br /><br />
                 <MudItem xs="12">
                     <MudGrid Justify="Justify.FlexStart">
                         <MudItem xs="4">
@@ -58,6 +60,7 @@
                         </MudItem>
                     </MudGrid>
                 </MudItem>
+                <br /><br />
                 <MudItem xs="12">
                     <MudGrid Justify="Justify.FlexStart">
                         <MudItem xs="4">
@@ -86,7 +89,7 @@
                         <MudItem xs="6">
                             <MudSlider @bind-Value="appState.Config.LightSettings.DefaultBrightness" Min="0" Max="100"></MudSlider>
                         </MudItem>
-                        <MudItem xs="1">
+                        <MudItem xs="2">
                             <MudNumericField @bind-Value="appState.Config.LightSettings.DefaultBrightness" Variant="Variant.Outlined" Min="0" Max="100" Step="1" />
                         </MudItem>
                     </MudGrid>
@@ -100,7 +103,7 @@
                     <MudItem xs="6">
                         <MudSlider @bind-Value="appState.Config.LightSettings.PollingInterval" Step=".1" Min="1" Max="5"></MudSlider>
                     </MudItem>
-                    <MudItem xs="1">
+                    <MudItem xs="2">
                         <MudNumericField @bind-Value="appState.Config.LightSettings.PollingInterval" Variant="Variant.Outlined" Format="F1" Min="1.0" Max="5.0" Step=".1" />
                     </MudItem>
                 </MudGrid>

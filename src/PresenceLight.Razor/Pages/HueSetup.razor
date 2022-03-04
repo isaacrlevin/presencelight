@@ -5,7 +5,7 @@
 @inject IModalService Modal
 @inject ILogger<HueSetup> _logger;
 @inject NavigationManager NavManager
-@inject DialogService DialogService;
+@inject IDialogService DialogService;
 
 
 
@@ -30,9 +30,9 @@
                 <MudItem xs="12">
                     <MudButton OnClick="FindBridge" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">Find Hue Bridge</MudButton>
                 </MudItem>
-                <MudItem xs="12">
+                <MudItem xs="4">
                     <EditForm Model="@appState.Config" OnValidSubmit="RegisterBridge">
-                        <MudTextField @bind-Value="@appState.Config.LightSettings.Hue.HueIpAddress" />
+                        <MudTextField Variant="Variant.Outlined" @bind-Value="@appState.Config.LightSettings.Hue.HueIpAddress" />
                         <br />
                         <DataAnnotationsValidator />
                         <Microsoft.AspNetCore.Components.Forms.ValidationSummary />
@@ -52,9 +52,9 @@
             }
             <MudGrid Class="mt-10" Justify="Justify.Center">
                 <MudItem xs="12">
-                    <MudButton @onclick="@((ev) => CheckHue("Lights"))" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">Get Lights</MudButton>
+                    <MudButton @onclick="@((ev) => CheckHue("Lights"))" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">Get Hue Lights</MudButton>
                     <span>&nbsp;&nbsp;</span>
-                    <MudButton @onclick="@((ev) => CheckHue("Groups"))" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">Get Groups</MudButton>
+                    <MudButton @onclick="@((ev) => CheckHue("Groups"))" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">Get Hue Groups</MudButton>
                 </MudItem>
             </MudGrid>
             if (isLoadingLights)
@@ -68,15 +68,10 @@
             {
                 @if (appState.HueLights != null)
                 {
-                    <MudGrid Class="mt-10" Justify="Justify.Center">
-                        <MudItem xs="12">
-                            <span><strong>@lastType</strong></span>
-                        </MudItem>
-                    </MudGrid>
 
                     <MudGrid Class="mt-10" Justify="Justify.Center">
                         <MudItem xs="4">
-                            <MudSelect Dense="true" Label="@("Select Hue {lastType}")" T="string" Variant="Variant.Outlined" ValueChanged="OnChange">
+                            <MudSelect Dense="true" Label="@($"Select Hue {lastType}")" T="string" Variant="Variant.Outlined" ValueChanged="OnChange">
                                 @foreach (var light in appState.HueLights)
                                 {
                                     if (light.GetType() == typeof(Q42.HueApi.Models.Groups.Group))
@@ -111,6 +106,17 @@
                         </MudItem>
                     </MudGrid>
 
+                    <MudGrid Class="mt-10" Style="vertical-align: middle" Justify="Justify.FlexStart">
+                        <MudItem xs="3">
+                            <MudText Typo="Typo.h5">Brightness</MudText>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudSlider @bind-Value="appState.Config.LightSettings.Hue.Brightness" Min="0" Max="100"></MudSlider>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudNumericField @bind-Value="appState.Config.LightSettings.Hue.Brightness" Variant="Variant.Outlined" Min="0" Max="100" Step="1" />
+                        </MudItem>
+                    </MudGrid>
 
                     <Statuses Light="@appState.Config.LightSettings.Hue"></Statuses>
                 }
@@ -286,7 +292,25 @@
         {
             if (string.IsNullOrEmpty(lastType) || type != lastType)
             {
-                appState.Config.LightSettings.Hue.SelectedItemId = string.Empty;
+                if (string.IsNullOrEmpty(type))
+                {
+                    if (!string.IsNullOrEmpty(appState.Config.LightSettings.Hue.SelectedItemId))
+                    {
+                        if (appState.Config.LightSettings.Hue.SelectedItemId.Contains("group"))
+                        {
+                            type = "Groups";
+                        }
+                        else
+                        {
+                            type = "Lights";
+                        }
+                    }
+                    else
+                    {
+                        appState.Config.LightSettings.Hue.SelectedItemId = string.Empty;
+                        type = "Lights";
+                    }
+                }
                 lastType = type;
             }
 
