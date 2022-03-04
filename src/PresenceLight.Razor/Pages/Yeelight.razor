@@ -54,7 +54,7 @@
                         <MudItem xs="6">
                             <MudSlider @bind-Value="appState.Config.LightSettings.Yeelight.Brightness" Min="0" Max="100"></MudSlider>
                         </MudItem>
-                        <MudItem xs="1">
+                        <MudItem xs="2">
                             <MudNumericField @bind-Value="appState.Config.LightSettings.Yeelight.Brightness" Variant="Variant.Outlined" Min="0" Max="100" Step="1" />
                         </MudItem>
                     </MudGrid>
@@ -73,7 +73,8 @@
     </MudContainer>
 </MudPaper>
 
-@code {    bool settingsSaved = false;
+@code {
+    bool settingsSaved = false;
     string message;
     bool isLoadingLights = false;
 

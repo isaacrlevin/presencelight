@@ -106,7 +106,7 @@
                         <MudItem xs="6">
                             <MudSlider @bind-Value="appState.Config.LightSettings.Hue.Brightness" Min="0" Max="100"></MudSlider>
                         </MudItem>
-                        <MudItem xs="1">
+                        <MudItem xs="2">
                             <MudNumericField @bind-Value="appState.Config.LightSettings.Hue.Brightness" Variant="Variant.Outlined" Min="0" Max="100" Step="1" />
                         </MudItem>
                     </MudGrid>
@@ -280,9 +280,9 @@
 
     async Task CheckHue(string type = null)
     {
-        isLoadingLights = true;
         if (appState.Config.LightSettings.Hue.IsEnabled)
         {
+            isLoadingLights = true;
             if (string.IsNullOrEmpty(lastType) || type != lastType)
             {
                 if (string.IsNullOrEmpty(type))
@@ -367,7 +367,6 @@
                     this.StateHasChanged();
                     appState.SetHueLights(new List<Q42.HueApi.Light>());
                 }
-
             }
             isLoadingLights = false;
         }

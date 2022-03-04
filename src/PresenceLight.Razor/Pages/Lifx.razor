@@ -84,7 +84,7 @@
                         <MudItem xs="6">
                             <MudSlider @bind-Value="appState.Config.LightSettings.LIFX.Brightness" Min="0" Max="100"></MudSlider>
                         </MudItem>
-                        <MudItem xs="1">
+                        <MudItem xs="2">
                             <MudNumericField @bind-Value="appState.Config.LightSettings.LIFX.Brightness" Variant="Variant.Outlined" Min="0" Max="100" Step="1" />
                         </MudItem>
                     </MudGrid>
@@ -151,9 +151,9 @@
 
     async Task CheckLIFX(string type = null)
     {
-        isLoadingLights = true;
         if (@appState.Config.LightSettings.LIFX.IsEnabled)
         {
+            isLoadingLights = true;
             if (string.IsNullOrEmpty(lastType) || type != lastType)
             {
                 if (string.IsNullOrEmpty(type))
@@ -223,9 +223,7 @@
                     this.StateHasChanged();
                     appState.SetLIFXLights(new List<LifxCloud.NET.Models.Light>());
                 }
-
             }
-
             isLoadingLights = false;
         }
     }
