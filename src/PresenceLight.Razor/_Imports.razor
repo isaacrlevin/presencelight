@@ -7,9 +7,6 @@
 @using Microsoft.JSInterop
 @using PresenceLight.Razor
 @using PresenceLight.Razor.Shared
-@using Blazored
-@using Blazored.Modal
-@using Blazored.Modal.Services
 @using Microsoft.AspNetCore.Authentication
 @using PresenceLight.Core
 @using Microsoft.Extensions.Options
@@ -20,11 +17,13 @@
 @using System.Net.Http.Headers
 @using System.Threading.Tasks
 @using System.Threading
-@using Blazorise
 @using BlazorPro.Spinkit
 @using Microsoft.Extensions.Logging
 @using PresenceLight.Razor.Services
 @using PresenceLight
 @using System.Reflection
 @using MudBlazor
-@inject MediatR.IMediator _mediator;
+@inject MediatR.IMediator _mediator
+@inject ISettingsService SettingsService
+@inject AppState appState
+@inject NavigationManager NavManager

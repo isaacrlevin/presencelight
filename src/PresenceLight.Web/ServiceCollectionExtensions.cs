@@ -3,12 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-using Blazored.Modal;
-
-using Blazorise;
-using Blazorise.Bootstrap;
-using Blazorise.Icons.FontAwesome;
-
 using MediatR;
 
 using Microsoft.Extensions.Configuration;
@@ -42,16 +36,6 @@ namespace PresenceLight.Web
             services.AddSingleton<AppState>();
             services.AddSingleton<AppInfo, AppInfo>();
             services.AddPresenceServices();
-            services.AddBlazoredModal();
-
-            services.AddBlazorise(options =>
-            {
-                options.ChangeTextOnKeyPress = true;
-            })
-            .AddBootstrapProviders()
-            .AddFontAwesomeIcons();
-
-
 
             return services;
         }

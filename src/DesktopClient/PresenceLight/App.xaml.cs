@@ -4,12 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Windows;
 
-using Blazored.Modal;
 using MudBlazor;
-using Blazorise;
-using Blazorise.Bootstrap;
-using Blazorise.Icons.FontAwesome;
-
 using MediatR;
 
 using Microsoft.ApplicationInsights.Extensibility;
@@ -145,13 +140,7 @@ namespace PresenceLight
 
             services.AddHttpClient();
             services.AddHttpContextAccessor();
-            services.AddBlazoredModal();
             services.AddBlazorWebView();
-            services.AddBlazorise(options =>
-            {
-                options.ChangeTextOnKeyPress = true;
-            }).AddBootstrapProviders().AddFontAwesomeIcons();
-
 
             services.AddMediatR(typeof(App),
                      typeof(BaseConfig));
