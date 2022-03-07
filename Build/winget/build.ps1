@@ -18,9 +18,7 @@ function Get-HashForArchitecture {
         [string]
         $Version
     )
-    Invoke-WebRequest -Uri "https://github.com/isaacrlevin/presencelight/releases/download/Desktop-v$Version/PresenceLight.$Version-$Architecture.zip"  -OutFile "download$Architecture.zip"
-    $hash=Get-Filehash "download$Architecture.zip"
-   
+    $hash = (new-object Net.WebClient).DownloadString("https://github.com/isaacrlevin/presencelight/releases/download/Desktop-v$Version/PresenceLight.$Version-$Architecture.sha256")
     return $hash
 }
 
@@ -50,6 +48,7 @@ function Write-MetaData {
 
 New-Item -Path $PWD -Name $Version -ItemType "directory"
 # Get all files inside the folder and adjust the version/hash
+$HashAmd86 = Get-HashForArchitecture -Architecture 'x86' -Version $Version
 $HashAmd64 = Get-HashForArchitecture -Architecture 'x64' -Version $Version
 $HashArm64 = Get-HashForArchitecture -Architecture 'win-arm64' -Version $Version
 Get-ChildItem '*.yaml' | ForEach-Object -Process {
