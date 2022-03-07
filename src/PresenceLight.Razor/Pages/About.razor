@@ -1,84 +1,58 @@
 ﻿@page "/about"
-@inject ISettingsService SettingsService
 @inject IJSRuntime js
 @inject AppInfo _appInfo
-<div class="container text-body" style="overflow:hidden">
-    <div class="row">
-        <div class="container-fluid">
-            <div class="row-fluid">
-                <div>
-                    <div class="w-20">
-                        <img src="/_content/PresenceLight.Razor/images/profileimage.jpg" width="300" />
-                    </div>
-                    <div class="w-20">
-                        &nbsp;
-                    </div>
-                    <div class="w-70">
-                        <h2>PresenceLight by Isaac Levin</h2>
-                        <br />
-                        <h6><a href="https://github.com/isaacrlevin/presencelight" target="_blank">https://github.com/isaacrlevin/presencelight</a></h6>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <br /><br /><br />
-    <div class="row">
-        <div class="w-25">
-            <h4>Application Type</h4>
-        </div>
-        <div class="w-50">
-            @appType
-        </div>
-    </div>
-    <div class="row">
-        <div class="w-25">
-            <h4>Application Version</h4>
-        </div>
-        <div class="w-50">
-            @assemblyVersion
-        </div>
-    </div>
-    <div class="row">
-        <div class="w-25">
-            <h4>Install Location</h4>
-        </div>
-        <div class="w-50">
-            @installLocation
-        </div>
-    </div>
-    <div class="row">
-        <div class="w-25">
-            <h4>Install Date</h4>
-        </div>
-        <div class="w-50">
-            @installedDate
-        </div>
-    </div>
-    <div class="row">
-        <div class="w-25">
-            <h4>Runtime Version</h4>
-        </div>
-        <div class="w-50">
-            @RuntimeVersionInfo
-        </div>
-    </div>
-    <div class="row">
-        <div class="w-25">
-            <h4>Configuration Path</h4>
-        </div>
-        <div class="w-50">
-           <a href="" @onclick:preventDefault @onclick="@((ev) => DownloadSettings(@localConfigurationPath))" title="Click to Download @@localConfigurationPath">@localConfigurationPath</a>  
-        </div>
-    </div>
-    <br />
-    <br />
-    <div class="row">
-        <div class="w-100">
-            <h6>Found an issue or want a feature? File it <a href="https://github.com/isaacrlevin/PresenceLight/issues/new/choose" target="_blank">here</a></h6>
-        </div>
-    </div>
-</div>
+
+
+<MudPaper Height="500px" Width="100%" Elevation="0">
+    <MudContainer MaxWidth="MaxWidth.ExtraLarge" Style="text-align:center">
+        <MudAvatar Image="/_content/PresenceLight.Razor/images/profileimage.jpg" Style="height:300px; width:300px"></MudAvatar>
+        <MudText Typo="Typo.h3">PresenceLight by Isaac Levin</MudText>
+        <MudSpacer />
+
+
+        <MudGrid Class="mt-10" Justify="Justify.FlexStart" Style="word-wrap:break-word">
+            <MudItem xs="4">
+                <MudText Typo="Typo.h6" Align="Align.Left">Application Type</MudText>
+            </MudItem>
+            <MudItem xs="8">
+                <MudText Typo="Typo.h6" Align="Align.Left">@appType</MudText>
+            </MudItem>
+            <MudItem xs="4">
+                <MudText Typo="Typo.h6" Align="Align.Left">Application Version</MudText>
+            </MudItem>
+            <MudItem xs="8">
+                <MudText Typo="Typo.h6" Align="Align.Left">@assemblyVersion</MudText>
+            </MudItem>
+            <MudItem xs="4">
+                <MudText Typo="Typo.h6" Align="Align.Left">Install Location</MudText>
+            </MudItem>
+            <MudItem xs="8">
+                <MudText Typo="Typo.h6" Align="Align.Left">@installLocation</MudText>
+            </MudItem>
+            <MudItem xs="4">
+                <MudText Typo="Typo.h6" Align="Align.Left">Install Date</MudText>
+            </MudItem>
+            <MudItem xs="8">
+                <MudText Typo="Typo.h6" Align="Align.Left">@installedDate</MudText>
+            </MudItem>
+            <MudItem xs="4">
+                <MudText Typo="Typo.h6" Align="Align.Left">Runtime Version</MudText>
+            </MudItem>
+            <MudItem xs="8">
+                <MudText Typo="Typo.h6" Align="Align.Left">@RuntimeVersionInfo</MudText>
+            </MudItem>
+            <MudItem xs="4">
+                <MudText Typo="Typo.h6" Align="Align.Left">Settings Path</MudText>
+            </MudItem>
+            <MudItem xs="8">
+                <MudLink Typo="Typo.h6" Href="" title="Click to download configuration file" @onclick="@((ev) => DownloadSettings(@localConfigurationPath))" Align="Align.Left">@localConfigurationPath</MudLink>
+            </MudItem>
+        </MudGrid>
+        <br />
+        <br />
+        <h6>Found an issue or want a feature? File it <a href="https://github.com/isaacrlevin/PresenceLight/issues/new/choose" target="_blank">here</a></h6>
+    </MudContainer>
+</MudPaper>
 
 @code {
     string installLocation;
@@ -87,7 +61,7 @@
     string assemblyVersion;
     string localConfigurationPath;
     string appType;
-   
+
     protected override void OnInitialized()
     {
         appType = _appInfo.GetAppInstallType();
@@ -98,7 +72,7 @@
         localConfigurationPath = new System.IO.FileInfo(SettingsService.GetSettingsFileLocation()).FullName;
     }
 
-        async Task DownloadSettings(string filename)
+    async Task DownloadSettings(string filename)
     {
         string fileContents;
         using (var fs = new System.IO.FileStream(

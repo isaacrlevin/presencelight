@@ -1,93 +1,83 @@
 ﻿@page "/wiz"
 
-@inject ISettingsService SettingsService
-@inject AppState appState
+
 @inject ILogger<Wiz> _logger;
-@inject NavigationManager NavManager
-<div class="container text-body" style="overflow:hidden">
-    <div class="row">
-        <div class="container-fluid">
-            <div class="row-fluid">
-                <div>
-                    <h1>Configure Wiz</h1>
-                    <br />
-                    <br />
-                    <div>
-                        <input type="checkbox" @bind-value="@appState.Config.LightSettings.Wiz.IsEnabled" checked="@appState.Config.LightSettings.Wiz.IsEnabled" /> Connect to Wiz
-                    </div>
-                    <br />
-                    <br />
-                    @if (appState.Config.LightSettings.Wiz.IsEnabled)
-                    {
-                        <div class="row">
-                            <div class="col-12">
-                                <button @onclick="GetLights" class="btn btn-primary" type="submit">Find Wiz Lights</button>
-                            </div>
-                        </div>
 
-                        <br />
-                        <br />
-                        @if (appState.WizLights != null)
-                        {
-                            <div class="form-group col-3 centering text-center">
-                                <select class="form-control" @onchange="OnChange">
-                                    <option disabled="disabled">Select</option>
-                                    @foreach (var light in appState.WizLights)
+<MudPaper Width="100%" Elevation="0">
+    <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Style="text-align:center">
+        <MudText Typo="Typo.h3">Configure Wiz</MudText>
+        <MudGrid Class="mt-10" Justify="Justify.Center">
+            <MudItem xs="12">
+                <MudCheckBox @bind-Checked="@appState.Config.LightSettings.Wiz.IsEnabled" Label="Connect to Wiz"></MudCheckBox>
+            </MudItem>
+        </MudGrid>
+        @if (appState.Config.LightSettings.Wiz.IsEnabled)
+        {
+            <MudGrid Class="mt-10" Justify="Justify.Center">
+                <MudItem xs="12">
+                    <MudButton OnClick="GetLights" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">Find Wiz Lights</MudButton>
+                </MudItem>
+            </MudGrid>
+            if (isLoadingLights)
+            {
+                <br />
+
+                <br />
+                <Circle Center="true" />
+            }
+            else
+            {
+                @if (appState.WizLights != null)
+                {
+                    <MudGrid Class="mt-10" Justify="Justify.Center">
+                        <MudItem xs="4">
+                            <MudSelect Dense="true" T="string" Variant="Variant.Outlined" ValueChanged="OnChange">
+                                <MudSelectItem Disabled="true" Value="@("Select")" />
+                                @foreach (var light in appState.WizLights)
+                                {
+                                    @if (appState.Config.LightSettings.Wiz.SelectedItemId == light.MacAddress)
                                     {
-                                        @if (appState.Config.LightSettings.Wiz.SelectedItemId == light.MacAddress)
-                                        {
-                                            <option selected="selected" value=@light.MacAddress>@light.LightName</option>
-                                        }
-                                        else
-                                        {
-                                            <option value=@light.MacAddress>@light.LightName</option>
-                                        }
+                                        <MudSelectItem Value="@light.MacAddress" />
                                     }
-                                </select>
-                            </div>
-                        }
-                        <br />
-                        <br />
-                        <div class="row">
-                            <div class="col-4">
-                                <h5>Brightness</h5>
-                            </div>
-                            <div class="col-4">
-                                <Slider TValue="int" @bind-Value="@appState.Config.LightSettings.Wiz.Brightness" Step="1" Min="0" Max="100" />
-                            </div>
-                            <div class="col-4">
-                                <input style="width:50px" @bind-value="@appState.Config.LightSettings.Wiz.Brightness" type="text" />
-                            </div>
-                        </div>
+                                    else
+                                    {
+                                        <MudSelectItem Value="@light.MacAddress" />
+                                    }
+                                }
+                            </MudSelect>
+                        </MudItem>
+                    </MudGrid>
 
-                        <br />
-                        <br />
+                    <MudGrid Class="mt-10 align-center" Justify="Justify.FlexStart">
+                        <MudItem xs="3">
+                            <MudText Typo="Typo.h5">Brightness</MudText>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudSlider @bind-Value="appState.Config.LightSettings.Wiz.Brightness" Min="0" Max="100"></MudSlider>
+                        </MudItem>
+                        <MudItem xs="2">
+                            <MudNumericField @bind-Value="appState.Config.LightSettings.Wiz.Brightness" Variant="Variant.Outlined" Min="0" Max="100" Step="1" />
+                        </MudItem>
+                    </MudGrid>
 
-                        <Statuses Light="@appState.Config.LightSettings.Wiz"></Statuses>
-
-                        <br />
-                        <br />
-
-                        <button class="btn btn-primary" @onclick="Save">Save Wiz Settings</button>
-
-                        <br />
-                        <br />
-                        <div>
-                            @if (settingsSaved)
-                            {
-                                <span class="@wizMessageClass">@message</span>
-                            }
-                        </div>
-                    }
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+                    <Statuses Light="@appState.Config.LightSettings.Wiz"></Statuses>
+                }
+            }
+        }
+        <MudItem Class="mt-10" xs="12">
+            <MudButton Class="mb-10" OnClick="Save" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">Save</MudButton>
+            @if (settingsSaved)
+            {
+                <MudText Color="MudBlazor.Color.Success">@message</MudText>
+            }
+        </MudItem>
+    </MudContainer>
+</MudPaper>
 
 @code {
 
     bool settingsSaved = false;
+    bool isLoadingLights = false;
     string message;
     string wizMessageClass;
 
@@ -102,16 +92,9 @@
                 NavManager.NavigateTo("/");
             }
 
-            if (appState.Config.LightSettings.Wiz.IsEnabled
-            && !string.IsNullOrEmpty(appState.Config.LightSettings.Wiz.SelectedItemId))
-            {
-                appState.SetWizLights(await _mediator.Send(new Core.WizServices.GetLightsCommand()));
-
-                settingsSaved = true;
-                message = "Connected to Wiz Cloud";
-                wizMessageClass = "text-success";
-            }
+            await GetLights();
         }
+
         catch (Exception e)
         {
             _logger.LogError(e, "Error Occured loading Wiz");
@@ -136,9 +119,9 @@
         }
     }
 
-    private void OnChange(ChangeEventArgs e)
+    private void OnChange(string e)
     {
-        var light = e.Value.ToString();
+        var light = e;
         appState.Config.LightSettings.Wiz.SelectedItemId = light;
         appState.SetWizLight(light);
         _logger.LogInformation($"Selected Wiz Light Set: {light}");
@@ -146,21 +129,26 @@
 
     public async Task GetLights()
     {
-        try
+        if (appState.Config.LightSettings.Wiz.IsEnabled)
         {
-            _logger.LogInformation("Wiz Light Retrieval Initialized");
-            appState.SetWizLights(await _mediator.Send(new Core.WizServices.GetLightsCommand()));
-
-            if (string.IsNullOrEmpty(appState.Config.LightSettings.Wiz.SelectedItemId) && appState.WizLights.Count() > 0)
+            try
             {
-                appState.Config.LightSettings.Wiz.SelectedItemId = appState.WizLights.FirstOrDefault().MacAddress;
+                isLoadingLights = true;
+                _logger.LogInformation("Wiz Light Retrieval Initialized");
+                appState.SetWizLights(await _mediator.Send(new Core.WizServices.GetLightsCommand()));
+
+                if (string.IsNullOrEmpty(appState.Config.LightSettings.Wiz.SelectedItemId) && appState.WizLights.Count() > 0)
+                {
+                    appState.Config.LightSettings.Wiz.SelectedItemId = appState.WizLights.FirstOrDefault().MacAddress;
+                }
+                _logger.LogInformation("Wiz Light Retrieval Successful");
+                isLoadingLights = false;
             }
-            _logger.LogInformation("Wiz Light Retrieval Successful");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error occured Finding Wiz Lights");
-            throw;
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occured Finding Wiz Lights");
+                throw;
+            }
         }
     }
 

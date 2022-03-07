@@ -11,9 +11,6 @@
 
   <ItemGroup>
     <PackageReference Include="Alexa.NET" Version="1.20.0" />
-    <PackageReference Include="Blazored.Modal" Version="6.0.1" />
-    <PackageReference Include="Blazorise.Bootstrap" Version="0.9.5.5" />
-    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.5.5" />
     <PackageReference Include="BlazorPro.Spinkit" Version="1.2.0" />
     <PackageReference Include="IdentityModel" Version="6.0.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.20.0" />
@@ -26,11 +23,12 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Identity.Client" Version="4.41.0" />
+    <PackageReference Include="Microsoft.Identity.Client" Version="4.42.0" />
     <PackageReference Include="Microsoft.Identity.Web" Version="1.23.0" />
     <PackageReference Include="Microsoft.Identity.Web.MicrosoftGraph" Version="1.23.0" />
     <PackageReference Include="Microsoft.Identity.Web.UI" Version="1.23.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
+    <PackageReference Include="MudBlazor" Version="6.0.7" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 

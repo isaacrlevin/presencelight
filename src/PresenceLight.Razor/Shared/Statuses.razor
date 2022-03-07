@@ -1,41 +1,49 @@
-﻿@using PresenceLight.Core;
-
-<div class="row">
-    <div class="col-12">
-        <input type="checkbox" checked="@Light.UseActivityStatus" @bind-value="@Light.UseActivityStatus" /> Use Activity Statuses
-    </div>
-</div>
+﻿<br />
 <br />
-<br />
+<MudExpansionPanels>
+    <MudExpansionPanel>
+        <TitleContent>
+            <MudText Typo="Typo.h6" Color="MudBlazor.Color.Primary">Custom Colors</MudText>
+        </TitleContent>
+        <ChildContent>
+            <MudGrid Justify="Justify.Center">
+                <MudItem xs="12">
+                    <MudCheckBox @bind-Checked="@Light.UseActivityStatus" Label="Use Activity Statuses"></MudCheckBox>
+                </MudItem>
+            </MudGrid>
+            <br />
+            <br />
 
-@foreach (var lightStatus in Light.Statuses.GetType().GetProperties().OrderBy(a => a.Name))
-{
-    @if ((!Light.UseActivityStatus && lightStatus.Name.Contains("Availability")) || (Light.UseActivityStatus && lightStatus.Name.Contains("Activity")))
-    {
-        var status = (AvailabilityStatus)lightStatus.GetValue(Light.Statuses);
+            @foreach (var lightStatus in Light.Statuses.GetType().GetProperties().OrderBy(a => a.Name))
+            {
+                @if ((!Light.UseActivityStatus && lightStatus.Name.Contains("Availability")) || (Light.UseActivityStatus && lightStatus.Name.Contains("Activity")))
+                {
+                    var status = (AvailabilityStatus)lightStatus.GetValue(Light.Statuses);
 
-        <div class="row" style="margin-bottom: 10px">
-            <div class="col-4">
-                <h5>@Helpers.HumanifyText(lightStatus.Name.Replace("Status","").Replace("Availability","").Replace("Activity","")) Color</h5>
-            </div>
-            <div class="col-4">
-                <ColorEdit Color="@status.Colour" @onchange="@((ChangeEventArgs e) => ChangeStatusColor(e, status))" />
-            </div>
-            <div class="col-4">
-                <input type="checkbox" checked="@status.Disabled" @onchange="@((ChangeEventArgs e) => StatusDisabledOnCheck(e, status))" /> Off?
-            </div>
-        </div>
-    }
-}
-
+                    <MudGrid Justify="Justify.Center">
+                        <MudItem xs="4">
+                            <MudText Typo=Typo.h6>@Helpers.HumanifyText(lightStatus.Name.Replace("Status","").Replace("Availability","").Replace("Activity","")) Color</MudText>
+                        </MudItem>
+                        <MudItem xs="4">
+                            <ColorEdit Color="@status.Colour" @onchange="@((ChangeEventArgs e) => ChangeStatusColor(e, status))" />
+                        </MudItem>
+                        <MudItem xs="4">
+                            <MudCheckBox T="bool" Checked="@status.Disabled" CheckedChanged="@(x => StatusDisabledOnCheck(x, status))" Label="Off?"></MudCheckBox>
+                        </MudItem>
+                    </MudGrid>
+                }
+            }
+        </ChildContent>
+    </MudExpansionPanel>
+</MudExpansionPanels>
 @code {
     [Parameter] public BaseLight Light { get; set; }
 
-    void StatusDisabledOnCheck(ChangeEventArgs e, object settingValue)
+    void StatusDisabledOnCheck(bool e, object settingValue)
     {
-        var newSetting = e.Value;
+        var newSetting = e;
         AvailabilityStatus status = (AvailabilityStatus)settingValue;
-        status.Disabled = (bool)newSetting;
+        status.Disabled = newSetting;
     }
 
     void ChangeStatusColor(ChangeEventArgs e, object settingValue)

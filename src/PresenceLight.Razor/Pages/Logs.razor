@@ -5,14 +5,42 @@
 @inject IJSRuntime js
 @inject Microsoft.Extensions.Configuration.IConfiguration _configuration
 
-<Tabs SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
-    <Items>
-        <Tab Name="logfiles">Log Files</Tab>
-        <Tab Name="livelogs">Live Logs</Tab>
-    </Items>
-    <Content>
-        <TabPanel Name="livelogs">
-            <table class="table">
+
+
+<MudTabs Elevation="0" Outlined="true">
+    <MudTabPanel Text="Log Files">
+         <table class="table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>FileName</th>
+                        <th>Size</th>
+                        <th>Creation Time</th>
+                        <th>Last Access</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @lock (logFilesLockObject)
+                    {
+                        foreach (var logFile in LogFiles.OrderByDescending(a => a.CreationTime))
+                        {
+                            <tr>
+                                <th scope="row">
+                                    <a href="" @onclick:preventDefault @onclick="@((ev) => DownloadLogs(logFile.Name))" title="Click to Download @logFile.Name">Open</a>
+                                </th>
+                                <th>@logFile.Name</th>
+                                <td>@logFile.Length</td>
+                                <td>@logFile.CreationTime</td>
+                                <td>@logFile.LastAccessTime</td>
+                            </tr>
+
+                        }
+                    }
+                </tbody>
+            </table>
+    </MudTabPanel>
+    <MudTabPanel Text="Live Logs">
+         <table class="table">
                 <thead>
                     <tr>
                         <th>Timestamp</th>
@@ -52,41 +80,9 @@
                     }
                 </tbody>
             </table>
-        </TabPanel>
-        <TabPanel Name="logfiles">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th>FileName</th>
-                        <th>Size</th>
-                        <th>Creation Time</th>
-                        <th>Last Access</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @lock (logFilesLockObject)
-                    {
-                        foreach (var logFile in LogFiles.OrderByDescending(a => a.CreationTime))
-                        {
-                            <tr>
-                                <th scope="row">
-                                    <a href="" @onclick:preventDefault @onclick="@((ev) => DownloadLogs(logFile.Name))" title="Click to Download @logFile.Name">Open</a>
-                                </th>
-                                <th>@logFile.Name</th>
-                                <td>@logFile.Length</td>
-                                <td>@logFile.CreationTime</td>
-                                <td>@logFile.LastAccessTime</td>
-                            </tr>
+    </MudTabPanel>
+</MudTabs>
 
-                        }
-                    }
-                </tbody>
-            </table>
-
-        </TabPanel>
-    </Content>
-</Tabs>
 @code {
     string selectedTab = "logfiles";
     static object logsLockObject = new();
