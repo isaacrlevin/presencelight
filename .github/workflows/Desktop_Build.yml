@@ -425,7 +425,7 @@ jobs:
           prerelease: false
 
       - name: Upload Standalone x86 Release
-        id: upload-release-asset
+        id: upload-release-asset4
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -436,7 +436,7 @@ jobs:
           asset_content_type: application/zip
 
       - name: Upload x86 Hash
-        id: upload-release-asset
+        id: upload-release-asset5
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -458,7 +458,7 @@ jobs:
           asset_content_type: application/zip
 
       - name: Upload x64 Hash
-        id: upload-release-asset
+        id: upload-release-asset6
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
