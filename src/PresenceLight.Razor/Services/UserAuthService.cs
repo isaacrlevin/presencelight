@@ -1,14 +1,14 @@
 ﻿using System;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Graph;
-using Microsoft.Identity.Client;
-using PresenceLight.Core;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using System.Collections.Generic;
+
+using Microsoft.Extensions.Configuration;
+using Microsoft.Graph;
+using Microsoft.Identity.Client;
+using Microsoft.Identity.Client.Extensions.Msal;
 
 namespace PresenceLight.Razor
 {
@@ -35,6 +35,45 @@ namespace PresenceLight.Razor
                      .WithAuthority($"{Configuration["AzureAd:Instance"]}common/v2.0")
                      .WithRedirectUri($"{Configuration["AzureAd:RedirectHost"].ToString()}{Configuration["AzureAd:CallbackPath"]}")
                      .Build();
+
+                var cacheHelper = CreateCacheHelperAsync(Configuration["AzureAd:ClientId"]);
+                cacheHelper.RegisterCache(_msalClient.UserTokenCache);
+            }
+        }
+
+        private static MsalCacheHelper CreateCacheHelperAsync(string clientId)
+        {
+            StorageCreationProperties storageProperties;
+
+            try
+            {
+                storageProperties =
+                    new StorageCreationPropertiesBuilder(
+                    "cache.plaintext",
+                    System.AppContext.BaseDirectory,
+                    clientId)
+                    .WithLinuxUnprotectedFile()
+                    .Build();
+
+                var cacheHelper = MsalCacheHelper.CreateAsync(storageProperties).Result;
+                return cacheHelper;
+
+            }
+            catch (MsalCachePersistenceException e)
+            {
+                storageProperties =
+                    new StorageCreationPropertiesBuilder(
+                    "cache.plaintext",
+                    System.AppContext.BaseDirectory,
+                    clientId)
+                    .WithLinuxUnprotectedFile()
+                    .Build();
+
+                var cacheHelper = MsalCacheHelper.CreateAsync(storageProperties).Result;
+
+                cacheHelper.VerifyPersistence();
+
+                return cacheHelper;
             }
         }
 
