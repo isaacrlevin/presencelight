@@ -76,7 +76,7 @@ namespace PresenceLight.Core
                         break;
                     case var length when color.Length > 6:
                         // Get last 6 characters
-                        color = color.Substring(color.Length - 6);
+                        color = color.Substring(0, 6);
                         break;
                     default:
                         throw new ArgumentException("Supplied Color had an issue");

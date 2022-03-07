@@ -1,93 +1,82 @@
 ﻿@page "/yeelight"
 
-@inject ISettingsService SettingsService
-@inject AppState appState
 @inject ILogger<CustomApiSetup> _logger;
-@inject NavigationManager NavManager
-<div class="container text-body" style="overflow:hidden">
-    <div class="row">
-        <div class="container-fluid">
-            <div class="row-fluid">
-                <div>
-                    <h1>Configure Yeelight</h1>
-                    <br />
-                    <br />
-                    <div>
-                        <input type="checkbox" @bind-value="@appState.Config.LightSettings.Yeelight.IsEnabled" checked="@appState.Config.LightSettings.Yeelight.IsEnabled" /> Connect to Yeelight
-                    </div>
-                    <br />
-                    <br />
-                    @if (appState.Config.LightSettings.Yeelight.IsEnabled)
-                    {
-                        <div class="row">
-                            <div class="col-12">
-                                <button @onclick="GetYeeLights" class="btn btn-primary" type="submit">Find Yeelight's</button>
-                            </div>
-                        </div>
 
-                        <br />
-                        <br />
-                        @if (appState.YeelightLights != null)
-                        {
-                            <div class="form-group col-3 centering text-center">
-                                <select class="form-control" @onchange="OnChange">
-                                    <option disabled="disabled">Select</option>
-                                    @foreach (var light in appState.YeelightLights)
+<MudPaper Width="100%" Elevation="0">
+    <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Style="text-align:center">
+        <MudText Typo="Typo.h3">Configure Yeelight</MudText>
+        <MudGrid Class="mt-10" Justify="Justify.Center">
+            <MudItem xs="12">
+                <MudCheckBox @bind-Checked="@appState.Config.LightSettings.Yeelight.IsEnabled" Label="Connect to Yeelight"></MudCheckBox>
+            </MudItem>
+        </MudGrid>
+        @if (appState.Config.LightSettings.Yeelight.IsEnabled)
+        {
+            <MudGrid Class="mt-10" Justify="Justify.Center">
+                <MudItem xs="12">
+                    <MudButton OnClick="GetYeeLights" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">Find Yeelights</MudButton>
+                </MudItem>
+            </MudGrid>
+            if (isLoadingLights)
+            {
+                <br />
+
+                <br />
+                <Circle Center="true" />
+            }
+            else
+            {
+                @if (appState.YeelightLights != null)
+                {
+                    <MudGrid Class="mt-10" Justify="Justify.Center">
+                        <MudItem xs="4">
+                            <MudSelect Dense="true" T="string" Variant="Variant.Outlined" ValueChanged="OnChange">
+                                <MudSelectItem Disabled="true" Value="@("Select")" />
+                                @foreach (var light in appState.YeelightLights)
+                                {
+                                    @if (appState.Config.LightSettings.Yeelight.SelectedItemId == light.Id)
                                     {
-                                        @if (appState.Config.LightSettings.Yeelight.SelectedItemId == light.Id)
-                                        {
-                                            <option selected="selected" value=@light.Id>@light.Hostname</option>
-                                        }
-                                        else
-                                        {
-                                            <option value=@light.Id>@light.Hostname</option>
-                                        }
+                                        <MudSelectItem Value="@light.Hostname" />
                                     }
-                                </select>
-                            </div>
-                        }
+                                    else
+                                    {
+                                        <MudSelectItem Value="@light.Hostname" />
+                                    }
+                                }
+                            </MudSelect>
+                        </MudItem>
+                    </MudGrid>
 
-                        <div class="row">
-                            <div class="col-4">
-                                <h5>Brightness</h5>
-                            </div>
-                            <div class="col-4">
-                                <Slider TValue="int" @bind-Value="@appState.Config.LightSettings.Yeelight.Brightness" Step="1" Min="0" Max="100" />
-                            </div>
-                            <div class="col-4">
-                                <input style="width:50px" @bind-value="@appState.Config.LightSettings.Yeelight.Brightness" type="text" />
-                            </div>
-                        </div>
+                    <MudGrid Class="mt-10 align-center" Justify="Justify.FlexStart">
+                        <MudItem xs="3">
+                            <MudText Typo="Typo.h5">Brightness</MudText>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudSlider @bind-Value="appState.Config.LightSettings.Yeelight.Brightness" Min="0" Max="100"></MudSlider>
+                        </MudItem>
+                        <MudItem xs="2">
+                            <MudNumericField @bind-Value="appState.Config.LightSettings.Yeelight.Brightness" Variant="Variant.Outlined" Min="0" Max="100" Step="1" />
+                        </MudItem>
+                    </MudGrid>
 
-                        <br />
-                        <br />
-
-                        <Statuses Light="@appState.Config.LightSettings.Yeelight"></Statuses>
-
-                        <br />
-                        <br />
-
-                        <button class="btn btn-primary" @onclick="Save">Save Yeelight Settings</button>
-
-                        <br />
-                        <br />
-                        <div>
-                            @if (settingsSaved)
-                            {
-                                <span class="text-success">@message</span>
-                            }
-                        </div>
-                    }
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+                    <Statuses Light="@appState.Config.LightSettings.Yeelight"></Statuses>
+                }
+            }
+        }
+        <MudItem Class="mt-10" xs="12">
+            <MudButton Class="mb-10" OnClick="Save" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">Save</MudButton>
+            @if (settingsSaved)
+            {
+                <MudText Color="MudBlazor.Color.Success">@message</MudText>
+            }
+        </MudItem>
+    </MudContainer>
+</MudPaper>
 
 @code {
-
     bool settingsSaved = false;
     string message;
+    bool isLoadingLights = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -99,6 +88,8 @@
             {
                 NavManager.NavigateTo("/");
             }
+
+            await GetYeeLights();
         }
         catch (Exception e)
         {
@@ -124,9 +115,9 @@
         }
     }
 
-    private void OnChange(ChangeEventArgs e)
+    private void OnChange(string e)
     {
-        var light = e.Value.ToString();
+        var light = e;
         appState.Config.LightSettings.Yeelight.SelectedItemId = light;
         appState.SetYeelightLight(light);
         _logger.LogInformation($"Selected Yeelight Light Set: {light}");
@@ -134,22 +125,27 @@
 
     public async Task GetYeeLights()
     {
-        try
+        if (@appState.Config.LightSettings.Yeelight.IsEnabled)
         {
-            _logger.LogInformation("Yeelight Light Retrieval Initialized");
-            appState.SetYeelightLights(await _mediator.Send(new Core.YeelightServices.GetLightCommand()));
-
-            if (string.IsNullOrEmpty(appState.Config.LightSettings.Yeelight.SelectedItemId) && appState.YeelightLights.Count() > 0)
+            try
             {
-                appState.Config.LightSettings.Yeelight.SelectedItemId = appState.YeelightLights.FirstOrDefault().Id;
-            }
-            _logger.LogInformation("Yeelight Light Retrieval Successful");
+                isLoadingLights = true;
+                _logger.LogInformation("Yeelight Light Retrieval Initialized");
+                appState.SetYeelightLights(await _mediator.Send(new Core.YeelightServices.GetLightCommand()));
 
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error occured Finding YeeLights");
-            throw;
+                if (string.IsNullOrEmpty(appState.Config.LightSettings.Yeelight.SelectedItemId) && appState.YeelightLights.Count() > 0)
+                {
+                    appState.Config.LightSettings.Yeelight.SelectedItemId = appState.YeelightLights.FirstOrDefault().Id;
+                }
+                _logger.LogInformation("Yeelight Light Retrieval Successful");
+                isLoadingLights = false;
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occured Finding YeeLights");
+                throw;
+            }
         }
     }
 
@@ -162,4 +158,4 @@
     {
         InvokeAsync(StateHasChanged);
     }
-}
+        }

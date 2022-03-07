@@ -1,30 +1,26 @@
 ﻿@page "/color"
 
 @using LifxCloud.NET.Models
-@inject AppState appState
-@inject IJSRuntime jsRuntime;
 @inject ILogger<Color> _logger;
 
-<div class="container text-body">
-    <div class="row">
-        <div class="container-fluid">
-            <div class="row-fluid">
-                <div>
-                    <h1>Set Light Colors</h1>
-                    <br />
-                    <br />
-                    <div style="width: 85%">
-                        <div id="extraPicker" class="colorPicker"></div>
-                    </div>
-                    <br />
-                    <button @onclick="SetColor" class="btn btn-primary">Set Color</button>
-                    <button disabled="@isGraphDisabled" @onclick="SyncTeamsPresence" class="btn btn-primary">Sync Teams Presence</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
+<MudPaper Height="500px" Width="100%" Elevation="0">
+    <MudContainer MaxWidth="MaxWidth.Small" Style="text-align:center">
+        <MudGrid Class="mt-10" Justify="Justify.Center">
+            <MudItem xs="12">
+                <MudText Typo="Typo.h3">Set Light Color</MudText>
+            </MudItem>
+            <MudItem xs="12" >
+                <MudColorPicker PickerVariant="PickerVariant.Static" Label="Basic Color Picker" @bind-Text="color" Style="@($"color: {color}")" Placeholder="Select Color" />
+            </MudItem>
+            <MudItem xs="6" >
+                <MudButton OnClick="SetColor" Variant="Variant.Filled" Color="MudBlazor.Color.Primary" Style="width:75%">Set Color</MudButton>
+            </MudItem>
+            <MudItem xs="6">
+                <MudButton OnClick="SyncTeamsPresence" Variant="Variant.Filled" Color="MudBlazor.Color.Primary" Style="width:75%">Sync Teams Presence</MudButton>
+            </MudItem>
+        </MudGrid>
+    </MudContainer>
+</MudPaper>
 
 @code {
     bool isGraphDisabled = false;
@@ -35,8 +31,6 @@
     {
         try
         {
-            color = await jsRuntime.InvokeAsync<string>("getColor");
-
             appState.SetLightMode("Custom");
             _logger.LogInformation("Light Mode: Custom");
             isGraphDisabled = false;
@@ -49,18 +43,18 @@
 
             if (appState.LightMode == "Custom")
             {
-				 if (!string.IsNullOrEmpty(appState.Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(appState.Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(appState.Config.LightSettings.Hue.SelectedItemId))
+                if (!string.IsNullOrEmpty(appState.Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(appState.Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(appState.Config.LightSettings.Hue.SelectedItemId))
                 {
                     if (appState.Config.LightSettings.Hue.UseRemoteApi)
                     {
                         if (!string.IsNullOrEmpty(appState.Config.LightSettings.Hue.RemoteBridgeId))
                         {
                             await _mediator.Send(new Core.RemoteHueServices.SetColorCommand
-                            {
-                                Availability = appState.CustomColor,
-                                LightId = appState.Config.LightSettings.Hue.SelectedItemId,
-                                BridgeId = appState.Config.LightSettings.Hue.RemoteBridgeId
-                            }).ConfigureAwait(true);
+                                {
+                                    Availability = appState.CustomColor,
+                                    LightId = appState.Config.LightSettings.Hue.SelectedItemId,
+                                    BridgeId = appState.Config.LightSettings.Hue.RemoteBridgeId
+                                }).ConfigureAwait(true);
                         }
                     }
                     else
@@ -83,20 +77,20 @@
                 if (appState.Config.LightSettings.CustomApi.IsEnabled)
                 {
                     string response = await _mediator.Send(new Core.CustomApiServices.SetColorCommand
-                    {
-                        Activity = appState.CustomColor,
-                        Availability = appState.CustomColor
-                    });
+                        {
+                            Activity = appState.CustomColor,
+                            Availability = appState.CustomColor
+                        });
                 }
 
                 if (appState.Config.LightSettings.Wiz.IsEnabled)
                 {
                     await _mediator.Send(new Core.WizServices.SetColorCommand
-                    {
-                        Activity = appState.CustomColor,
-                        Availability = appState.CustomColor,
-                        LightID = appState.Config.LightSettings.Wiz.SelectedItemId
-                    });
+                        {
+                            Activity = appState.CustomColor,
+                            Availability = appState.CustomColor,
+                            LightID = appState.Config.LightSettings.Wiz.SelectedItemId
+                        });
                 }
             }
         }
@@ -105,15 +99,6 @@
             _logger.LogError(e, $"Error Occured Setting Custom Color {color}");
             throw;
         }
-    }
-
-    protected override async void OnAfterRender(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await jsRuntime.InvokeVoidAsync("loadColor");
-        }
-        base.OnAfterRender(firstRender);
     }
 
     void SyncTeamsPresence()

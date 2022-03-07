@@ -1,122 +1,102 @@
-﻿@page "/customapi"
+﻿@page "/custom"
+
 @using PresenceLight.Core.Initialize;
-@inject NavigationManager NavManager
-@inject ISettingsService SettingsService
-@inject AppState appState
-@inject IModalService Modal
 @inject ILogger<CustomApiSetup> _logger;
 
-<div class="container text-body" style="overflow:hidden">
-    <div class="row">
-        <div class="container-fluid">
-            <div class="row-fluid">
-                <div>
-                    <h1>Configure Custom API</h1>
-                    <br />
-                    <br />
-                    <div>
-                        <input type="checkbox" @bind-value="@appState.Config.LightSettings.CustomApi.IsEnabled" checked="@appState.Config.LightSettings.CustomApi.IsEnabled" /> Connect to Custom HTTP API
-                    </div>
-                    <br />
-                    <br />
-                    @if (appState.Config.LightSettings.CustomApi.IsEnabled)
-                    {
-                        @foreach (var customApiSetting in appState.Config.LightSettings.CustomApi.GetType().GetProperties())
+<MudPaper Width="100%" Elevation="0">
+    <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Style="text-align:center">
+        <MudText Typo="Typo.h3">Configure Custom API</MudText>
+        <MudGrid Class="mt-10" Justify="Justify.Center">
+            <MudItem xs="12">
+                <MudCheckBox @bind-Checked="@appState.Config.LightSettings.CustomApi.IsEnabled" Label="Connect to Custom API"></MudCheckBox>
+            </MudItem>
+        </MudGrid>
+        @if (appState.Config.LightSettings.CustomApi.IsEnabled)
+        {
+            @foreach (var customApiSetting in appState.Config.LightSettings.CustomApi.GetType().GetProperties())
+            {
+                @if (customApiSetting.PropertyType.Name == "CustomApiSetting")
+                {
+                    object customApiSettingValue = customApiSetting.GetValue(appState.Config.LightSettings.CustomApi, null);
+                    var lab = $"{customApiSetting.Name}Uri";
+
+                    <MudGrid Class="mt-10" Justify="Justify.Center">
+                        <MudItem xs="3">
+                            <strong><label for="@lab">@Helpers.HumanifyText(customApiSetting.Name.Replace("CustomApi","")):</label></strong>
+                        </MudItem>
+                        @if (customApiSettingValue != null)
                         {
-                            @if (customApiSetting.PropertyType.Name == "CustomApiSetting")
+                            @foreach (var setting in customApiSettingValue.GetType().GetProperties())
                             {
-                                object customApiSettingValue = customApiSetting.GetValue(appState.Config.LightSettings.CustomApi, null);
-                                var lab = $"{customApiSetting.Name}Uri";
+                                object settingValue = setting.GetValue(customApiSettingValue, null);
 
-                                <div class="form-group row">
-
-                                    <label class="col-sm-3 col-form-label" for="@lab">@Helpers.HumanifyText(customApiSetting.Name.Replace("CustomApi","")):</label>
-
-                                    @if (customApiSettingValue != null)
-                                    {
-                                        @foreach (var setting in customApiSettingValue.GetType().GetProperties())
-                                        {
-                                            object settingValue = setting.GetValue(customApiSettingValue, null);
-
-                                            if (setting.Name == "Method")
-                                            {
-                                                <div class="col-sm-2">
-                                                    <select class="form-control" value="@settingValue?.ToString()" @onchange="@((ChangeEventArgs e) => OnChange(e, setting, customApiSettingValue))">
-                                                        <option value="" disabled="disabled">Select</option>
-                                                        <option value="GET">GET</option>
-                                                        <option value="POST">POST</option>
-                                                    </select>
-                                                </div>
-                                            }
-                                            else
-                                            {
-                                                <div class="col-sm-7">
-                                                    <input type="text" id="@lab" value="@settingValue?.ToString()" @onchange="@((ChangeEventArgs e) => OnChange(e, setting, customApiSettingValue))" class="form-control" />
-                                                </div>
-                                            }
-                                        }
-
-                                    }
-                                </div>
+                                if (setting.Name == "Method")
+                                {
+                                    <MudItem xs="2">
+                                        <select class="form-control" value="@settingValue?.ToString()" @onchange="@((ChangeEventArgs e) => OnChange(e, setting, customApiSettingValue))">
+                                            <option value="" disabled="disabled">Select</option>
+                                            <option value="GET">GET</option>
+                                            <option value="POST">POST</option>
+                                        </select>
+                                    </MudItem>
+                                }
+                                else
+                                {
+                                    <MudItem xs="7">
+                                        <input type="text" id="@lab" value="@settingValue?.ToString()" @onchange="@((ChangeEventArgs e) => OnChange(e, setting, customApiSettingValue))" class="form-control" />
+                                    </MudItem>
+                                }
                             }
                         }
+                    </MudGrid>
+                }
+            }
 
-                        <br />
-                        <br />
-                        <div>
-                            <input type="checkbox" checked="@appState.Config.LightSettings.CustomApi.UseBasicAuth" @bind-value="@appState.Config.LightSettings.CustomApi.UseBasicAuth" /> Use Basic Auth
-                        </div>
-                        <br />
-                        <br />
-                        @if (appState.Config.LightSettings.CustomApi.UseBasicAuth)
-                        {
-                            <div class="form-group row">
-                                <label class="col-sm-3 col-form-label">
-                                    Basic Auth Username:
-                                </label>
+            <MudGrid Class="mt-10" Justify="Justify.Center">
+                <MudItem xs="12">
+                    <input type="checkbox" checked="@appState.Config.LightSettings.CustomApi.UseBasicAuth" @bind-value="@appState.Config.LightSettings.CustomApi.UseBasicAuth" /> Use Basic Auth
+                </MudItem>
+            </MudGrid>
 
 
-                                <div class="col-sm-7">
-                                    <input style="width: 100%" @bind-value="@appState.Config.LightSettings.CustomApi.BasicAuthUserName" type="text" class="form-control">
-                                </div>
+            @if (appState.Config.LightSettings.CustomApi.UseBasicAuth)
+            {
+                <MudGrid Class="mt-10" Justify="Justify.Center">
+                    <MudItem xs="3">
+                        Basic Auth Username:
+                    </MudItem>
+                    <MudItem xs="7">
+                        <input style="width: 100%" @bind-value="@appState.Config.LightSettings.CustomApi.BasicAuthUserName" type="text" class="form-control">
+                    </MudItem>
+                </MudGrid>
 
-                            </div>
+                <MudGrid Class="mt-10" Justify="Justify.Center">
+                    <MudItem xs="3">
+                        Basic Auth Password:
+                    </MudItem>
+                    <MudItem xs="7">
+                        <input style="width: 100%" @bind-value="@appState.Config.LightSettings.CustomApi.BasicAuthUserPassword" type="password" class="form-control">
+                    </MudItem>
+                </MudGrid>
+            }
+            <MudGrid Class="mt-10" Justify="Justify.Center">
+                <MudItem xs="12">
+                    <input type="checkbox" checked="@appState.Config.LightSettings.CustomApi.IgnoreCertificateErrors" @bind-value="@appState.Config.LightSettings.CustomApi.IgnoreCertificateErrors" /> Ignore Certificate Errors
+                </MudItem>
+            </MudGrid>
+        }
 
-                            <div class="form-group row">
-                                <label class="col-sm-3 col-form-label">
-                                    Basic Auth Password:
-                                </label>
+        <MudItem Class="mt-10" xs="12">
+            <MudButton Class="mb-10" OnClick="Save" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">Save</MudButton>
+            @if (settingsSaved)
+            {
+                <MudText Color="MudBlazor.Color.Success">@message</MudText>
+            }
+        </MudItem>
+    </MudContainer>
+</MudPaper>
 
-                                <div class="col-sm-7">
-                                    <input style="width: 100%" @bind-value="@appState.Config.LightSettings.CustomApi.BasicAuthUserPassword" type="password" class="form-control">
-                                </div>
 
-                            </div>
-
-                            <br />
-                            <br />
-                        }
-                        <div>
-                            <input type="checkbox" checked="@appState.Config.LightSettings.CustomApi.IgnoreCertificateErrors" @bind-value="@appState.Config.LightSettings.CustomApi.IgnoreCertificateErrors" /> Ignore Certificate Errors
-                        </div>
-                        <br />
-                        <br />
-                        <button class="btn btn-primary" @onclick="Save">Save Custom API Settings</button>
-
-                        <br />
-                        <br />
-                        <div>
-                            @if (settingsSaved)
-                            {
-                                <span class="text-success">@message</span>
-                            }
-                        </div>
-                    }
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
 @code {
 
