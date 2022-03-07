@@ -17,7 +17,9 @@
                 <MudItem xs="12">
                     <MudText Typo="Typo.h5">Working Days</MudText>
                 </MudItem>
-                <br /><br />
+                <br />
+
+                <br />
                 <MudItem xs="12">
                     <MudGrid Justify="Justify.Center">
                         <MudItem xs="1">
@@ -43,9 +45,11 @@
                         </MudItem>
                     </MudGrid>
                 </MudItem>
-                <br /><br />
+                <br />
+
+                <br />
                 <MudItem xs="12">
-                    <MudGrid Justify="Justify.FlexStart">
+                    <MudGrid Justify="Justify.FlexStart" Class="align-center">
                         <MudItem xs="4">
                             <MudText Typo="Typo.h5">Light Syncing Schedule (Working Hours)</MudText>
                         </MudItem>
@@ -57,9 +61,11 @@
                         </MudItem>
                     </MudGrid>
                 </MudItem>
-                <br /><br />
+                <br />
+
+                <br />
                 <MudItem xs="12">
-                    <MudGrid Justify="Justify.FlexStart">
+                    <MudGrid Justify="Justify.FlexStart" Class="align-center">
                         <MudItem xs="4">
                             <MudText Typo="Typo.h5">Light Status When After Hours Are Reached</MudText>
                         </MudItem>
@@ -79,7 +85,7 @@
             @if (appState.Config.LightSettings.UseDefaultBrightness)
             {
                 <MudItem xs="12">
-                    <MudGrid Justify="Justify.FlexStart">
+                    <MudGrid Justify="Justify.FlexStart" Class="align-center">
                         <MudItem xs="3">
                             <MudText Typo="Typo.h5">Brightness</MudText>
                         </MudItem>
@@ -93,7 +99,7 @@
                 </MudItem>
             }
             <MudItem xs="12">
-                <MudGrid Justify="Justify.FlexStart">
+                <MudGrid Justify="Justify.FlexStart" Class="align-center">
                     <MudItem xs="3">
                         <MudText Typo="Typo.h5">Polling Interval</MudText>
                     </MudItem>
@@ -108,7 +114,7 @@
             @if (appState.Config.AppType == "Desktop")
             {
                 <MudItem xs="12">
-                    <MudGrid Justify="Justify.Center">
+                    <MudGrid Justify="Justify.Center" Class="align-center">
                         <MudItem xs="3">
                             <MudText Typo="Typo.h5">Icon Type</MudText>
                         </MudItem>
