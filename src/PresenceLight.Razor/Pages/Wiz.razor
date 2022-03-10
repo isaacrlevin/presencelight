@@ -31,18 +31,11 @@
                 {
                     <MudGrid Class="mt-10" Justify="Justify.Center">
                         <MudItem xs="4">
-                            <MudSelect Dense="true" T="string" Variant="Variant.Outlined" ValueChanged="OnChange">
+                            <MudSelect Value=@($"{selectedLightLabel}") Dense="true" T="string" Variant="Variant.Outlined" ValueChanged="OnChange">
                                 <MudSelectItem Disabled="true" Value="@("Select")" />
                                 @foreach (var light in appState.WizLights)
                                 {
-                                    @if (appState.Config.LightSettings.Wiz.SelectedItemId == light.MacAddress)
-                                    {
-                                        <MudSelectItem Value="@light.MacAddress" />
-                                    }
-                                    else
-                                    {
-                                        <MudSelectItem Value="@light.MacAddress" />
-                                    }
+                                    <MudSelectItem Value="@light.MacAddress">@light.LightName</MudSelectItem>
                                 }
                             </MudSelect>
                         </MudItem>
@@ -80,6 +73,7 @@
     bool isLoadingLights = false;
     string message;
     string wizMessageClass;
+    string selectedLightLabel = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -140,6 +134,10 @@
                 if (string.IsNullOrEmpty(appState.Config.LightSettings.Wiz.SelectedItemId) && appState.WizLights.Count() > 0)
                 {
                     appState.Config.LightSettings.Wiz.SelectedItemId = appState.WizLights.FirstOrDefault().MacAddress;
+                }
+                else
+                {
+                    selectedLightLabel = appState.WizLights.Where(a => a.MacAddress == appState.Config.LightSettings.LIFX.SelectedItemId).FirstOrDefault().LightName;
                 }
                 _logger.LogInformation("Wiz Light Retrieval Successful");
                 isLoadingLights = false;

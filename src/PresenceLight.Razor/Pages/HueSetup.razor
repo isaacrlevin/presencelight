@@ -64,34 +64,18 @@
 
                     <MudGrid Class="mt-10" Justify="Justify.Center">
                         <MudItem xs="4">
-                            <MudSelect Dense="true" Label="@($"Select Hue {lastType}")" T="string" Variant="Variant.Outlined" ValueChanged="OnChange">
+                            <MudSelect Value=@($"{selectedLightLabel}") Dense="true" Label="@($"Select Hue {lastType}")" T="string" Variant="Variant.Outlined" ValueChanged="OnChange">
                                 @foreach (var light in appState.HueLights)
                                 {
                                     if (light.GetType() == typeof(Q42.HueApi.Models.Groups.Group))
                                     {
                                         var obj = (Q42.HueApi.Models.Groups.Group)light;
-
-                                        @if (appState.Config.LightSettings.Hue.SelectedItemId == $"group_id:{obj.Id}")
-                                        {
-                                            <MudSelectItem Value="@($"group_id:{@obj.Id}")">@obj.Name</MudSelectItem>
-                                        }
-                                        else
-                                        {
-                                            <MudSelectItem Value="@($"group_id:{@obj.Id}")">@obj.Name</MudSelectItem>
-                                        }
+                                        <MudSelectItem Value="@($"group_id:{@obj.Id}")">@obj.Name</MudSelectItem>
                                     }
                                     else
                                     {
                                         var obj = (Q42.HueApi.Light)light;
-
-                                        @if (appState.Config.LightSettings.Hue.SelectedItemId == $"id:{obj.Id}")
-                                        {
-                                            <MudSelectItem Value="@($"id:{@obj.Id}")">@obj.Name</MudSelectItem>
-                                        }
-                                        else
-                                        {
-                                            <MudSelectItem Value="@($"id:{@obj.Id}")">@obj.Name</MudSelectItem>
-                                        }
+                                        <MudSelectItem Value="@($"id:{@obj.Id}")">@obj.Name</MudSelectItem>
                                     }
 
                                 }
@@ -134,7 +118,7 @@
 
     bool showHueMessage = false;
     string hueMessage;
-
+    string selectedLightLabel = "";
     string lastType = "";
 
     protected override async Task OnInitializedAsync()
@@ -330,6 +314,10 @@
                             var obj = (Q42.HueApi.Models.Groups.Group)appState.HueLights.FirstOrDefault();
                             appState.Config.LightSettings.Hue.SelectedItemId = $"group_id:{obj.Id}";
                         }
+                        else
+                        {
+                            selectedLightLabel = ((Q42.HueApi.Models.Groups.Group)appState.HueLights.Where(a => ((Q42.HueApi.Models.Groups.Group)a).Id == appState.Config.LightSettings.Hue.SelectedItemId.Replace("group_id:", "")).FirstOrDefault()).Name;
+                        }
                     }
                     else
                     {
@@ -347,6 +335,10 @@
                         {
                             var obj = (Q42.HueApi.Light)appState.HueLights.FirstOrDefault();
                             appState.Config.LightSettings.Hue.SelectedItemId = $"id:{obj.Id}";
+                        }
+                        else
+                        {
+                            selectedLightLabel = ((Q42.HueApi.Light)appState.HueLights.Where(a => ((Q42.HueApi.Light)a).Id == appState.Config.LightSettings.Hue.SelectedItemId.Replace("id:", "")).FirstOrDefault()).Name;
                         }
                     }
 
