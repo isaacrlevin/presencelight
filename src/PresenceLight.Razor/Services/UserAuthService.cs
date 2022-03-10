@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Linq;
+﻿using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -35,6 +33,7 @@ namespace PresenceLight.Razor
                      .WithAuthority($"{Configuration["AzureAd:Instance"]}common/v2.0")
                      .WithRedirectUri($"{Configuration["AzureAd:RedirectHost"].ToString()}{Configuration["AzureAd:CallbackPath"]}")
                      .Build();
+
 
                 var cacheHelper = CreateCacheHelperAsync(Configuration["AzureAd:ClientId"]);
                 cacheHelper.RegisterCache(_msalClient.UserTokenCache);
