@@ -53,11 +53,11 @@
 
                                         @if (appState.Config.LightSettings.LIFX.SelectedItemId == $"group_id:{obj.Id}")
                                         {
-                                            <MudSelectItem Value="@("group_id:{@obj.Id}")">@obj.Label</MudSelectItem>
+                                            <MudSelectItem Value="@($"group_id:{@obj.Id}")">@obj.Label</MudSelectItem>
                                         }
                                         else
                                         {
-                                            <MudSelectItem Value="@("group_id:{@obj.Id}")">@obj.Label</MudSelectItem>
+                                            <MudSelectItem Value="@($"group_id:{@obj.Id}")">@obj.Label</MudSelectItem>
                                         }
                                     }
                                     else
@@ -66,11 +66,11 @@
 
                                         @if (appState.Config.LightSettings.LIFX.SelectedItemId == $"id:{obj.Id}")
                                         {
-                                            <MudSelectItem Value="@("id:{@obj.Id}")">@obj.Label</MudSelectItem>
+                                            <MudSelectItem Value="@($"id:{@obj.Id}")">@obj.Label</MudSelectItem>
                                         }
                                         else
                                         {
-                                            <MudSelectItem Value="@("id:{@obj.Id}")">@obj.Label</MudSelectItem>
+                                            <MudSelectItem Value="@($"id:{@obj.Id}")">@obj.Label</MudSelectItem>
                                         }
                                     }
 
