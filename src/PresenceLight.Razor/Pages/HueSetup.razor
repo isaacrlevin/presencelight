@@ -73,11 +73,11 @@
 
                                         @if (appState.Config.LightSettings.Hue.SelectedItemId == $"group_id:{obj.Id}")
                                         {
-                                            <MudSelectItem Value="@("group_id:{@obj.Id}")">@obj.Name</MudSelectItem>
+                                            <MudSelectItem Value="@($"group_id:{@obj.Id}")">@obj.Name</MudSelectItem>
                                         }
                                         else
                                         {
-                                            <MudSelectItem Value="@("group_id:{@obj.Id}")">@obj.Name</MudSelectItem>
+                                            <MudSelectItem Value="@($"group_id:{@obj.Id}")">@obj.Name</MudSelectItem>
                                         }
                                     }
                                     else
@@ -86,11 +86,11 @@
 
                                         @if (appState.Config.LightSettings.Hue.SelectedItemId == $"id:{obj.Id}")
                                         {
-                                            <MudSelectItem Value="@("id:{@obj.Id}")">@obj.Name</MudSelectItem>
+                                            <MudSelectItem Value="@($"id:{@obj.Id}")">@obj.Name</MudSelectItem>
                                         }
                                         else
                                         {
-                                            <MudSelectItem Value="@("id:{@obj.Id}")">@obj.Name</MudSelectItem>
+                                            <MudSelectItem Value="@($"id:{@obj.Id}")">@obj.Name</MudSelectItem>
                                         }
                                     }
 
