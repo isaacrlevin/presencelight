@@ -256,7 +256,7 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error occured Getting Photo");
+                _logger.LogError(e, "Error occured Setting Color");
             }
         }
 
