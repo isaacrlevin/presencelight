@@ -22,6 +22,9 @@ using Serilog;
 
 using Windows.Storage;
 using MudBlazor.Services;
+using Blazorise;
+using Blazorise.Bootstrap;
+using Blazorise.Icons.FontAwesome;
 
 namespace PresenceLight
 {
@@ -141,6 +144,13 @@ namespace PresenceLight
             services.AddHttpClient();
             services.AddHttpContextAccessor();
             services.AddBlazorWebView();
+
+            services.AddBlazorise(options =>
+                 {
+                     options.Immediate = true;
+                 })
+    .AddBootstrapProviders()
+    .AddFontAwesomeIcons();
 
             services.AddMediatR(typeof(App),
                      typeof(BaseConfig));
