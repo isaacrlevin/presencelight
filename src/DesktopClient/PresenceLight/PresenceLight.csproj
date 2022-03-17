@@ -15,7 +15,7 @@
 
   <ItemGroup> 
     <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.20.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Wpf" Version="6.0.200-preview.13.2865" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Wpf" Version="6.0.200-preview.14.5099+sha.03a0eb8e6-azdo.5845410" />
     <PackageReference Update="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.2" />
     <PackageReference Update="Microsoft.SourceLink.GitHub" Version="1.1.1" />
     <PackageReference Update="Nerdbank.GitVersioning" Version="3.4.255" />
