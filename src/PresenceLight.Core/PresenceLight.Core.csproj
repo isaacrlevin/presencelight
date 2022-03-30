@@ -42,6 +42,7 @@
     <PackageReference Include="Serilog.Sinks.ApplicationInsights" Version="3.1.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+    <PackageReference Include="System.IO.Ports" Version="6.0.0" />
     <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="6.0.0" />
     <PackageReference Include="YeelightAPI" Version="1.10.2" />
   </ItemGroup>
