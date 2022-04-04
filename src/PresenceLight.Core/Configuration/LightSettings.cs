@@ -35,6 +35,8 @@ namespace PresenceLight.Core
         public int DefaultBrightness { get; set; }
         public CustomApi CustomApi { get; set; }
 
+        public LocalSerialHost LocalSerialHost { get; set; }
+
         public LIFX LIFX { get; set; }
 
         public Hue Hue { get; set; }

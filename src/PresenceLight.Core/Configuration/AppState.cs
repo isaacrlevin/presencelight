@@ -31,6 +31,10 @@ namespace PresenceLight.Core
 
         public string YeelightLightId { get; set; }
 
+        public IEnumerable<string> LocalSerialHosts { get; set; }
+
+        public string LocalSerialHostSelected { get; set; }
+
         public IEnumerable<object> LIFXLights { get; set; }
 
         public string LIFXLightId { get; set; }
@@ -124,6 +128,18 @@ namespace PresenceLight.Core
             NotifyStateChanged();
         }
 
+        public void SetLocalSerialHosts(IEnumerable<string> lights)
+        {
+            LocalSerialHosts = lights;
+            NotifyStateChanged();
+        }
+
+        public void SetLocalSerialHost(string port)
+        {
+            LocalSerialHostSelected = port;
+            NotifyStateChanged();
+        }
+        
         public void SetWizLight(string lightId)
         {
             WizLightId = lightId;

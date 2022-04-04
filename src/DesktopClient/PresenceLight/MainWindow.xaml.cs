@@ -253,6 +253,11 @@ namespace PresenceLight
                 {
                     string response = await _mediator.Send(new Core.CustomApiServices.SetColorCommand() { Activity = activity, Availability = color });
                 }
+
+                if(_appState.Config.LightSettings.LocalSerialHost.IsEnabled)
+                {
+                    string response = await _mediator.Send(new Core.LocalSerialHostServices.SetColorCommand() { Activity = activity, Availability = color });
+                }
             }
             catch (Exception e)
             {

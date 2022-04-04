@@ -1,0 +1,247 @@
+﻿@page "/serial"
+
+@using PresenceLight.Core.LocalSerialHostServices;
+@inject ILogger<LocalSerialHostSetup> _logger;
+
+<MudPaper Width="100%" Elevation="0">
+    <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Style="text-align:center">
+        <MudText Typo="Typo.h3">Configure Local Serial </MudText>
+        <MudGrid Class="mt-10" Justify="Justify.Center">
+            <MudItem xs="12">
+                <MudCheckBox @bind-Checked="@appState.Config.LightSettings.LocalSerialHost.IsEnabled" Label="Connect to Local Serial Host"></MudCheckBox>
+            </MudItem>
+        </MudGrid>
+        @if (appState.Config.LightSettings.LocalSerialHost.IsEnabled)
+        {
+            <MudGrid Class="mt-10" Justify="Justify.Center">
+                <MudItem xs="12">
+                    <MudButton OnClick="GetSerialHosts" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">Get Serial Ports</MudButton>
+                </MudItem>
+            </MudGrid>
+            if (isLoadingLights)
+            {
+                <br />
+
+                <br />
+                <Circle Center="true" />
+            }
+            else
+            {
+                @if (appState.LocalSerialHosts != null)
+                {
+                    @foreach (var LocalSerialHostSetting in appState.Config.LightSettings.LocalSerialHost.GetType().GetProperties())
+                    {
+                        @if (LocalSerialHostSetting.PropertyType.Name == "LocalSerialHostSetting")
+                        {
+                            object LocalSerialHostSettingValue = LocalSerialHostSetting.GetValue(appState.Config.LightSettings.LocalSerialHost, null);
+                            var lab = $"{LocalSerialHostSetting.Name}Uri";
+
+                            <MudGrid Class="mt-10" Justify="Justify.Center">
+                                <MudItem xs="3">
+                                    <strong><label for="@lab">@Helpers.HumanifyText(LocalSerialHostSetting.Name.Replace("LocalSerialHost","")):</label></strong>
+                                </MudItem>
+                                @if (LocalSerialHostSettingValue != null)
+                                {
+                                    @foreach (var setting in LocalSerialHostSettingValue.GetType().GetProperties())
+                                    {
+                                        object settingValue = setting.GetValue(LocalSerialHostSettingValue, null);
+
+                                        if (setting.Name == "Port")
+                                        {
+                                            <MudItem xs="2">
+                                                <select class="form-control" value="@settingValue?.ToString()" @onchange="@((ChangeEventArgs e) => OnChange(e, setting, LocalSerialHostSettingValue))">
+                                                    <option value="" disabled="disabled">Select</option>
+                                                    @foreach(var port in appState.LocalSerialHosts)
+                                                    {
+                                                        <option value="@port">@port</option>
+                                                    }                                                
+                                                </select>
+                                            </MudItem>
+                                        }
+                                        else if (setting.Name == "BaudRate")
+                                        {
+                                            <MudItem xs="2">
+                                                <select class="form-control" value="@settingValue?.ToString()" @onchange="@((ChangeEventArgs e) => OnChange(e, setting, LocalSerialHostSettingValue))">
+                                                    <option value="" disabled="disabled">Select</option>
+                                                    <option value="">None</option>
+                                                    <option value="300">300</option>
+                                                    <option value="1200">1200</option>
+                                                    <option value="2400">2400</option>
+                                                    <option value="4800">4800</option>
+                                                    <option value="9600">9600</option>
+                                                    <option value="19200">19200</option>
+                                                    <option value="38400">38400</option>
+                                                    <option value="57600">57600</option>
+                                                </select>
+                                            </MudItem>
+                                        }
+                                        else if (setting.Name == "LineEnding")
+                                        {
+                                            <MudItem xs="2">
+                                                <select class="form-control" value="@settingValue?.ToString()" @onchange="@((ChangeEventArgs e) => OnChange(e, setting, LocalSerialHostSettingValue))">
+                                                    <option value="" disabled="disabled">Select</option>
+                                                    <option value="">None</option>
+                                                    <option value="CR">CR</option>
+                                                    <option value="LF">LF</option>
+                                                    <option value="CRLF">CRLF</option>
+                                                </select>
+                                            </MudItem>
+                                        }
+                                    }
+                                }
+                            </MudGrid>
+                        }
+                        else if (LocalSerialHostSetting.PropertyType.Name == "String")
+                        {
+                            @if (LocalSerialHostSetting.Name != "SelectedItemId")
+                            {
+                                object parent = appState.Config.LightSettings.LocalSerialHost;
+                                object LocalSerialHostSettingValue = LocalSerialHostSetting.GetValue(appState.Config.LightSettings.LocalSerialHost, null);
+                                var lab = $"{LocalSerialHostSetting.Name}Uri";
+
+                                <MudGrid Class="mt-10" Justify="Justify.Center">
+                                    <MudItem xs="3">
+                                        <strong><label for="@lab">@Helpers.HumanifyText(LocalSerialHostSetting.Name.Replace("LocalSerialHost","")):</label></strong>
+                                    </MudItem>
+
+                                    <MudItem xs="7">
+                                        <input type="text" id="@lab" value="@LocalSerialHostSettingValue?.ToString()" @onchange="@((ChangeEventArgs e) => OnChange(e, LocalSerialHostSetting, parent, false))" class="form-control" />
+                                    </MudItem>
+                                </MudGrid>
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
+        <MudItem Class="mt-10" xs="12">
+            <MudButton Class="mb-10" OnClick="Save" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">Save</MudButton>
+            @if (settingsSaved)
+            {
+                <MudText Color="MudBlazor.Color.Success">@message</MudText>
+            }
+        </MudItem>
+    </MudContainer>
+</MudPaper>
+
+
+
+@code {
+
+    bool settingsSaved = false;
+    string message;
+    bool isLoadingLights = false;
+    string selectedPort = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!appState.SignedIn)
+        {
+            NavManager.NavigateTo("/");
+        }
+        try
+        {
+            appState.OnChange += RaiseStateHasChanged;
+
+            await GetSerialHosts();
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error Occured loading Local Serial Host Page");
+            throw;
+        }
+        await Task.CompletedTask;
+    }
+
+    private void Save()
+    {
+        try
+        {
+            SettingsService.SaveSettings(appState.Config);
+            _mediator.Send(new InitializeCommand { AppState = appState });
+
+            message = "Settings Saved";
+            settingsSaved = true;
+            _logger.LogInformation("Settings Saved from Local Serial Host Page");
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error Occured Saving Local Serial Host Settings");
+            throw;
+        }
+    }
+
+    private void OnChange(ChangeEventArgs e, object setting, object LocalSerialHostSettingValue, bool directChangeValue = false)
+    {
+        var newSetting = e.Value;
+
+        if (directChangeValue)
+        {
+            string settingAsString = (string)setting;
+            settingAsString = (string)newSetting;
+        }
+        else
+        {
+            PropertyInfo propInfo = (PropertyInfo)setting;
+
+            try
+            {
+                propInfo.SetValue(LocalSerialHostSettingValue, newSetting);
+            }
+            catch (TargetException TargetEx)
+            {
+                _logger.LogError(TargetEx, "New value is wrong type");
+            }
+        }
+    }
+
+    private void OnChange(string e)
+    {
+        var port = e;
+        appState.Config.LightSettings.LocalSerialHost.SelectedItemId = port;
+        appState.SetLocalSerialHost(port);
+        _logger.LogInformation($"Selected Serial Host Set: {port}");
+    }
+
+    public async Task GetSerialHosts()
+    {
+        if (appState.Config.LightSettings.LocalSerialHost.IsEnabled)
+        {
+            try
+            {
+                isLoadingLights = true;
+                _logger.LogInformation("Local Serial Hosts Retrieval Initialized");
+                appState.SetLocalSerialHosts(await _mediator.Send(new Core.LocalSerialHostServices.GetPortCommand()));
+
+                if (string.IsNullOrEmpty(appState.Config.LightSettings.LocalSerialHost.SelectedItemId) && appState.LocalSerialHosts.Count() > 0)
+                {
+                    appState.Config.LightSettings.LocalSerialHost.SelectedItemId = appState.LocalSerialHosts.FirstOrDefault();
+                }
+                else
+                {
+                    selectedPort = appState.LocalSerialHosts.Where(a => a == appState.Config.LightSettings.LocalSerialHost.SelectedItemId).FirstOrDefault();
+                }
+
+                _logger.LogInformation("Local Serial Hosts Retrieval Successful");
+                isLoadingLights = false;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Error occurred finding Serial Hosts");
+                throw;
+            }
+        }
+    }
+
+    public void Dispose()
+    {
+        appState.OnChange -= RaiseStateHasChanged;
+    }
+
+    private void RaiseStateHasChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+}
