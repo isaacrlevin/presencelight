@@ -409,6 +409,7 @@ jobs:
 
             $zipARMHash = Get-FileHash "/home/runner/work/presencelight/presencelight/StandaloneSigned/PresenceLight.${{ env.VERSION }}-win-arm64.zip" -Algorithm SHA256
             $zipARMHash.Hash | Out-File -Encoding 'UTF8' "/home/runner/work/presencelight/presencelight/StandaloneSigned/win-arm64.sha256"
+        shell: pwsh
 
       - name: Create GitHub Release
         id: create_release
