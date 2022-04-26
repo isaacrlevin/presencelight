@@ -18,7 +18,7 @@ function Get-HashForArchitecture {
         [string]
         $Version
     )
-    $hash = (new-object Net.WebClient).DownloadString("https://github.com/isaacrlevin/presencelight/releases/download/Desktop-v$Version/PresenceLight.$Version-$Architecture.sha256")
+    $hash = (new-object Net.WebClient).DownloadString("https://github.com/isaacrlevin/presencelight/releases/download/Desktop-v$Version/$Architecture.sha256")
     return $hash
 }
 
