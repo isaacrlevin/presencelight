@@ -58,6 +58,7 @@ if (-not $Token) {
     return
 }
 # Get the latest wingetcreate exe
-Invoke-WebRequest 'https://aka.ms/wingetcreate/latest/self-contained' -OutFile "./$Version/wingetcreate.exe"
+cd $Version
+Invoke-WebRequest 'https://aka.ms/wingetcreate/latest/self-contained' -OutFile wingetcreate.exe
 # Create the PR
-"./$Version/wingetcreate.exe" submit --token $Token $Version
+wingetcreate.exe submit --token $Token $Version
