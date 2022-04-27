@@ -394,11 +394,11 @@ jobs:
           name: StandaloneSigned
           path: "${{ github.workspace }}/StandaloneSigned"
 
-    - uses: actions/download-artifact@v2
-      name: Download Release Signed
-      with:
-        name: ReleaseSigned
-        path: "${{ github.workspace }}/ReleaseSigned"
+      - uses: actions/download-artifact@v2
+        name: Download Release Signed
+        with:
+          name: ReleaseSigned
+          path: "${{ github.workspace }}/ReleaseSigned"
 
       - name: Get Version from File
         run: |
