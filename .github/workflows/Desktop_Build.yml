@@ -454,7 +454,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: "/home/runner/work/presencelight/presencelight/StandaloneSigned/x86-zip.sha256"
-          asset_name: "x86.sha256"
+          asset_name: "x86-zip.sha256"
           asset_content_type: text/plain
 
       - name: Upload Standalone x64 Release
@@ -476,7 +476,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: "/home/runner/work/presencelight/presencelight/StandaloneSigned/x64-zip.sha256"
-          asset_name: "x64.sha256"
+          asset_name: "x64-zip.sha256"
           asset_content_type: text/plain
 
       - name: Upload Standalone ARM Release
@@ -498,7 +498,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: "/home/runner/work/presencelight/presencelight/StandaloneSigned/win-arm64-zip.sha256"
-          asset_name: "win-arm64.sha256"
+          asset_name: "win-arm64-zip.sha256"
           asset_content_type: text/plain
 
       - name: Upload APPX
