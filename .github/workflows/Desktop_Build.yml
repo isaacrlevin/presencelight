@@ -394,6 +394,12 @@ jobs:
           name: StandaloneSigned
           path: "${{ github.workspace }}/StandaloneSigned"
 
+    - uses: actions/download-artifact@v2
+      name: Download Release Signed
+      with:
+        name: ReleaseSigned
+        path: "${{ github.workspace }}/ReleaseSigned"
+
       - name: Get Version from File
         run: |
           version=$(<"${{ github.workspace }}/StandaloneSigned/version.txt")
@@ -402,13 +408,17 @@ jobs:
       - name: Add hashes
         run: |
             $zip64Hash = Get-FileHash "/home/runner/work/presencelight/presencelight/StandaloneSigned/PresenceLight.${{ env.VERSION }}-x64.zip" -Algorithm SHA256
-            $zip64Hash.Hash | Out-File -Encoding 'UTF8' "/home/runner/work/presencelight/presencelight/StandaloneSigned/x64.sha256"
+            $zip64Hash.Hash | Out-File -Encoding 'UTF8' "/home/runner/work/presencelight/presencelight/StandaloneSigned/x64-zip.sha256"
 
             $zip86Hash = Get-FileHash "/home/runner/work/presencelight/presencelight/StandaloneSigned/PresenceLight.${{ env.VERSION }}-x86.zip" -Algorithm SHA256
-            $zip86Hash.Hash | Out-File -Encoding 'UTF8' "/home/runner/work/presencelight/presencelight/StandaloneSigned/x86.sha256"
+            $zip86Hash.Hash | Out-File -Encoding 'UTF8' "/home/runner/work/presencelight/presencelight/StandaloneSigned/x86-zip.sha256"
 
             $zipARMHash = Get-FileHash "/home/runner/work/presencelight/presencelight/StandaloneSigned/PresenceLight.${{ env.VERSION }}-win-arm64.zip" -Algorithm SHA256
-            $zipARMHash.Hash | Out-File -Encoding 'UTF8' "/home/runner/work/presencelight/presencelight/StandaloneSigned/win-arm64.sha256"
+            $zipARMHash.Hash | Out-File -Encoding 'UTF8' "/home/runner/work/presencelight/presencelight/StandaloneSigned/win-arm64-zip.sha256"
+
+            $appxHash = Get-FileHash "/home/runner/work/presencelight/presencelight/ReleaseSigned/PresenceLight.Package_${{ env.VERSION }}.0_Test/PresenceLight.Package_${{ env.VERSION }}.0_x64_x86_ARM64.appxbundle" -Algorithm SHA256
+            $appxHash.Hash | Out-File -Encoding 'UTF8' "/home/runner/work/presencelight/presencelight/ReleaseSigned/appx.sha256"
+          
         shell: pwsh
 
       - name: Create GitHub Release
@@ -491,6 +501,28 @@ jobs:
           asset_name: "win-arm64.sha256"
           asset_content_type: text/plain
 
+      - name: Upload APPX
+        id: upload-release-asset7
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: "/home/runner/work/presencelight/presencelight/ReleaseSigned/PresenceLight.Package_${{ env.VERSION }}.0_Test/PresenceLight.Package_${{ env.VERSION }}.0_x64_x86_ARM64.appxbundle"
+          asset_name: "PresenceLight.Package_${{ env.VERSION }}.0_x64_x86_ARM64.appxbundle"
+          asset_content_type: application/zip
+
+      - name: Upload APPX Hash
+        id: upload-release-asset8
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: "/home/runner/work/presencelight/presencelight/ReleaseSigned/appx.sha256"
+          asset_name: "appx.sha256"
+          asset_content_type: text/plain          
+
   Deploy_Choco:
     needs: Deploy_GitHub_Release
     if: ${{ github.event_name != 'pull_request' }}
@@ -524,12 +556,12 @@ jobs:
         run: |
           # Hash the Zip Files
           mkdir "${{ github.workspace }}\Download"
-          Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/x86.sha256" -OutFile "${{ github.workspace }}\\Download\\x86.sha256"
-          Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/x64.sha256" -OutFile "${{ github.workspace }}\\Download\\x64.sha256"
-          Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/win-arm64.sha256" -OutFile "${{ github.workspace }}\\Download\\win-arm64.sha256"
-          $hash86=Get-Filehash ${{ github.workspace }}\\Download\\x86.sha256
-          $hash64=Get-Filehash ${{ github.workspace }}\\Download\\x64.sha256
-          $hashARM=Get-Filehash ${{ github.workspace }}\\Download\\win-arm64.sha256
+          Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/x86-zip.sha256" -OutFile "${{ github.workspace }}\\Download\\x86-zip.sha256"
+          Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/x64-zip.sha256" -OutFile "${{ github.workspace }}\\Download\\x64-zip.sha256"
+          Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/win-arm64-zip.sha256" -OutFile "${{ github.workspace }}\\Download\\win-arm64-zip.sha256"
+          $hash86=Get-Filehash ${{ github.workspace }}\\Download\\x86-zip.sha256
+          $hash64=Get-Filehash ${{ github.workspace }}\\Download\\x64-zip.sha256
+          $hashARM=Get-Filehash ${{ github.workspace }}\\Download\\win-arm64-zip.sha256
 
           # Update ChocolateyInstall.ps1
           $installFile = Get-Content -path "${{ github.workspace }}\\Chocolatey\\tools\\ChocolateyInstall.ps1" -Raw
