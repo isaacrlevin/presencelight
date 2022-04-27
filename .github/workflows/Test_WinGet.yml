@@ -21,3 +21,6 @@ jobs:
     - name: Create manifest and submit PR
       run: |
         ./build.ps1 -Version "${{ github.event.inputs.version }}" -Token $env:WINGETCREATE_TOKEN
+    - name: Setup tmate session
+      if: ${{ failure() }}
+      uses: mxschmitt/action-tmate@v3
