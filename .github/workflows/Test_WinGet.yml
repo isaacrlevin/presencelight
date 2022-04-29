@@ -22,7 +22,7 @@ jobs:
       uses: isaacrlevin/winget-publish-action@v.5
       with:
         publish-type: 'Update'
-        user: "isaacrlevin"
+        user: "isaaclevin"
         package: "presencelight"
         version: "5.4.11.0"
         url: "https://github.com/isaacrlevin/presencelight/releases/download/Desktop-v5.4.11/PresenceLight.Package_5.4.11.0_x64_x86_ARM64.appxbundle"
