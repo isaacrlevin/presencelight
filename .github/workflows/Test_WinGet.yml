@@ -16,8 +16,8 @@ jobs:
     env:
       WINGETCREATE_TOKEN: ${{ secrets.WINGETCREATE_TOKEN }}
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+#    - name: Checkout code
+#      uses: actions/checkout@v2
     - name: Winget Publish
       uses: isaacrlevin/winget-publish-action@v.5
       with:
