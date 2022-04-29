@@ -18,9 +18,24 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-    - name: Create manifest and submit PR
-      run: |
-        ./build.ps1 -Version "${{ github.event.inputs.version }}" -Token $env:WINGETCREATE_TOKEN
+    - name: Winget Publish
+      uses: isaacrlevin/winget-publish-action@v.5
+      with:
+        publish-type: "Update"
+        user: "isaacrlevin"
+        package: "presencelight"
+        version: "5.4.11.0"
+        url: "https://github.com/isaacrlevin/presencelight/releases/download/Desktop-v5.4.11/PresenceLight.Package_5.4.11.0_x64_x86_ARM64.appxbundle"
+        arch: x64
+        installer-type: "appx"
+        publisher: "Isaac Levin"
+        package-name: "PresenceLight"
+        license: "MIT License"
+        short-description: "PresenceLight is a solution to broadcast your various statuses to light bulbs."
+        token: ${{ secrets.WINGETCREATE_TOKEN }}
+#    - name: Create manifest and submit PR
+#      run: |
+#        ./build.ps1 -Version "${{ github.event.inputs.version }}" -Token $env:WINGETCREATE_TOKEN
     - name: Setup tmate session
       if: ${{ failure() }}
       uses: mxschmitt/action-tmate@v3
