@@ -21,7 +21,7 @@ jobs:
     - name: Winget Publish
       uses: isaacrlevin/winget-publish-action@v.5
       with:
-        publish-type: 'Update'
+        publish-type: 'Create'
         user: "isaaclevin"
         package: "presencelight"
         version: "5.4.11.0"
