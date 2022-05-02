@@ -1,10 +1,6 @@
 name: Winget
 on:
   workflow_dispatch:
-    inputs:
-      version:
-        description: 'The latest version'
-        required: true
 
 jobs:
   publish:
