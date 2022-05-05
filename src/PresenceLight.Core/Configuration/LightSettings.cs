@@ -15,7 +15,7 @@ namespace PresenceLight.Core
 
         public bool UseWorkingHours { get; set; }
 
-        public bool UseAmPM { get; set; }
+        public bool UseAmPm { get; set; }
 
         public string WorkingHoursStartTime { get; set; }
 

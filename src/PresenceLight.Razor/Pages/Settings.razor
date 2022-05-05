@@ -54,13 +54,13 @@
                         <MudItem xs="4">
                             <MudText Typo="Typo.h5">Light Syncing Schedule (Working Hours)</MudText>
                             <br />
-                            <MudCheckBox @bind-Checked="@appState.Config.LightSettings.UseAmPM" Label="Use AM PM Format"></MudCheckBox>
+                            <MudCheckBox @bind-Checked="@appState.Config.LightSettings.UseAmPm" Label="Use AM PM Format"></MudCheckBox>
                         </MudItem>
                         <MudItem xs="3">
-                            <MudTimePicker Label="Start Time" AmPm="@appState.Config.LightSettings.UseAmPM" @bind-Time="startTimeSpan" />
+                            <MudTimePicker Label="Start Time" AmPm="@appState.Config.LightSettings.UseAmPm" @bind-Time="startTimeSpan" />
                         </MudItem>
                         <MudItem xs="3">
-                            <MudTimePicker Label="End Time" AmPm="@appState.Config.LightSettings.UseAmPM" @bind-Time="endTimeSpan" />
+                            <MudTimePicker Label="End Time" AmPm="@appState.Config.LightSettings.UseAmPm" @bind-Time="endTimeSpan" />
                         </MudItem>
                     </MudGrid>
                 </MudItem>
