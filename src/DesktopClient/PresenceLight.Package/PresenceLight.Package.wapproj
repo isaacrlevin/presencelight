@@ -74,7 +74,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Update="Microsoft.SourceLink.GitHub" Version="1.1.1" />
-    <PackageReference Update="Nerdbank.GitVersioning" Version="3.4.255" />
+    <PackageReference Update="Nerdbank.GitVersioning" Version="3.5.103" />
   </ItemGroup>
   <Import Project="$(WapProjPath)\Microsoft.DesktopBridge.targets" />
   <Target Name="BuildRef" Condition="'$(BuildingInsideVisualStudio)' != 'true' " BeforeTargets="BeforeBuild">
