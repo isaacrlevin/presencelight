@@ -611,6 +611,11 @@ jobs:
       with:
         name: ReleaseSigned
         path: "${{ github.workspace }}/ReleaseSigned"
+        
+    - name: Copy files to same directory
+      run: |
+        az storage blob upload --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} -f "${{ github.workspace }}/ReleaseSigned/stable_badge.svg" -n stable_badge.svg -c store --content-type image/svg+xml  --debug --overwrite
+      shell: pwsh
 
     - name: Windows Store Publish
       uses: isaacrlevin/windows-store-action@1.0
