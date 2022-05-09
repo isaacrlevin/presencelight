@@ -359,8 +359,8 @@ jobs:
       run: |
         Copy-Item "${{ github.workspace }}/NightlySigned" -Destination "${{ github.workspace }}/Upload" -Recurse -Verbose
         dir .\Upload\
-        az storage blob upload --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} -f /home/runner/work/presencelight/presencelight/Upload/ci_badge.svg -n ci_badge.svg -c nightly --content-type image/svg+xml  --debug
-        az storage blob upload --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} -f /home/runner/work/presencelight/presencelight/Upload/PresenceLight.Package.appinstaller -n PresenceLight.Package.appinstaller -c nightly --content-type application/xml  --debug
+        az storage blob upload --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} -f /home/runner/work/presencelight/presencelight/Upload/ci_badge.svg -n ci_badge.svg -c nightly --content-type image/svg+xml  --debug --overwrite
+        az storage blob upload --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} -f /home/runner/work/presencelight/presencelight/Upload/PresenceLight.Package.appinstaller -n PresenceLight.Package.appinstaller -c nightly --content-type application/xml  --debug --overwrite
         az storage blob upload-batch --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} --source /home/runner/work/presencelight/presencelight/Upload --pattern *.appxbundle -d nightly --content-type application/vns.ms-appx --debug
       shell: pwsh
 
