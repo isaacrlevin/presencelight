@@ -1,10 +1,11 @@
 ﻿@page "/settings"
 
+@inject IJSRuntime js
 @inject ILogger<Settings> _logger;
 
 <MudPaper Width="100%" Elevation="0">
     <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Style="text-align:center">
-        <MudText Typo="Typo.h3">Settings</MudText>
+        <MudText Typo="Typo.h3">Settings</MudText>   <MudLink Typo="Typo.body1" Href="" title="Click to download configuration file" @onclick="@((ev) => DownloadSettings(@localConfigurationPath))" Align="Align.Left">Download File</MudLink>
         <MudGrid Class="mt-10" Justify="Justify.Center">
             <MudItem xs="6">
                 <MudCheckBox @bind-Checked="@appState.Config.LightSettings.SyncLights" Label="Light Sync Enabled"></MudCheckBox>
@@ -23,25 +24,25 @@
                 <MudItem xs="12">
                     <MudGrid Justify="Justify.Center">
                         <MudItem xs="1">
-                            <MudToggleIconButton Style=@(@Sunday ? "background-color: #594ae2ff; color: white" : "") @bind-Toggled="@Sunday" Color="@MudBlazor.Color.Default" ToggledColor="@MudBlazor.Color.Primary">Sun</MudToggleIconButton>
+                            <MudToggleIconButton Style=@(@Sunday ? "background-color: #594ae2ff; color: white !important" : "") @bind-Toggled="@Sunday" Color="@MudBlazor.Color.Default" ToggledColor="@MudBlazor.Color.Primary">Sun</MudToggleIconButton>
                         </MudItem>
                         <MudItem xs="1">
-                            <MudToggleIconButton Style=@(@Monday ? "background-color: #594ae2ff; color: white" : "") @bind-Toggled="@Monday" Color="@MudBlazor.Color.Default" ToggledColor="@MudBlazor.Color.Primary">Mon</MudToggleIconButton>
+                            <MudToggleIconButton Style=@(@Monday ? "background-color: #594ae2ff; color: white !important" : "") @bind-Toggled="@Monday" Color="@MudBlazor.Color.Default" ToggledColor="@MudBlazor.Color.Primary">Mon</MudToggleIconButton>
                         </MudItem>
                         <MudItem xs="1">
-                            <MudToggleIconButton Style=@(@Tuesday ? "background-color: #594ae2ff; color: white" : "") @bind-Toggled="@Tuesday" Color="@MudBlazor.Color.Default" ToggledColor="@MudBlazor.Color.Primary">Tues</MudToggleIconButton>
+                            <MudToggleIconButton Style=@(@Tuesday ? "background-color: #594ae2ff; color: white !important" : "") @bind-Toggled="@Tuesday" Color="@MudBlazor.Color.Default" ToggledColor="@MudBlazor.Color.Primary">Tues</MudToggleIconButton>
                         </MudItem>
                         <MudItem xs="1">
-                            <MudToggleIconButton Style=@(@Wednesday ? "background-color: #594ae2ff; color: white" : "") @bind-Toggled="@Wednesday" Color="@MudBlazor.Color.Default" ToggledColor="@MudBlazor.Color.Primary">Wed</MudToggleIconButton>
+                            <MudToggleIconButton Style=@(@Wednesday ? "background-color: #594ae2ff; color: white !important" : "") @bind-Toggled="@Wednesday" Color="@MudBlazor.Color.Default" ToggledColor="@MudBlazor.Color.Primary">Wed</MudToggleIconButton>
                         </MudItem>
                         <MudItem xs="1">
-                            <MudToggleIconButton Style=@(@Thursday ? "background-color: #594ae2ff; color: white" : "") @bind-Toggled="@Thursday" Color="@MudBlazor.Color.Default" ToggledColor="@MudBlazor.Color.Primary">Thu</MudToggleIconButton>
+                            <MudToggleIconButton Style=@(@Thursday ? "background-color: #594ae2ff; color: white !important" : "") @bind-Toggled="@Thursday" Color="@MudBlazor.Color.Default" ToggledColor="@MudBlazor.Color.Primary">Thu</MudToggleIconButton>
                         </MudItem>
                         <MudItem xs="1">
-                            <MudToggleIconButton Style=@(@Friday ? "background-color: #594ae2ff; color: white" : "") @bind-Toggled="@Friday" Color="@MudBlazor.Color.Default" ToggledColor="@MudBlazor.Color.Primary">Fri</MudToggleIconButton>
+                            <MudToggleIconButton Style=@(@Friday ? "background-color: #594ae2ff; color: white !important" : "") @bind-Toggled="@Friday" Color="@MudBlazor.Color.Default" ToggledColor="@MudBlazor.Color.Primary">Fri</MudToggleIconButton>
                         </MudItem>
                         <MudItem xs="1">
-                            <MudToggleIconButton Style=@(@Saturday ? "background-color: #594ae2ff; color: white" : "") @bind-Toggled="@Saturday" Color="@MudBlazor.Color.Default" ToggledColor="@MudBlazor.Color.Primary">Sat</MudToggleIconButton>
+                            <MudToggleIconButton Style=@(@Saturday ? "background-color: #594ae2ff; color: white !important" : "") @bind-Toggled="@Saturday" Color="@MudBlazor.Color.Default" ToggledColor="@MudBlazor.Color.Primary">Sat</MudToggleIconButton>
                         </MudItem>
                     </MudGrid>
                 </MudItem>
@@ -52,12 +53,14 @@
                     <MudGrid Justify="Justify.FlexStart" Class="align-center">
                         <MudItem xs="4">
                             <MudText Typo="Typo.h5">Light Syncing Schedule (Working Hours)</MudText>
+                            <br />
+                            <MudCheckBox @bind-Checked="@appState.Config.LightSettings.UseAmPm" Label="Use AM PM Format"></MudCheckBox>
                         </MudItem>
                         <MudItem xs="3">
-                            <MudTimePicker Label="Start Time" AmPm="true" @bind-Time="startTimeSpan" />
+                            <MudTimePicker Label="Start Time" AmPm="@appState.Config.LightSettings.UseAmPm" @bind-Time="startTimeSpan" />
                         </MudItem>
                         <MudItem xs="3">
-                            <MudTimePicker Label="End Time" AmPm="true" @bind-Time="endTimeSpan" />
+                            <MudTimePicker Label="End Time" AmPm="@appState.Config.LightSettings.UseAmPm" @bind-Time="endTimeSpan" />
                         </MudItem>
                     </MudGrid>
                 </MudItem>
@@ -144,6 +147,7 @@
 @code {
     bool settingsSaved = false;
     string message;
+    string localConfigurationPath;
 
     bool Monday;
     bool Tuesday;
@@ -168,7 +172,9 @@
         PopulateWorkingDays();
 
         startTimeSpan = appState.Config.LightSettings.WorkingHoursStartTimeAsDate == null ? null : appState.Config.LightSettings.WorkingHoursStartTimeAsDate.Value.TimeOfDay;
-        startTimeSpan = appState.Config.LightSettings.WorkingHoursEndTimeAsDate == null ? null : appState.Config.LightSettings.WorkingHoursStartTimeAsDate.Value.TimeOfDay;
+        endTimeSpan = appState.Config.LightSettings.WorkingHoursEndTimeAsDate == null ? null : appState.Config.LightSettings.WorkingHoursEndTimeAsDate.Value.TimeOfDay;
+
+        localConfigurationPath = new System.IO.FileInfo(SettingsService.GetSettingsFileLocation()).FullName;
 
         await Task.CompletedTask;
     }
@@ -277,5 +283,26 @@
         }
 
         appState.Config.LightSettings.WorkingDays = string.Join("|", days);
+    }
+
+    async Task DownloadSettings(string filename)
+    {
+        string fileContents;
+        using (var fs = new System.IO.FileStream(
+                filename,
+                System.IO.FileMode.Open,
+                System.IO.FileAccess.Read,
+                System.IO.FileShare.ReadWrite))
+        {
+            var b = new byte[fs.Length];
+
+            fs.Read(b, 0, b.Length);
+            fileContents = Convert.ToBase64String(b);
+        }
+
+        await js.InvokeAsync<object>(
+                   "saveAsFile",
+                   filename,
+                   fileContents);
     }
 }

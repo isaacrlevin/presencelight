@@ -44,36 +44,19 @@
                 {
                     <MudGrid Class="mt-10" Justify="Justify.Center">
                         <MudItem xs="4">
-                            <MudSelect Dense="true" Label="@($"Select LIFX {lastType}")" T="string" Variant="Variant.Outlined" ValueChanged="OnChange">
+                            <MudSelect Dense="true" Value=@($"{selectedLightLabel}") Label="@($"Select LIFX {lastType}")" T="string" Variant="Variant.Outlined" ValueChanged="OnChange">
                                 @foreach (var light in appState.LIFXLights)
                                 {
                                     if (light.GetType() == typeof(LifxCloud.NET.Models.Group))
                                     {
                                         var obj = (LifxCloud.NET.Models.Group)light;
-
-                                        @if (appState.Config.LightSettings.LIFX.SelectedItemId == $"group_id:{obj.Id}")
-                                        {
-                                            <MudSelectItem Value="@("group_id:{@obj.Id}")">@obj.Label</MudSelectItem>
-                                        }
-                                        else
-                                        {
-                                            <MudSelectItem Value="@("group_id:{@obj.Id}")">@obj.Label</MudSelectItem>
-                                        }
+                                        <MudSelectItem Value="@($"group_id:{@obj.Id}")">@obj.Label</MudSelectItem>
                                     }
                                     else
                                     {
                                         var obj = (LifxCloud.NET.Models.Light)light;
-
-                                        @if (appState.Config.LightSettings.LIFX.SelectedItemId == $"id:{obj.Id}")
-                                        {
-                                            <MudSelectItem Value="@("id:{@obj.Id}")">@obj.Label</MudSelectItem>
-                                        }
-                                        else
-                                        {
-                                            <MudSelectItem Value="@("id:{@obj.Id}")">@obj.Label</MudSelectItem>
-                                        }
+                                        <MudSelectItem Value="@($"id:{@obj.Id}")">@obj.Label</MudSelectItem>
                                     }
-
                                 }
                             </MudSelect>
                         </MudItem>
@@ -114,6 +97,7 @@
     string lifxMessage;
     string lastType = "";
     bool isLoadingLights = false;
+    string selectedLightLabel = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -196,6 +180,10 @@
                             var obj = (LifxCloud.NET.Models.Group)appState.LIFXLights.FirstOrDefault();
                             appState.Config.LightSettings.LIFX.SelectedItemId = $"group_id:{obj.Id}";
                         }
+                        else
+                        {
+                            selectedLightLabel = ((LifxCloud.NET.Models.Group)appState.LIFXLights.Where(a => ((LifxCloud.NET.Models.Group)a).Id == appState.Config.LightSettings.LIFX.SelectedItemId.Replace("group_id:", "")).FirstOrDefault()).Label;
+                        }
                     }
                     else
                     {
@@ -205,6 +193,10 @@
                         {
                             var obj = (LifxCloud.NET.Models.Light)appState.LIFXLights.FirstOrDefault();
                             appState.Config.LightSettings.LIFX.SelectedItemId = $"id:{obj.Id}";
+                        }
+                        else
+                        {
+                            selectedLightLabel = ((LifxCloud.NET.Models.Light)appState.LIFXLights.Where(a => ((LifxCloud.NET.Models.Light)a).Id == appState.Config.LightSettings.LIFX.SelectedItemId.Replace("id:", "")).FirstOrDefault()).Label;
                         }
                     }
 

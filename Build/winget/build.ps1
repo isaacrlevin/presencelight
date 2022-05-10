@@ -9,16 +9,13 @@ Param
     $Token
 )
 
-function Get-HashForArchitecture {
+function Get-Hash {
     param (
-        [parameter(Mandatory = $true)]
-        [string]
-        $Architecture,
         [parameter(Mandatory = $true)]
         [string]
         $Version
     )
-    $hash = (new-object Net.WebClient).DownloadString("https://github.com/isaacrlevin/presencelight/releases/download/Desktop-v$Version/PresenceLight.$Version-$Architecture.sha256")
+    $hash = (new-object Net.WebClient).DownloadString("https://github.com/isaacrlevin/presencelight/releases/download/Desktop-v$Version/appx.sha256")
     return $hash
 }
 
@@ -32,15 +29,11 @@ function Write-MetaData {
         $Version,
         [parameter(Mandatory = $true)]
         [string]
-        $HashAmd64,
-        [parameter(Mandatory = $true)]
-        [string]
-        $HashArm64
+        $Hash
     )
     $content = Get-Content $FileName -Raw
     $content = $content.Replace('<VERSION>', $Version)
-    $content = $content.Replace('<HASH-AMD64>', $HashAmd64)
-    $content = $content.Replace('<HASH-ARM64>', $HashArm64)
+    $content = $content.Replace('<HASH>', $Hash)
     $date = Get-Date -Format "yyyy-MM-dd"
     $content = $content.Replace('<DATE>', $date)
     $content | Out-File -Encoding 'UTF8' "./$Version/$FileName"
@@ -48,11 +41,9 @@ function Write-MetaData {
 
 New-Item -Path $PWD -Name $Version -ItemType "directory"
 # Get all files inside the folder and adjust the version/hash
-$HashAmd86 = Get-HashForArchitecture -Architecture 'x86' -Version $Version
-$HashAmd64 = Get-HashForArchitecture -Architecture 'x64' -Version $Version
-$HashArm64 = Get-HashForArchitecture -Architecture 'win-arm64' -Version $Version
+$Hash = Get-Hash -Version $Version
 Get-ChildItem '*.yaml' | ForEach-Object -Process {
-    Write-MetaData -FileName $_.Name -Version $Version -HashAmd64 $HashAmd64 -HashArm64 $HashArm64
+    Write-MetaData -FileName $_.Name -Version $Version -Hash $Hash
 }
 if (-not $Token) {
     return

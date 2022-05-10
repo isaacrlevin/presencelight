@@ -15,6 +15,8 @@ namespace PresenceLight.Core
 
         public bool UseWorkingHours { get; set; }
 
+        public bool UseAmPm { get; set; }
+
         public string WorkingHoursStartTime { get; set; }
 
         [Newtonsoft.Json.JsonIgnore]
@@ -34,6 +36,8 @@ namespace PresenceLight.Core
         public bool UseDefaultBrightness { get; set; }
         public int DefaultBrightness { get; set; }
         public CustomApi CustomApi { get; set; }
+
+        public LocalSerialHost LocalSerialHost { get; set; }
 
         public LIFX LIFX { get; set; }
 

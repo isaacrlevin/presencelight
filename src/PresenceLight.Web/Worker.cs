@@ -278,6 +278,15 @@ namespace PresenceLight.Web
                     });
                 }
 
+                 if (_appState.Config.LightSettings.LocalSerialHost.IsEnabled && !string.IsNullOrEmpty(_appState.Config.LightSettings.LocalSerialHost.SelectedItemId))
+                {
+                    string response = await _mediator.Send(new Core.LocalSerialHostServices.SetColorCommand
+                    {
+                        Activity = activity,
+                        Availability = color
+                    });
+                }
+
                 if (_appState.Config.LightSettings.Wiz.IsEnabled)
                 {
                     await _mediator.Send(new Core.WizServices.SetColorCommand

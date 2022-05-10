@@ -1,5 +1,5 @@
 PackageIdentifier: isaaclevin.presencelight
-PackageVersion: <VERSION>
+PackageVersion: <VERSION>.0
 Platform:
 - Windows.Universal
 MinimumOSVersion: 10.0.17134.0
@@ -12,13 +12,13 @@ UpgradeBehavior: install
 PackageFamilyName: 37828IsaacLevin.197278F15330A_jvewcxq8vj8qt
 Installers:
 - Architecture: x64
-  InstallerUrl: https://github.com/isaacrlevin/presencelight/releases/download/Desktop-v<VERSION>/PresenceLight.<VERSION>-x64.zip
-  InstallerSha256: <HASH-AMD64>
-- Architecture: x85
-  InstallerUrl: https://github.com/isaacrlevin/presencelight/releases/download/Desktop-v<VERSION>/PresenceLight.<VERSION>-x86.zip
-  InstallerSha256: <HASH-AMD86>
+  InstallerUrl: https://github.com/isaacrlevin/presencelight/releases/download/Desktop-v<VERSION>/PresenceLight.Package_<VERSION>.0_x64_x86_ARM64.appxbundle
+  InstallerSha256: <HASH>
 - Architecture: arm64
-  InstallerUrl: https://github.com/isaacrlevin/presencelight/releases/download/Desktop-v<VERSION>/PresenceLight.<VERSION>-win-arm64.zip
-  InstallerSha256: <HASH-ARM64>
+  InstallerUrl: https://github.com/isaacrlevin/presencelight/releases/download/Desktop-v<VERSION>/PresenceLight.Package_<VERSION>.0_x64_x86_ARM64.appxbundle
+  InstallerSha256: <HASH>
+- Architecture: x86
+  InstallerUrl: https://github.com/isaacrlevin/presencelight/releases/download/Desktop-v<VERSION>/PresenceLight.Package_<VERSION>.0_x64_x86_ARM64.appxbundle
+  InstallerSha256: <HASH>
 ManifestType: installer
 ManifestVersion: 1.1.0

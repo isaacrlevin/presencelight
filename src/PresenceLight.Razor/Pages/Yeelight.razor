@@ -30,18 +30,11 @@
                 {
                     <MudGrid Class="mt-10" Justify="Justify.Center">
                         <MudItem xs="4">
-                            <MudSelect Dense="true" T="string" Variant="Variant.Outlined" ValueChanged="OnChange">
+                            <MudSelect Value=@($"{selectedLightLabel}") Dense="true" T="string" Variant="Variant.Outlined" ValueChanged="OnChange">
                                 <MudSelectItem Disabled="true" Value="@("Select")" />
                                 @foreach (var light in appState.YeelightLights)
                                 {
-                                    @if (appState.Config.LightSettings.Yeelight.SelectedItemId == light.Id)
-                                    {
-                                        <MudSelectItem Value="@light.Hostname" />
-                                    }
-                                    else
-                                    {
-                                        <MudSelectItem Value="@light.Hostname" />
-                                    }
+                                    <MudSelectItem Value="@light.Id">@light.Hostname</MudSelectItem>
                                 }
                             </MudSelect>
                         </MudItem>
@@ -77,6 +70,7 @@
     bool settingsSaved = false;
     string message;
     bool isLoadingLights = false;
+    string selectedLightLabel = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -136,6 +130,10 @@
                 if (string.IsNullOrEmpty(appState.Config.LightSettings.Yeelight.SelectedItemId) && appState.YeelightLights.Count() > 0)
                 {
                     appState.Config.LightSettings.Yeelight.SelectedItemId = appState.YeelightLights.FirstOrDefault().Id;
+                }
+                else
+                {
+                    selectedLightLabel = appState.YeelightLights.Where(a => a.Id == appState.Config.LightSettings.Yeelight.SelectedItemId).FirstOrDefault()?.Hostname;
                 }
                 _logger.LogInformation("Yeelight Light Retrieval Successful");
                 isLoadingLights = false;
