@@ -112,6 +112,7 @@ jobs:
         # Update AppSettings.json. This must be done before build.
         $appsettings= get-content ".\src\DesktopClient\PresenceLight\appsettings.json" -raw | ConvertFrom-Json
         $appsettings.aadSettings.clientId = "${{ secrets.ApplicationId }}"
+        $appsettings.appVersion = "${{ env.GitBuildVersionSimple }}"
         $appsettings.lightSettings.lifx.LIFXClientId = "${{ secrets.LIFXClientId }}"
         $appsettings.lightSettings.lifx.LIFXClientSecret = "${{ secrets.LIFXClientSecret }}"
         $appsettings.applicationInsights.instrumentationkey = "${{ secrets.InstrumentationKey }}"
@@ -418,7 +419,7 @@ jobs:
 
             $appxHash = Get-FileHash "/home/runner/work/presencelight/presencelight/ReleaseSigned/PresenceLight.Package_${{ env.VERSION }}.0_Test/PresenceLight.Package_${{ env.VERSION }}.0_x64_x86_ARM64.appxbundle" -Algorithm SHA256
             $appxHash.Hash | Out-File -Encoding 'UTF8' "/home/runner/work/presencelight/presencelight/ReleaseSigned/appx.sha256"
-          
+
         shell: pwsh
 
       - name: Create GitHub Release
@@ -521,7 +522,7 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: "/home/runner/work/presencelight/presencelight/ReleaseSigned/appx.sha256"
           asset_name: "appx.sha256"
-          asset_content_type: text/plain          
+          asset_content_type: text/plain
 
   Deploy_Choco:
     needs: Deploy_GitHub_Release
@@ -611,7 +612,7 @@ jobs:
       with:
         name: ReleaseSigned
         path: "${{ github.workspace }}/ReleaseSigned"
-        
+
     - name: Copy files to same directory
       run: |
         az storage blob upload --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} -f "${{ github.workspace }}/ReleaseSigned/stable_badge.svg" -n stable_badge.svg -c store --content-type image/svg+xml  --debug --overwrite
@@ -653,7 +654,7 @@ jobs:
         name: Download Signing Scripts Artifacts
         with:
           name: SigningScripts
-          path: "${{ github.workspace }}/SigningScripts"        
+          path: "${{ github.workspace }}/SigningScripts"
 
       - name: Create manifest and submit PR
         working-directory: ${{ github.workspace }}/SigningScripts/winget
