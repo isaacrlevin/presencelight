@@ -26,7 +26,17 @@ else
                     <MudText Typo="Typo.body2" Class="px-4 py-2"> Hello, @context.User.Identity.Name!</MudText>
                 </ActivatorContent>
                 <ChildContent>
-                    <MudListItem Text="Logout" Icon="@Icons.Material.Filled.Logout" OnClick="SignOut" />
+                    <div tabindex="0" class="mud-list-item mud-list-item-dense mud-list-item-gutters mud-list-item-clickable mud-ripple">
+                        <div class="mud-list-item-icon">
+                            <svg class="mud-icon-root mud-svg-icon mud-inherit-text mud-icon-size-medium" focusable="false" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M0 0h24v24H0z" fill="none"></path>
+                                <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"></path>
+                            </svg>
+                        </div>
+                        <div class="mud-list-item-text ">
+                            <MudLink Class="mud-typography mud-typography-body2 mud-inherit-text" Href="MicrosoftIdentity/Account/SignOut">Log Out</MudLink>
+                        </div>
+                    </div>
                 </ChildContent>
             </MudMenu>
         </Authorized>
@@ -50,8 +60,15 @@ else
 
     private void SignOut()
     {
-        appState.SignOutRequested = true;
-        NavManager.NavigateTo("/");
+        if (appState.Config.AppType == "Desktop")
+        {
+            appState.SignOutRequested = true;
+            NavManager.NavigateTo("/");
+        }
+        else
+        {
+            NavManager.NavigateTo("MicrosoftIdentity/Account/SignOut");
+        }
     }
 
     public void Dispose()
@@ -63,4 +80,4 @@ else
     {
         InvokeAsync(StateHasChanged);
     }
-}
+    }
