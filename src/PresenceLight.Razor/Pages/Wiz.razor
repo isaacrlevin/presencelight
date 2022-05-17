@@ -117,6 +117,7 @@
     {
         var light = e;
         appState.Config.LightSettings.Wiz.SelectedItemId = light;
+        selectedLightLabel = appState.WizLights.Where(a => a.MacAddress == appState.Config.LightSettings.Wiz.SelectedItemId).FirstOrDefault().LightName;
         appState.SetWizLight(light);
         _logger.LogInformation($"Selected Wiz Light Set: {light}");
     }
@@ -137,7 +138,7 @@
                 }
                 else
                 {
-                    selectedLightLabel = appState.WizLights.Where(a => a.MacAddress == appState.Config.LightSettings.LIFX.SelectedItemId).FirstOrDefault().LightName;
+                    selectedLightLabel = appState.WizLights.Where(a => a.MacAddress == appState.Config.LightSettings.Wiz.SelectedItemId).FirstOrDefault().LightName;
                 }
                 _logger.LogInformation("Wiz Light Retrieval Successful");
                 isLoadingLights = false;
