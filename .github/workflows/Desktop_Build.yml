@@ -560,15 +560,15 @@ jobs:
           Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/x86-zip.sha256" -OutFile "${{ github.workspace }}\\Download\\x86-zip.sha256"
           Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/x64-zip.sha256" -OutFile "${{ github.workspace }}\\Download\\x64-zip.sha256"
           Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/win-arm64-zip.sha256" -OutFile "${{ github.workspace }}\\Download\\win-arm64-zip.sha256"
-          $hash86=Get-Filehash ${{ github.workspace }}\\Download\\x86-zip.sha256
-          $hash64=Get-Filehash ${{ github.workspace }}\\Download\\x64-zip.sha256
-          $hashARM=Get-Filehash ${{ github.workspace }}\\Download\\win-arm64-zip.sha256
+          $hash86= get-content ${{ github.workspace }}\\Download\\x86-zip.sha256
+          $hash64= get-content ${{ github.workspace }}\\Download\\x64-zip.sha256
+          $hashARM= get-content ${{ github.workspace }}\\Download\\win-arm64-zip.sha256
 
           # Update ChocolateyInstall.ps1
           $installFile = Get-Content -path "${{ github.workspace }}\\Chocolatey\\tools\\ChocolateyInstall.ps1" -Raw
-          $installFile = $installFile -replace '{ReplaceCheckSumARM}', $hashARM.Hash
-          $installFile = $installFile -replace '{ReplaceCheckSumx86}', $hash86.Hash
-          $installFile = $installFile -replace '{ReplaceCheckSumx64}', $hash64.Hash
+          $installFile = $installFile -replace '{ReplaceCheckSumARM}', $hashARM
+          $installFile = $installFile -replace '{ReplaceCheckSumx86}', $hash86
+          $installFile = $installFile -replace '{ReplaceCheckSumx64}', $hash64
           $installFile = $installFile -replace '{ARMLink}' , "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-win-arm64.zip"
           $installFile = $installFile -replace '{x86Link}' , "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x86.zip"
           $installFile = $installFile -replace '{x64Link}' , "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x64.zip"
@@ -579,9 +579,9 @@ jobs:
           $verificationFile = $verificationFile -replace '{ARMLink}' , "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-win-arm64.zip"
           $verificationFile = $verificationFile -replace '{x64Link}' , "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x64.zip"
           $verificationFile = $verificationFile -replace '{x86Link}' , "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x86.zip"
-          $verificationFile = $verificationFile -replace '{HASHx64}', $hash64.Hash
-          $verificationFile = $verificationFile -replace '{HASHx86}', $hash86.Hash
-          $verificationFile = $verificationFile -replace '{HASHARM}', $hashARM.Hash
+          $verificationFile = $verificationFile -replace '{HASHx64}', $hash64
+          $verificationFile = $verificationFile -replace '{HASHx86}', $hash86
+          $verificationFile = $verificationFile -replace '{HASHARM}', $hashARM
           $verificationFile | Set-Content -Path "${{ github.workspace }}\\Chocolatey\\tools\\Verification.txt"
         shell: powershell
 
