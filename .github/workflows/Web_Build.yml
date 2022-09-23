@@ -62,6 +62,12 @@ jobs:
       with:
         dotnet-version: 6.0.x
 
+    - name: Use .NET Core SDK 7.0.x
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 7.0.x
+        include-prerelease: true
+
     - name: Nerdbank.GitVersioning
       uses: dotnet/nbgv@v0.3.1
       with:
