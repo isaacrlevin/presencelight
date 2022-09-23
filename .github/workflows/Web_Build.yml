@@ -28,7 +28,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - ChannelName: Windows_x64_x86
+          - ChannelName: Windows_x64
             RID: win-x64
           - ChannelName: Windows_ARM
             RID: win-arm
@@ -137,7 +137,7 @@ jobs:
       with:
         path: Build
         name: SigningScripts
-      if:  ${{ success() && matrix.ChannelName  == 'Windows_x64_x86' }}
+      if:  ${{ success() && matrix.ChannelName  == 'Windows_x64' }}
 
   Code_Signing:
     needs: Build_Web
@@ -153,11 +153,11 @@ jobs:
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: Download Windows_x64_x86 Artifacts
+    - name: Download Windows_x64 Artifacts
       uses: actions/download-artifact@v2
       with:
-        name: Windows_x64_x86
-        path: ${{ github.workspace }}/ToSign/Windows_x64_x86
+        name: Windows_x64
+        path: ${{ github.workspace }}/ToSign/Windows_x64
 
     - name: Download Windows_ARM Artifacts
       uses: actions/download-artifact@v2
@@ -230,11 +230,11 @@ jobs:
         inlineScript: az appservice plan update --name levin-signserv-asp-2dnwx6q6jwiay --resource-group SignService --sku S1
         azcliversion: latest
 
-    - name: Publish Signed Windows_x64_x86 Packages
+    - name: Publish Signed Windows_x64 Packages
       uses: actions/upload-artifact@v2
       with:
-        path: ${{ github.workspace }}/ToSign/Windows_x64_x86
-        name: Windows_x64_x86_Signed
+        path: ${{ github.workspace }}/ToSign/Windows_x64
+        name: Windows_x64_Signed
 
     - name: Publish Signed Windows_ARM Packages
       uses: actions/upload-artifact@v2
@@ -286,11 +286,11 @@ jobs:
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: Download Windows_x64_x86 Artifacts
+    - name: Download Windows_x64 Artifacts
       uses: actions/download-artifact@v2
       with:
-        name: Windows_x64_x86
-        path: ${{ github.workspace }}/Sign/Windows_x64_x86
+        name: Windows_x64
+        path: ${{ github.workspace }}/Sign/Windows_x64
 
     - name: Download Windows_ARM Artifacts
       uses: actions/download-artifact@v2
@@ -548,11 +548,11 @@ jobs:
           commitMode: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Download Windows_x64_x86 Artifacts
+      - name: Download Windows_x64 Artifacts
         uses: actions/download-artifact@v2
         with:
-          name: Windows_x64_x86
-          path: ${{ github.workspace }}/Sign/Windows_x64_x86
+          name: Windows_x64
+          path: ${{ github.workspace }}/Sign/Windows_x64
 
       - name: Download Windows_ARM Artifacts
         uses: actions/download-artifact@v2
@@ -621,14 +621,14 @@ jobs:
           asset_content_type: application/zip
 
       - name: Upload Release Asset
-        id: upload-release-Windows_x64_x86
+        id: upload-release-Windows_x64
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: "/home/runner/work/presencelight/presencelight/Sign/Windows_x64_x86/PresenceLight.Windows_x64_x86.${{ env.VERSION }}.zip"
-          asset_name: "PresenceLight.Windows_x64_x86.${{ env.VERSION }}.zip"
+          asset_path: "/home/runner/work/presencelight/presencelight/Sign/Windows_x64/PresenceLight.Windows_x64.${{ env.VERSION }}.zip"
+          asset_name: "PresenceLight.Windows_x64.${{ env.VERSION }}.zip"
           asset_content_type: application/zip
 
       - name: Upload Release Asset
