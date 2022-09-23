@@ -9,10 +9,10 @@
             <MudItem xs="12">
                 <MudText Typo="Typo.h3">Set Light Color</MudText>
             </MudItem>
-            <MudItem xs="12" >
+            <MudItem xs="12">
                 <MudColorPicker PickerVariant="PickerVariant.Static" Label="Basic Color Picker" @bind-Text="color" Style="@($"color: {color}")" Placeholder="Select Color" />
             </MudItem>
-            <MudItem xs="6" >
+            <MudItem xs="6">
                 <MudButton OnClick="SetColor" Variant="Variant.Filled" Color="MudBlazor.Color.Primary" Style="width:75%">Set Color</MudButton>
             </MudItem>
             <MudItem xs="6">
@@ -43,24 +43,27 @@
 
             if (appState.LightMode == "Custom")
             {
-                if (!string.IsNullOrEmpty(appState.Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(appState.Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(appState.Config.LightSettings.Hue.SelectedItemId))
+                if (appState.Config.LightSettings.Hue.IsEnabled)
                 {
-                    if (appState.Config.LightSettings.Hue.UseRemoteApi)
+                    if (!string.IsNullOrEmpty(appState.Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(appState.Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(appState.Config.LightSettings.Hue.SelectedItemId))
                     {
-                        if (!string.IsNullOrEmpty(appState.Config.LightSettings.Hue.RemoteBridgeId))
+                        if (appState.Config.LightSettings.Hue.UseRemoteApi)
                         {
-                            await _mediator.Send(new Core.RemoteHueServices.SetColorCommand
-                                {
-                                    Availability = appState.CustomColor,
-                                    LightId = appState.Config.LightSettings.Hue.SelectedItemId,
-                                    BridgeId = appState.Config.LightSettings.Hue.RemoteBridgeId
-                                }).ConfigureAwait(true);
+                            if (!string.IsNullOrEmpty(appState.Config.LightSettings.Hue.RemoteBridgeId))
+                            {
+                                await _mediator.Send(new Core.RemoteHueServices.SetColorCommand
+                                    {
+                                        Availability = appState.CustomColor,
+                                        LightId = appState.Config.LightSettings.Hue.SelectedItemId,
+                                        BridgeId = appState.Config.LightSettings.Hue.RemoteBridgeId
+                                    }).ConfigureAwait(true);
+                            }
                         }
-                    }
-                    else
-                    {
-                        await _mediator.Send(new Core.HueServices.SetColorCommand() { Activity = appState.CustomColor, Availability = appState.CustomColor, LightID = appState.Config.LightSettings.Hue.SelectedItemId }).ConfigureAwait(true);
+                        else
+                        {
+                            await _mediator.Send(new Core.HueServices.SetColorCommand() { Activity = appState.CustomColor, Availability = appState.CustomColor, LightID = appState.Config.LightSettings.Hue.SelectedItemId }).ConfigureAwait(true);
 
+                        }
                     }
                 }
 

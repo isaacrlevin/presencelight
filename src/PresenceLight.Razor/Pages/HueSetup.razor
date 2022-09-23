@@ -288,6 +288,11 @@
                         type = "Lights";
                     }
                 }
+                else
+                {
+                    appState.Config.LightSettings.Hue.SelectedItemId = string.Empty;
+                    selectedLightLabel = string.Empty;
+                }
                 lastType = type;
             }
 
@@ -381,4 +386,4 @@
     {
         InvokeAsync(StateHasChanged);
     }
-    }
+}
