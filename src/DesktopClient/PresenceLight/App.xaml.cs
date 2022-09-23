@@ -143,7 +143,7 @@ namespace PresenceLight
 
             services.AddHttpClient();
             services.AddHttpContextAccessor();
-            services.AddBlazorWebView();
+            services.AddWpfBlazorWebView();
 
             services.AddBlazorise(options =>
                  {
