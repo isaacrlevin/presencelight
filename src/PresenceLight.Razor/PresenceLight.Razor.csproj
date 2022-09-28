@@ -11,7 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="Alexa.NET" Version="1.22.0-preview" />
-    <PackageReference Include="Blazorise.Bootstrap" Version="1.1.0-rc1" />
+    <PackageReference Include="Blazorise.Bootstrap" Version="1.1.0" />
     <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.1.0-rc1" />
     <PackageReference Include="BlazorPro.Spinkit" Version="1.2.0" />
     <PackageReference Include="IdentityModel" Version="6.1.0-preview.1" />
