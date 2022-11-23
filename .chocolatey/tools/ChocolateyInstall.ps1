@@ -29,8 +29,10 @@ $packageArgs = @{
   packageName    = $packageName
   unzipLocation  = $InstallDir
   urlARM         = "{ARMLink}"
+  url86bit       = "{x86Link}"
   url64bit       = "{x64Link}"
   checksumARM    = "{ReplaceCheckSumARM}"
+  checksum       = "{ReplaceCheckSumx86}"
   checksum64     = "{ReplaceCheckSumx64}"
   checksumType   = 'SHA256'
 }

@@ -142,6 +142,12 @@ jobs:
         $badge.Save("${{ github.workspace }}\${{ matrix.ChannelName }}\stable_badge.svg")
       shell: powershell
 
+    - name: Build Standalone Presence Light x86
+      run: |
+        dotnet restore .\src\DesktopClient\PresenceLight\PresenceLight.csproj
+        dotnet publish .\src\DesktopClient\PresenceLight\PresenceLight.csproj -c ${{ env.BuildConfiguration }} /p:PublishProfile=Properties/PublishProfiles/WinX86.pubxml
+      if:  ${{ success() && matrix.ChannelName  == 'Standalone' }}
+
     - name: Build Standalone Presence Light x64
       run: |
         dotnet restore .\src\DesktopClient\PresenceLight\PresenceLight.csproj
@@ -152,6 +158,13 @@ jobs:
       run: |
         dotnet restore .\src\DesktopClient\PresenceLight\PresenceLight.csproj
         dotnet publish .\src\DesktopClient\PresenceLight\PresenceLight.csproj -c ${{ env.BuildConfiguration }} /p:PublishProfile=Properties/PublishProfiles/WinARM64.pubxml
+      if:  ${{ success() && matrix.ChannelName  == 'Standalone' }}
+
+    - name: Zip Standalone PresenceLight x86 Files
+      run: |
+        Compress-Archive -Path '.\src\DesktopClient\PresenceLight\bin\${{ env.BuildConfiguration }}\${{ env.Win10RID }}\win-x86\publish\*' `
+        -DestinationPath ${{ github.workspace }}\${{ matrix.ChannelName }}\PresenceLight.${{ env.GitBuildVersionSimple }}-x86.zip
+      shell: powershell
       if:  ${{ success() && matrix.ChannelName  == 'Standalone' }}
 
     - name: Zip Standalone PresenceLight x64 Files
@@ -404,10 +417,13 @@ jobs:
             $zip64Hash = Get-FileHash "/home/runner/work/presencelight/presencelight/StandaloneSigned/PresenceLight.${{ env.VERSION }}-x64.zip" -Algorithm SHA256
             $zip64Hash.Hash | Out-File -Encoding 'UTF8' "/home/runner/work/presencelight/presencelight/StandaloneSigned/x64-zip.sha256"
 
+            $zip86Hash = Get-FileHash "/home/runner/work/presencelight/presencelight/StandaloneSigned/PresenceLight.${{ env.VERSION }}-x86.zip" -Algorithm SHA256
+            $zip86Hash.Hash | Out-File -Encoding 'UTF8' "/home/runner/work/presencelight/presencelight/StandaloneSigned/x86-zip.sha256"
+
             $zipARMHash = Get-FileHash "/home/runner/work/presencelight/presencelight/StandaloneSigned/PresenceLight.${{ env.VERSION }}-win-arm64.zip" -Algorithm SHA256
             $zipARMHash.Hash | Out-File -Encoding 'UTF8' "/home/runner/work/presencelight/presencelight/StandaloneSigned/win-arm64-zip.sha256"
 
-            $appxHash = Get-FileHash "/home/runner/work/presencelight/presencelight/ReleaseSigned/PresenceLight.Package_${{ env.VERSION }}.0_Test/PresenceLight.Package_${{ env.VERSION }}.0_x64_ARM64.appxbundle" -Algorithm SHA256
+            $appxHash = Get-FileHash "/home/runner/work/presencelight/presencelight/ReleaseSigned/PresenceLight.Package_${{ env.VERSION }}.0_Test/PresenceLight.Package_${{ env.VERSION }}.0_x64_x86_ARM64.appxbundle" -Algorithm SHA256
             $appxHash.Hash | Out-File -Encoding 'UTF8' "/home/runner/work/presencelight/presencelight/ReleaseSigned/appx.sha256"
 
         shell: pwsh
@@ -425,6 +441,28 @@ jobs:
             ${{ steps.changelog.outputs.changelog }}
           draft: false
           prerelease: false
+
+      - name: Upload Standalone x86 Release
+        id: upload-release-asset4
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: "/home/runner/work/presencelight/presencelight/StandaloneSigned/PresenceLight.${{ env.VERSION }}-x86.zip"
+          asset_name: "PresenceLight.${{ env.VERSION }}-x86.zip"
+          asset_content_type: application/zip
+
+      - name: Upload x86 Hash
+        id: upload-release-asset5
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: "/home/runner/work/presencelight/presencelight/StandaloneSigned/x86-zip.sha256"
+          asset_name: "x86-zip.sha256"
+          asset_content_type: text/plain
 
       - name: Upload Standalone x64 Release
         id: upload-release-asset1
@@ -477,8 +515,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: "/home/runner/work/presencelight/presencelight/ReleaseSigned/PresenceLight.Package_${{ env.VERSION }}.0_Test/PresenceLight.Package_${{ env.VERSION }}.0_x64_ARM64.appxbundle"
-          asset_name: "PresenceLight.Package_${{ env.VERSION }}.0_x64_ARM64.appxbundle"
+          asset_path: "/home/runner/work/presencelight/presencelight/ReleaseSigned/PresenceLight.Package_${{ env.VERSION }}.0_Test/PresenceLight.Package_${{ env.VERSION }}.0_x64_x86_ARM64.appxbundle"
+          asset_name: "PresenceLight.Package_${{ env.VERSION }}.0_x64_x86_ARM64.appxbundle"
           asset_content_type: application/zip
 
       - name: Upload APPX Hash
@@ -525,16 +563,20 @@ jobs:
         run: |
           # Hash the Zip Files
           mkdir "${{ github.workspace }}\Download"
+          Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/x86-zip.sha256" -OutFile "${{ github.workspace }}\\Download\\x86-zip.sha256"
           Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/x64-zip.sha256" -OutFile "${{ github.workspace }}\\Download\\x64-zip.sha256"
           Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/win-arm64-zip.sha256" -OutFile "${{ github.workspace }}\\Download\\win-arm64-zip.sha256"
+          $hash86= get-content ${{ github.workspace }}\\Download\\x86-zip.sha256
           $hash64= get-content ${{ github.workspace }}\\Download\\x64-zip.sha256
           $hashARM= get-content ${{ github.workspace }}\\Download\\win-arm64-zip.sha256
 
           # Update ChocolateyInstall.ps1
           $installFile = Get-Content -path "${{ github.workspace }}\\Chocolatey\\tools\\ChocolateyInstall.ps1" -Raw
           $installFile = $installFile -replace '{ReplaceCheckSumARM}', $hashARM
+          $installFile = $installFile -replace '{ReplaceCheckSumx86}', $hash86
           $installFile = $installFile -replace '{ReplaceCheckSumx64}', $hash64
           $installFile = $installFile -replace '{ARMLink}' , "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-win-arm64.zip"
+          $installFile = $installFile -replace '{x86Link}' , "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x86.zip"
           $installFile = $installFile -replace '{x64Link}' , "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x64.zip"
           $installFile | Set-Content -Path "${{ github.workspace }}\\Chocolatey\\tools\\ChocolateyInstall.ps1"
 
@@ -542,7 +584,9 @@ jobs:
           $verificationFile = Get-Content -path "${{ github.workspace }}\\Chocolatey\\tools\\Verification.txt"
           $verificationFile = $verificationFile -replace '{ARMLink}' , "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-win-arm64.zip"
           $verificationFile = $verificationFile -replace '{x64Link}' , "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x64.zip"
+          $verificationFile = $verificationFile -replace '{x86Link}' , "${{ env.GitHubReleaseUrl }}v${{ env.VERSION }}/PresenceLight.${{ env.VERSION }}-x86.zip"
           $verificationFile = $verificationFile -replace '{HASHx64}', $hash64
+          $verificationFile = $verificationFile -replace '{HASHx86}', $hash86
           $verificationFile = $verificationFile -replace '{HASHARM}', $hashARM
           $verificationFile | Set-Content -Path "${{ github.workspace }}\\Chocolatey\\tools\\Verification.txt"
         shell: powershell
