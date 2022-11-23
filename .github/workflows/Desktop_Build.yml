@@ -35,7 +35,7 @@ jobs:
       BuildConfiguration: Release
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       GitHubReleaseUrl: https://github.com/isaacrlevin/presencelight/releases/download/Desktop-
-      Win10RID: net7.0-windows10.0.19041
+      Win10RID: net6.0-windows10.0.19041
 
     steps:
 
