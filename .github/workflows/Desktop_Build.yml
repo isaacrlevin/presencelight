@@ -236,7 +236,7 @@ jobs:
         path: "${{ github.workspace }}/SigningScripts"
 
     - name: Install SignTool tool
-      run: dotnet tool install --tool-path . SignClient
+      run: dotnet tool install --tool-path . SignClient --version 1.3.155
 
     - name: Scale Up Sign Service
       uses: azure/cli@v1.0.0

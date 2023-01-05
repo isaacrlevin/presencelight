@@ -30,8 +30,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresenceLight.Web", "Presen
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "DockerCompose\docker-compose.dcproj", "{D6871E74-A6E2-41EE-AA4A-7BE357501D63}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PresenceLight.MAUI", "DesktopClient\PresenceLight.MAUI\PresenceLight.MAUI.csproj", "{478D057D-17AC-4AB0-88AA-CA613E5CFBB5}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -120,24 +118,6 @@ Global
 		{D6871E74-A6E2-41EE-AA4A-7BE357501D63}.Release|ARM64.Build.0 = Release|Any CPU
 		{D6871E74-A6E2-41EE-AA4A-7BE357501D63}.Release|x64.ActiveCfg = Release|Any CPU
 		{D6871E74-A6E2-41EE-AA4A-7BE357501D63}.Release|x64.Build.0 = Release|Any CPU
-		{478D057D-17AC-4AB0-88AA-CA613E5CFBB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{478D057D-17AC-4AB0-88AA-CA613E5CFBB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{478D057D-17AC-4AB0-88AA-CA613E5CFBB5}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{478D057D-17AC-4AB0-88AA-CA613E5CFBB5}.Debug|ARM64.ActiveCfg = Debug|Any CPU
-		{478D057D-17AC-4AB0-88AA-CA613E5CFBB5}.Debug|ARM64.Build.0 = Debug|Any CPU
-		{478D057D-17AC-4AB0-88AA-CA613E5CFBB5}.Debug|ARM64.Deploy.0 = Debug|Any CPU
-		{478D057D-17AC-4AB0-88AA-CA613E5CFBB5}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{478D057D-17AC-4AB0-88AA-CA613E5CFBB5}.Debug|x64.Build.0 = Debug|Any CPU
-		{478D057D-17AC-4AB0-88AA-CA613E5CFBB5}.Debug|x64.Deploy.0 = Debug|Any CPU
-		{478D057D-17AC-4AB0-88AA-CA613E5CFBB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{478D057D-17AC-4AB0-88AA-CA613E5CFBB5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{478D057D-17AC-4AB0-88AA-CA613E5CFBB5}.Release|Any CPU.Deploy.0 = Release|Any CPU
-		{478D057D-17AC-4AB0-88AA-CA613E5CFBB5}.Release|ARM64.ActiveCfg = Release|Any CPU
-		{478D057D-17AC-4AB0-88AA-CA613E5CFBB5}.Release|ARM64.Build.0 = Release|Any CPU
-		{478D057D-17AC-4AB0-88AA-CA613E5CFBB5}.Release|ARM64.Deploy.0 = Release|Any CPU
-		{478D057D-17AC-4AB0-88AA-CA613E5CFBB5}.Release|x64.ActiveCfg = Release|Any CPU
-		{478D057D-17AC-4AB0-88AA-CA613E5CFBB5}.Release|x64.Build.0 = Release|Any CPU
-		{478D057D-17AC-4AB0-88AA-CA613E5CFBB5}.Release|x64.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
