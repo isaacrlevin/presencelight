@@ -11,27 +11,27 @@
 
   <ItemGroup>
     <PackageReference Include="Alexa.NET" Version="1.22.0-preview" />
-    <PackageReference Include="Blazorise.Bootstrap" Version="1.1.0-rc1" />
-    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.1.0-rc1" />
+    <PackageReference Include="Blazorise.Bootstrap" Version="1.1.5" />
+    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.1.5" />
     <PackageReference Include="BlazorPro.Spinkit" Version="1.2.0" />
     <PackageReference Include="IdentityModel" Version="6.1.0-preview.1" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.SnapshotCollector" Version="1.4.3" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.9" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="7.0.0-rc.1.22427.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.0-rc.1.22427.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="7.0.0-rc.1.22426.10" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="7.0.0-rc.1.22426.10" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="7.0.0-rc.1.22426.10" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0-rc.1.22426.10" />
-    <PackageReference Include="Microsoft.Identity.Client" Version="4.47.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="7.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Identity.Client" Version="4.49.1" />
     <PackageReference Include="Microsoft.Identity.Web" Version="2.0.0-preview" />
     <PackageReference Include="Microsoft.Identity.Web.MicrosoftGraph" Version="2.0.0-preview" />
     <PackageReference Include="Microsoft.Identity.Web.UI" Version="2.0.0-preview" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.0" />
-    <PackageReference Include="MudBlazor" Version="6.0.17-dev.1" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.2-beta2" />
+    <PackageReference Include="MudBlazor" Version="6.1.7" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
   </ItemGroup>
 
 
