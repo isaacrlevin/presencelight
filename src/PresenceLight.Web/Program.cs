@@ -1,10 +1,13 @@
-﻿using Blazorise;
+﻿using System.Diagnostics;
+
+using Blazorise;
 using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
 
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Graph.ExternalConnectors;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
@@ -26,13 +29,25 @@ IConfigurationBuilder configBuilderForMain = new ConfigurationBuilder();
 
 configBuilderForMain
     .SetBasePath(Directory.GetCurrentDirectory())
-    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
-    .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: false)
-    .AddJsonFile("PresenceLightSettings.json", optional: false, reloadOnChange: false)
-    .AddJsonFile("PresenceLightSettings.Development.json", optional: true, reloadOnChange: false)
-    .AddJsonFile(System.IO.Path.Combine("config", "appsettings.json"), optional: true, reloadOnChange: false)
-    .AddJsonFile(System.IO.Path.Combine("config", "PresenceLightSettings.json"), optional: true, reloadOnChange: false)
-    .AddEnvironmentVariables();
+    .AddEnvironmentVariables(); ;
+
+if (Debugger.IsAttached)
+{
+    configBuilderForMain.AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: false);
+    configBuilderForMain.AddJsonFile("PresenceLightSettings.Development.json", optional: true, reloadOnChange: false);
+}
+else
+{
+    configBuilderForMain.AddJsonFile("PresenceLightSettings.json", optional: false, reloadOnChange: false);
+    configBuilderForMain.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
+}
+
+if (Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true")
+{
+    configBuilderForMain.AddJsonFile(System.IO.Path.Combine("config", "appsettings.json"), optional: true, reloadOnChange: false);
+    configBuilderForMain.AddJsonFile(System.IO.Path.Combine("config", "PresenceLightSettings.json"), optional: true, reloadOnChange: false);
+}
+
 
 configBuilderForMain.Build();
 
@@ -49,12 +64,24 @@ Log.Logger = new LoggerConfiguration()
      .CreateLogger();
 
 builder.Configuration.SetBasePath(Directory.GetCurrentDirectory());
-builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
-builder.Configuration.AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: false);
-builder.Configuration.AddJsonFile("PresenceLightSettings.json", optional: false, reloadOnChange: false);
-builder.Configuration.AddJsonFile("PresenceLightSettings.Development.json", optional: true, reloadOnChange: false);
-builder.Configuration.AddJsonFile(System.IO.Path.Combine("config", "appsettings.json"), optional: true, reloadOnChange: false);
-builder.Configuration.AddJsonFile(System.IO.Path.Combine("config", "PresenceLightSettings.json"), optional: true, reloadOnChange: false);
+
+if (Debugger.IsAttached)
+{
+    builder.Configuration.AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: false);
+    builder.Configuration.AddJsonFile("PresenceLightSettings.Development.json", optional: true, reloadOnChange: false);
+}
+else
+{
+    builder.Configuration.AddJsonFile("PresenceLightSettings.json", optional: false, reloadOnChange: false);
+    builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
+}
+
+if (Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true")
+{
+    builder.Configuration.AddJsonFile(System.IO.Path.Combine("config", "appsettings.json"), optional: true, reloadOnChange: false);
+    builder.Configuration.AddJsonFile(System.IO.Path.Combine("config", "PresenceLightSettings.json"), optional: true, reloadOnChange: false);
+}
+
 builder.Configuration.AddEnvironmentVariables();
 
 

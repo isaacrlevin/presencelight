@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -55,7 +56,6 @@ namespace PresenceLight
             _appState = appState;
 
             _logger = logger;
-            InitializeComponent();
             System.Windows.Application.Current.SessionEnding += new SessionEndingCancelEventHandler(Current_SessionEnding);
 
             _graphservice = graphService;
@@ -206,28 +206,31 @@ namespace PresenceLight
         {
             try
             {
-                if (!string.IsNullOrEmpty(_appState.Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(_appState.Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(_appState.Config.LightSettings.Hue.SelectedItemId))
+                if (_appState.Config.LightSettings.Hue.IsEnabled)
                 {
-                    if (_appState.Config.LightSettings.Hue.UseRemoteApi)
+                    if (!string.IsNullOrEmpty(_appState.Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(_appState.Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(_appState.Config.LightSettings.Hue.SelectedItemId))
                     {
-                        if (!string.IsNullOrEmpty(_appState.Config.LightSettings.Hue.RemoteBridgeId))
+                        if (_appState.Config.LightSettings.Hue.UseRemoteApi)
                         {
-                            await _mediator.Send(new Core.RemoteHueServices.SetColorCommand
+                            if (!string.IsNullOrEmpty(_appState.Config.LightSettings.Hue.RemoteBridgeId))
                             {
-                                Availability = color,
-                                LightId = _appState.Config.LightSettings.Hue.SelectedItemId,
-                                BridgeId = _appState.Config.LightSettings.Hue.RemoteBridgeId
-                            }).ConfigureAwait(true);
+                                await _mediator.Send(new Core.RemoteHueServices.SetColorCommand
+                                {
+                                    Availability = color,
+                                    LightId = _appState.Config.LightSettings.Hue.SelectedItemId,
+                                    BridgeId = _appState.Config.LightSettings.Hue.RemoteBridgeId
+                                }).ConfigureAwait(true);
+                            }
                         }
-                    }
-                    else
-                    {
-                        await _mediator.Send(new Core.HueServices.SetColorCommand()
+                        else
                         {
-                            Activity = activity,
-                            Availability = color,
-                            LightID = _appState.Config.LightSettings.Hue.SelectedItemId
-                        }).ConfigureAwait(false);
+                            await _mediator.Send(new Core.HueServices.SetColorCommand()
+                            {
+                                Activity = activity,
+                                Availability = color,
+                                LightID = _appState.Config.LightSettings.Hue.SelectedItemId
+                            }).ConfigureAwait(false);
+                        }
                     }
                 }
 

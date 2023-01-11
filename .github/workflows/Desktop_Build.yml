@@ -51,6 +51,12 @@ jobs:
       with:
         dotnet-version: 6.0.x
 
+    - name: Use .NET Core SDK 7.0.x
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 7.0.x
+        include-prerelease: true
+
     - name: Nerdbank.GitVersioning
       uses: dotnet/nbgv@v0.3.1
       with:
@@ -230,7 +236,7 @@ jobs:
         path: "${{ github.workspace }}/SigningScripts"
 
     - name: Install SignTool tool
-      run: dotnet tool install --tool-path . SignClient
+      run: dotnet tool install --tool-path . SignClient --version 1.3.155
 
     - name: Scale Up Sign Service
       uses: azure/cli@v1.0.0
