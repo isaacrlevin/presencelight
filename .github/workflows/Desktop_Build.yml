@@ -35,7 +35,7 @@ jobs:
       BuildConfiguration: Release
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       GitHubReleaseUrl: https://github.com/isaacrlevin/presencelight/releases/download/Desktop-
-      Win10RID: net6.0-windows10.0.19041
+      Win10RID: net7.0-windows10.0.19041
 
     steps:
 
@@ -45,11 +45,6 @@ jobs:
 
     - name: setup-msbuild
       uses: microsoft/setup-msbuild@v1
-
-    - name: Use .NET Core SDK 6.0.x
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 6.0.x
 
     - name: Use .NET Core SDK 7.0.x
       uses: actions/setup-dotnet@v1
