@@ -15,8 +15,8 @@
     <iconUrl>https://rawcdn.githack.com/isaacrlevin/PresenceLight/2c388db6a155cf7bbc8b12578222e0609d147ee0/Icon.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>
-PresenceLight is a solution to broadcast your various statuses to a various smart light bulbs.
-Some statuses you can broadcast are: your availability in Microsoft Teams or color of your choosing.
+PresenceLight is a solution to broadcast your various statuses to a Phillips Hue or LIFX light bulb.
+Some statuses you can broadcast are: your availability in Microsoft Teams, your current Windows 10 theme, and a theme or color of your choosing.
 
 ## Package Parameters
 
