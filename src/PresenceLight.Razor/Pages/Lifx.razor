@@ -158,8 +158,14 @@
                     else
                     {
                         appState.Config.LightSettings.LIFX.SelectedItemId = string.Empty;
+                        selectedLightLabel = string.Empty;
                         type = "Lights";
                     }
+                }
+                else
+                {
+                    appState.Config.LightSettings.LIFX.SelectedItemId = string.Empty;
+                    selectedLightLabel = string.Empty;
                 }
                 lastType = type;
             }
@@ -247,6 +253,16 @@
         appState.Config.LightSettings.LIFX.SelectedItemId = light;
         appState.SetLIFXLight(light);
         _logger.LogInformation($"Selected LIFX Light Set: {light}");
+
+        if (e.Contains("group"))
+        {
+            selectedLightLabel = ((LifxCloud.NET.Models.Group)appState.LIFXLights.Where(a => ((LifxCloud.NET.Models.Group)a).Id == appState.Config.LightSettings.LIFX.SelectedItemId.Replace("group_id:", "")).FirstOrDefault()).Label;
+        }
+        else
+        {
+            selectedLightLabel = ((LifxCloud.NET.Models.Light)appState.LIFXLights.Where(a => ((LifxCloud.NET.Models.Light)a).Id == appState.Config.LightSettings.LIFX.SelectedItemId.Replace("id:", "")).FirstOrDefault()).Label;
+        }
+
     }
 
     public void Dispose()
@@ -258,4 +274,4 @@
     {
         InvokeAsync(StateHasChanged);
     }
-    }
+}

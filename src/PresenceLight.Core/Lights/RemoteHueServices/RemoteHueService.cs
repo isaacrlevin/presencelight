@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading;
@@ -8,10 +9,13 @@ using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
 
+using Newtonsoft.Json;
+
 using Q42.HueApi;
 using Q42.HueApi.ColorConverters;
 using Q42.HueApi.ColorConverters.HSB;
 using Q42.HueApi.Interfaces;
+using Q42.HueApi.Models;
 using Q42.HueApi.Models.Groups;
 
 namespace PresenceLight.Core
@@ -31,6 +35,7 @@ namespace PresenceLight.Core
         private IRemoteAuthenticationClient _authClient;
         private readonly ILogger<RemoteHueService> _logger;
         private MediatR.IMediator _mediator;
+        private string _cacheFile =  System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "/huetoken.cache";
 
         public RemoteHueService(AppState appState, ILogger<RemoteHueService> logger, MediatR.IMediator mediator)
         {
@@ -86,6 +91,16 @@ namespace PresenceLight.Core
                 var incoming_state = context.Request.QueryString.Get("state");
 
                 var accessToken = await _authClient.GetToken(code);
+
+                if (accessToken != null)
+                {
+                    _authClient.Initialize(accessToken);
+                    if (File.Exists(_cacheFile))
+                    {
+                        File.Delete(_cacheFile);
+                    }
+                    await File.WriteAllTextAsync(_cacheFile, JsonConvert.SerializeObject(accessToken));
+                }
 
                 _client = new RemoteHueClient(_authClient.GetValidToken);
             }
@@ -281,10 +296,34 @@ namespace PresenceLight.Core
         {
             try
             {
+                try
+                {
+                    var token = await _authClient.GetValidToken();
+                }
+                catch
+                {
+                    if (File.Exists(_cacheFile))
+                    {
+                        AccessTokenResponse response = JsonConvert.DeserializeObject<AccessTokenResponse>(File.ReadAllText(_cacheFile));
+                        if (response != null)
+                        {
+                            _authClient = new RemoteAuthenticationClient(_appState.Config.LightSettings.Hue.RemoteHueClientId, _appState.Config.LightSettings.Hue.RemoteHueClientSecret, _appState.Config.LightSettings.Hue.RemoteHueClientAppName);
+                            _authClient.Initialize(response);
+                        }
+                    }
+                    else
+                    {
+                        // prompt auth
+                        await RegisterBridge();
+                    }
+                }
+
                 if (_client == null || !_client.IsInitialized)
                 {
+                    var token = await _authClient.GetValidToken();
                     _client = new RemoteHueClient(_authClient.GetValidToken);
                     _client.Initialize(_appState.Config.LightSettings.Hue.RemoteBridgeId, _appState.Config.LightSettings.Hue.HueApiKey);
+                    //var c = await _client.GetHttpClient();
                 }
 
                 var lights = await _client.GetLightsAsync();
@@ -308,6 +347,27 @@ namespace PresenceLight.Core
         {
             try
             {
+                try
+                {
+                    var token = await _authClient.GetValidToken();
+                }
+                catch
+                {
+                    if (File.Exists(_cacheFile))
+                    {
+                        AccessTokenResponse response = JsonConvert.DeserializeObject<AccessTokenResponse>(File.ReadAllText(_cacheFile));
+                        if (response != null)
+                        {
+                            _authClient = new RemoteAuthenticationClient(_appState.Config.LightSettings.Hue.RemoteHueClientId, _appState.Config.LightSettings.Hue.RemoteHueClientSecret, _appState.Config.LightSettings.Hue.RemoteHueClientAppName);
+                            _authClient.Initialize(response);
+                        }
+                    }
+                    else
+                    {
+                        // prompt auth
+                        await RegisterBridge();
+                    }
+                }
                 if (_client == null || !_client.IsInitialized)
                 {
                     _client = new RemoteHueClient(_authClient.GetValidToken);
