@@ -19,22 +19,25 @@
         </MudGrid>
         @if (appState.Config.LightSettings.Hue.IsEnabled)
         {
-            <MudGrid Class="mt-10" Justify="Justify.Center">
-                <MudItem xs="12">
-                    <MudButton OnClick="FindBridge" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">Find Hue Bridge</MudButton>
-                </MudItem>
-                <MudItem xs="4">
-                    <EditForm Model="@appState.Config" OnValidSubmit="RegisterBridge">
-                        <MudTextField Variant="Variant.Outlined" @bind-Value="@appState.Config.LightSettings.Hue.HueIpAddress" />
-                        <br />
-                        <DataAnnotationsValidator />
-                        <Microsoft.AspNetCore.Components.Forms.ValidationSummary />
-                        <br />
-                        <br />
-                        <MudButton ButtonType="MudBlazor.ButtonType.Submit" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">Register Bridge</MudButton>
-                    </EditForm>
-                </MudItem>
-            </MudGrid>
+            @if (!appState.Config.LightSettings.Hue.UseRemoteApi)
+            {
+                <MudGrid Class="mt-10" Justify=" Justify.Center">
+                    <MudItem xs="       12">
+                        <MudButton OnClick="        FindBridge" Variant="    Variant.Filled" Color="MudBlazor.Color.Primary">Find Hue Bridge</MudButton>
+                    </MudItem>
+                    <MudItem xs="    4">
+                        <EditForm Model="@appState.Config" OnValidSubmit=" RegisterBridge">
+                            <MudTextField Variant="       Variant.Outlined" @bind-Value="@appState.Config.LightSettings.Hue.HueIpAddress" />
+                            <br />
+                            <DataAnnotationsValidator />
+                            <Microsoft.AspNetCore.Components.Forms.ValidationSummary />
+                            <br />
+                            <br />
+                            <MudButton ButtonType="   MudBlazor.ButtonType.Submit" Variant="Variant.Filled" Color="     MudBlazor.Color.Primary">Register Bridge</MudButton>
+                        </EditForm>
+                    </MudItem>
+                </MudGrid>
+            }
             @if (showHueMessage)
             {
                 <MudGrid Class="mt-10" Justify="Justify.Center">
@@ -163,22 +166,30 @@
 
     private async Task LoginRemoteApi()
     {
-        try
+        if (appState.Config.LightSettings.Hue.UseRemoteApi)
         {
-            _logger.LogInformation("Cloud Hue Login Initialized");
-            var (bridgeId, apiKey, bridgeIp) = await _mediator.Send(new PresenceLight.Core.RemoteHueServices.RegisterBridgeCommand());
-            if (!string.IsNullOrEmpty(apiKey) && !string.IsNullOrEmpty(bridgeId) && !string.IsNullOrEmpty(bridgeIp))
+            if (!appState.Config.LightSettings.Hue.IsEnabled)
             {
-                appState.Config.LightSettings.Hue.HueApiKey = apiKey;
-                appState.Config.LightSettings.Hue.RemoteBridgeId = bridgeId;
-                appState.Config.LightSettings.Hue.HueIpAddress = bridgeIp;
-                _logger.LogInformation("Cloud Hue Login Successful");
-                await Save();
+                appState.Config.LightSettings.Hue.IsEnabled = true;
             }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error Occured Getting Cloud Hue Api Key");
+
+            try
+            {
+                _logger.LogInformation("Cloud Hue Login Initialized");
+                var (bridgeId, apiKey, bridgeIp) = await _mediator.Send(new PresenceLight.Core.RemoteHueServices.RegisterBridgeCommand());
+                if (!string.IsNullOrEmpty(apiKey) && !string.IsNullOrEmpty(bridgeId))
+                {
+                    appState.Config.LightSettings.Hue.HueApiKey = apiKey;
+                    appState.Config.LightSettings.Hue.RemoteBridgeId = bridgeId;
+                    appState.Config.LightSettings.Hue.HueIpAddress = bridgeIp;
+                    _logger.LogInformation("Cloud Hue Login Successful");
+                    await Save();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error Occured Getting Cloud Hue Api Key");
+            }
         }
     }
 
