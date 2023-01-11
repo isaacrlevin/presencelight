@@ -4,7 +4,7 @@ on:
     branches: [ main ]
     paths-ignore:
     - '.github/workflows/Desktop_Build.yml'
-    - '.github/workflows/Test_WinGet.yml'    
+    - '.github/workflows/Test_WinGet.yml'
     - 'src/DesktopClient/**'
     - 'README.md'
     - 'desktop-README.md'
@@ -56,11 +56,6 @@ jobs:
     - uses: actions/checkout@v2
       with:
         fetch-depth: 0
-
-    - name: Use .NET Core SDK 6.0.x
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 6.0.x
 
     - name: Use .NET Core SDK 7.0.x
       uses: actions/setup-dotnet@v1
