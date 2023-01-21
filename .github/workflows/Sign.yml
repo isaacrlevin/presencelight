@@ -224,7 +224,7 @@ jobs:
       shell: pwsh
       run: >
         ./sign code azure-key-vault
-        **/*.nupkg
+        **/*.appxbundle
         --timestamp-url "http://timestamp.digicert.com"
         --base-directory "${{ github.workspace }}/ToSign/Nightly"
         --file-list "${{ github.workspace }}/SigningScripts/filelist.txt" 
