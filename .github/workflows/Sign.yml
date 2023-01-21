@@ -10,9 +10,8 @@ jobs:
     strategy:
       matrix:
         ChannelName:
-        - Release
         - Nightly
-        - Standalone
+
 
     env:
       DOTNET_CLI_TELEMETRY_OPTOUT: 1
@@ -180,14 +179,14 @@ jobs:
       with:
         path: Build
         name: SigningScripts
-      if:  ${{ success() && matrix.ChannelName  == 'Release' }}
+      if:  ${{ success() && matrix.ChannelName  == 'Nightly' }}
 
     - name: Publish .chocolatey scripts
       uses: actions/upload-artifact@v2
       with:
         path: .chocolatey
         name: Chocolatey
-      if:  ${{ success() && matrix.ChannelName  == 'Standalone' }}
+      if:  ${{ success() && matrix.ChannelName  == 'Nightly' }}
     
   sign:
     needs: Build_WPF
