@@ -208,7 +208,9 @@ jobs:
 
   Code_Signing:
     needs: Build_WPF
-    if: ${{ github.event_name != 'pull_request' }}
+    if: ${{ (github.event_name != 'pull_request') && (github.ref == 'refs/heads/main') }}
+    permissions:
+      id-token: write # Required for requesting the JWT
     environment:
         name: Code_Signing
         url: ${{ steps.deploy_staging.outputs.webapp-url }}
@@ -231,94 +233,82 @@ jobs:
         name: SigningScripts
         path: "${{ github.workspace }}/SigningScripts"
 
-    - name: Install SignTool tool
-      run: dotnet tool install --tool-path . SignClient --version 1.3.155
-
-    - name: Scale Up Sign Service
-      uses: azure/cli@v1.0.0
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
       with:
-        inlineScript: az appservice plan update --name levin-signserv-asp-2dnwx6q6jwiay --resource-group SignService --sku P3V2
-        azcliversion: latest
-
-    - uses: nick-invision/retry@v2
-      name: Authenticode Sign AppXBundle Nightly
+        dotnet-version: 6.x
+        
+    - name: Install Sign CLI tool
+      run: dotnet tool install --tool-path . sign --version 0.9.0-beta.23063.3
+      
+    - name: Azure Login
+      uses: azure/login@v1
       with:
-        timeout_minutes: 5
-        max_attempts: 5
-        retry_wait_seconds: 30
-        shell: pwsh
-        command: |
-          .\SignClient "Sign" `
-          --baseDirectory "${{ github.workspace }}/ToSign/Nightly" `
-          --input "**/*.appxbundle" `
-          --config "${{ github.workspace }}/SigningScripts/appsettings.json" `
-          --filelist "${{ github.workspace }}/SigningScripts/filelist.txt" `
-          --user "${{ secrets.SignClientUser }}" `
-          --secret "${{ secrets.SignClientSecret }}" `
-          --name "PresenceLight" `
-          --description "PresenceLight" `
-          --descriptionUrl "https://github.com/isaacrlevin/presencelight"
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - uses: nick-invision/retry@v2
-      name: Authenticode Sign AppXBundle Release
-      with:
-        timeout_minutes: 5
-        max_attempts: 5
-        retry_wait_seconds: 30
-        shell: pwsh
-        command: |
-          .\SignClient "Sign" `
-          --baseDirectory "${{ github.workspace }}/ToSign/Release" `
-          --input "**/*.appxbundle" `
-          --config "${{ github.workspace }}/SigningScripts/appsettings.json" `
-          --filelist "${{ github.workspace }}/SigningScripts/filelist.txt" `
-          --user "${{ secrets.SignClientUser }}" `
-          --secret "${{ secrets.SignClientSecret }}" `
-          --name "PresenceLight" `
-          --description "PresenceLight" `
-          --descriptionUrl "https://github.com/isaacrlevin/presencelight"
+    - name: Sign Nightly
+      shell: pwsh
+      run: >
+        ./sign code azure-key-vault
+        **/*.appxbundle
+        --timestamp-url "http://timestamp.digicert.com"
+        --base-directory "${{ github.workspace }}/ToSign/Nightly"
+        --file-list "${{ github.workspace }}/SigningScripts/filelist.txt" 
+        --publisher-name "Isaac Levin"
+        --description "PresenceLight"
+        --description-url "https://github.com/isaacrlevin/presencelight"
+        --azure-key-vault-managed-identity true
+        --azure-key-vault-url "${{ secrets.KEY_VAULT_URL }}"
+        --azure-key-vault-certificate "${{ secrets.KEY_VAULT_CERTIFICATE_ID }}"
+        --verbosity Trace
 
-    - uses: nick-invision/retry@v2
-      name: Authenticode Sign AppInstaller
-      with:
-        timeout_minutes: 10
-        max_attempts: 10
-        shell: pwsh
-        command: |
-          .\SignClient "Sign" `
-          --baseDirectory "${{ github.workspace }}/ToSign" `
-          --input "**/*.appinstaller" `
-          --config "${{ github.workspace }}/SigningScripts/appsettings.json" `
-          --filelist "${{ github.workspace }}/SigningScripts/filelist.txt" `
-          --user "${{ secrets.SignClientUser }}" `
-          --secret "${{ secrets.SignClientSecret }}" `
-          --name "PresenceLight" `
-          --description "PresenceLight" `
-          --descriptionUrl "https://github.com/isaacrlevin/presencelight"
+    - name: Sign Release
+      shell: pwsh
+      run: >
+        ./sign code azure-key-vault
+        **/*.appxbundle
+        --timestamp-url "http://timestamp.digicert.com"
+        --base-directory "${{ github.workspace }}/ToSign/Release"
+        --file-list "${{ github.workspace }}/SigningScripts/filelist.txt" 
+        --publisher-name "Isaac Levin"
+        --description "PresenceLight"
+        --description-url "https://github.com/isaacrlevin/presencelight"
+        --azure-key-vault-managed-identity true
+        --azure-key-vault-url "${{ secrets.KEY_VAULT_URL }}"
+        --azure-key-vault-certificate "${{ secrets.KEY_VAULT_CERTIFICATE_ID }}"
+        --verbosity Trace
 
-    - uses: nick-invision/retry@v2
-      name: Authenticode Sign Zip
-      with:
-        timeout_minutes: 10
-        max_attempts: 10
-        shell: pwsh
-        command: |
-          .\SignClient "Sign" `
-          --baseDirectory "${{ github.workspace }}/ToSign" `
-          --input "**/*.zip" `
-          --config "${{ github.workspace }}/SigningScripts/appsettings.json" `
-          --filelist "${{ github.workspace }}/SigningScripts/filelist.txt" `
-          --user "${{ secrets.SignClientUser }}" `
-          --secret "${{ secrets.SignClientSecret }}" `
-          --name "PresenceLight" `
-          --description "PresenceLight" `
-          --descriptionUrl "https://github.com/isaacrlevin/presencelight"
+    - name: Sign AppInstaller
+      shell: pwsh
+      run: >
+        ./sign code azure-key-vault
+        **/*.appinstaller
+        --timestamp-url "http://timestamp.digicert.com"
+        --base-directory "${{ github.workspace }}/ToSign"
+        --file-list "${{ github.workspace }}/SigningScripts/filelist.txt" 
+        --publisher-name "Isaac Levin"
+        --description "PresenceLight"
+        --description-url "https://github.com/isaacrlevin/presencelight"
+        --azure-key-vault-managed-identity true
+        --azure-key-vault-url "${{ secrets.KEY_VAULT_URL }}"
+        --azure-key-vault-certificate "${{ secrets.KEY_VAULT_CERTIFICATE_ID }}"
+        --verbosity Trace      
 
-    - name: Scale Down Sign Service
-      uses: azure/cli@v1.0.0
-      with:
-        inlineScript: az appservice plan update --name levin-signserv-asp-2dnwx6q6jwiay --resource-group SignService --sku B1
-        azcliversion: latest
+    - name: Sign Zip
+      shell: pwsh
+      run: >
+        ./sign code azure-key-vault
+        **/*.zip
+        --timestamp-url "http://timestamp.digicert.com"
+        --base-directory "${{ github.workspace }}/ToSign"
+        --file-list "${{ github.workspace }}/SigningScripts/filelist.txt" 
+        --publisher-name "Isaac Levin"
+        --description "PresenceLight"
+        --description-url "https://github.com/isaacrlevin/presencelight"
+        --azure-key-vault-managed-identity true
+        --azure-key-vault-url "${{ secrets.KEY_VAULT_URL }}"
+        --azure-key-vault-certificate "${{ secrets.KEY_VAULT_CERTIFICATE_ID }}"
+        --verbosity Trace
 
     - name: Publish Signed Release Packages
       uses: actions/upload-artifact@v2

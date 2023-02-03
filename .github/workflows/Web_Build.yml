@@ -137,7 +137,9 @@ jobs:
 
   Code_Signing:
     needs: Build_Web
-    if: ${{ github.event_name != 'pull_request' }}
+    if: ${{ (github.event_name != 'pull_request') && (github.ref == 'refs/heads/main') }}
+    permissions:
+      id-token: write # Required for requesting the JWT
     environment:
         name: Code_Signing
         url: ${{ steps.deploy_staging.outputs.webapp-url }}
@@ -197,34 +199,34 @@ jobs:
         name: SigningScripts
         path: "${{ github.workspace }}/SigningScripts"
 
-    - name: Install SignTool tool
-      run: dotnet tool install --tool-path . SignClient
-
-    - name: Scale Up Sign Service
-      uses: azure/cli@v1.0.0
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
       with:
-        inlineScript: az appservice plan update --name levin-signserv-asp-2dnwx6q6jwiay --resource-group SignService --sku P2V2
-        azcliversion: latest
+        dotnet-version: 6.x
+        
+    - name: Install Sign CLI tool
+      run: dotnet tool install --tool-path . sign --version 0.9.0-beta.23063.3
+      
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: Authenticode Sign Zip
-      run: |
-        .\SignClient "Sign" `
-        --baseDirectory "${{ github.workspace }}/ToSign" `
-        --input "**/*.{exe,zip}" `
-        --config "${{ github.workspace }}/SigningScripts/appsettings.json" `
-        --filelist "${{ github.workspace }}/SigningScripts/filelist.txt" `
-        --user "${{ secrets.SignClientUser }}" `
-        --secret "${{ secrets.SignClientSecret }}" `
-        --name "PresenceLight" `
-        --description "PresenceLight" `
-        --descriptionUrl "https://github.com/isaacrlevin/presencelight"
+    - name: Sign artifacts
       shell: pwsh
-
-    - name: Scale Down Sign Service
-      uses: azure/cli@v1.0.0
-      with:
-        inlineScript: az appservice plan update --name levin-signserv-asp-2dnwx6q6jwiay --resource-group SignService --sku S1
-        azcliversion: latest
+      run: >
+        ./sign code azure-key-vault
+        **/*.{exe,zip}
+        --timestamp-url "http://timestamp.digicert.com"
+        --base-directory "${{ github.workspace }}/ToSign"
+        --file-list "${{ github.workspace }}/SigningScripts/filelist.txt" 
+        --publisher-name "Isaac Levin"
+        --description "PresenceLight"
+        --description-url "https://github.com/isaacrlevin/presencelight"
+        --azure-key-vault-managed-identity true
+        --azure-key-vault-url "${{ secrets.KEY_VAULT_URL }}"
+        --azure-key-vault-certificate "${{ secrets.KEY_VAULT_CERTIFICATE_ID }}"
+        --verbosity Trace
 
     - name: Publish Signed Windows_x64_x86 Packages
       uses: actions/upload-artifact@v2
