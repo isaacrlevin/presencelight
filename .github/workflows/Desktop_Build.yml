@@ -215,7 +215,7 @@ jobs:
         name: Code_Signing
         url: ${{ steps.deploy_staging.outputs.webapp-url }}
     name: Code Sign WPF
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
     - name: Azure Login
       uses: azure/login@v1
@@ -225,13 +225,13 @@ jobs:
     - name: Download Artifacts
       uses: actions/download-artifact@v2
       with:
-        path: "${{ github.workspace }}/ToSign"
+        path: "${{ github.workspace }}\ToSign"
 
     - uses: actions/download-artifact@v2
       name: Download Signing Scripts Artifacts
       with:
         name: SigningScripts
-        path: "${{ github.workspace }}/SigningScripts"
+        path: "${{ github.workspace }}\SigningScripts"
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
@@ -252,7 +252,7 @@ jobs:
         ./sign code azure-key-vault
         **/*.appxbundle
         --timestamp-url "http://timestamp.digicert.com"
-        --base-directory "${{ github.workspace }}/ToSign/Nightly"
+        --base-directory "${{ github.workspace }}\ToSign\Nightly"
         --file-list "${{ github.workspace }}/SigningScripts/filelist.txt" 
         --publisher-name "Isaac Levin"
         --description "PresenceLight"
@@ -268,7 +268,7 @@ jobs:
         ./sign code azure-key-vault
         **/*.appxbundle
         --timestamp-url "http://timestamp.digicert.com"
-        --base-directory "${{ github.workspace }}/ToSign/Release"
+        --base-directory "${{ github.workspace }}\ToSign\Release"
         --file-list "${{ github.workspace }}/SigningScripts/filelist.txt" 
         --publisher-name "Isaac Levin"
         --description "PresenceLight"
@@ -313,19 +313,19 @@ jobs:
     - name: Publish Signed Release Packages
       uses: actions/upload-artifact@v2
       with:
-        path: ${{ github.workspace }}/ToSign/Release
+        path: ${{ github.workspace }}\ToSign\Release
         name: ReleaseSigned
 
     - name: Publish Signed Nightly Packages
       uses: actions/upload-artifact@v2
       with:
-        path: ${{ github.workspace }}/ToSign/Nightly
+        path: ${{ github.workspace }}\ToSign\Nightly
         name: NightlySigned
 
     - name: Publish Signed Standalone Packages
       uses: actions/upload-artifact@v2
       with:
-        path: ${{ github.workspace }}/ToSign/Standalone
+        path: ${{ github.workspace }}\ToSign\Standalone
         name: StandaloneSigned
 
   Deploy_Azure_Blob:
