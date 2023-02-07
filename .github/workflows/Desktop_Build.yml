@@ -225,13 +225,13 @@ jobs:
     - name: Download Artifacts
       uses: actions/download-artifact@v2
       with:
-        path: "${{ github.workspace }}\ToSign"
+        path: ${{ github.workspace }}\ToSign
 
     - uses: actions/download-artifact@v2
       name: Download Signing Scripts Artifacts
       with:
         name: SigningScripts
-        path: "${{ github.workspace }}\SigningScripts"
+        path: ${{ github.workspace }}\SigningScripts
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
