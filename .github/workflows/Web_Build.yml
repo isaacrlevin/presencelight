@@ -144,7 +144,7 @@ jobs:
         name: Code_Signing
         url: ${{ steps.deploy_staging.outputs.webapp-url }}
     name: Code Sign Web
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
     - name: Azure Login
       uses: azure/login@v1
@@ -155,43 +155,43 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         name: Windows_x64_x86
-        path: ${{ github.workspace }}/ToSign/Windows_x64_x86
+        path: ${{ github.workspace }}\ToSign\Windows_x64_x86
 
     - name: Download Windows_ARM Artifacts
       uses: actions/download-artifact@v2
       with:
         name: Windows_ARM
-        path: ${{ github.workspace }}/ToSign/Windows_ARM
+        path: ${{ github.workspace }}\ToSign\Windows_ARM
 
     - name: Download macOS Artifacts
       uses: actions/download-artifact@v2
       with:
         name: macOS
-        path: ${{ github.workspace }}/ToSign/macOS
+        path: ${{ github.workspace }}\ToSign\macOS
 
     - name: Download Linux_ARM Artifacts
       uses: actions/download-artifact@v2
       with:
         name: Linux_ARM
-        path: ${{ github.workspace }}/ToSign/Linux_ARM
+        path: ${{ github.workspace }}\ToSign\Linux_ARM
 
     - name: Download Linux_ARM64 Artifacts
       uses: actions/download-artifact@v2
       with:
         name: Linux_ARM64
-        path: ${{ github.workspace }}/ToSign/Linux_ARM64
+        path: ${{ github.workspace }}\ToSign\Linux_ARM64
 
     - name: Download Linux_Musl_x64 Artifacts
       uses: actions/download-artifact@v2
       with:
         name: Linux_Musl_x64
-        path: ${{ github.workspace }}/ToSign/Linux_Musl_x64
+        path: ${{ github.workspace }}\ToSign\Linux_Musl_x64
 
     - name: Download Linux_Musl_ARM_x64 Artifacts
       uses: actions/download-artifact@v2
       with:
         name: Linux_Musl_ARM_x64
-        path: ${{ github.workspace }}/ToSign/Linux_Musl_ARM_x64
+        path: ${{ github.workspace }}\ToSign\Linux_Musl_ARM_x64
 
     - uses: actions/download-artifact@v2
       name: Download Signing Scripts Artifacts
@@ -231,43 +231,43 @@ jobs:
     - name: Publish Signed Windows_x64_x86 Packages
       uses: actions/upload-artifact@v2
       with:
-        path: ${{ github.workspace }}/ToSign/Windows_x64_x86
+        path: ${{ github.workspace }}\ToSign\Windows_x64_x86
         name: Windows_x64_x86_Signed
 
     - name: Publish Signed Windows_ARM Packages
       uses: actions/upload-artifact@v2
       with:
-        path: ${{ github.workspace }}/ToSign/Windows_ARM
+        path: ${{ github.workspace }}\ToSign\Windows_ARM
         name: Windows_ARM_Signed
 
     - name: Publish Signed macOS Packages
       uses: actions/upload-artifact@v2
       with:
-        path: ${{ github.workspace }}/ToSign/macOS
+        path: ${{ github.workspace }}\ToSign\macOS
         name: macOS_Signed
 
     - name: Publish Signed Linux_ARM Packages
       uses: actions/upload-artifact@v2
       with:
-        path: ${{ github.workspace }}/ToSign/Linux_ARM
+        path: ${{ github.workspace }}\ToSign\Linux_ARM
         name: Linux_ARM_Signed
 
     - name: Publish Signed Linux_ARM64 Packages
       uses: actions/upload-artifact@v2
       with:
-        path: ${{ github.workspace }}/ToSign/Linux_ARM64
+        path: ${{ github.workspace }}\ToSign\Linux_ARM64
         name: Linux_ARM64_Signed
 
     - name: Publish Signed Linux_Musl_x64 Packages
       uses: actions/upload-artifact@v2
       with:
-        path: ${{ github.workspace }}/ToSign/Linux_Musl_x64
+        path: ${{ github.workspace }}\ToSign\Linux_Musl_x64
         name: Linux_Musl_x64_Signed
 
     - name: Publish Signed Linux_Musl_ARM_x64 Packages
       uses: actions/upload-artifact@v2
       with:
-        path: ${{ github.workspace }}/ToSign/Linux_Musl_ARM_x64
+        path: ${{ github.workspace }}\ToSign\Linux_Musl_ARM_x64
         name: Linux_Musl_ARM_x64_Signed
 
   Deploy_Azure_Blob:
