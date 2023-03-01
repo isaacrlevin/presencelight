@@ -123,6 +123,11 @@ namespace PresenceLight
                 logging.AddSerilog();
             });
 
+#if DEBUG
+            services.AddBlazorWebViewDeveloperTools();           
+#endif
+
+
             services.Configure<TelemetryConfiguration>((o) =>
             {
                 o.InstrumentationKey = Configuration["ApplicationInsights:InstrumentationKey"];
