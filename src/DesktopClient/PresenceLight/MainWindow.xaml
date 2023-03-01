@@ -10,7 +10,7 @@
         xmlns:blazor="clr-namespace:Microsoft.AspNetCore.Components.WebView.Wpf;assembly=Microsoft.AspNetCore.Components.WebView.Wpf"
         mc:Ignorable="d" Title="PresenceLight" Icon="Icons/Icon.ico" Height="1200" Width="1200" MinWidth="600px">
     <Grid>
-        <blazor:BlazorWebView x:Name="blazorWebView1" HostPage="wwwroot\index.html" Services="{StaticResource services}">
+        <blazor:BlazorWebView x:Name="blazorWebView1" HostPage="wwwroot\index.html" Services="{StaticResource services}" Loaded="MainWindow_Loaded">
             <blazor:BlazorWebView.RootComponents>
                 <blazor:RootComponent Selector="#app" ComponentType="{x:Type local:PresenceLightClientApp}" />
             </blazor:BlazorWebView.RootComponents>

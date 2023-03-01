@@ -52,7 +52,7 @@ namespace PresenceLight
         {
             var currentApp = (App)System.Windows.Application.Current;
             Resources.Add("services", currentApp.ServiceProvider);
-
+            InitializeComponent();
             _appState = appState;
 
             _logger = logger;
@@ -144,7 +144,11 @@ namespace PresenceLight
                 _diagClient.TrackException(e);
             }
         }
-
+        private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            await blazorWebView1.WebView.EnsureCoreWebView2Async();
+            blazorWebView1.WebView.CoreWebView2.Settings.IsZoomControlEnabled = false;
+        }
         private void LoadApp()
         {
             try
