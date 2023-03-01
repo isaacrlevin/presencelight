@@ -29,7 +29,7 @@
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Graph" Version="4.50.0" />
+    <PackageReference Include="Microsoft.Graph" Version="5.0.0" />
     <PackageReference Include="Microsoft.Identity.Client" Version="4.49.1" />
     <PackageReference Include="OpenWiz" Version="1.1.0" />
     <PackageReference Include="Polly" Version="7.2.3" />
