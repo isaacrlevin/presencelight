@@ -6,6 +6,8 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
+using YeelightAPI.Models;
+
 namespace PresenceLight.Core.LifxServices
 {
     internal class InitializeHandler : IRequestHandler<InitializeCommand>
@@ -16,11 +18,10 @@ namespace PresenceLight.Core.LifxServices
             _service = service;
         }
 
-        public async Task<Unit> Handle(InitializeCommand command, CancellationToken cancellationToken)
+        async Task IRequestHandler<InitializeCommand>.Handle(InitializeCommand command, CancellationToken cancellationToken)
         {
             _service.Initialize(command.AppState);
             await Task.CompletedTask;
-            return default;
         }
     }
 }
