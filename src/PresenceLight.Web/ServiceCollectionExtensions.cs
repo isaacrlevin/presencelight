@@ -20,8 +20,11 @@ namespace PresenceLight.Web
     {
         public static IServiceCollection AddPresenceLight(this IServiceCollection services, IConfiguration Configuration)
         {
-            services.AddMediatR(typeof(PresenceLightClientApp),
-                                typeof(BaseConfig));
+            services.AddMediatR(cfg =>
+            {
+                cfg.RegisterServicesFromAssembly(typeof(PresenceLightClientApp).Assembly);
+                cfg.RegisterServicesFromAssembly(typeof(BaseConfig).Assembly);
+            });
 
             services.AddMudServices();
 

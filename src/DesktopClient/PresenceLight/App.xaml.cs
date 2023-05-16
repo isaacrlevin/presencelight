@@ -157,8 +157,11 @@ namespace PresenceLight
     .AddBootstrapProviders()
     .AddFontAwesomeIcons();
 
-            services.AddMediatR(typeof(App),
-                     typeof(BaseConfig));
+            services.AddMediatR(cfg =>
+            {
+                cfg.RegisterServicesFromAssembly(typeof(App).Assembly);
+                cfg.RegisterServicesFromAssembly(typeof(BaseConfig).Assembly);
+            });
 
             //Singleton Services
             services.AddSingleton<AppState>();

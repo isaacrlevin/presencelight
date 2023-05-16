@@ -6,6 +6,8 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
+using YeelightAPI.Models;
+
 namespace PresenceLight.Core.GraphServices
 {
     internal class InitializeHandler : IRequestHandler<InitializeCommand>
@@ -17,11 +19,10 @@ namespace PresenceLight.Core.GraphServices
             _graph = graph;
         }
 
-        public async Task<Unit> Handle(InitializeCommand command, CancellationToken cancellationToken)
+        async Task IRequestHandler<InitializeCommand>.Handle(InitializeCommand command, CancellationToken cancellationToken)
         {
             _graph.Initialize(command.Client);
             await Task.CompletedTask;
-            return default;
         }
     }
 }
