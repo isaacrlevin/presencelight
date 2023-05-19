@@ -13,7 +13,7 @@ jobs:
       WINGETCREATE_TOKEN: ${{ secrets.WINGETCREATE_TOKEN }}
     steps:
     - name: Winget Publish
-      uses: isaacrlevin/winget-publish-action@v.5
+      uses: isaacrlevin/winget-publish-action@v.7
       with:
         publish-type: 'Create'
         user: "isaaclevin"
