@@ -26,7 +26,7 @@ jobs:
       - name: Create manifest and submit PR
         working-directory: ${{ github.workspace }}/SigningScripts/winget
         run: |
-          ./build.ps1 -Version "${{ input.Version }}" -Token "${{ secrets.WINGETCREATE_TOKEN }}"
+          ./build.ps1 -Version "${{ inputs.Version }}" -Token "${{ secrets.WINGETCREATE_TOKEN }}"
       - name: Setup tmate session
         if: ${{ failure() }}
         uses: mxschmitt/action-tmate@v3
