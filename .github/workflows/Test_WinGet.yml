@@ -18,10 +18,15 @@ jobs:
         publish-type: 'Create'
         user: "isaaclevin"
         package: "presencelight"
-        version: "5.5.13.0"
-        url: "https://github.com/isaacrlevin/presencelight/releases/download/Desktop-v5.5.13/PresenceLight.Package_5.5.13.0_x64_x86_ARM64.appxbundle"
+        version: "5.6.1.0"
+        url: "https://github.com/isaacrlevin/presencelight/releases/download/Desktop-v5.6.1/PresenceLight.Package_5.6.1.0_x64_x86_ARM64.appxbundle"
         token: ${{ secrets.WINGETCREATE_TOKEN }}
         short-description: "PresenceLight is a solution to broadcast your various statuses to light bulbs."
+        arch: x64
+        installer-type: "appx"
+        publisher: "Isaac Levin"
+        package-name: "PresenceLight"
+        license: "MIT License"        
     - name: Setup tmate session
       if: ${{ failure() }}
       uses: mxschmitt/action-tmate@v3
