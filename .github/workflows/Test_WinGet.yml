@@ -1,7 +1,13 @@
 name: Winget
 on:
   workflow_dispatch:
-
+    inputs:
+      Version:
+        description: 'Release'
+        required: true
+        default: '5.0'
+        type: string
+        
 jobs:
   publish:
     runs-on: windows-latest
@@ -18,8 +24,8 @@ jobs:
         publish-type: 'Create'
         user: "isaaclevin"
         package: "presencelight"
-        version: "5.6.1.0"
-        url: "https://github.com/isaacrlevin/presencelight/releases/download/Desktop-v5.6.1/PresenceLight.Package_5.6.1.0_x64_x86_ARM64.appxbundle"
+        version: "${{ inputs.Version }}"
+        url: "https://github.com/isaacrlevin/presencelight/releases/download/Desktop-v${{ inputs.Version }}/PresenceLight.Package_${{ inputs.Version }}.0_x64_x86_ARM64.appxbundle"
         token: ${{ secrets.WINGETCREATE_TOKEN }}
         short-description: "PresenceLight is a solution to broadcast your various statuses to light bulbs."
         arch: x64
@@ -27,6 +33,10 @@ jobs:
         publisher: "Isaac Levin"
         package-name: "PresenceLight"
         license: "MIT License"        
+        family-name: ""
     - name: Setup tmate session
       if: ${{ failure() }}
       uses: mxschmitt/action-tmate@v3
+      
+      
+      
