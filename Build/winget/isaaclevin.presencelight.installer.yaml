@@ -21,4 +21,4 @@ Installers:
   InstallerUrl: https://github.com/isaacrlevin/presencelight/releases/download/Desktop-v<VERSION>/PresenceLight.Package_<VERSION>.0_x64_x86_ARM64.appxbundle
   InstallerSha256: <HASH>
 ManifestType: installer
-ManifestVersion: 1.1.0
+ManifestVersion: 1.4.0
