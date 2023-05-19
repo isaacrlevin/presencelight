@@ -17,14 +17,13 @@ jobs:
     env:
       WINGETCREATE_TOKEN: ${{ secrets.WINGETCREATE_TOKEN }}
     steps:
-      - uses: actions/download-artifact@v2
-        name: Download Signing Scripts Artifacts
+      - name: Checkout code
+        uses: actions/checkout@v2
         with:
-          name: SigningScripts
-          path: "${{ github.workspace }}/SigningScripts"
+          fetch-depth: 0
 
       - name: Create manifest and submit PR
-        working-directory: ${{ github.workspace }}/SigningScripts/winget
+        working-directory: ${{ github.workspace }}/Build/winget
         run: |
           ./build.ps1 -Version "${{ inputs.Version }}" -Token "${{ secrets.WINGETCREATE_TOKEN }}"
       - name: Setup tmate session
