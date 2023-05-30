@@ -1,26 +1,31 @@
 name: Winget
 on:
   workflow_dispatch:
-
+    inputs:
+      Version:
+        description: 'Release'
+        required: true
+        default: '5.0'
+        type: string
+        
 jobs:
   publish:
     runs-on: windows-latest
     defaults:
       run:
-        shell: pwsh
-        working-directory: ${{ github.workspace }}/Build/winget
+        shell: pwsh        
     env:
       WINGETCREATE_TOKEN: ${{ secrets.WINGETCREATE_TOKEN }}
     steps:
-    - name: Winget Publish
-      uses: isaacrlevin/winget-publish-action@v.5
-      with:
-        publish-type: 'Create'
-        user: "isaaclevin"
-        package: "presencelight"
-        version: "5.5.13.0"
-        url: "https://github.com/isaacrlevin/presencelight/releases/download/Desktop-v5.5.13/PresenceLight.Package_5.5.13.0_x64_x86_ARM64.appxbundle"
-        token: ${{ secrets.WINGETCREATE_TOKEN }}
-    - name: Setup tmate session
-      if: ${{ failure() }}
-      uses: mxschmitt/action-tmate@v3
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Create manifest and submit PR
+        working-directory: ${{ github.workspace }}/Build/winget
+        run: |
+          ./build.ps1 -Version "${{ inputs.Version }}" -Token "${{ secrets.WINGETCREATE_TOKEN }}"
+      - name: Setup tmate session
+        if: ${{ failure() }}
+        uses: mxschmitt/action-tmate@v3
