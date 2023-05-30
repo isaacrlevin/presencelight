@@ -246,7 +246,7 @@ namespace PresenceLight
 
                 if (_appState.Config.LightSettings.Wiz.IsEnabled)
                 {
-                    await _mediator.Send(new PresenceLight.Core.WizServices.SetColorCommand { Activity = activity, Availability = color, LightID = _appState.Config.LightSettings.Wiz.SelectedItemId }).ConfigureAwait(true);
+                   // await _mediator.Send(new PresenceLight.Core.WizServices.SetColorCommand { Activity = activity, Availability = color, LightID = _appState.Config.LightSettings.Wiz.SelectedItemId }).ConfigureAwait(true);
 
                 }
 

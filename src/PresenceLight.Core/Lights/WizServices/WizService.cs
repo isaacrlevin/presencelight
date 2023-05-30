@@ -20,7 +20,7 @@ namespace PresenceLight.Core
     {
         private AppState _appState;
         private readonly ILogger<WizService> _logger;
-        
+
         public WizService(AppState appState, ILogger<WizService> logger)
         {
             _logger = logger;
@@ -146,7 +146,7 @@ namespace PresenceLight.Core
 
             WizState state = WizState.MakeGetSystemConfig();
 
-            socket.GetSocket().ReceiveTimeout = 1000; // This will prevent the demo from running indefinitely
+            socket.GetSocket().ReceiveTimeout = 10000; // This will prevent the demo from running indefinitely
             socket.SendTo(state, handle);
 
             List<(string LightName, string MacAddress)> homeIds = new List<(string LightName, string MacAddress)>();
@@ -154,15 +154,22 @@ namespace PresenceLight.Core
             // You won't easily get an IP address here, but this will list all Home IDs on the network.
             while (true)
             {
-                state = socket.ReceiveFrom(handle);
-                if (state.Result.HomeId != null)
+                try
                 {
-                    Console.WriteLine($"Home ID for light {state.Result.Mac} = {state.Result.HomeId}");
+                    state = socket.ReceiveFrom(handle);
+                    if (state.Result.HomeId != null)
+                    {
+                        Console.WriteLine($"Home ID for light {state.Result.Mac} = {state.Result.HomeId}");
 
-                    (string LightName, string MacAddress) result = (state.Result.ModuleName, state.Result.Mac);
-                    homeIds.Add(result);
+                        (string LightName, string MacAddress) result = (state.Result.ModuleName, state.Result.Mac);
+                        homeIds.Add(result);
+                    }
+                    break;
                 }
-                break;
+                catch (Exception e)
+                {
+                    var foo = e.Message;
+                }
             }
 
             return homeIds;

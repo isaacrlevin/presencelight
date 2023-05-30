@@ -292,12 +292,12 @@ namespace PresenceLight.Web
 
                 if (_appState.Config.LightSettings.Wiz.IsEnabled)
                 {
-                    await _mediator.Send(new Core.WizServices.SetColorCommand
-                    {
-                        Activity = activity,
-                        Availability = color,
-                        LightID = _appState.Config.LightSettings.Wiz.SelectedItemId
-                    });
+                    //await _mediator.Send(new Core.WizServices.SetColorCommand
+                    //{
+                    //    Activity = activity,
+                    //    Availability = color,
+                    //    LightID = _appState.Config.LightSettings.Wiz.SelectedItemId
+                    //});
                 }
             }
             catch (Exception e)
