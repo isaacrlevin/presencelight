@@ -130,7 +130,7 @@
             {
                 isLoadingLights = true;
                 _logger.LogInformation("Wiz Light Retrieval Initialized");
-                appState.SetWizLights(await _mediator.Send(new Core.WizServices.GetLightsCommand()));
+                //appState.SetWizLights(await _mediator.Send(new Core.WizServices.GetLightsCommand()));
 
                 if (string.IsNullOrEmpty(appState.Config.LightSettings.Wiz.SelectedItemId) && appState.WizLights.Count() > 0)
                 {

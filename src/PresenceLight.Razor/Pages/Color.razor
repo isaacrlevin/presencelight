@@ -97,12 +97,12 @@
 
                 if (appState.Config.LightSettings.Wiz.IsEnabled)
                 {
-                    await _mediator.Send(new Core.WizServices.SetColorCommand
-                        {
-                            Activity = appState.CustomColor,
-                            Availability = appState.CustomColor,
-                            LightID = appState.Config.LightSettings.Wiz.SelectedItemId
-                        });
+                    // await _mediator.Send(new Core.WizServices.SetColorCommand
+                    //     {
+                    //         Activity = appState.CustomColor,
+                    //         Availability = appState.CustomColor,
+                    //         LightID = appState.Config.LightSettings.Wiz.SelectedItemId
+                    //     });
                 }
             }
         }
