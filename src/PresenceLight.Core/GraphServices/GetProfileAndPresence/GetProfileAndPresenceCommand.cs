@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using Microsoft.Graph;
+using Microsoft.Graph.Models;
 using System;
 
 namespace PresenceLight.Core.GraphServices

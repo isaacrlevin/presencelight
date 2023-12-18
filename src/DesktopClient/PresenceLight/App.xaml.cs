@@ -132,7 +132,6 @@ namespace PresenceLight
             {
                 o.InstrumentationKey = Configuration["ApplicationInsights:InstrumentationKey"];
                 o.TelemetryInitializers.Add(new OperationCorrelationTelemetryInitializer());
-                //o.TelemetryInitializers.Add(AppVersionTelemetryInitializer);
             });
             services.AddApplicationInsightsTelemetryWorkerService(options =>
             {

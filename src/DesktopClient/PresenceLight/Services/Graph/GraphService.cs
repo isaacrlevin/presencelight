@@ -4,6 +4,7 @@ using Microsoft.Identity.Client;
 using System.Collections.Generic;
 using Microsoft.Extensions.Options;
 using PresenceLight.Core;
+using KiotaAuth = Microsoft.Kiota.Abstractions.Authentication;
 
 namespace PresenceLight.Graph
 {
@@ -27,7 +28,7 @@ namespace PresenceLight.Graph
             return _graphServiceClient;
         }
 
-        private IAuthenticationProvider CreateAuthorizationProvider()
+        private WPFAuthorizationProvider CreateAuthorizationProvider()
         {
             List<string> scopes = new List<string>
             {

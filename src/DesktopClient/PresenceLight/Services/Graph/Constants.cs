@@ -6,21 +6,21 @@ namespace PresenceLight.Graph
 {
     public static class PresenceConstants
     {
-        public static string Inactive = "Not Logged In";
+        public const string Inactive = "Not Logged In";
     }
 
     public class PresenceColors
     {
-        public static string Available = "#009933";
-        public static string AvailableIdle = "#ffff00";
-        public static string Busy = "#ff3300";
-        public static string BusyIdle = "#ffff00";
-        public static string BeRightBack = "#ffff00";
-        public static string Away = "#ffff00";
-        public static string DoNotDisturb = "#B03CDE";
-        public static string OutOfOffice = "#800080";
-        public static string Offline = "#FFFFFF";
-        public static string Inactive = "#FFFFFF";
+        public const string Available = "#009933";
+        public const string AvailableIdle = "#FFFF00";
+        public const string Busy = "#FF3300";
+        public const string BusyIdle = "#FFFF00";
+        public const string BeRightBack = "#FFFF00";
+        public const string Away = "#FFFF00";
+        public const string DoNotDisturb = "#B03CDE";
+        public const string OutOfOffice = "#800080";
+        public const string Offline = "#FFFFFF";
+        public const string Inactive = "#FFFFFF";
 
         public static string GetColor(string status)
         {

@@ -51,7 +51,7 @@ namespace PresenceLight.Services
             {
                 string content = JsonConvert.SerializeObject(data, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { });
                 StorageFile f;
-                if (await IsFilePresent().ConfigureAwait(true))
+                if (await IsFilePresent())
                 {
                     f = await _settingsFolder.GetFileAsync(SETTINGS_FILENAME);
                 }
@@ -111,7 +111,7 @@ namespace PresenceLight.Services
                 }
                 else
                 {
-                    var config = await LoadSettings().ConfigureAwait(true);
+                    var config = await LoadSettings();
                     if (config == null)
                     {
                         return false;

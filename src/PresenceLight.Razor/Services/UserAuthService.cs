@@ -1,16 +1,22 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Graph;
 using Microsoft.Identity.Client;
 using Microsoft.Identity.Client.Extensions.Msal;
+using Microsoft.Kiota.Abstractions;
+using Microsoft.Kiota.Abstractions.Authentication;
+
+using KiotaAuth = Microsoft.Kiota.Abstractions.Authentication;
 
 namespace PresenceLight.Razor
 {
-    public class UserAuthService : IAuthenticationProvider
+    public class UserAuthService : KiotaAuth.IAuthenticationProvider
     {
         static string[] graphScopes = { "https://graph.microsoft.com/.default" };
         private readonly IConfidentialClientApplication _msalClient;
@@ -138,13 +144,12 @@ namespace PresenceLight.Razor
             }
         }
 
-        public async Task AuthenticateRequestAsync(HttpRequestMessage requestMessage)
+        public async Task AuthenticateRequestAsync(RequestInformation requestMessage, Dictionary<string, object> additionalAuthenticationContext, CancellationToken cancellationToken)
         {
             var accessToken = await GetAccessToken();
             if (!string.IsNullOrEmpty(accessToken))
             {
-                requestMessage.Headers.Authorization =
-                    new AuthenticationHeaderValue("Bearer", accessToken);
+                requestMessage.Headers.Add("Authorization", $"Bearer {accessToken}");
             }
         }
     }

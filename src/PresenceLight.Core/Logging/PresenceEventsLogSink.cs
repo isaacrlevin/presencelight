@@ -24,19 +24,9 @@ namespace PresenceLight.Core
             PresenceEventsLogHandler?.Invoke(this, logEvent);
         }
       
-        public static EventHandler<LogEvent> PresenceEventsLogHandler;
+        public EventHandler<LogEvent> PresenceEventsLogHandler;
     }
-    public class test {
-        public test() {
-            PresenceEventsLogSink.PresenceEventsLogHandler += Handler;
 
-        }
-
-        private void Handler(object? sender, LogEvent e)
-        {
-            throw new NotImplementedException();
-        }
-    }
     public static class PresenceEventsLogSinkExtensions {
 
         public static LoggerConfiguration PresenceEventsLogSink(
