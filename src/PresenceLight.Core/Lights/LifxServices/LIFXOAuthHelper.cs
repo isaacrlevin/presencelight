@@ -36,10 +36,8 @@ namespace PresenceLight.Core
         {
 
             var builder = WebApplication.CreateBuilder();
-            builder.Host.ConfigureLogging(logging =>
-            {
-                logging.ClearProviders();
-            });
+            builder.Logging.ClearProviders();
+
             var app = builder.Build();
 
             var tcs = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);

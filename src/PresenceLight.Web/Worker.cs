@@ -52,7 +52,7 @@ namespace PresenceLight.Web
                     }
                     catch (Exception e)
                     {
-                        _logger.LogError(e, "Exception occured restarting worker");
+                        _logger.LogError(e, "Exception occurred restarting worker");
                     }
                 }
                 else

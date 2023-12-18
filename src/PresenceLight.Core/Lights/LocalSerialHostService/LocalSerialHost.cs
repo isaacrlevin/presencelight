@@ -307,7 +307,7 @@ namespace PresenceLight.Core
         {
             try 
             {
-                IEnumerable<string> ports = SerialPort.GetPortNames();
+                IEnumerable<string> ports = await Task.Run(() => SerialPort.GetPortNames());
                 return ports;
             }
             catch (Exception e)

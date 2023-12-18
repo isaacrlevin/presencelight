@@ -338,7 +338,7 @@ namespace PresenceLight.Core
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error Getting Lights", e);
+                _logger.LogError(e, "Error Getting Lights");
                 throw;
             }
         }
@@ -378,7 +378,7 @@ namespace PresenceLight.Core
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error Getting Lights", e);
+                _logger.LogError(e, "Error Getting Lights");
                 throw;
             }
         }

@@ -107,11 +107,13 @@ namespace PresenceLight
             //Logging
             var telemetryConfiguration = TelemetryConfiguration.CreateDefault();
             telemetryConfiguration.InstrumentationKey = Configuration["ApplicationInsights:InstrumentationKey"];
+
+
+
             var loggerConfig =
             new LoggerConfiguration()
                           .ReadFrom.Configuration(Configuration)
                           .WriteTo.PresenceEventsLogSink()
-                          .WriteTo.ApplicationInsights(telemetryConfiguration, TelemetryConverter.Traces, Serilog.Events.LogEventLevel.Error)
                           .Enrich.FromLogContext();
 
 
