@@ -6,10 +6,14 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Net.Http.Headers;
+using KiotaAuth = Microsoft.Kiota.Abstractions.Authentication;
+using Microsoft.Kiota.Abstractions.Authentication;
+using Microsoft.Kiota.Abstractions;
+using System.Threading;
 
 namespace PresenceLight.Graph
 {
-    public class WPFAuthorizationProvider : MSGraph.IAuthenticationProvider
+    public class WPFAuthorizationProvider : KiotaAuth.IAuthenticationProvider
     {
         public static IPublicClientApplication Application;
         private readonly List<string> _scopes;
@@ -20,17 +24,17 @@ namespace PresenceLight.Graph
             _scopes = scopes;
         }
 
-        public async Task AuthenticateRequestAsync(HttpRequestMessage request)
+        async Task IAuthenticationProvider.AuthenticateRequestAsync(RequestInformation request, Dictionary<string, object>? additionalAuthenticationContext, CancellationToken cancellationToken)
         {
             AuthenticationResult authResult = null;
 
-            var accounts = await Application.GetAccountsAsync().ConfigureAwait(true);
+            var accounts = await Application.GetAccountsAsync();
             var firstAccount = accounts.FirstOrDefault();
 
             try
             {
                 authResult = await Application.AcquireTokenSilent(_scopes, accounts.FirstOrDefault())
-                .ExecuteAsync().ConfigureAwait(true);
+                .ExecuteAsync(cancellationToken);
 
             }
             catch (MsalUiRequiredException)
@@ -41,8 +45,8 @@ namespace PresenceLight.Graph
                      {
                          authResult = await Application.AcquireTokenInteractive(_scopes)
                             .WithUseEmbeddedWebView(false)
-                            .ExecuteAsync().ConfigureAwait(true);
-                     }).ConfigureAwait(true);
+                            .ExecuteAsync();
+                     });
                 }
                 catch 
                 {
@@ -52,7 +56,7 @@ namespace PresenceLight.Graph
 
             if (authResult != null)
             {
-                request.Headers.Authorization = new AuthenticationHeaderValue("bearer", authResult.AccessToken);
+                request.Headers.Add("Authorization", $"Bearer {authResult.AccessToken}");                
             }
         }
     }

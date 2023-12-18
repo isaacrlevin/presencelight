@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using Microsoft.Graph;
+using Microsoft.Graph.Models;
 
 using PresenceLight.Core.WizServices;
 
@@ -15,7 +15,7 @@ namespace PresenceLight.Core
 
         public event Action OnChange;
 
-        public User User { get; set; }
+        public User User { get; set; } = new User();
 
         public bool SignedIn { get; set; }
 
@@ -51,14 +51,14 @@ namespace PresenceLight.Core
 
         public string CustomColor { get; set; }
 
-        public BaseConfig Config { get; set; }
+        public BaseConfig Config { get; set; } = new BaseConfig();
 
         public void SetConfig(BaseConfig config)
         {
             Config = config;
         }
 
-        public void SetUserInfo(User user, Presence presence, string photo = null)
+        public void SetUserInfo(User? user, Presence? presence, string? photo = null)
         {
             User = user;
             Presence = presence;

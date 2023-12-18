@@ -1,5 +1,7 @@
 ﻿using MediatR;
-using Microsoft.Graph;
+
+using Microsoft.Graph.Models;
+
 using Polly.Retry;
 using System.Threading;
 using System.Threading.Tasks;

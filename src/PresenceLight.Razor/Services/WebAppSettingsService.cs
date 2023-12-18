@@ -39,7 +39,7 @@ namespace PresenceLight.Razor.Services
             }
             else
             {
-                var config = await LoadSettings().ConfigureAwait(true);
+                var config = await LoadSettings();
                 if (config == null)
                 {
                     return false;
@@ -51,7 +51,7 @@ namespace PresenceLight.Razor.Services
 
         public async Task<BaseConfig?> LoadSettings()
         {
-            string fileJSON = await File.ReadAllTextAsync(GetSettingsFileLocation(), Encoding.UTF8).ConfigureAwait(true);
+            string fileJSON = await File.ReadAllTextAsync(GetSettingsFileLocation(), Encoding.UTF8);
             var config = JsonConvert.DeserializeObject<BaseConfig>(fileJSON);
             _appState.SetConfig(config);
             return config;
@@ -60,7 +60,7 @@ namespace PresenceLight.Razor.Services
         public async Task<bool> SaveSettings(BaseConfig data)
         {
             string content = JsonConvert.SerializeObject(data, Newtonsoft.Json.Formatting.Indented, new JsonSerializerSettings { });
-            await File.WriteAllTextAsync(GetSettingsFileLocation(), content, Encoding.UTF8).ConfigureAwait(false);
+            await File.WriteAllTextAsync(GetSettingsFileLocation(), content, Encoding.UTF8);
             _appState.SetConfig(data);
             return true;
         }
