@@ -32,7 +32,7 @@ jobs:
           - ChannelName: Windows_x64_x86
             RID: win-x64
           - ChannelName: Windows_ARM
-            RID: win-arm
+            RID: win-arm64
           - ChannelName: macOS
             RID: osx-x64
           - ChannelName: Linux_ARM
@@ -42,7 +42,7 @@ jobs:
           - ChannelName: Linux_Musl_x64
             RID: linux-musl-x64
           - ChannelName: Linux_Musl_ARM_x64
-            RID: linux-musl-x64
+            RID: linux-musl-arm64
 
     env:
       DOTNET_CLI_TELEMETRY_OPTOUT: 1
