@@ -147,7 +147,6 @@ jobs:
 
     - name: Create Directory for Channel
       run: mkdir ${{ github.workspace }}/${{ matrix.ChannelName }}
-      shell: powershell
 
     - run: dotnet publish './src/PresenceLight.Web/PresenceLight.Web.csproj' -r ${{ matrix.RID }} -c ${{ env.BuildConfiguration }} /p:PublishSingleFile=true -o ${{ github.workspace }}\PresenceLight.${{ env.GitBuildVersionSimple }}_${{ matrix.ChannelName }} /p:Version=${{ env.GitBuildVersionSimple }}
       name: dotnet publish ${{ matrix.RID }}
