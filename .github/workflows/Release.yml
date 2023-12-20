@@ -1,0 +1,23 @@
+on:
+  workflow_dispatch:
+    inputs:
+      Version:
+        description: 'Release'
+        required: true
+        default: '5.0'
+        type: string
+
+  workflow_call:
+    inputs:
+      Version:
+        description: 'Release'
+        required: true
+        default: '5.0'
+        type: string
+
+jobs:
+    Deploy_Choco:
+      uses: isaacrlevin/presencelight/.github/workflows/Releases/Choco.yml@main
+      with:
+        Version: ${{ inputs.VERSION }}
+

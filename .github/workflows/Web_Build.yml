@@ -98,6 +98,7 @@ jobs:
 
   Build_Web:
     name: Build Web
+    needs: Setup_Web
     runs-on: ubuntu-latest
     strategy:
       matrix:
