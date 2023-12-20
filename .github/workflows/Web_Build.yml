@@ -176,7 +176,7 @@ jobs:
         path: ${{ github.workspace }}/${{ matrix.ChannelName }}
         name: ${{ matrix.ChannelName }}
 
-  generate_matrix:
+  Generate_Matrix:
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set_matrix.outputs.matrix }}
