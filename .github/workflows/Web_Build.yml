@@ -176,20 +176,27 @@ jobs:
         path: ${{ github.workspace }}/${{ matrix.ChannelName }}
         name: ${{ matrix.ChannelName }}
 
+  generate_matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set_matrix.outputs.matrix }}
+
+    steps:
+      - name: Set Matrix
+        id: set_matrix
+        run: echo "::set-output name=matrix::['Windows_x64_x86', 'Windows_ARM', 'macOS', 'Linux_ARM', 'Linux_ARM64', 'Linux_Musl_x64', 'Linux_Musl_ARM_x64']"
+
+      - name: Create Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: matrix-artifact
+          path: ${{ runner.workspace }}/matrix-artifact
+
   Code_Signing:
     needs: Build_Web
-    runs-on: windows-latest
-    if: ${{ (github.event_name != 'pull_request') && (github.ref == 'refs/heads/main') }}
-    steps:
-      - id: setup-matrix
-        uses: druzsan/setup-matrix@v1
-        with:
-          matrix: |
-            ChannelName: Windows_x64_x86 Windows_ARM macOS Linux_ARM Linux_ARM64 Linux_Musl_x64 Linux_Musl_ARM_x64
-
-      - uses: "isaacrlevin/presencelight/.github/workflows/Sign.yml@main"
-        with:
-          matrix: ${{ steps.setup-matrix.outputs.matrix }}
+    uses: "isaacrlevin/presencelight/.github/workflows/Sign.yml@main"
+    with:
+      matrix: ${{ steps.setup-matrix.outputs.matrix }}
 
     # permissions:
     #   id-token: write # Required for requesting the JWT
