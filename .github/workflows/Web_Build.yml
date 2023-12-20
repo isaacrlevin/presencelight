@@ -186,11 +186,11 @@ jobs:
         id: set_matrix
         run: echo "::set-output name=matrix::['Windows_x64_x86', 'Windows_ARM', 'macOS', 'Linux_ARM', 'Linux_ARM64', 'Linux_Musl_x64', 'Linux_Musl_ARM_x64']"
 
-      - name: Create Artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: matrix-artifact
-          path: ${{ runner.workspace }}/matrix-artifact
+      # - name: Create Artifact
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: matrix-artifact
+      #     path: ${{ runner.workspace }}/matrix-artifact
 
   Code_Signing:
     needs: Build_Web

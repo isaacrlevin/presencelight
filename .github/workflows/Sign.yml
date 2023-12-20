@@ -34,7 +34,8 @@ jobs:
     #       - ChannelName: Linux_Musl_ARM_x64
 
     strategy:
-      matrix: ${{ fromJson(inputs.Matrix) }}
+      matrix: ${{fromJson(needs.use_matrix.outputs.matrix_strategy)}}
+
     steps:
 
       - name: Download Matrix Artifact
