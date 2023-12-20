@@ -20,7 +20,8 @@ on:
 jobs:
 
   Sign_Code:
-
+    permissions:
+      id-token: write # Required for requesting the JWT
     runs-on: windows-latest
 
     steps:
