@@ -142,7 +142,7 @@ jobs:
 
     - name: Get Version from File
       run: |
-        version=$(<"${{ github.workspace }}/version.txt")
+        version=$(<"${{ github.workspace }}/src/version.txt")
           echo "VERSION=$version" >> $GITHUB_ENV
 
     - name: Create Directory for Channel
