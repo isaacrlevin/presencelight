@@ -53,32 +53,11 @@ jobs:
 
     - name: Update appsettings.json
       run: |
-        # Update AppSettings.json. This must be done before build.
-        $appsettings= get-content ".\src\PresenceLight.Web\appsettings.json" -raw | ConvertFrom-Json
-
-        $appsettings.azureAd.clientId = "${{ secrets.ApplicationId }}"
-        $appsettings.azureAd.clientSecret = "${{ secrets.ClientSecret }}"
-
-        $appsettings.appVersion = "${{ env.GitBuildVersionSimple }}"
-
-        $appsettings.applicationInsights.instrumentationkey = "${{ secrets.InstrumentationKey }}"
-        $appsettings | ConvertTo-Json -depth 32| set-content '.\src\PresenceLight.Web\appsettings.json'
-      shell: powershell
-      if: ${{ success() && github.event_name != 'pull_request' }}
-
-    - name: Update PresenceLightSettings.json
-      run: |
-        # Update PresenceLightSettings.json. This must be done before build.
-        $PresenceLightSettings= get-content ".\src\PresenceLight.Web\PresenceLightSettings.json" -raw | ConvertFrom-Json
-
-        $PresenceLightSettings.lightSettings.lifx.LIFXClientId = "${{ secrets.LIFXClientId }}"
-        $PresenceLightSettings.lightSettings.lifx.LIFXClientSecret = "${{ secrets.LIFXClientSecret }}"
-
-        $PresenceLightSettings.lightSettings.hue.RemoteHueClientId = "${{ secrets.RemoteHueClientId }}"
-        $PresenceLightSettings.lightSettings.hue.RemoteHueClientSecret = "${{ secrets.RemoteHueClientSecret }}"
-        $PresenceLightSettings.lightSettings.hue.RemoteHueClientAppName = "${{ secrets.RemoteHueClientAppName }}"
-
-        $PresenceLightSettings | ConvertTo-Json -depth 32| set-content '.\src\PresenceLight.Web\PresenceLightSettings.json'
+        ./Build/scripts/update-web-json.ps1 -Version "${{ env.GitBuildVersionSimple }}" -ApplicationId "${{ secrets.ApplicationId }}" `
+        -ClientSecret "${{ secrets.ClientSecret }}" -InstrumentationKey "${{ secrets.InstrumentationKey }}" `
+        -LIFXClientId "${{ secrets.LIFXClientId }}" -LIFXClientSecret "${{ secrets.LIFXClientSecret }}" `
+        -RemoteHueClientId "${{ secrets.RemoteHueClientId }}" -RemoteHueClientSecret "${{ secrets.RemoteHueClientSecret }}" `
+        -RemoteHueClientAppName "${{ secrets.RemoteHueClientAppName }}"
       shell: powershell
       if: ${{ success() && github.event_name != 'pull_request' }}
 
