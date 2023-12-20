@@ -87,7 +87,7 @@ jobs:
 
     - name: Create Version File to Artifact
       run : |
-        New-Item -Path ${{ github.workspace }}\src\Build -Name "version.txt" -ItemType "file" -Value "${{ env.GitBuildVersionSimple }}"
+        New-Item -Path ${{ github.workspace }}\Build -Name "version.txt" -ItemType "file" -Value "${{ env.GitBuildVersionSimple }}"
       shell: powershell
 
     - name: Publish Arifacts
