@@ -96,6 +96,13 @@ jobs:
         path: ${{ github.workspace }}\src
         name: PreBuild
 
+    - name: Publish signing scripts
+      uses: actions/upload-artifact@v2
+      with:
+        path: Build
+        name: SigningScripts
+      if:  ${{ success() }}
+
   Build_Web:
     name: Build Web
     needs: Setup_Web
@@ -164,13 +171,6 @@ jobs:
         path: ${{ github.workspace }}/${{ matrix.ChannelName }}
         name: ${{ matrix.ChannelName }}
 
-
-    - name: Publish signing scripts
-      uses: actions/upload-artifact@v2
-      with:
-        path: Build
-        name: SigningScripts
-      if:  ${{ success() && matrix.ChannelName  == 'Windows_x64_x86' }}
 
   Code_Signing:
     needs: Build_Web
@@ -398,49 +398,16 @@ jobs:
     name: Deploy Web Containers (DockerHub / GitHub Packages)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-
-      - name: Download Linux_ARM64 Artifacts
+      - name: Download PreBuild
         uses: actions/download-artifact@v2
         with:
-          name: Linux_ARM64
-          path: ${{ github.workspace }}/Sign/Linux_ARM64
+          name: PreBuild
+          path: ${{ github.workspace }}/src
 
       - name: Get Version from File
         run: |
-          version=$(<"${{ github.workspace }}/Sign/Linux_ARM64/version.txt")
-          echo "VERSION=$version" >> $GITHUB_ENV
-
-      - name: Update appsettings.json
-        run: |
-          # Update AppSettings.json. This must be done before build.
-          $appsettings= get-content ".\src\PresenceLight.Web\appsettings.json" -raw | ConvertFrom-Json
-
-          $appsettings.azureAd.clientId = "${{ secrets.ApplicationId }}"
-          $appsettings.azureAd.clientSecret = "${{ secrets.ClientSecret }}"
-
-          $appsettings.appVersion = "${{ env.VERSION }}"
-
-          $appsettings.applicationInsights.instrumentationkey = "${{ secrets.InstrumentationKey }}"
-          $appsettings | ConvertTo-Json -depth 32| set-content '.\src\PresenceLight.Web\appsettings.json'
-        shell: pwsh
-        if: ${{ success() && github.event_name != 'pull_request' }}
-
-      - name: Update PresenceLightSettings.json
-        run: |
-          # Update PresenceLightSettings.json. This must be done before build.
-          $PresenceLightSettings= get-content ".\src\PresenceLight.Web\PresenceLightSettings.json" -raw | ConvertFrom-Json
-
-          $PresenceLightSettings.lightSettings.lifx.LIFXClientId = "${{ secrets.LIFXClientId }}"
-          $PresenceLightSettings.lightSettings.lifx.LIFXClientSecret = "${{ secrets.LIFXClientSecret }}"
-
-          $PresenceLightSettings.lightSettings.hue.RemoteHueClientId = "${{ secrets.RemoteHueClientId }}"
-          $PresenceLightSettings.lightSettings.hue.RemoteHueClientSecret = "${{ secrets.RemoteHueClientSecret }}"
-          $PresenceLightSettings.lightSettings.hue.RemoteHueClientAppName = "${{ secrets.RemoteHueClientAppName }}"
-
-          $PresenceLightSettings | ConvertTo-Json -depth 32| set-content '.\src\PresenceLight.Web\PresenceLightSettings.json'
-        shell: pwsh
-        if: ${{ success() && github.event_name != 'pull_request' }}
+          version=$(<"${{ github.workspace }}/src/version.txt")
+            echo "VERSION=$version" >> $GITHUB_ENV
 
       - name: Update Docker Files
         run: |
