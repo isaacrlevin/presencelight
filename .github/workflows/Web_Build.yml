@@ -552,17 +552,15 @@ jobs:
             echo "VERSION=$version" >> $GITHUB_ENV
 
       - name: Create GitHub Release
-        uses: meeDamian/github-release@2.0
+        uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844
         with:
+          tag_name: "Web-v${{ env.VERSION }}"
+          body: ${{ steps.changelog.outputs.changelog }}
+          fail_on_unmatched_files: true
           token: ${{ secrets.GITHUB_TOKEN }}
-          tag: "Web-v${{ env.VERSION }}"
-          name: "Web v${{ env.VERSION }}"
-          body: >
-            ${{ steps.changelog.outputs.compareurl }}
-            ${{ steps.changelog.outputs.changelog }}
-          gzip: false
-          files: >
-            Sign/*.zip
+          files: |
+            ${{ github.workspace }}/Sign/*.zip
+
       - name: Setup tmate session
         if: ${{ failure() }}
         uses: mxschmitt/action-tmate@v3
