@@ -143,7 +143,7 @@ jobs:
     - name: Get Version from File
       run: |
         version=$(<"${{ github.workspace }}/src/version.txt")
-          echo "VERSION=$version" >> $GITHUB_ENV
+          echo "GitBuildVersionSimple=$version" >> $GITHUB_ENV
 
     - name: Create Directory for Channel
       run: mkdir ${{ github.workspace }}/${{ matrix.ChannelName }}
