@@ -13,7 +13,7 @@ on:
 
 jobs:
 
-  Code_Signing:
+  use_matrix:
     permissions:
       id-token: write # Required for requesting the JWT
     environment:
