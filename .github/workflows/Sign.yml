@@ -3,67 +3,32 @@ name: Build and Sign
 on:
   workflow_dispatch:
     inputs:
-      matrix:
-        description: 'Matrix of Channel Names to Sign'
+      target:
+        description: 'Target of Channel Name to Sign'
         required: true
-        default: '{}'
+        default: ''
         type: string
 
   workflow_call:
+    inputs:
+      target:
+        description: 'Target of Channel Name to Sign'
+        required: true
+        default: ''
+        type: string
 
 jobs:
 
-  use_matrix:
-    permissions:
-      id-token: write # Required for requesting the JWT
-    environment:
-        name: Code_Signing
-        # url: ${{ steps.deploy_staging.outputs.webapp-url }}
-    name: Code Sign Web
-    runs-on: windows-latest
-
-    # strategy:
-    #   matrix:
-    #     include:
-    #       - ChannelName: Windows_x64_x86
-    #       - ChannelName: Windows_ARM
-    #       - ChannelName: macOS
-    #       - ChannelName: Linux_ARM
-    #       - ChannelName: Linux_ARM64
-    #       - ChannelName: Linux_Musl_x64
-    #       - ChannelName: Linux_Musl_ARM_x64
-
-    strategy:
-      matrix: ${{fromJson(needs.use_matrix.outputs.matrix_strategy)}}
-
-    steps:
-
-      - name: Download Matrix Artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: matrix-artifact
-          path: ${{ runner.workspace }}/matrix-artifact
-
-      - name: Set Matrix Strategy
-        id: set_matrix_strategy
-        run: |
-          matrix_values=$(cat ${{ runner.workspace }}/matrix-artifact/matrix.txt)
-          matrix_strategy="[${matrix_values}]"
-          echo "::set-output name=matrix_strategy::${matrix_strategy}"
-
   run-tests:
-    needs: use_matrix
-    strategy:
-      matrix: ${{fromJson(needs.use_matrix.outputs.matrix_strategy)}}
 
     runs-on: windows-latest
 
     steps:
-    - name: Download ${{ matrix.value }} Artifacts
+    - name: Download ${{ inputs.target }} Artifacts
       uses: actions/download-artifact@v2
       with:
-        name: ${{ matrix.value }}
-        path: ${{ github.workspace }}\ToSign\${{ matrix.value }}
+        name: ${{ inputs.target }}
+        path: ${{ github.workspace }}\ToSign\${{ inputs.target }}
 
     - uses: actions/download-artifact@v2
       name: Download Signing Scripts Artifacts
@@ -100,8 +65,8 @@ jobs:
         --azure-key-vault-certificate "${{ secrets.KEY_VAULT_CERTIFICATE_ID }}"
         --verbosity Trace
 
-    - name: Publish Signed ${{ matrix.value }} Packages
+    - name: Publish Signed ${{ inputs.target }} Packages
       uses: actions/upload-artifact@v2
       with:
-        path: ${{ github.workspace }}\ToSign\${{ matrix.value }}
-        name: '${{ matrix.value }}_Signed'
+        path: ${{ github.workspace }}\ToSign\${{ inputs.target }}
+        name: '${{ inputs.target }}_Signed'
