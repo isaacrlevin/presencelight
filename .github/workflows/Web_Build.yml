@@ -23,26 +23,9 @@ on:
     - '.chocolatey/**'
 
 jobs:
-  Build_Web:
-    name: Build Web
+  Setup_Web:
+    name: Setup Web
     runs-on: windows-latest
-    strategy:
-      matrix:
-        include:
-          - ChannelName: Windows_x64_x86
-            RID: win-x64
-          - ChannelName: Windows_ARM
-            RID: win-arm64
-          - ChannelName: macOS
-            RID: osx-x64
-          - ChannelName: Linux_ARM
-            RID: linux-arm
-          - ChannelName: Linux_ARM64
-            RID: linux-x64
-          - ChannelName: Linux_Musl_x64
-            RID: linux-musl-x64
-          - ChannelName: Linux_Musl_ARM_x64
-            RID: linux-musl-arm64
 
     env:
       DOTNET_CLI_TELEMETRY_OPTOUT: 1
@@ -70,15 +53,6 @@ jobs:
         setCommonVars: true
 
     - run: echo "BuildNumber - ${{ env.GitBuildVersionSimple }}"
-
-    - name: Create Directory for Channel
-      run: mkdir ${{ github.workspace }}\${{ matrix.ChannelName }}
-      shell: powershell
-
-    - name: Add Version File to Artifact
-      run : |
-        New-Item -Path ${{ github.workspace }}\${{ matrix.ChannelName }} -Name "version.txt" -ItemType "file" -Value "${{ env.GitBuildVersionSimple }}"
-      shell: powershell
 
     - name: Update appsettings.json
       run: |
@@ -111,7 +85,70 @@ jobs:
       shell: powershell
       if: ${{ success() && github.event_name != 'pull_request' }}
 
-    - run: dotnet publish '.\src\PresenceLight.Web\PresenceLight.Web.csproj' -r ${{ matrix.RID }} -c ${{ env.BuildConfiguration }} /p:PublishSingleFile=true -o ${{ github.workspace }}\PresenceLight.${{ env.GitBuildVersionSimple }}_${{ matrix.ChannelName }} /p:Version=${{ env.GitBuildVersionSimple }}
+    - name: Create Version File to Artifact
+      run : |
+        New-Item -Path ${{ github.workspace }}\src -Name "version.txt" -ItemType "file" -Value "${{ env.GitBuildVersionSimple }}"
+      shell: powershell
+
+    - name: Publish Arifacts
+      uses: actions/upload-artifact@v2
+      with:
+        path: ${{ github.workspace }}\src
+        name: PreBuild
+
+  Build_Web:
+    name: Build Web
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - ChannelName: Windows_x64_x86
+            RID: win-x64
+          - ChannelName: Windows_ARM
+            RID: win-arm64
+          - ChannelName: macOS
+            RID: osx-x64
+          - ChannelName: Linux_ARM
+            RID: linux-arm
+          - ChannelName: Linux_ARM64
+            RID: linux-x64
+          - ChannelName: Linux_Musl_x64
+            RID: linux-musl-x64
+          - ChannelName: Linux_Musl_ARM_x64
+            RID: linux-musl-arm64
+
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+      DOTNET_NOLOGO: true
+      BuildConfiguration: Release
+      ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+      GitHubReleaseUrl: https://github.com/isaacrlevin/presencelight/releases/download/Web-
+
+    steps:
+
+    - name: Use .NET Core SDK 8.0.x
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 8.0.x
+        include-prerelease: true
+
+    - name: Download PreBuild
+      uses: actions/download-artifact@v2
+      with:
+        name: PreBuild
+        path: ${{ github.workspace }}/src
+
+    - name: Get Version from File
+      run: |
+        version=$(<"${{ github.workspace }}/version.txt")
+          echo "VERSION=$version" >> $GITHUB_ENV
+
+    - name: Create Directory for Channel
+      run: mkdir ${{ github.workspace }}/${{ matrix.ChannelName }}
+      shell: powershell
+
+    - run: dotnet publish './src/PresenceLight.Web/PresenceLight.Web.csproj' -r ${{ matrix.RID }} -c ${{ env.BuildConfiguration }} /p:PublishSingleFile=true -o ${{ github.workspace }}\PresenceLight.${{ env.GitBuildVersionSimple }}_${{ matrix.ChannelName }} /p:Version=${{ env.GitBuildVersionSimple }}
       name: dotnet publish ${{ matrix.RID }}
       if: ${{ success() }}
 
@@ -119,12 +156,12 @@ jobs:
       run: |
         Compress-Archive -Path '${{ github.workspace }}\PresenceLight.${{ env.GitBuildVersionSimple }}_${{ matrix.ChannelName }}\' `
         -DestinationPath ${{ github.workspace }}\${{ matrix.ChannelName }}\PresenceLight.${{ matrix.ChannelName }}.${{ env.GitBuildVersionSimple }}.zip
-      shell: powershell
+      shell: pwsh
 
     - name: Publish Arifacts
       uses: actions/upload-artifact@v2
       with:
-        path: ${{ github.workspace }}\${{ matrix.ChannelName }}
+        path: ${{ github.workspace }}/${{ matrix.ChannelName }}
         name: ${{ matrix.ChannelName }}
 
 
@@ -203,10 +240,10 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 6.x
-        
+
     - name: Install Sign CLI tool
       run: dotnet tool install --tool-path . sign --version 0.9.0-beta.23063.3
-      
+
     - name: Azure Login
       uses: azure/login@v1
       with:
@@ -219,7 +256,7 @@ jobs:
         '**/*.{exe,zip}'
         --timestamp-url "http://timestamp.digicert.com"
         --base-directory "${{ github.workspace }}/ToSign"
-        --file-list "${{ github.workspace }}/SigningScripts/filelist.txt" 
+        --file-list "${{ github.workspace }}/SigningScripts/filelist.txt"
         --publisher-name "Isaac Levin"
         --description "PresenceLight"
         --description-url "https://github.com/isaacrlevin/presencelight"
@@ -593,94 +630,21 @@ jobs:
           version=$(<"${{ github.workspace }}/Sign/Linux_ARM64/version.txt")
           echo "VERSION=$version" >> $GITHUB_ENV
 
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@latest
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create GitHub Release
+        uses: meeDamian/github-release@2.0
         with:
-          tag_name: "Web-v${{ env.VERSION }}"
-          release_name: "Web v${{ env.VERSION }}"
-          body: |
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: "Web-v${{ env.VERSION }}"
+          name: "Web v${{ env.VERSION }}"
+          body: >
             ${{ steps.changelog.outputs.compareurl }}
             ${{ steps.changelog.outputs.changelog }}
-          draft: false
-          prerelease: false
-
-      - name: Upload Release Asset
-        id: upload-release-Linux_Musl_ARM_x64
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: "/home/runner/work/presencelight/presencelight/Sign/Linux_Musl_ARM_x64/PresenceLight.Linux_Musl_ARM_x64.${{ env.VERSION }}.zip"
-          asset_name: "PresenceLight.Linux_Musl_ARM_x64.${{ env.VERSION }}.zip"
-          asset_content_type: application/zip
-
-      - name: Upload Release Asset
-        id: upload-release-Windows_x64_x86
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: "/home/runner/work/presencelight/presencelight/Sign/Windows_x64_x86/PresenceLight.Windows_x64_x86.${{ env.VERSION }}.zip"
-          asset_name: "PresenceLight.Windows_x64_x86.${{ env.VERSION }}.zip"
-          asset_content_type: application/zip
-
-      - name: Upload Release Asset
-        id: upload-release-Windows_ARM
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: "/home/runner/work/presencelight/presencelight/Sign/Windows_ARM/PresenceLight.Windows_ARM.${{ env.VERSION }}.zip"
-          asset_name: "PresenceLight.Windows_ARM.${{ env.VERSION }}.zip"
-          asset_content_type: application/zip
-
-      - name: Upload Release Asset
-        id: upload-release-macOS
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: "/home/runner/work/presencelight/presencelight/Sign/macOS/PresenceLight.macOS.${{ env.VERSION }}.zip"
-          asset_name: "PresenceLight.macOS.${{ env.VERSION }}.zip"
-          asset_content_type: application/zip
-
-      - name: Upload Release Asset
-        id: upload-release-Linux_ARM
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: "/home/runner/work/presencelight/presencelight/Sign/Linux_ARM/PresenceLight.Linux_ARM.${{ env.VERSION }}.zip"
-          asset_name: "PresenceLight.Linux_ARM.${{ env.VERSION }}.zip"
-          asset_content_type: application/zip
-
-      - name: Upload Release Asset
-        id: upload-release-Linux_ARM64
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: "/home/runner/work/presencelight/presencelight/Sign/Linux_ARM64/PresenceLight.Linux_ARM64.${{ env.VERSION }}.zip"
-          asset_name: "PresenceLight.Linux_ARM64.${{ env.VERSION }}.zip"
-          asset_content_type: application/zip
-
-      - name: Upload Release Asset
-        id: upload-release-Linux_Musl_x64
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: "/home/runner/work/presencelight/presencelight/Sign/Linux_Musl_x64/PresenceLight.Linux_Musl_x64.${{ env.VERSION }}.zip"
-          asset_name: "PresenceLight.Linux_Musl_x64.${{ env.VERSION }}.zip"
-          asset_content_type: application/zip
-
+          gzip: folders
+          files: >
+            "/home/runner/work/presencelight/presencelight/Sign/Linux_Musl_ARM_x64/PresenceLight.Linux_Musl_ARM_x64.${{ env.VERSION }}.zip"
+            "/home/runner/work/presencelight/presencelight/Sign/Windows_x64_x86/PresenceLight.Windows_x64_x86.${{ env.VERSION }}.zip"
+            "/home/runner/work/presencelight/presencelight/Sign/Windows_ARM/PresenceLight.Windows_ARM.${{ env.VERSION }}.zip"
+            "/home/runner/work/presencelight/presencelight/Sign/macOS/PresenceLight.macOS.${{ env.VERSION }}.zip"
+            "/home/runner/work/presencelight/presencelight/Sign/Linux_ARM/PresenceLight.Linux_ARM.${{ env.VERSION }}.zip"
+            "/home/runner/work/presencelight/presencelight/Sign/Linux_ARM64/PresenceLight.Linux_ARM64.${{ env.VERSION }}.zip"
+            "/home/runner/work/presencelight/presencelight/Sign/Linux_Musl_x64/PresenceLight.Linux_Musl_x64.${{ env.VERSION }}.zip"
