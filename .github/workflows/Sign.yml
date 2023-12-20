@@ -60,7 +60,7 @@ jobs:
         '**/*.{exe,zip}'
         --timestamp-url "http://timestamp.digicert.com"
         --base-directory "${{ github.workspace }}/ToSign"
-        --file-list "${{ github.workspace }}/SigningScripts/filelist.txt"
+        --file-list "${{ github.workspace }}/SigningScripts/Signing/filelist.txt"
         --publisher-name "Isaac Levin"
         --description "PresenceLight"
         --description-url "https://github.com/isaacrlevin/presencelight"

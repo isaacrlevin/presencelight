@@ -34,7 +34,7 @@ jobs:
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
     - name: Download ${{ inputs.target }} Artifacts
-      uses: actions/download-artifact@v4.1.0
+      uses: actions/download-artifact@v2
       with:
         name: ${{ inputs.target }}
         path: ${{ github.workspace }}\ToSign\${{ inputs.target }}
