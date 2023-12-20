@@ -559,7 +559,7 @@ jobs:
           fail_on_unmatched_files: true
           token: ${{ secrets.GITHUB_TOKEN }}
           files: |
-            ${{ github.workspace }}/Sign/*.zip
+            ${{ github.workspace }}/Sign/**/*.zip
 
       - name: Setup tmate session
         if: ${{ failure() }}
