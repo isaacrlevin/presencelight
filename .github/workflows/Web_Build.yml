@@ -182,78 +182,7 @@ jobs:
     uses: isaacrlevin/presencelight/.github/workflows/Sign.yml@main
     with:
       target: ${{ matrix.target }}
-
-  # Code_Signing:
-
-  #   uses:
-
-    # permissions:
-    #   id-token: write # Required for requesting the JWT
-    # environment:
-    #     name: Code_Signing
-    #     url: ${{ steps.deploy_staging.outputs.webapp-url }}
-    # name: Code Sign Web
-    # runs-on: windows-latest
-
-    # strategy:
-    #   matrix:
-    #     include:
-    #       - ChannelName: Windows_x64_x86
-    #       - ChannelName: Windows_ARM
-    #       - ChannelName: macOS
-    #       - ChannelName: Linux_ARM
-    #       - ChannelName: Linux_ARM64
-    #       - ChannelName: Linux_Musl_x64
-    #       - ChannelName: Linux_Musl_ARM_x64
-
-    # steps:
-
-    # - name: Download ${{ matrix.ChannelName }} Artifacts
-    #   uses: actions/download-artifact@v4.1.0
-    #   with:
-    #     name: ${{ matrix.ChannelName }}
-    #     path: ${{ github.workspace }}\ToSign\${{ matrix.ChannelName }}
-
-    # - uses: actions/download-artifact@v4.1.0
-    #   name: Download Signing Scripts Artifacts
-    #   with:
-    #     name: SigningScripts
-    #     path: "${{ github.workspace }}/SigningScripts"
-
-    # - name: Setup .NET
-    #   uses: actions/setup-dotnet@v3
-    #   with:
-    #     dotnet-version: 6.x
-
-    # - name: Install Sign CLI tool
-    #   run: dotnet tool install --tool-path . sign --version 0.9.0-beta.23063.3
-
-    # - name: Azure Login
-    #   uses: azure/login@v1.5.1
-    #   with:
-    #     creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-    # - name: Sign artifacts
-    #   shell: pwsh
-    #   run: >
-    #     ./sign code azure-key-vault
-    #     '**/*.{exe,zip}'
-    #     --timestamp-url "http://timestamp.digicert.com"
-    #     --base-directory "${{ github.workspace }}/ToSign"
-    #     --file-list "${{ github.workspace }}/SigningScripts/filelist.txt"
-    #     --publisher-name "Isaac Levin"
-    #     --description "PresenceLight"
-    #     --description-url "https://github.com/isaacrlevin/presencelight"
-    #     --azure-key-vault-managed-identity true
-    #     --azure-key-vault-url "${{ secrets.KEY_VAULT_URL }}"
-    #     --azure-key-vault-certificate "${{ secrets.KEY_VAULT_CERTIFICATE_ID }}"
-    #     --verbosity Trace
-
-    # - name: Publish Signed ${{ matrix.ChannelName }} Packages
-    #   uses: actions/upload-artifact@v4
-    #   with:
-    #     path: ${{ github.workspace }}\ToSign\${{ matrix.ChannelName }}
-    #     name: '${{ matrix.ChannelName }}_Signed'
+    secrets: inherit
 
   Deploy_Azure_Blob:
     needs: Code_Signing
@@ -314,7 +243,7 @@ jobs:
         path: ${{ github.workspace }}/Sign/Linux_Musl_ARM_x64
 
     - name: Archive Previous Release
-      uses: azure/cli@v1.0.0
+      uses: azure/cli@v1.0.9
       with:
         inlineScript: |
           az storage blob copy start-batch \
