@@ -87,7 +87,7 @@ jobs:
 
     - name: Create Version File to Artifact
       run : |
-        New-Item -Path ${{ github.workspace }}\src -Name "version.txt" -ItemType "file" -Value "${{ env.GitBuildVersionSimple }}"
+        New-Item -Path ${{ github.workspace }}\src\Build -Name "version.txt" -ItemType "file" -Value "${{ env.GitBuildVersionSimple }}"
       shell: powershell
 
     - name: Publish Arifacts
@@ -147,9 +147,15 @@ jobs:
         name: PreBuild
         path: ${{ github.workspace }}/src
 
+    - uses: actions/download-artifact@v2
+      name: Download Signing Scripts Artifacts
+      with:
+        name: SigningScripts
+        path: "${{ github.workspace }}/SigningScripts"
+
     - name: Get Version from File
       run: |
-        version=$(<"${{ github.workspace }}/src/version.txt")
+        version=$(<"${{ github.workspace }}/SigningScripts/version.txt")
           echo "GitBuildVersionSimple=$version" >> $GITHUB_ENV
 
     - name: Create Directory for Channel
@@ -182,53 +188,25 @@ jobs:
         url: ${{ steps.deploy_staging.outputs.webapp-url }}
     name: Code Sign Web
     runs-on: windows-latest
+
+    strategy:
+      matrix:
+        include:
+          - ChannelName: Windows_x64_x86
+          - ChannelName: Windows_ARM
+          - ChannelName: macOS
+          - ChannelName: Linux_ARM
+          - ChannelName: Linux_ARM64
+          - ChannelName: Linux_Musl_x64
+          - ChannelName: Linux_Musl_ARM_x64
+
     steps:
-    - name: Azure Login
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: Download Windows_x64_x86 Artifacts
+    - name: Download ${{ matrix.ChannelName }} Artifacts
       uses: actions/download-artifact@v2
       with:
-        name: Windows_x64_x86
-        path: ${{ github.workspace }}\ToSign\Windows_x64_x86
-
-    - name: Download Windows_ARM Artifacts
-      uses: actions/download-artifact@v2
-      with:
-        name: Windows_ARM
-        path: ${{ github.workspace }}\ToSign\Windows_ARM
-
-    - name: Download macOS Artifacts
-      uses: actions/download-artifact@v2
-      with:
-        name: macOS
-        path: ${{ github.workspace }}\ToSign\macOS
-
-    - name: Download Linux_ARM Artifacts
-      uses: actions/download-artifact@v2
-      with:
-        name: Linux_ARM
-        path: ${{ github.workspace }}\ToSign\Linux_ARM
-
-    - name: Download Linux_ARM64 Artifacts
-      uses: actions/download-artifact@v2
-      with:
-        name: Linux_ARM64
-        path: ${{ github.workspace }}\ToSign\Linux_ARM64
-
-    - name: Download Linux_Musl_x64 Artifacts
-      uses: actions/download-artifact@v2
-      with:
-        name: Linux_Musl_x64
-        path: ${{ github.workspace }}\ToSign\Linux_Musl_x64
-
-    - name: Download Linux_Musl_ARM_x64 Artifacts
-      uses: actions/download-artifact@v2
-      with:
-        name: Linux_Musl_ARM_x64
-        path: ${{ github.workspace }}\ToSign\Linux_Musl_ARM_x64
+        name: ${{ matrix.ChannelName }}
+        path: ${{ github.workspace }}\ToSign\${{ matrix.ChannelName }}
 
     - uses: actions/download-artifact@v2
       name: Download Signing Scripts Artifacts
@@ -265,47 +243,11 @@ jobs:
         --azure-key-vault-certificate "${{ secrets.KEY_VAULT_CERTIFICATE_ID }}"
         --verbosity Trace
 
-    - name: Publish Signed Windows_x64_x86 Packages
+    - name: Publish Signed ${{ matrix.ChannelName }} Packages
       uses: actions/upload-artifact@v2
       with:
-        path: ${{ github.workspace }}\ToSign\Windows_x64_x86
-        name: Windows_x64_x86_Signed
-
-    - name: Publish Signed Windows_ARM Packages
-      uses: actions/upload-artifact@v2
-      with:
-        path: ${{ github.workspace }}\ToSign\Windows_ARM
-        name: Windows_ARM_Signed
-
-    - name: Publish Signed macOS Packages
-      uses: actions/upload-artifact@v2
-      with:
-        path: ${{ github.workspace }}\ToSign\macOS
-        name: macOS_Signed
-
-    - name: Publish Signed Linux_ARM Packages
-      uses: actions/upload-artifact@v2
-      with:
-        path: ${{ github.workspace }}\ToSign\Linux_ARM
-        name: Linux_ARM_Signed
-
-    - name: Publish Signed Linux_ARM64 Packages
-      uses: actions/upload-artifact@v2
-      with:
-        path: ${{ github.workspace }}\ToSign\Linux_ARM64
-        name: Linux_ARM64_Signed
-
-    - name: Publish Signed Linux_Musl_x64 Packages
-      uses: actions/upload-artifact@v2
-      with:
-        path: ${{ github.workspace }}\ToSign\Linux_Musl_x64
-        name: Linux_Musl_x64_Signed
-
-    - name: Publish Signed Linux_Musl_ARM_x64 Packages
-      uses: actions/upload-artifact@v2
-      with:
-        path: ${{ github.workspace }}\ToSign\Linux_Musl_ARM_x64
-        name: Linux_Musl_ARM_x64_Signed
+        path: ${{ github.workspace }}\ToSign\${{ matrix.ChannelName }}
+        name: '${{ matrix.ChannelName }}_Signed'
 
   Deploy_Azure_Blob:
     needs: Code_Signing
@@ -397,6 +339,7 @@ jobs:
         url: ${{ steps.deploy_staging.outputs.webapp-url }}
     name: Deploy Web Containers (DockerHub / GitHub Packages)
     runs-on: ubuntu-latest
+
     steps:
       - name: Download PreBuild
         uses: actions/download-artifact@v2
@@ -404,9 +347,15 @@ jobs:
           name: PreBuild
           path: ${{ github.workspace }}/src
 
+      - uses: actions/download-artifact@v2
+        name: Download Signing Scripts Artifacts
+        with:
+          name: SigningScripts
+          path: "${{ github.workspace }}/SigningScripts"
+
       - name: Get Version from File
         run: |
-          version=$(<"${{ github.workspace }}/src/version.txt")
+          version=$(<"${{ github.workspace }}/SigningScripts/version.txt")
             echo "VERSION=$version" >> $GITHUB_ENV
 
       - name: Update Docker Files
@@ -592,10 +541,16 @@ jobs:
           name: Linux_Musl_ARM_x64
           path: ${{ github.workspace }}/Sign/Linux_Musl_ARM_x64
 
+      - uses: actions/download-artifact@v2
+        name: Download Signing Scripts Artifacts
+        with:
+          name: SigningScripts
+          path: "${{ github.workspace }}/SigningScripts"
+
       - name: Get Version from File
         run: |
-          version=$(<"${{ github.workspace }}/Sign/Linux_ARM64/version.txt")
-          echo "VERSION=$version" >> $GITHUB_ENV
+          version=$(<"${{ github.workspace }}/SigningScripts/version.txt")
+            echo "VERSION=$version" >> $GITHUB_ENV
 
       - name: Create GitHub Release
         uses: meeDamian/github-release@2.0
