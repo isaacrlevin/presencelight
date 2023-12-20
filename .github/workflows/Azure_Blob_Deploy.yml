@@ -36,8 +36,8 @@ jobs:
     - name: Download ${{ inputs.target }} Artifacts
       uses: actions/download-artifact@v3
       with:
-        name: ${{ inputs.target }}
-        path: ${{ github.workspace }}\Signed\${{ inputs.target }}_Signed
+        name: ${{ inputs.target }}_Signed
+        path: ${{ github.workspace }}\Signed\${{ inputs.target }}
 
     - name: Archive Previous Release
       uses: azure/cli@v1.0.9

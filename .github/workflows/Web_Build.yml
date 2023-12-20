@@ -15,9 +15,10 @@ on:
     branches: [ main ]
     paths-ignore:
     - '.github/workflows/Desktop_Build.yml'
+    - '.github/workflows/Test_WinGet.yml'
+    - '.github/workflows/Sign.yml'
     - 'src/DesktopClient/**'
-    - 'README.md'
-    - 'desktop-README.md'
+    - '*..md'
     - 'Build/PublishStore/**'
     - '.chocolatey/**'
 
