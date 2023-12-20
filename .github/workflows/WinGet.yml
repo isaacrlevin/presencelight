@@ -7,18 +7,18 @@ on:
         required: true
         default: '5.0'
         type: string
-        
+
 jobs:
   publish:
     runs-on: windows-latest
     defaults:
       run:
-        shell: pwsh        
+        shell: pwsh
     env:
       WINGETCREATE_TOKEN: ${{ secrets.WINGETCREATE_TOKEN }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 

@@ -36,18 +36,17 @@ jobs:
 
     steps:
 
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
     - name: Use .NET Core SDK 8.0.x
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 8.0.x
-        include-prerelease: true
 
     - name: Nerdbank.GitVersioning
-      uses: dotnet/nbgv@v0.3.1
+      uses: dotnet/nbgv@v0.4.1
       with:
         setCommonVars: true
 
@@ -90,13 +89,13 @@ jobs:
       shell: powershell
 
     - name: Publish Arifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         path: ${{ github.workspace }}\src
         name: PreBuild
 
     - name: Publish signing scripts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         path: Build
         name: SigningScripts
@@ -135,18 +134,17 @@ jobs:
     steps:
 
     - name: Use .NET Core SDK 8.0.x
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 8.0.x
-        include-prerelease: true
 
     - name: Download PreBuild
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4.1.0
       with:
         name: PreBuild
         path: ${{ github.workspace }}/src
 
-    - uses: actions/download-artifact@v2
+    - uses: actions/download-artifact@v4.1.0
       name: Download Signing Scripts Artifacts
       with:
         name: SigningScripts
@@ -171,7 +169,7 @@ jobs:
       shell: pwsh
 
     - name: Publish Arifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         path: ${{ github.workspace }}/${{ matrix.ChannelName }}
         name: ${{ matrix.ChannelName }}
@@ -180,7 +178,7 @@ jobs:
     needs: Build_Web
     strategy:
       matrix:
-        target: [dev, stage, prod]
+        target: [ Windows_x64_x86, Windows_ARM, macOS, Linux_ARM, Linux_ARM64, Linux_Musl_x64, Linux_Musl_ARM_x64 ]
     uses: isaacrlevin/presencelight/.github/workflows/Sign.yml@main
     with:
       target: ${{ matrix.target }}
@@ -211,12 +209,12 @@ jobs:
     # steps:
 
     # - name: Download ${{ matrix.ChannelName }} Artifacts
-    #   uses: actions/download-artifact@v2
+    #   uses: actions/download-artifact@v4.1.0
     #   with:
     #     name: ${{ matrix.ChannelName }}
     #     path: ${{ github.workspace }}\ToSign\${{ matrix.ChannelName }}
 
-    # - uses: actions/download-artifact@v2
+    # - uses: actions/download-artifact@v4.1.0
     #   name: Download Signing Scripts Artifacts
     #   with:
     #     name: SigningScripts
@@ -252,7 +250,7 @@ jobs:
     #     --verbosity Trace
 
     # - name: Publish Signed ${{ matrix.ChannelName }} Packages
-    #   uses: actions/upload-artifact@v2
+    #   uses: actions/upload-artifact@v4
     #   with:
     #     path: ${{ github.workspace }}\ToSign\${{ matrix.ChannelName }}
     #     name: '${{ matrix.ChannelName }}_Signed'
@@ -272,43 +270,43 @@ jobs:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     - name: Download Windows_x64_x86 Artifacts
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4.1.0
       with:
         name: Windows_x64_x86
         path: ${{ github.workspace }}/Sign/Windows_x64_x86
 
     - name: Download Windows_ARM Artifacts
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4.1.0
       with:
         name: Windows_ARM_Signed
         path: ${{ github.workspace }}/Sign/Windows_ARM
 
     - name: Download macOS Artifacts
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4.1.0
       with:
         name: macOS_Signed
         path: ${{ github.workspace }}/Sign/macOS
 
     - name: Download Linux_ARM Artifacts
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4.1.0
       with:
         name: Linux_ARM_Signed
         path: ${{ github.workspace }}/Sign/Linux_ARM
 
     - name: Download Linux_ARM64 Artifacts
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4.1.0
       with:
         name: Linux_ARM64_Signed
         path: ${{ github.workspace }}/Sign/Linux_ARM64
 
     - name: Download Linux_Musl_x64 Artifacts
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4.1.0
       with:
         name: Linux_Musl_x64_Signed
         path: ${{ github.workspace }}/Sign/Linux_Musl_x64
 
     - name: Download Linux_Musl_ARM_x64 Artifacts
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4.1.0
       with:
         name: Linux_Musl_ARM_x64_Signed
         path: ${{ github.workspace }}/Sign/Linux_Musl_ARM_x64
@@ -350,12 +348,12 @@ jobs:
 
     steps:
       - name: Download PreBuild
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4.1.0
         with:
           name: PreBuild
           path: ${{ github.workspace }}/src
 
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4.1.0
         name: Download Signing Scripts Artifacts
         with:
           name: SigningScripts
@@ -493,7 +491,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -508,48 +506,48 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download Windows_x64_x86 Artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4.1.0
         with:
           name: Windows_x64_x86
           path: ${{ github.workspace }}/Sign/Windows_x64_x86
 
       - name: Download Windows_ARM Artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4.1.0
         with:
           name: Windows_ARM
           path: ${{ github.workspace }}/Sign/Windows_ARM
 
       - name: Download macOS Artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4.1.0
         with:
           name: macOS
           path: ${{ github.workspace }}/Sign/macOS
 
       - name: Download Linux_ARM Artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4.1.0
         with:
           name: Linux_ARM
           path: ${{ github.workspace }}/Sign/Linux_ARM
 
       - name: Download Linux_ARM64 Artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4.1.0
         with:
           name: Linux_ARM64
           path: ${{ github.workspace }}/Sign/Linux_ARM64
 
       - name: Download Linux_Musl_x64 Artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4.1.0
         with:
           name: Linux_Musl_x64
           path: ${{ github.workspace }}/Sign/Linux_Musl_x64
 
       - name: Download Linux_Musl_ARM_x64 Artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4.1.0
         with:
           name: Linux_Musl_ARM_x64
           path: ${{ github.workspace }}/Sign/Linux_Musl_ARM_x64
 
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4.1.0
         name: Download Signing Scripts Artifacts
         with:
           name: SigningScripts
