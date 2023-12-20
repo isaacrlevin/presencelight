@@ -177,7 +177,6 @@ jobs:
         path: ${{ github.workspace }}/${{ matrix.ChannelName }}
         name: ${{ matrix.ChannelName }}
 
-
   Code_Signing:
     needs: Build_Web
     if: ${{ (github.event_name != 'pull_request') && (github.ref == 'refs/heads/main') }}
@@ -561,7 +560,7 @@ jobs:
           body: >
             ${{ steps.changelog.outputs.compareurl }}
             ${{ steps.changelog.outputs.changelog }}
-          gzip: folders
+          gzip: false
           files: >
             "/home/runner/work/presencelight/presencelight/Sign/Linux_Musl_ARM_x64/PresenceLight.Linux_Musl_ARM_x64.${{ env.VERSION }}.zip"
             "/home/runner/work/presencelight/presencelight/Sign/Windows_x64_x86/PresenceLight.Windows_x64_x86.${{ env.VERSION }}.zip"
