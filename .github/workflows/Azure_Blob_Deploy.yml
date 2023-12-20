@@ -1,0 +1,66 @@
+name: Deploy Worker Apps to Azure Blob Storage
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'Target of Channel Name to Sign'
+        required: true
+        default: ''
+        type: string
+
+  workflow_call:
+    inputs:
+      target:
+        description: 'Target of Channel Name to Sign'
+        required: true
+        default: ''
+        type: string
+
+jobs:
+
+  Deploy_Worker_Artifacts:
+    name: Deploy Worker Artifacts
+    permissions:
+      id-token: write # Required for requesting the JWT
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Azure login
+      uses: azure/login@v1.5.1
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+    - name: Download ${{ inputs.target }} Artifacts
+      uses: actions/download-artifact@v4.1.0
+      with:
+        name: ${{ inputs.target }}
+        path: ${{ github.workspace }}\ToSign\${{ inputs.target }}
+
+    - name: Archive Previous Release
+      uses: azure/cli@v1.0.9
+      with:
+        inlineScript: |
+          az storage blob copy start-batch \
+          --account-key ${{ secrets.ACCOUNT_KEY }} \
+          --account-name ${{ secrets.ACCOUNT_NAME }} \
+          --destination-container ${{ secrets.WORKER_ARCHIVE_CONTAINER }} \
+          --source-account-key ${{ secrets.ACCOUNT_KEY }} \
+          --source-account-name ${{ secrets.ACCOUNT_NAME }} \
+          --source-container ${{ secrets.WORKER_CONTAINER }}
+
+          az storage blob delete-batch \
+          --account-key ${{ secrets.ACCOUNT_KEY }} \
+          --account-name ${{ secrets.ACCOUNT_NAME }} \
+          --source ${{ secrets.WORKER_CONTAINER }}
+        azcliversion: latest
+
+    - name: Upload Release to Blob Storage
+      uses: azure/cli@v1.0.9
+      with:
+        inlineScript: |
+          az storage blob upload-batch --connection-string '${{ secrets.AZUREBLOBCONNECTIONSTRING }}' \
+          -d ${{ secrets.WORKER_CONTAINER }} -s '${{ github.workspace }}/Sign'
+        azcliversion: latest

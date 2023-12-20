@@ -35,7 +35,6 @@ jobs:
       GitHubReleaseUrl: https://github.com/isaacrlevin/presencelight/releases/download/Web-
 
     steps:
-
     - uses: actions/checkout@v4
       with:
         fetch-depth: 0
@@ -186,95 +185,13 @@ jobs:
 
   Deploy_Azure_Blob:
     needs: Code_Signing
-    if: ${{ github.event_name != 'pull_request' }}
-    environment:
-        name: Deploy_Azure_Blob
-        url: ${{ steps.deploy_staging.outputs.webapp-url }}
-    name: Deploy Web Website
-    runs-on: ubuntu-latest
-    steps:
-    - name: Azure login
-      uses: azure/login@v1.5.1
-      with:
-        client-id: ${{ secrets.AZURE_CLIENT_ID }}
-        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-    - name: Download Windows_x64_x86 Artifacts
-      uses: actions/download-artifact@v4.1.0
-      with:
-        name: Windows_x64_x86
-        path: ${{ github.workspace }}/Sign/Windows_x64_x86
-
-    - name: Download Windows_ARM Artifacts
-      uses: actions/download-artifact@v4.1.0
-      with:
-        name: Windows_ARM_Signed
-        path: ${{ github.workspace }}/Sign/Windows_ARM
-
-    - name: Download macOS Artifacts
-      uses: actions/download-artifact@v4.1.0
-      with:
-        name: macOS_Signed
-        path: ${{ github.workspace }}/Sign/macOS
-
-    - name: Download Linux_ARM Artifacts
-      uses: actions/download-artifact@v4.1.0
-      with:
-        name: Linux_ARM_Signed
-        path: ${{ github.workspace }}/Sign/Linux_ARM
-
-    - name: Download Linux_ARM64 Artifacts
-      uses: actions/download-artifact@v4.1.0
-      with:
-        name: Linux_ARM64_Signed
-        path: ${{ github.workspace }}/Sign/Linux_ARM64
-
-    - name: Download Linux_Musl_x64 Artifacts
-      uses: actions/download-artifact@v4.1.0
-      with:
-        name: Linux_Musl_x64_Signed
-        path: ${{ github.workspace }}/Sign/Linux_Musl_x64
-
-    - name: Download Linux_Musl_ARM_x64 Artifacts
-      uses: actions/download-artifact@v4.1.0
-      with:
-        name: Linux_Musl_ARM_x64_Signed
-        path: ${{ github.workspace }}/Sign/Linux_Musl_ARM_x64
-
-    - name: Archive Previous Release
-      uses: azure/cli@v1.0.9
-      with:
-        inlineScript: |
-          az storage blob copy start-batch \
-          --account-key ${{ secrets.ACCOUNT_KEY }} \
-          --account-name ${{ secrets.ACCOUNT_NAME }} \
-          --destination-container ${{ secrets.WORKER_ARCHIVE_CONTAINER }} \
-          --source-account-key ${{ secrets.ACCOUNT_KEY }} \
-          --source-account-name ${{ secrets.ACCOUNT_NAME }} \
-          --source-container ${{ secrets.WORKER_CONTAINER }}
-
-          az storage blob delete-batch \
-          --account-key ${{ secrets.ACCOUNT_KEY }} \
-          --account-name ${{ secrets.ACCOUNT_NAME }} \
-          --source ${{ secrets.WORKER_CONTAINER }}
-        azcliversion: latest
-
-    - name: Upload Release to Blob Storage
-      uses: azure/cli@v1.0.9
-      with:
-        inlineScript: |
-          az storage blob upload-batch --connection-string '${{ secrets.AZUREBLOBCONNECTIONSTRING }}' -d ${{ secrets.WORKER_CONTAINER }} -s '${{ github.workspace }}/Sign'
-        azcliversion: latest
-
-
-    # - name: Upload Release to Blob Storage
-    #   uses: bacongobbler/azure-blob-storage-upload@v1.2.0
-    #   with:
-    #     source_dir: ${{ github.workspace }}/Sign
-    #     container_name: ${{ secrets.WORKER_CONTAINER }}
-    #     connection_string: ${{ secrets.AZUREBLOBCONNECTIONSTRING }}
-    #     sync: true
+    strategy:
+      matrix:
+        target: [ Windows_x64_x86, Windows_ARM, macOS, Linux_ARM, Linux_ARM64, Linux_Musl_x64, Linux_Musl_ARM_x64 ]
+    uses: isaacrlevin/presencelight/.github/workflows/Azure_Blob_Deploy.yml@main
+    with:
+      target: ${{ matrix.target }}
+    secrets: inherit
 
   Deploy_Containers:
     needs: Build_Web
