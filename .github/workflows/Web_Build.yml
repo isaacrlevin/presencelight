@@ -562,10 +562,13 @@ jobs:
             ${{ steps.changelog.outputs.changelog }}
           gzip: false
           files: >
-            "/home/runner/work/presencelight/presencelight/Sign/Linux_Musl_ARM_x64/PresenceLight.Linux_Musl_ARM_x64.${{ env.VERSION }}.zip"
-            "/home/runner/work/presencelight/presencelight/Sign/Windows_x64_x86/PresenceLight.Windows_x64_x86.${{ env.VERSION }}.zip"
-            "/home/runner/work/presencelight/presencelight/Sign/Windows_ARM/PresenceLight.Windows_ARM.${{ env.VERSION }}.zip"
-            "/home/runner/work/presencelight/presencelight/Sign/macOS/PresenceLight.macOS.${{ env.VERSION }}.zip"
-            "/home/runner/work/presencelight/presencelight/Sign/Linux_ARM/PresenceLight.Linux_ARM.${{ env.VERSION }}.zip"
-            "/home/runner/work/presencelight/presencelight/Sign/Linux_ARM64/PresenceLight.Linux_ARM64.${{ env.VERSION }}.zip"
-            "/home/runner/work/presencelight/presencelight/Sign/Linux_Musl_x64/PresenceLight.Linux_Musl_x64.${{ env.VERSION }}.zip"
+            /home/runner/work/presencelight/presencelight/Sign/Linux_Musl_ARM_x64/PresenceLight.Linux_Musl_ARM_x64.${{ env.VERSION }}.zip
+            /home/runner/work/presencelight/presencelight/Sign/Windows_x64_x86/PresenceLight.Windows_x64_x86.${{ env.VERSION }}.zip
+            /home/runner/work/presencelight/presencelight/Sign/Windows_ARM/PresenceLight.Windows_ARM.${{ env.VERSION }}.zip
+            /home/runner/work/presencelight/presencelight/Sign/macOS/PresenceLight.macOS.${{ env.VERSION }}.zip
+            /home/runner/work/presencelight/presencelight/Sign/Linux_ARM/PresenceLight.Linux_ARM.${{ env.VERSION }}.zip
+            /home/runner/work/presencelight/presencelight/Sign/Linux_ARM64/PresenceLight.Linux_ARM64.${{ env.VERSION }}.zip
+            /home/runner/work/presencelight/presencelight/Sign/Linux_Musl_x64/PresenceLight.Linux_Musl_x64.${{ env.VERSION }}.zip
+      - name: Setup tmate session
+        if: ${{ failure() }}
+        uses: mxschmitt/action-tmate@v3
