@@ -195,8 +195,6 @@ jobs:
   Code_Signing:
     needs: Build_Web
     uses: "isaacrlevin/presencelight/.github/workflows/Sign.yml@main"
-    with:
-      matrix: ${{ steps.setup-matrix.outputs.matrix }}
 
     # permissions:
     #   id-token: write # Required for requesting the JWT

@@ -10,12 +10,7 @@ on:
         type: string
 
   workflow_call:
-    inputs:
-      matrix:
-        description: 'Matrix of Channel Names to Sign'
-        required: true
-        default: '{}'
-        type: string
+
 jobs:
 
   Code_Signing:
@@ -42,11 +37,32 @@ jobs:
       matrix: ${{ fromJson(inputs.Matrix) }}
     steps:
 
-    - name: Download ${{ matrix.ChannelName }} Artifacts
+      - name: Download Matrix Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: matrix-artifact
+          path: ${{ runner.workspace }}/matrix-artifact
+
+      - name: Set Matrix Strategy
+        id: set_matrix_strategy
+        run: |
+          matrix_values=$(cat ${{ runner.workspace }}/matrix-artifact/matrix.txt)
+          matrix_strategy="[${matrix_values}]"
+          echo "::set-output name=matrix_strategy::${matrix_strategy}"
+
+  run-tests:
+    needs: use_matrix
+    strategy:
+      matrix: ${{fromJson(needs.use_matrix.outputs.matrix_strategy)}}
+
+    runs-on: windows-latest
+
+    steps:
+    - name: Download ${{ matrix.value }} Artifacts
       uses: actions/download-artifact@v2
       with:
-        name: ${{ matrix.ChannelName }}
-        path: ${{ github.workspace }}\ToSign\${{ matrix.ChannelName }}
+        name: ${{ matrix.value }}
+        path: ${{ github.workspace }}\ToSign\${{ matrix.value }}
 
     - uses: actions/download-artifact@v2
       name: Download Signing Scripts Artifacts
@@ -83,8 +99,8 @@ jobs:
         --azure-key-vault-certificate "${{ secrets.KEY_VAULT_CERTIFICATE_ID }}"
         --verbosity Trace
 
-    - name: Publish Signed ${{ matrix.ChannelName }} Packages
+    - name: Publish Signed ${{ matrix.value }} Packages
       uses: actions/upload-artifact@v2
       with:
-        path: ${{ github.workspace }}\ToSign\${{ matrix.ChannelName }}
-        name: '${{ matrix.ChannelName }}_Signed'
+        path: ${{ github.workspace }}\ToSign\${{ matrix.value }}
+        name: '${{ matrix.value }}_Signed'
