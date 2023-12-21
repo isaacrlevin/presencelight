@@ -220,129 +220,13 @@ jobs:
 
   Code_Signing:
     needs: Build_WPF
-    if: ${{ (github.event_name != 'pull_request') && (github.ref == 'refs/heads/main') }}
-    permissions:
-      id-token: write # Required for requesting the JWT
-    environment:
-        name: Code_Signing
-        url: ${{ steps.deploy_staging.outputs.webapp-url }}
-    name: Code Sign WPF
-    runs-on: windows-latest
-    steps:
-    - name: Azure login
-      uses: azure/login@v1.5.1
-      with:
-        client-id: ${{ secrets.AZURE_CLIENT_ID }}
-        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-    - name: Download Artifacts
-      uses: actions/download-artifact@v3
-      with:
-        path: ${{ github.workspace }}\ToSign
-
-    - uses: actions/download-artifact@v3
-      name: Download Signing Scripts Artifacts
-      with:
-        name: SigningScripts
-        path: ${{ github.workspace }}\SigningScripts
-
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: 6.x
-
-    - name: Install Sign CLI tool
-      run: dotnet tool install --tool-path . sign --version 0.9.0-beta.23063.3
-
-    - name: Azure login
-      uses: azure/login@v1.5.1
-      with:
-        client-id: ${{ secrets.AZURE_CLIENT_ID }}
-        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-    - name: Sign Nightly
-      shell: pwsh
-      run: >
-        ./sign code azure-key-vault
-        **/*.appxbundle
-        --timestamp-url "http://timestamp.digicert.com"
-        --base-directory "${{ github.workspace }}\ToSign\Nightly"
-        --file-list "${{ github.workspace }}/SigningScripts/filelist.txt"
-        --publisher-name "Isaac Levin"
-        --description "PresenceLight"
-        --description-url "https://github.com/isaacrlevin/presencelight"
-        --azure-key-vault-managed-identity true
-        --azure-key-vault-url "${{ secrets.KEY_VAULT_URL }}"
-        --azure-key-vault-certificate "${{ secrets.KEY_VAULT_CERTIFICATE_ID }}"
-        --verbosity Trace
-
-    - name: Sign Release
-      shell: pwsh
-      run: >
-        ./sign code azure-key-vault
-        **/*.appxbundle
-        --timestamp-url "http://timestamp.digicert.com"
-        --base-directory "${{ github.workspace }}\ToSign\Release"
-        --file-list "${{ github.workspace }}/SigningScripts/filelist.txt"
-        --publisher-name "Isaac Levin"
-        --description "PresenceLight"
-        --description-url "https://github.com/isaacrlevin/presencelight"
-        --azure-key-vault-managed-identity true
-        --azure-key-vault-url "${{ secrets.KEY_VAULT_URL }}"
-        --azure-key-vault-certificate "${{ secrets.KEY_VAULT_CERTIFICATE_ID }}"
-        --verbosity Trace
-
-    - name: Sign AppInstaller
-      shell: pwsh
-      run: >
-        ./sign code azure-key-vault
-        **/*.appinstaller
-        --timestamp-url "http://timestamp.digicert.com"
-        --base-directory "${{ github.workspace }}/ToSign"
-        --file-list "${{ github.workspace }}/SigningScripts/filelist.txt"
-        --publisher-name "Isaac Levin"
-        --description "PresenceLight"
-        --description-url "https://github.com/isaacrlevin/presencelight"
-        --azure-key-vault-managed-identity true
-        --azure-key-vault-url "${{ secrets.KEY_VAULT_URL }}"
-        --azure-key-vault-certificate "${{ secrets.KEY_VAULT_CERTIFICATE_ID }}"
-        --verbosity Trace
-
-    - name: Sign Zip
-      shell: pwsh
-      run: >
-        ./sign code azure-key-vault
-        **/*.zip
-        --timestamp-url "http://timestamp.digicert.com"
-        --base-directory "${{ github.workspace }}/ToSign"
-        --file-list "${{ github.workspace }}/SigningScripts/filelist.txt"
-        --publisher-name "Isaac Levin"
-        --description "PresenceLight"
-        --description-url "https://github.com/isaacrlevin/presencelight"
-        --azure-key-vault-managed-identity true
-        --azure-key-vault-url "${{ secrets.KEY_VAULT_URL }}"
-        --azure-key-vault-certificate "${{ secrets.KEY_VAULT_CERTIFICATE_ID }}"
-        --verbosity Trace
-
-    - name: Publish Signed Release Packages
-      uses: actions/upload-artifact@v3
-      with:
-        path: ${{ github.workspace }}\ToSign\Release
-        name: ReleaseSigned
-
-    - name: Publish Signed Nightly Packages
-      uses: actions/upload-artifact@v3
-      with:
-        path: ${{ github.workspace }}\ToSign\Nightly
-        name: NightlySigned
-
-    - name: Publish Signed Standalone Packages
-      uses: actions/upload-artifact@v3
-      with:
-        path: ${{ github.workspace }}\ToSign\Standalone
-        name: StandaloneSigned
+    strategy:
+      matrix:
+        target: [ Release, Nightly, Standalone ]
+    uses: isaacrlevin/presencelight/.github/workflows/Sign.yml@main
+    with:
+      target: ${{ matrix.target }}
+    secrets: inherit
 
   Deploy_Azure_Blob:
     needs: Code_Signing
@@ -433,24 +317,22 @@ jobs:
         shell: pwsh
 
       - name: Create GitHub Release
-        uses: meeDamian/github-release@2.0
+        uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844
         with:
+          tag_name: "Desktop-v${{ env.VERSION }}"
+          body: ${{ steps.changelog.outputs.changelog }}
+          fail_on_unmatched_files: true
           token: ${{ secrets.GITHUB_TOKEN }}
-          tag: "Desktop-v${{ env.VERSION }}"
-          name: "Desktop v${{ env.VERSION }}"
-          body: >
-            ${{ steps.changelog.outputs.compareurl }}
-            ${{ steps.changelog.outputs.changelog }}
-          gzip: folders
-          files: >
-            "/home/runner/work/presencelight/presencelight/StandaloneSigned/PresenceLight.${{ env.VERSION }}-x86.zip"
-            "/home/runner/work/presencelight/presencelight/StandaloneSigned/x86-zip.sha256"
-            "/home/runner/work/presencelight/presencelight/StandaloneSigned/PresenceLight.${{ env.VERSION }}-x64.zip"
-            "/home/runner/work/presencelight/presencelight/StandaloneSigned/x64-zip.sha256"
-            "/home/runner/work/presencelight/presencelight/StandaloneSigned/PresenceLight.${{ env.VERSION }}-win-arm64.zip"
-            "/home/runner/work/presencelight/presencelight/StandaloneSigned/win-arm64-zip.sha256"
-            "/home/runner/work/presencelight/presencelight/ReleaseSigned/appx.sha256"
-            "/home/runner/work/presencelight/presencelight/ReleaseSigned/PresenceLight.Package_${{ env.VERSION }}.0_Test/PresenceLight.Package_${{ env.VERSION }}.0_x64_x86_ARM64.appxbundle"
+          files: |
+            ${{ github.workspace }}/StandaloneSigned/**/*.zip
+            ${{ github.workspace }}/StandaloneSigned/**/*.sha256"
+            ${{ github.workspace }}/ReleaseSigned/**/*appx.sha256"
+            ${{ github.workspace }}/ReleaseSigned/**/.appxbundle"
+
+      - name: Setup tmate session
+        if: ${{ failure() }}
+        uses: mxschmitt/action-tmate@v3
+
 
   Deploy_Choco:
     needs: Deploy_GitHub_Release
