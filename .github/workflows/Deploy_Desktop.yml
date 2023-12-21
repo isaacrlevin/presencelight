@@ -96,6 +96,7 @@ jobs:
 
   Build_WPF:
     name: Build WPF
+    needs: Setup_Desktop
     runs-on: windows-latest
     strategy:
       matrix:
