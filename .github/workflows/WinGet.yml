@@ -8,6 +8,8 @@ on:
         default: '5.0'
         type: string
 
+  workflow_call:
+
 jobs:
   publish:
     runs-on: windows-latest
@@ -17,15 +19,33 @@ jobs:
     env:
       WINGETCREATE_TOKEN: ${{ secrets.WINGETCREATE_TOKEN }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v3
+        if: ${{ github.event_name == 'workflow_call' }}
+        name: Download Signing Scripts Artifacts
         with:
-          fetch-depth: 0
+          name: SigningScripts
+          path: "${{ github.workspace }}/SigningScripts"
+
+      - name: Get Version from File
+        if: ${{ github.event_name == 'workflow_call' }}
+        run: |
+          $version = Get-Content "${{ github.workspace }}/SigningScripts/version.txt"
+          echo "VERSION=$version" >> $GITHUB_ENV
+        shell: powershell
+
+      - name: Get Version from Input
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        run: |
+          $version = "${{ inputs.Version }}"
+          echo "VERSION=$version" >> $GITHUB_ENV
+        shell: powershell
 
       - name: Create manifest and submit PR
-        working-directory: ${{ github.workspace }}/Build/winget
+        working-directory: ${{ github.workspace }}/SigningScripts/winget
         run: |
-          ./build.ps1 -Version "${{ inputs.Version }}" -Token "${{ secrets.WINGETCREATE_TOKEN }}"
+          ./build.ps1 -Version "${{ env.VERSION }}" -Token "${{ secrets.WINGETCREATE_TOKEN }}"
+
       - name: Setup tmate session
         if: ${{ failure() }}
         uses: mxschmitt/action-tmate@v3

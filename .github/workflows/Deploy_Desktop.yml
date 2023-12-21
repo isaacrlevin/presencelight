@@ -364,3 +364,9 @@ jobs:
         client-secret: ${{ secrets.STORE_CLIENT_SECRET }}
         app-id: ${{ secrets.APP_ID }}
         package-path: "${{ github.workspace }}/ReleaseSigned/"
+
+  Deploy_Winget:
+    needs: Deploy_GitHub_Release
+    if: ${{ github.event_name != 'pull_request' }}
+    uses: isaacrlevin/presencelight/.github/workflows/WinGet.yml@main
+    secrets: inherit

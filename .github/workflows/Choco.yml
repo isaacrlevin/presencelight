@@ -56,3 +56,7 @@ jobs:
         run: |
           .\Build\scripts\push-choco.ps1 -Version "${{ env.VERSION}}" -CHOCOAPIKEY "${{ secrets.CHOCOAPIKEY}}"
         shell: powershell
+
+      - name: Setup tmate session
+        if: ${{ failure() }}
+        uses: mxschmitt/action-tmate@v3
