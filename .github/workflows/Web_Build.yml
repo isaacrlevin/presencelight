@@ -165,6 +165,7 @@ jobs:
 
   Deploy_Azure_Blob:
     needs: Code_Signing
+    name: Deploy Worker to Blob Storage
     if: ${{ github.event_name != 'pull_request' }}
     strategy:
       matrix:

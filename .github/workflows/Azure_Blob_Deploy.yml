@@ -39,7 +39,7 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: ${{ inputs.target }}_Signed
-        path: ${{ github.workspace }}\Signed\${{ inputs.target }}
+        path: ${{ github.workspace }}/Signed/${{ inputs.target }}
 
     - name: Archive Previous Release
       uses: azure/cli@v1.0.9
@@ -63,6 +63,6 @@ jobs:
       uses: azure/cli@v1.0.9
       with:
         inlineScript: |
-          az storage blob upload-batch --connection-string '${{ secrets.AZUREBLOBCONNECTIONSTRING }}' \
-          -d ${{ secrets.WORKER_CONTAINER }} -s '${{ github.workspace }}/Signed'
+          az storage blob upload-batch --connection-string "${{ secrets.AZUREBLOBCONNECTIONSTRING }}" \
+          -d "${{ secrets.WORKER_CONTAINER }}" -s "${{ github.workspace }}/Signed"
         azcliversion: latest
