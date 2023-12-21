@@ -141,6 +141,9 @@ jobs:
         $version = Get-Content "${{ github.workspace }}/SigningScripts/version.txt"
         echo "GitBuildVersionSimple=$version" >> $GITHUB_ENV
 
+    - name: Create Directory for Channel
+      run: mkdir ${{ github.workspace }}/${{ matrix.ChannelName }}
+
     - name: Update Badge Versions
       run: |
         # Update badges
@@ -153,9 +156,6 @@ jobs:
         $badge.svg.g[1].text[3].InnerText = "${{ env.GitBuildVersionSimple }}.0"
         $badge.Save("${{ github.workspace }}\${{ matrix.ChannelName }}\stable_badge.svg")
       shell: powershell
-
-    - name: Create Directory for Channel
-      run: mkdir ${{ github.workspace }}/${{ matrix.ChannelName }}
 
     - name: Build Standalone Presence Light x86
       run: |
