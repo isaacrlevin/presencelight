@@ -92,18 +92,13 @@ jobs:
         name: Chocolatey
       if:  ${{ success() && matrix.ChannelName  == 'Standalone' }}
 
-
-
   Build_WPF:
     name: Build WPF
     needs: Setup_Desktop
     runs-on: windows-latest
     strategy:
       matrix:
-        ChannelName:
-        - Release
-        - Nightly
-        - Standalone
+        ChannelName: [ Release,  Nightly,  Standalone ]
 
     env:
       DOTNET_CLI_TELEMETRY_OPTOUT: 1
@@ -332,7 +327,6 @@ jobs:
       - name: Setup tmate session
         if: ${{ failure() }}
         uses: mxschmitt/action-tmate@v3
-
 
   Deploy_Choco:
     needs: Deploy_GitHub_Release
