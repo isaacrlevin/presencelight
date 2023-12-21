@@ -57,7 +57,7 @@ jobs:
       shell: pwsh
       run: >
         ./sign code azure-key-vault
-        '**/*.{exe,zip}'
+        '**/*.{exe,zip,appxbundle,appinstaller}'
         --timestamp-url "http://timestamp.digicert.com"
         --base-directory "${{ github.workspace }}/ToSign"
         --file-list "${{ github.workspace }}/SigningScripts/Signing/filelist.txt"
