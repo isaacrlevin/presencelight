@@ -17,7 +17,7 @@ jobs:
       - uses: actions/download-artifact@v2
         name: Download Standalone Signed App Artifacts
         with:
-          name: StandaloneSigned
+          name: Standalone_Signed
           path: "${{ github.workspace }}\\StandaloneSigned"
 
       - uses: actions/download-artifact@v3
