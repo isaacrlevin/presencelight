@@ -2,7 +2,7 @@ on:
   push:
     branches: [ main ]
     paths-ignore:
-    - '.github/workflows/Web_Build.yml'
+    - '.github/workflows/Deploy_Web.yml'
     - '.github/workflows/Test_WinGet.yml'
     - 'src/PresenceLight.Web/**'
     - 'src/DockerFiles/**'
@@ -11,7 +11,7 @@ on:
   pull_request:
     branches: [ main ]
     paths-ignore:
-    - '.github/workflows/Web_Build.yml'
+    - '.github/workflows/Deploy_Web.yml'
     - '.github/workflows/Sign.yml'
     - 'src/PresenceLight.Web/**'
     - 'src/DockerFiles/**'
