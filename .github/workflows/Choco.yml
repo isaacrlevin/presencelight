@@ -1,6 +1,12 @@
 on:
   workflow_call:
 
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to deploy'
+        required: true
+
 jobs:
 
   Deploy_Choco:
@@ -15,15 +21,25 @@ jobs:
           path: "${{ github.workspace }}\\StandaloneSigned"
 
       - uses: actions/download-artifact@v3
+        if: ${{ github.event_name == 'workflow_call' }}
         name: Download Signing Scripts Artifacts
         with:
           name: SigningScripts
           path: "${{ github.workspace }}/SigningScripts"
 
       - name: Get Version from File
+        if: ${{ github.event_name == 'workflow_call' }}
         run: |
           version = Get-Content "${{ github.workspace }}/SigningScripts/version.txt"
           echo "VERSION=$version" >> $GITHUB_ENV
+        shell: powershell
+
+      - name: Get Version from File
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        run: |
+          version = "${{ inputs.vERSION }}"
+          echo "VERSION=$version" >> $GITHUB_ENV
+        shell: powershell
 
       - uses: actions/download-artifact@v2
         name: Download Chocolatey Artifacts
@@ -33,18 +49,10 @@ jobs:
 
       - name: Update Chocolatey Files
         run: |
-          .\Build\scripts\hash-files.ps1 -Version "$env:Version"
+          .\Build\scripts\hash-files.ps1 -Version "${{ env.VERSION }}"
         shell: powershell
 
       - name: Push to Chocolatey
         run: |
-          # Chocolatey Pack
-          & choco.exe pack "${{ github.workspace }}\\Chocolatey\\PresenceLight.nuspec" --version "${{ env.Version }}.0" --OutputDirectory "${{ github.workspace }}\\Chocolatey"
-
-          & choco.exe apikey --key "${{ secrets.CHOCOAPIKEY }}" --source https://push.chocolatey.org/
-
-          $nupkgs = gci "${{ github.workspace }}\\Chocolatey\\PresenceLight.*.nupkg" | Select -ExpandProperty FullName
-          foreach ($nupkg in $nupkgs){
-            & choco.exe push $nupkg --source https://push.chocolatey.org/
-          }
+          .\Build\scripts\push-choco.ps1 -Version "${{ env.VERSION}}" -CHOCOAPIKEY "${{ secrets.CHOCOAPIKEY}}"
         shell: powershell
