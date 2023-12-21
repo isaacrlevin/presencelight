@@ -15,7 +15,7 @@ jobs:
 
     steps:
       - uses: actions/download-artifact@v2
-        name: Download Nightly Signed
+        name: Download Standalone Signed App Artifacts
         with:
           name: StandaloneSigned
           path: "${{ github.workspace }}\\StandaloneSigned"

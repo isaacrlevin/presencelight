@@ -230,6 +230,8 @@ jobs:
         name: Deploy_Azure_Blob
         url: ${{ steps.deploy_staging.outputs.webapp-url }}
     name: Deploy WPF Nightly
+    permissions:
+      id-token: write # Required for requesting the JWT
     runs-on: ubuntu-latest
     steps:
     - name: Azure login
@@ -333,3 +335,32 @@ jobs:
     if: ${{ github.event_name != 'pull_request' }}
     uses: isaacrlevin/presencelight/.github/workflows/Choco.yml@main
     secrets: inherit
+
+  Deploy_Store:
+    needs: Deploy_Azure_Blob
+    if: ${{ github.event_name != 'pull_request' }}
+    environment:
+        name: Deploy_Store
+        url: ${{ steps.deploy_staging.outputs.webapp-url }}
+    name: Deploy WPF Windows Store
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/download-artifact@v2
+      name: Download Release Signed
+      with:
+        name: ReleaseSigned
+        path: "${{ github.workspace }}/ReleaseSigned"
+
+    - name: Copy files to same directory
+      run: |
+        az storage blob upload --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} -f "${{ github.workspace }}/ReleaseSigned/stable_badge.svg" -n stable_badge.svg -c store --content-type image/svg+xml  --debug --overwrite
+      shell: pwsh
+
+    - name: Windows Store Publish
+      uses: isaacrlevin/windows-store-action@1.0
+      with:
+        tenant-id: ${{ secrets.STORE_TENANT }}
+        client-id: ${{ secrets.STORE_CLIENT_ID }}
+        client-secret: ${{ secrets.STORE_CLIENT_SECRET }}
+        app-id: ${{ secrets.APP_ID }}
+        package-path: "${{ github.workspace }}/ReleaseSigned/"
