@@ -1,0 +1,16 @@
+on:
+  workflow_dispatch:
+    inputs:
+      Version:
+        description: 'Release'
+        required: true
+        default: '5.0'
+        type: string
+
+  workflow_call:
+    inputs:
+      Version:
+        description: 'Release'
+        required: true
+        default: '5.0'
+        type: string

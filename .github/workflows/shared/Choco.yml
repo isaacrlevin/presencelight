@@ -1,0 +1,81 @@
+on:
+  workflow_dispatch:
+    inputs:
+      Version:
+        description: 'Release'
+        required: true
+        default: '5.0'
+        type: string
+
+  workflow_call:
+    inputs:
+      Version:
+        description: 'Release'
+        required: true
+        default: '5.0'
+        type: string
+
+jobs:
+
+  Deploy_Choco:
+    name: Deploy WPF Chocolatey
+    runs-on: windows-latest
+    env:
+      GitHubReleaseUrl: https://github.com/isaacrlevin/presencelight/releases/download/Desktop-
+    steps:
+      - uses: actions/download-artifact@v2
+        name: Download Nightly Signed
+        with:
+          name: StandaloneSigned
+          path: "${{ github.workspace }}\\StandaloneSigned"
+
+      - uses: actions/download-artifact@v2
+        name: Download Chocolatey Artifacts
+        with:
+          name: Chocolatey
+          path: "${{ github.workspace }}\\Chocolatey"
+
+      - name: Update Chocolatey Files
+        run: |
+          # Hash the Zip Files
+          mkdir "${{ github.workspace }}\Download"
+          Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}v${{ inputs.Version }}/x86-zip.sha256" -OutFile "${{ github.workspace }}\\Download\\x86-zip.sha256"
+          Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}v${{ inputs.Version }}/x64-zip.sha256" -OutFile "${{ github.workspace }}\\Download\\x64-zip.sha256"
+          Invoke-WebRequest -Uri "${{ env.GitHubReleaseUrl }}v${{ inputs.Version }}/win-arm64-zip.sha256" -OutFile "${{ github.workspace }}\\Download\\win-arm64-zip.sha256"
+          $hash86= get-content ${{ github.workspace }}\\Download\\x86-zip.sha256
+          $hash64= get-content ${{ github.workspace }}\\Download\\x64-zip.sha256
+          $hashARM= get-content ${{ github.workspace }}\\Download\\win-arm64-zip.sha256
+
+          # Update ChocolateyInstall.ps1
+          $installFile = Get-Content -path "${{ github.workspace }}\\Chocolatey\\tools\\ChocolateyInstall.ps1" -Raw
+          $installFile = $installFile -replace '{ReplaceCheckSumARM}', $hashARM
+          $installFile = $installFile -replace '{ReplaceCheckSumx86}', $hash86
+          $installFile = $installFile -replace '{ReplaceCheckSumx64}', $hash64
+          $installFile = $installFile -replace '{ARMLink}' , "${{ env.GitHubReleaseUrl }}v${{ inputs.Version }}/PresenceLight.${{ inputs.Version }}-win-arm64.zip"
+          $installFile = $installFile -replace '{x86Link}' , "${{ env.GitHubReleaseUrl }}v${{ inputs.Version }}/PresenceLight.${{ inputs.Version }}-x86.zip"
+          $installFile = $installFile -replace '{x64Link}' , "${{ env.GitHubReleaseUrl }}v${{ inputs.Version }}/PresenceLight.${{ inputs.Version }}-x64.zip"
+          $installFile | Set-Content -Path "${{ github.workspace }}\\Chocolatey\\tools\\ChocolateyInstall.ps1"
+
+          # Update Verification.txt
+          $verificationFile = Get-Content -path "${{ github.workspace }}\\Chocolatey\\tools\\Verification.txt"
+          $verificationFile = $verificationFile -replace '{ARMLink}' , "${{ env.GitHubReleaseUrl }}v${{ inputs.Version }}/PresenceLight.${{ inputs.Version }}-win-arm64.zip"
+          $verificationFile = $verificationFile -replace '{x64Link}' , "${{ env.GitHubReleaseUrl }}v${{ inputs.Version }}/PresenceLight.${{ inputs.Version }}-x64.zip"
+          $verificationFile = $verificationFile -replace '{x86Link}' , "${{ env.GitHubReleaseUrl }}v${{ inputs.Version }}/PresenceLight.${{ inputs.Version }}-x86.zip"
+          $verificationFile = $verificationFile -replace '{HASHx64}', $hash64
+          $verificationFile = $verificationFile -replace '{HASHx86}', $hash86
+          $verificationFile = $verificationFile -replace '{HASHARM}', $hashARM
+          $verificationFile | Set-Content -Path "${{ github.workspace }}\\Chocolatey\\tools\\Verification.txt"
+        shell: powershell
+
+      - name: Push to Chocolatey
+        run: |
+          # Chocolatey Pack
+          & choco.exe pack "${{ github.workspace }}\\Chocolatey\\PresenceLight.nuspec" --version "${{ inputs.Version }}.0" --OutputDirectory "${{ github.workspace }}\\Chocolatey"
+
+          & choco.exe apikey --key "${{ secrets.CHOCOAPIKEY }}" --source https://push.chocolatey.org/
+
+          $nupkgs = gci "${{ github.workspace }}\\Chocolatey\\PresenceLight.*.nupkg" | Select -ExpandProperty FullName
+          foreach ($nupkg in $nupkgs){
+            & choco.exe push $nupkg --source https://push.chocolatey.org/
+          }
+        shell: powershell
