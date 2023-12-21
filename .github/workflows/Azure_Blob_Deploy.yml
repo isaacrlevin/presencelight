@@ -21,6 +21,8 @@ jobs:
 
   Deploy_Worker_Artifacts:
     name: Deploy Worker Artifacts
+    environment:
+        name: Deploy_Azure_Blob
     permissions:
       id-token: write # Required for requesting the JWT
     runs-on: ubuntu-latest

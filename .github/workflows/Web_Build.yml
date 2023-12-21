@@ -165,6 +165,7 @@ jobs:
 
   Deploy_Azure_Blob:
     needs: Code_Signing
+    if: ${{ github.event_name != 'pull_request' }}
     strategy:
       matrix:
         target: [ Windows_x64_x86, Windows_ARM, macOS, Linux_ARM, Linux_ARM64, Linux_Musl_x64, Linux_Musl_ARM_x64 ]
