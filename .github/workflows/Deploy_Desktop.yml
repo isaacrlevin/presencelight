@@ -138,7 +138,7 @@ jobs:
 
     - name: Get Version from File
       run: |
-        version = Get-Content "${{ github.workspace }}/SigningScripts/version.txt"
+        $version = Get-Content "${{ github.workspace }}/SigningScripts/version.txt"
         echo "GitBuildVersionSimple=$version" >> $GITHUB_ENV
 
     - name: Update Badge Versions
