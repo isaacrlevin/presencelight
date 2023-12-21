@@ -3,19 +3,21 @@ on:
     branches: [ main ]
     paths-ignore:
     - '.github/workflows/Deploy_Web.yml'
-    - '.github/workflows/Test_WinGet.yml'
     - 'src/PresenceLight.Web/**'
     - 'src/DockerFiles/**'
-    - '*.md'
+    - '*..md'
+    - 'Build/**'
+    - '.chocolatey/**'
 
   pull_request:
     branches: [ main ]
     paths-ignore:
     - '.github/workflows/Deploy_Web.yml'
-    - '.github/workflows/Sign.yml'
     - 'src/PresenceLight.Web/**'
     - 'src/DockerFiles/**'
-    - '*.md'
+    - '*..md'
+    - 'Build/**'
+    - '.chocolatey/**'
 
 jobs:
 
@@ -443,5 +445,3 @@ jobs:
     needs: Deploy_GitHub_Release
     if: ${{ github.event_name != 'pull_request' }}
     uses: isaacrlevin/presencelight/.github/workflows/Choco.yml@main
-    with:
-      Version: ${{ env.VERSION }}

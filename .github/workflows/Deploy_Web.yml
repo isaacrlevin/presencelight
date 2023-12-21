@@ -4,7 +4,6 @@ on:
     branches: [ main ]
     paths-ignore:
     - '.github/workflows/Deploy_Desktop.yml'
-    - '.github/workflows/shared/**'
     - 'src/DesktopClient/**'
     - '*..md'
     - 'Build/**'
@@ -14,7 +13,6 @@ on:
     branches: [ main ]
     paths-ignore:
     - '.github/workflows/Deploy_Desktop.yml'
-    - '.github/workflows/shared/**'
     - 'src/DesktopClient/**'
     - '*..md'
     - 'Build/**'
