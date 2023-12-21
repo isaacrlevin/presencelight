@@ -186,20 +186,20 @@ jobs:
       if:  ${{ success() && matrix.ChannelName  != 'Standalone' }}
 
     - name: Publish ${{ matrix.ChannelName }} Arifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v3
       with:
         path: ${{ github.workspace }}\${{ matrix.ChannelName }}
         name: ${{ matrix.ChannelName }}
 
     - name: Publish signing scripts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v3
       with:
         path: Build
         name: SigningScripts
       if:  ${{ success() && matrix.ChannelName  == 'Release' }}
 
     - name: Publish .chocolatey scripts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v3
       with:
         path: .chocolatey
         name: Chocolatey
@@ -224,11 +224,11 @@ jobs:
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
     - name: Download Artifacts
-      uses: actions/download-artifact@v4.1.0
+      uses: actions/download-artifact@v3
       with:
         path: ${{ github.workspace }}\ToSign
 
-    - uses: actions/download-artifact@v4.1.0
+    - uses: actions/download-artifact@v3
       name: Download Signing Scripts Artifacts
       with:
         name: SigningScripts
@@ -314,19 +314,19 @@ jobs:
         --verbosity Trace
 
     - name: Publish Signed Release Packages
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v3
       with:
         path: ${{ github.workspace }}\ToSign\Release
         name: ReleaseSigned
 
     - name: Publish Signed Nightly Packages
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v3
       with:
         path: ${{ github.workspace }}\ToSign\Nightly
         name: NightlySigned
 
     - name: Publish Signed Standalone Packages
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v3
       with:
         path: ${{ github.workspace }}\ToSign\Standalone
         name: StandaloneSigned
@@ -347,7 +347,7 @@ jobs:
         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-    - uses: actions/download-artifact@v4.1.0
+    - uses: actions/download-artifact@v3
       name: Download Nightly Signed
       with:
         name: NightlySigned
@@ -386,13 +386,13 @@ jobs:
           commitMode: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/download-artifact@v4.1.0
+      - uses: actions/download-artifact@v3
         name: Download Nightly Signed
         with:
           name: StandaloneSigned
           path: "${{ github.workspace }}/StandaloneSigned"
 
-      - uses: actions/download-artifact@v4.1.0
+      - uses: actions/download-artifact@v3
         name: Download Release Signed
         with:
           name: ReleaseSigned

@@ -27,12 +27,12 @@ jobs:
 
     steps:
     - name: Download ${{ inputs.target }} Artifacts
-      uses: actions/download-artifact@v4.1.0
+      uses: actions/download-artifact@v3
       with:
         name: ${{ inputs.target }}
         path: ${{ github.workspace }}\ToSign\${{ inputs.target }}
 
-    - uses: actions/download-artifact@v4.1.0
+    - uses: actions/download-artifact@v3
       name: Download Signing Scripts Artifacts
       with:
         name: SigningScripts
@@ -70,7 +70,7 @@ jobs:
         --verbosity Trace
 
     - name: Publish Signed ${{ inputs.target }} Packages
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v3
       with:
         path: ${{ github.workspace }}\ToSign\${{ inputs.target }}
         name: '${{ inputs.target }}_Signed'

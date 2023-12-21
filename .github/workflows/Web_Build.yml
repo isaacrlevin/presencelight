@@ -68,13 +68,13 @@ jobs:
       shell: powershell
 
     - name: Publish Arifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v3
       with:
         path: ${{ github.workspace }}\src
         name: PreBuild
 
     - name: Publish signing scripts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v3
       with:
         path: Build
         name: SigningScripts
@@ -118,12 +118,12 @@ jobs:
         dotnet-version: 8.0.x
 
     - name: Download PreBuild
-      uses: actions/download-artifact@v4.1.0
+      uses: actions/download-artifact@v3
       with:
         name: PreBuild
         path: ${{ github.workspace }}/src
 
-    - uses: actions/download-artifact@v4.1.0
+    - uses: actions/download-artifact@v3
       name: Download Signing Scripts Artifacts
       with:
         name: SigningScripts
@@ -148,7 +148,7 @@ jobs:
       shell: pwsh
 
     - name: Publish Arifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v3
       with:
         path: ${{ github.workspace }}/${{ matrix.ChannelName }}
         name: ${{ matrix.ChannelName }}
@@ -185,12 +185,12 @@ jobs:
 
     steps:
       - name: Download PreBuild
-        uses: actions/download-artifact@v4.1.0
+        uses: actions/download-artifact@v3
         with:
           name: PreBuild
           path: ${{ github.workspace }}/src
 
-      - uses: actions/download-artifact@v4.1.0
+      - uses: actions/download-artifact@v3
         name: Download Signing Scripts Artifacts
         with:
           name: SigningScripts
@@ -343,48 +343,48 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download Windows_x64_x86 Artifacts
-        uses: actions/download-artifact@v4.1.0
+        uses: actions/download-artifact@v3
         with:
           name: Windows_x64_x86
           path: ${{ github.workspace }}/Sign/Windows_x64_x86
 
       - name: Download Windows_ARM Artifacts
-        uses: actions/download-artifact@v4.1.0
+        uses: actions/download-artifact@v3
         with:
           name: Windows_ARM
           path: ${{ github.workspace }}/Sign/Windows_ARM
 
       - name: Download macOS Artifacts
-        uses: actions/download-artifact@v4.1.0
+        uses: actions/download-artifact@v3
         with:
           name: macOS
           path: ${{ github.workspace }}/Sign/macOS
 
       - name: Download Linux_ARM Artifacts
-        uses: actions/download-artifact@v4.1.0
+        uses: actions/download-artifact@v3
         with:
           name: Linux_ARM
           path: ${{ github.workspace }}/Sign/Linux_ARM
 
       - name: Download Linux_ARM64 Artifacts
-        uses: actions/download-artifact@v4.1.0
+        uses: actions/download-artifact@v3
         with:
           name: Linux_ARM64
           path: ${{ github.workspace }}/Sign/Linux_ARM64
 
       - name: Download Linux_Musl_x64 Artifacts
-        uses: actions/download-artifact@v4.1.0
+        uses: actions/download-artifact@v3
         with:
           name: Linux_Musl_x64
           path: ${{ github.workspace }}/Sign/Linux_Musl_x64
 
       - name: Download Linux_Musl_ARM_x64 Artifacts
-        uses: actions/download-artifact@v4.1.0
+        uses: actions/download-artifact@v3
         with:
           name: Linux_Musl_ARM_x64
           path: ${{ github.workspace }}/Sign/Linux_Musl_ARM_x64
 
-      - uses: actions/download-artifact@v4.1.0
+      - uses: actions/download-artifact@v3
         name: Download Signing Scripts Artifacts
         with:
           name: SigningScripts
