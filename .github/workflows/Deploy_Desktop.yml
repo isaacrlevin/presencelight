@@ -69,13 +69,13 @@ jobs:
 
     - name: Create Version File to Artifact
       run : |
-        New-Item -Path ${{ github.workspace }}/Build -Name "version.txt" -ItemType "file" -Value "${{ env.GitBuildVersionSimple }}"
+        New-Item -Path ./Build -Name "version.txt" -ItemType "file" -Value "${{ env.GitBuildVersionSimple }}"
       shell: pwsh
 
     - name: Publish Arifacts
       uses: actions/upload-artifact@v3
       with:
-        path: ${{ github.workspace }}/src
+        path: ./src
         name: PreBuild-${{ matrix.ChannelName }}
 
     - name: Publish signing scripts
@@ -123,22 +123,22 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: PreBuild-${{ matrix.ChannelName }}
-        path: ${{ github.workspace }}/src
+        path: ./src
 
     - uses: actions/download-artifact@v3
       name: Download Signing Scripts Artifacts
       with:
         name: SigningScripts
-        path: "${{ github.workspace }}/SigningScripts"
+        path: ./SigningScripts
 
     - name: Set GitBuildVersionSimple Environment Variable
       run: |
-        $version = Get-Content "${{ github.workspace }}\SigningScripts\version.txt"
+        $version = Get-Content ".\SigningScripts\version.txt"
         echo "GitBuildVersionSimple=$version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
       shell: pwsh
 
     - name: Create Directory for Channel
-      run: mkdir ${{ github.workspace }}/${{ matrix.ChannelName }}
+      run: mkdir ./${{ matrix.ChannelName }}
 
     - name: Update Badge Versions
       run: |
@@ -146,11 +146,11 @@ jobs:
         [xml]$badge = Get-Content ".\SigningScripts\ci_badge.svg"
         $badge.svg.g[1].text[2].InnerText = "${{ env.GitBuildVersionSimple }}.0"
         $badge.svg.g[1].text[3].InnerText = "${{ env.GitBuildVersionSimple }}.0"
-        $badge.Save("${{ github.workspace }}\${{ matrix.ChannelName }}\ci_badge.svg")
+        $badge.Save(".\${{ matrix.ChannelName }}\ci_badge.svg")
         [xml]$badge = Get-Content ".\SigningScripts\store_badge.svg"
         $badge.svg.g[1].text[2].InnerText = "${{ env.GitBuildVersionSimple }}.0"
         $badge.svg.g[1].text[3].InnerText = "${{ env.GitBuildVersionSimple }}.0"
-        $badge.Save("${{ github.workspace }}\${{ matrix.ChannelName }}\stable_badge.svg")
+        $badge.Save(".\${{ matrix.ChannelName }}\stable_badge.svg")
       shell: powershell
 
     - name: Build Standalone Presence Light x86
@@ -174,21 +174,21 @@ jobs:
     - name: Zip Standalone PresenceLight x86 Files
       run: |
         Compress-Archive -Path '.\src\DesktopClient\PresenceLight\bin\${{ env.BuildConfiguration }}\${{ env.Win10RID }}\win-x86\publish\*' `
-        -DestinationPath "${{ github.workspace }}\${{ matrix.ChannelName }}\PresenceLight.${{ env.GitBuildVersionSimple }}-x86.zip"
+        -DestinationPath ".\${{ matrix.ChannelName }}\PresenceLight.${{ env.GitBuildVersionSimple }}-x86.zip"
       shell: powershell
       if:  ${{ success() && matrix.ChannelName  == 'Standalone' }}
 
     - name: Zip Standalone PresenceLight x64 Files
       run: |
         Compress-Archive -Path '.\src\DesktopClient\PresenceLight\bin\${{ env.BuildConfiguration }}\${{ env.Win10RID }}\win-x64\publish\*' `
-        -DestinationPath "${{ github.workspace }}\${{ matrix.ChannelName }}\PresenceLight.${{ env.GitBuildVersionSimple }}-x64.zip"
+        -DestinationPath ".}\${{ matrix.ChannelName }}\PresenceLight.${{ env.GitBuildVersionSimple }}-x64.zip"
       shell: powershell
       if:  ${{ success() && matrix.ChannelName  == 'Standalone' }}
 
     - name: Zip Standalone PresenceLight ARM Files
       run: |
         Compress-Archive -Path '.\src\DesktopClient\PresenceLight\bin\${{ env.BuildConfiguration }}\${{ env.Win10RID }}\win-arm64\publish\*' `
-        -DestinationPath "${{ github.workspace }}\${{ matrix.ChannelName }}\PresenceLight.${{ env.GitBuildVersionSimple }}-win-arm64.zip"
+        -DestinationPath ".\${{ matrix.ChannelName }}\PresenceLight.${{ env.GitBuildVersionSimple }}-win-arm64.zip"
       shell: powershell
       if:  ${{ success() && matrix.ChannelName  == 'Standalone' }}
 
@@ -196,13 +196,13 @@ jobs:
       run: |
         msbuild '.\src\DesktopClient\PresenceLight.Package\PresenceLight.Package.wapproj' /p:VersionNumber=${{ env.GitBuildVersionSimple }} `
         /p:ChannelName=${{ matrix.ChannelName }} /p:configuration='${{ env.BuildConfiguration }}' /p:IncludeSymbols=true /p:WarningLevel=0  `
-        /p:AppxPackageDir="${{ github.workspace }}\${{ matrix.ChannelName }}\"
+        /p:AppxPackageDir=".\${{ matrix.ChannelName }}\"
       if:  ${{ success() && matrix.ChannelName  != 'Standalone' }}
 
     - name: Publish ${{ matrix.ChannelName }} Arifacts
       uses: actions/upload-artifact@v3
       with:
-        path: ${{ github.workspace }}\${{ matrix.ChannelName }}
+        path: .\${{ matrix.ChannelName }}
         name: ${{ matrix.ChannelName }}
 
     - name: Publish signing scripts
@@ -249,11 +249,11 @@ jobs:
       name: Download Nightly Signed
       with:
         name: Nightly_Signed
-        path: "${{ github.workspace }}/NightlySigned"
+        path: "./NightlySigned"
 
     - name: Copy files to same directory
       run: |
-        Copy-Item "${{ github.workspace }}/NightlySigned" -Destination "${{ github.workspace }}/Upload" -Recurse -Verbose
+        Copy-Item "//NightlySigned" -Destination "./Upload" -Recurse -Verbose
         dir .\Upload\
         az storage blob upload --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} -f ./Upload/ci_badge.svg -n ci_badge.svg -c nightly --content-type image/svg+xml  --debug --overwrite
         az storage blob upload --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} -f ./Upload/PresenceLight.Package.appinstaller -n PresenceLight.Package.appinstaller -c nightly --content-type application/xml  --debug --overwrite
@@ -288,24 +288,24 @@ jobs:
         name: Download Standalone Signed
         with:
           name: Standalone_Signed
-          path: "${{ github.workspace }}/StandaloneSigned"
+          path: ./StandaloneSigned
 
       - uses: actions/download-artifact@v3
         name: Download Release Signed
         with:
           name: Release_Signed
-          path: "${{ github.workspace }}/ReleaseSigned"
+          path: ./ReleaseSigned
 
       - uses: actions/download-artifact@v3
         name: Download Signing Scripts Artifacts
         if: ${{ github.event_name == 'push' }}
         with:
           name: SigningScripts
-          path: "${{ github.workspace }}/SigningScripts"
+          path: ./SigningScripts
 
       - name: Get Version from Artifact
         run: |
-          version=$(<"${{ github.workspace }}/SigningScripts/version.txt")
+          version=$(<"./SigningScripts/version.txt")
           echo "VERSION=$version" >> $GITHUB_ENV
 
       - name: Add hashes
@@ -360,11 +360,11 @@ jobs:
       name: Download Release Signed
       with:
         name: Release_Signed
-        path: "${{ github.workspace }}/ReleaseSigned"
+        path: ./ReleaseSigned
 
     - name: Upload Badges to Azure Blob Storage
       run: |
-        az storage blob upload --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} -f "${{ github.workspace }}/ReleaseSigned/stable_badge.svg" -n stable_badge.svg -c store --content-type image/svg+xml  --debug --overwrite
+        az storage blob upload --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} -f "./ReleaseSigned/stable_badge.svg" -n stable_badge.svg -c store --content-type image/svg+xml  --debug --overwrite
       shell: pwsh
 
     - name: Windows Store Publish
@@ -374,7 +374,7 @@ jobs:
         client-id: ${{ secrets.STORE_CLIENT_ID }}
         client-secret: ${{ secrets.STORE_CLIENT_SECRET }}
         app-id: ${{ secrets.APP_ID }}
-        package-path: "${{ github.workspace }}/ReleaseSigned/"
+        package-path: "./ReleaseSigned/"
 
   Deploy_Winget:
     needs: Deploy_GitHub_Release

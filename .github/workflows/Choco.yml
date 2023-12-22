@@ -18,21 +18,19 @@ jobs:
         name: Download Standalone Signed App Artifacts
         with:
           name: Standalone_Signed
-          path: "${{ github.workspace }}\\StandaloneSigned"
+          path: .\StandaloneSigned
 
       - uses: actions/download-artifact@v3
         if: ${{ github.event_name == 'push' }}
         name: Download Signing Scripts Artifacts
         with:
           name: SigningScripts
-          path: "${{ github.workspace }}/SigningScripts"
+          path: .\SigningScripts
 
       - name: Get Version from Artifact (Push)
         if: ${{ github.event_name == 'push' }}
         run: |
-          - name: Set GitBuildVersionSimple environment variable
-            run: |
-              $version = Get-Content "${{ github.workspace }}/SigningScripts/version.txt"
+          $version = Get-Content .\SigningScripts\version.txt"
         shell: powershell
 
       - name: Get Version from Input (Workflow Dispatch)
@@ -52,7 +50,7 @@ jobs:
         name: Download Chocolatey Artifacts
         with:
           name: Chocolatey
-          path: "${{ github.workspace }}\\Chocolatey"
+          path: .\Chocolatey
 
       - name: Update Chocolatey Files
         run: |

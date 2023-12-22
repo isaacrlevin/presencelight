@@ -25,12 +25,11 @@ jobs:
         name: Download Signing Scripts Artifacts
         with:
           name: SigningScripts
-          path: "${{ github.workspace }}/SigningScripts"
+          path: ./SigningScripts
 
       - name: Get Version from Artifact (Push)
         run: |
-          version=$(<"${{ github.workspace }}/SigningScripts/version.txt")
-        shell: pwsh
+          version=$(<"./SigningScripts/version.txt")
 
       - name: Get Version from Input (Workflow Dispatch)
         if: ${{ github.event_name == 'workflow_dispatch' }}

@@ -60,13 +60,13 @@ jobs:
 
     - name: Create Version File to Artifact
       run : |
-        New-Item -Path ${{ github.workspace }}/Build -Name "version.txt" -ItemType "file" -Value "${{ env.GitBuildVersionSimple }}"
+        New-Item -Path ./Build -Name "version.txt" -ItemType "file" -Value "${{ env.GitBuildVersionSimple }}"
       shell: pwsh
 
     - name: Publish Arifacts
       uses: actions/upload-artifact@v3
       with:
-        path: ${{ github.workspace }}/src
+        path: ./src
         name: PreBuild
 
     - name: Publish signing scripts
@@ -117,36 +117,36 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: PreBuild
-        path: ${{ github.workspace }}/src
+        path: ./src
 
     - uses: actions/download-artifact@v3
       name: Download Signing Scripts Artifacts
       with:
         name: SigningScripts
-        path: "${{ github.workspace }}/SigningScripts"
+        path: ./SigningScripts
 
     - name: Get Version from Artifact
       run: |
-        version=$(<"${{ github.workspace }}/SigningScripts/version.txt")
+        version=$(<"./SigningScripts/version.txt")
           echo "GitBuildVersionSimple=$version" >> $GITHUB_ENV
 
     - name: Create Directory for Channel
-      run: mkdir ${{ github.workspace }}/${{ matrix.ChannelName }}
+      run: mkdir ./${{ matrix.ChannelName }}
 
-    - run: dotnet publish './src/PresenceLight.Web/PresenceLight.Web.csproj' -r ${{ matrix.RID }} -c ${{ env.BuildConfiguration }} /p:PublishSingleFile=true -o ${{ github.workspace }}/PresenceLight.${{ env.GitBuildVersionSimple }}_${{ matrix.ChannelName }} /p:Version=${{ env.GitBuildVersionSimple }} --property WarningLevel=0
+    - run: dotnet publish './src/PresenceLight.Web/PresenceLight.Web.csproj' -r ${{ matrix.RID }} -c ${{ env.BuildConfiguration }} /p:PublishSingleFile=true -o ./PresenceLight.${{ env.GitBuildVersionSimple }}_${{ matrix.ChannelName }} /p:Version=${{ env.GitBuildVersionSimple }} --property WarningLevel=0
       name: dotnet publish ${{ matrix.RID }}
       if: ${{ success() }}
 
     - name: Zip PresenceLight Web Files
       run: |
-        Compress-Archive -Path '${{ github.workspace }}/PresenceLight.${{ env.GitBuildVersionSimple }}_${{ matrix.ChannelName }}' `
-        -DestinationPath ${{ github.workspace }}/${{ matrix.ChannelName }}/PresenceLight.${{ matrix.ChannelName }}.${{ env.GitBuildVersionSimple }}.zip
+        Compress-Archive -Path './PresenceLight.${{ env.GitBuildVersionSimple }}_${{ matrix.ChannelName }}' `
+        -DestinationPath ./${{ matrix.ChannelName }}/PresenceLight.${{ matrix.ChannelName }}.${{ env.GitBuildVersionSimple }}.zip
       shell: pwsh
 
     - name: Publish Arifacts
       uses: actions/upload-artifact@v3
       with:
-        path: ${{ github.workspace }}/${{ matrix.ChannelName }}
+        path: ./${{ matrix.ChannelName }}
         name: ${{ matrix.ChannelName }}
 
   Code_Signing:
@@ -185,32 +185,32 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: PreBuild
-          path: ${{ github.workspace }}/src
+          path: ./src
 
       - uses: actions/download-artifact@v3
         name: Download Signing Scripts Artifacts
         with:
           name: SigningScripts
-          path: "${{ github.workspace }}/SigningScripts"
+          path: ./SigningScripts
 
       - name: Get Version from Artifact
         run: |
-          version=$(<"${{ github.workspace }}/SigningScripts/version.txt")
+          version=$(<"./SigningScripts/version.txt")
           echo "VERSION=$version" >> $GITHUB_ENV
 
       - name: Update Docker Files
         run: |
-          $dockerFileLatest = Get-Content -path "${{ github.workspace }}/src/PresenceLight.Web/Dockerfile" -Raw
+          $dockerFileLatest = Get-Content -path "./src/PresenceLight.Web/Dockerfile" -Raw
           $dockerFileLatest = $dockerFileLatest -replace '{VERSION}', "${{ env.VERSION }} "
-          $dockerFileLatest | Set-Content -Path "${{ github.workspace }}/src/PresenceLight.Web/Dockerfile"
+          $dockerFileLatest | Set-Content -Path "./src/PresenceLight.Web/Dockerfile"
 
-          $dockerFile32 = Get-Content -path "${{ github.workspace }}/src/PresenceLight.Web/Dockerfile.debian-arm32" -Raw
+          $dockerFile32 = Get-Content -path "./src/PresenceLight.Web/Dockerfile.debian-arm32" -Raw
           $dockerFile32 = $dockerFile32 -replace '{VERSION}', "${{ env.VERSION }} "
-          $dockerFile32 | Set-Content -Path "${{ github.workspace }}/src/PresenceLight.Web/Dockerfile.debian-arm32"
+          $dockerFile32 | Set-Content -Path "./src/PresenceLight.Web/Dockerfile.debian-arm32"
 
-          $dockerFile64 = Get-Content -path "${{ github.workspace }}/src/PresenceLight.Web/Dockerfile.debian-arm64" -Raw
+          $dockerFile64 = Get-Content -path "./src/PresenceLight.Web/Dockerfile.debian-arm64" -Raw
           $dockerFile64 = $dockerFile64 -replace '{VERSION}', "${{ env.VERSION }} "
-          $dockerFile64 | Set-Content -Path "${{ github.workspace }}/src/PresenceLight.Web/Dockerfile.debian-arm64"
+          $dockerFile64 | Set-Content -Path "./src/PresenceLight.Web/Dockerfile.debian-arm64"
         shell: pwsh
         if: ${{ success() && github.event_name != 'pull_request' }}
 
@@ -222,11 +222,11 @@ jobs:
           USERNAME: isaacrlevin
           REGISTRY: "ghcr.io"
           PASSWORD: ${{ secrets.GH_PERSONAL_TOKEN }}
-          DOCKERFILE: "${{ github.workspace }}/src/PresenceLight.Web/Dockerfile"
+          DOCKERFILE: "./src/PresenceLight.Web/Dockerfile"
           IMAGE_NAME: "isaacrlevin/presencelight"
           TAG_NAME: "${{ env.VERSION }}"
           LATEST: "true"
-          BUILD_PATH: "${{ github.workspace }}/src/"
+          BUILD_PATH: "./src/"
 
       - name: Push ARM to GitHub
         uses: opspresso/action-docker@master
@@ -236,10 +236,10 @@ jobs:
           USERNAME: isaacrlevin
           REGISTRY: "ghcr.io"
           PASSWORD: ${{ secrets.GH_PERSONAL_TOKEN }}
-          DOCKERFILE: "${{ github.workspace }}/src/PresenceLight.Web/Dockerfile.debian-arm32"
+          DOCKERFILE: "./src/PresenceLight.Web/Dockerfile.debian-arm32"
           IMAGE_NAME: "isaacrlevin/presencelight"
           TAG_NAME: "debian-arm32"
-          BUILD_PATH: "${{ github.workspace }}/src/"
+          BUILD_PATH: "./src/"
 
       - name: Push ARM64 to GitHub
         uses: opspresso/action-docker@master
@@ -249,10 +249,10 @@ jobs:
           USERNAME: isaacrlevin
           REGISTRY: "ghcr.io"
           PASSWORD: ${{ secrets.GH_PERSONAL_TOKEN }}
-          DOCKERFILE: "${{ github.workspace }}/src/PresenceLight.Web/Dockerfile.debian-arm64"
+          DOCKERFILE: "./src/PresenceLight.Web/Dockerfile.debian-arm64"
           IMAGE_NAME: "isaacrlevin/presencelight"
           TAG_NAME: "debian-arm64"
-          BUILD_PATH: "${{ github.workspace }}/src/"
+          BUILD_PATH: "./src/"
 
       - name: Push ARM to DockerHub (Versioned)
         uses: opspresso/action-docker@master
@@ -261,10 +261,10 @@ jobs:
         env:
           USERNAME: ${{ secrets.DOCKER_USERNAME }}
           PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-          DOCKERFILE: "${{ github.workspace }}/src/PresenceLight.Web/Dockerfile.debian-arm32"
+          DOCKERFILE: "./src/PresenceLight.Web/Dockerfile.debian-arm32"
           IMAGE_NAME: "isaaclevin/presencelight"
           TAG_NAME: "${{ env.VERSION }}-debian-arm32"
-          BUILD_PATH: "${{ github.workspace }}/src/"
+          BUILD_PATH: "./src/"
 
       - name: Push ARM to DockerHub (Latest)
         uses: opspresso/action-docker@master
@@ -273,10 +273,10 @@ jobs:
         env:
           USERNAME: ${{ secrets.DOCKER_USERNAME }}
           PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-          DOCKERFILE: "${{ github.workspace }}/src/PresenceLight.Web/Dockerfile.debian-arm32"
+          DOCKERFILE: "./src/PresenceLight.Web/Dockerfile.debian-arm32"
           IMAGE_NAME: "isaaclevin/presencelight"
           TAG_NAME: "debian-arm32"
-          BUILD_PATH: "${{ github.workspace }}/src/"
+          BUILD_PATH: "./src/"
 
       - name: Push ARM64 to DockerHub (Versioned)
         uses: opspresso/action-docker@master
@@ -285,10 +285,10 @@ jobs:
         env:
           USERNAME: ${{ secrets.DOCKER_USERNAME }}
           PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-          DOCKERFILE: "${{ github.workspace }}/src/PresenceLight.Web/Dockerfile.debian-arm64"
+          DOCKERFILE: "./src/PresenceLight.Web/Dockerfile.debian-arm64"
           IMAGE_NAME: "isaaclevin/presencelight"
           TAG_NAME: "${{ env.VERSION }}-debian-arm64"
-          BUILD_PATH: "${{ github.workspace }}/src/"
+          BUILD_PATH: "./src/"
 
       - name: Push ARM64 to DockerHub (Latest)
         uses: opspresso/action-docker@master
@@ -297,10 +297,10 @@ jobs:
         env:
           USERNAME: ${{ secrets.DOCKER_USERNAME }}
           PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-          DOCKERFILE: "${{ github.workspace }}/src/PresenceLight.Web/Dockerfile.debian-arm64"
+          DOCKERFILE: "./src/PresenceLight.Web/Dockerfile.debian-arm64"
           IMAGE_NAME: "isaaclevin/presencelight"
           TAG_NAME: "debian-arm64"
-          BUILD_PATH: "${{ github.workspace }}/src/"
+          BUILD_PATH: "./src/"
 
       - name: Push latest to DockerHub
         uses: opspresso/action-docker@master
@@ -309,11 +309,11 @@ jobs:
         env:
           USERNAME: ${{ secrets.DOCKER_USERNAME }}
           PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-          DOCKERFILE: "${{ github.workspace }}/src/PresenceLight.Web/Dockerfile"
+          DOCKERFILE: "./src/PresenceLight.Web/Dockerfile"
           IMAGE_NAME: "isaaclevin/presencelight"
           TAG_NAME: "${{ env.VERSION }}"
           LATEST: "true"
-          BUILD_PATH: "${{ github.workspace }}/src/"
+          BUILD_PATH: "./src/"
 
   Deploy_GitHub_Release:
     needs: Deploy_Azure_Blob
@@ -343,53 +343,53 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: Windows_x64_x86
-          path: ${{ github.workspace }}/Sign/Windows_x64_x86
+          path: ./Sign/Windows_x64_x86
 
       - name: Download Windows_ARM Artifacts
         uses: actions/download-artifact@v3
         with:
           name: Windows_ARM
-          path: ${{ github.workspace }}/Sign/Windows_ARM
+          path: ./Sign/Windows_ARM
 
       - name: Download macOS Artifacts
         uses: actions/download-artifact@v3
         with:
           name: macOS
-          path: ${{ github.workspace }}/Sign/macOS
+          path: ./Sign/macOS
 
       - name: Download Linux_ARM Artifacts
         uses: actions/download-artifact@v3
         with:
           name: Linux_ARM
-          path: ${{ github.workspace }}/Sign/Linux_ARM
+          path: ./Sign/Linux_ARM
 
       - name: Download Linux_ARM64 Artifacts
         uses: actions/download-artifact@v3
         with:
           name: Linux_ARM64
-          path: ${{ github.workspace }}/Sign/Linux_ARM64
+          path: ./Sign/Linux_ARM64
 
       - name: Download Linux_Musl_x64 Artifacts
         uses: actions/download-artifact@v3
         with:
           name: Linux_Musl_x64
-          path: ${{ github.workspace }}/Sign/Linux_Musl_x64
+          path: ./Sign/Linux_Musl_x64
 
       - name: Download Linux_Musl_ARM_x64 Artifacts
         uses: actions/download-artifact@v3
         with:
           name: Linux_Musl_ARM_x64
-          path: ${{ github.workspace }}/Sign/Linux_Musl_ARM_x64
+          path: ./Sign/Linux_Musl_ARM_x64
 
       - uses: actions/download-artifact@v3
         name: Download Signing Scripts Artifacts
         with:
           name: SigningScripts
-          path: "${{ github.workspace }}/SigningScripts"
+          path: "./SigningScripts"
 
       - name: Get Version from Artifact
         run: |
-          version=$(<"${{ github.workspace }}/SigningScripts/version.txt")
+          version=$(<"./SigningScripts/version.txt")
           echo "VERSION=$version" >> $GITHUB_ENV
 
       - name: Create GitHub Release
@@ -400,7 +400,7 @@ jobs:
           fail_on_unmatched_files: true
           token: ${{ secrets.GITHUB_TOKEN }}
           files: |
-            ${{ github.workspace }}/Sign/**/*.zip
+            ./Sign/**/*.zip
 
       - name: Setup tmate session
         if: ${{ failure() }}
