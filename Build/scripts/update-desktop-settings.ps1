@@ -43,9 +43,11 @@ Param
 switch ($Release) {
     "Release" {
         Write-Host "Updating AppxManifest for Release"
-        [xml]$manifest = get-content ".\src\DesktopClient\PresenceLight.Package\Package.appxmanifest"
+        $xmlPath= Resolve-Path ".\src\DesktopClient\PresenceLight.Package\Package.appxmanifest"
+        Write-Host "Updating AppxManifest for Release"
+        [xml]$manifest = get-content  $xmlPath
         $manifest.Package.Identity.Version = "${Version}.0"
-        $manifest.save(".\src\DesktopClient\PresenceLight.Package\Package.appxmanifest")
+        $manifest.save($xmlPath)
 
         Write-Host "Updating AppSettings for Release"
         $appsettings = get-content ".\src\DesktopClient\PresenceLight\appsettings.json" -raw | ConvertFrom-Json
@@ -54,11 +56,11 @@ switch ($Release) {
     }
     "Nightly" {
         Write-Host "Updating AppxManifest for Nightly"
-        [xml]$manifest = Get-Content ".\src\DesktopClient\PresenceLight.Package\Package-Nightly.appxmanifest"
-        Write-Host "Setting Version to ${Version}.0"
+        $xmlPath= Resolve-Path ".\src\DesktopClient\PresenceLight.Package\Package-Nightly.appxmanifest"
+        Write-Host "Updating AppxManifest for Nightly"
+        [xml]$manifest = get-content  $xmlPath
         $manifest.Package.Identity.Version = "${Version}.0"
-        Write-Host $manifest.Package.Identity.Version
-        $manifest.Save(".\src\DesktopClient\PresenceLight.Package\Package-Nightly.appxmanifest")
+        $manifest.save($xmlPath)
 
         Write-Host "Updating AppSettings for Nightly"
         $appsettings = get-content ".\src\DesktopClient\PresenceLight\appsettings.json" -raw | ConvertFrom-Json
