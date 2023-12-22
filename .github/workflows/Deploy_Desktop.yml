@@ -55,7 +55,7 @@ jobs:
       with:
         setCommonVars: true
 
-    - run: echo "BuildNumber - ${{ env.GitBuildVersionSimple }}"
+    - run: echo "BuildNumber - ${{ env.GitBuildVersionSimple }}.0"
 
     - name: Add Secrets to appsettings.json
       run: |

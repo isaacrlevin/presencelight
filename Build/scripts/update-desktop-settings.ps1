@@ -55,7 +55,9 @@ switch ($Release) {
     "Nightly" {
         Write-Host "Updating AppxManifest for Nightly"
         [xml]$manifest = Get-Content ".\src\DesktopClient\PresenceLight.Package\Package-Nightly.appxmanifest"
+        Write-Host "Setting Version to ${Version}.0"
         $manifest.Package.Identity.Version = "${Version}.0"
+        Write-Host $manifest.Package.Identity.Version
         $manifest.Save(".\src\DesktopClient\PresenceLight.Package\Package-Nightly.appxmanifest")
 
         Write-Host "Updating AppSettings for Nightly"
