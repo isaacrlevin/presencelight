@@ -255,9 +255,9 @@ jobs:
       run: |
         Copy-Item "${{ github.workspace }}/NightlySigned" -Destination "${{ github.workspace }}/Upload" -Recurse -Verbose
         dir .\Upload\
-        az storage blob upload --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} -f /home/runner/work/presencelight/presencelight/Upload/ci_badge.svg -n ci_badge.svg -c nightly --content-type image/svg+xml  --debug --overwrite
-        az storage blob upload --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} -f /home/runner/work/presencelight/presencelight/Upload/PresenceLight.Package.appinstaller -n PresenceLight.Package.appinstaller -c nightly --content-type application/xml  --debug --overwrite
-        az storage blob upload-batch --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} --source /home/runner/work/presencelight/presencelight/Upload --pattern *.appxbundle -d nightly --content-type application/vns.ms-appx --debug
+        az storage blob upload --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} -f ./Upload/ci_badge.svg -n ci_badge.svg -c nightly --content-type image/svg+xml  --debug --overwrite
+        az storage blob upload --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} -f ./Upload/PresenceLight.Package.appinstaller -n PresenceLight.Package.appinstaller -c nightly --content-type application/xml  --debug --overwrite
+        az storage blob upload-batch --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} --source ./Upload --pattern *.appxbundle -d nightly --content-type application/vns.ms-appx --debug
       shell: pwsh
 
   Deploy_GitHub_Release:
@@ -310,17 +310,17 @@ jobs:
 
       - name: Add hashes
         run: |
-            $zip64Hash = Get-FileHash "/home/runner/work/presencelight/presencelight/StandaloneSigned/PresenceLight.${{ env.VERSION }}-x64.zip" -Algorithm SHA256
-            $zip64Hash.Hash | Out-File -Encoding 'UTF8' "/home/runner/work/presencelight/presencelight/StandaloneSigned/x64-zip.sha256"
+            $zip64Hash = Get-FileHash "./StandaloneSigned/PresenceLight.${{ env.VERSION }}-x64.zip" -Algorithm SHA256
+            $zip64Hash.Hash | Out-File -Encoding 'UTF8' "./PresenceLight.${{ env.VERSION }}-x64.zip.sha256"
 
-            $zip86Hash = Get-FileHash "/home/runner/work/presencelight/presencelight/StandaloneSigned/PresenceLight.${{ env.VERSION }}-x86.zip" -Algorithm SHA256
-            $zip86Hash.Hash | Out-File -Encoding 'UTF8' "/home/runner/work/presencelight/presencelight/StandaloneSigned/x86-zip.sha256"
+            $zip86Hash = Get-FileHash "./StandaloneSigned/PresenceLight.${{ env.VERSION }}-x86.zip" -Algorithm SHA256
+            $zip86Hash.Hash | Out-File -Encoding 'UTF8' "./StandaloneSigned/PresenceLight.${{ env.VERSION }}-x86-zip.sha256"
 
-            $zipARMHash = Get-FileHash "/home/runner/work/presencelight/presencelight/StandaloneSigned/PresenceLight.${{ env.VERSION }}-win-arm64.zip" -Algorithm SHA256
-            $zipARMHash.Hash | Out-File -Encoding 'UTF8' "/home/runner/work/presencelight/presencelight/StandaloneSigned/win-arm64-zip.sha256"
+            $zipARMHash = Get-FileHash "./StandaloneSigned/PresenceLight.${{ env.VERSION }}-win-arm64.zip" -Algorithm SHA256
+            $zipARMHash.Hash | Out-File -Encoding 'UTF8' "./StandaloneSigned/PresenceLight.${{ env.VERSION }}-win-arm64.zip.sha256"
 
-            $appxHash = Get-FileHash "/home/runner/work/presencelight/presencelight/ReleaseSigned/PresenceLight.Package_${{ env.VERSION }}.0_Test/PresenceLight.Package_${{ env.VERSION }}.0_x64_x86_ARM64.appxbundle" -Algorithm SHA256
-            $appxHash.Hash | Out-File -Encoding 'UTF8' "/home/runner/work/presencelight/presencelight/ReleaseSigned/appx.sha256"
+            $appxHash = Get-FileHash "./ReleaseSigned/PresenceLight.Package_${{ env.VERSION }}.0_Test/PresenceLight.Package_${{ env.VERSION }}.0_x64_x86_ARM64.appxbundle" -Algorithm SHA256
+            $appxHash.Hash | Out-File -Encoding 'UTF8' "./ReleaseSigned/PresenceLight.Package_${{ env.VERSION }}.0_x64_x86_ARM64.appxbundle.sha256"
         shell: pwsh
 
       - name: Create GitHub Release
@@ -331,9 +331,10 @@ jobs:
           fail_on_unmatched_files: true
           token: ${{ secrets.GITHUB_TOKEN }}
           files: |
-            *.zip
-            *.sha256
-            *.appxbundle
+            StandaloneSigned/*.zip
+            StandaloneSigned/*.sha256
+            ReleaseSigned/*.sha256
+            ReleaseSigned/*.appxbundle
 
       - name: Setup tmate session
         if: ${{ failure() }}

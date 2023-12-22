@@ -30,13 +30,13 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: ${{ inputs.target }}
-        path: ${{ github.workspace }}\ToSign\${{ inputs.target }}
+        path: .\ToSign\${{ inputs.target }}
 
     - uses: actions/download-artifact@v3
       name: Download Signing Scripts Artifacts
       with:
         name: SigningScripts
-        path: "${{ github.workspace }}/SigningScripts"
+        path: .\SigningScripts
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
@@ -59,8 +59,8 @@ jobs:
         ./sign code azure-key-vault
         '**/*.{exe,zip,appxbundle,appinstaller}'
         --timestamp-url "http://timestamp.digicert.com"
-        --base-directory "${{ github.workspace }}/ToSign"
-        --file-list "${{ github.workspace }}/SigningScripts/Signing/filelist.txt"
+        --base-directory ".\ToSign"
+        --file-list ".\SigningScripts\Signing\filelist.txt"
         --publisher-name "Isaac Levin"
         --description "PresenceLight"
         --description-url "https://github.com/isaacrlevin/presencelight"
@@ -72,7 +72,7 @@ jobs:
     - name: Publish Signed ${{ inputs.target }} Packages
       uses: actions/upload-artifact@v3
       with:
-        path: ${{ github.workspace }}\ToSign\${{ inputs.target }}
+        path: .\ToSign\${{ inputs.target }}
         name: '${{ inputs.target }}_Signed'
 
     - name: Setup tmate session
