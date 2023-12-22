@@ -75,7 +75,7 @@ jobs:
     - name: Publish Arifacts
       uses: actions/upload-artifact@v3
       with:
-        path: ${{ github.workspace }}\src
+        path: ${{ github.workspace }}/src
         name: PreBuild-${{ matrix.ChannelName }}
 
     - name: Publish signing scripts
