@@ -19,7 +19,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Wpf" Version="8.0.3" />
     <PackageReference Update="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.2" />
     <PackageReference Update="Microsoft.SourceLink.GitHub" Version="8.0.0" />
-    <!-- <PackageReference Update="Nerdbank.GitVersioning" Version="3.6.133" /> -->
+    <PackageReference Update="Nerdbank.GitVersioning" Version="3.6.133" />
     <PackageReference Include="Serilog.Sinks.ApplicationInsights" Version="4.0.0" />
     <ProjectReference Include="..\..\PresenceLight.Core\PresenceLight.Core.csproj" />
     <ProjectReference Include="..\..\PresenceLight.Razor\PresenceLight.Razor.csproj" />

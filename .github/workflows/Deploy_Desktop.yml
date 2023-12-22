@@ -285,7 +285,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/download-artifact@v3
-        name: Download Nightly Signed
+        name: Download Standalone Signed
         with:
           name: Standalone_Signed
           path: "${{ github.workspace }}/StandaloneSigned"
@@ -297,8 +297,8 @@ jobs:
           path: "${{ github.workspace }}/ReleaseSigned"
 
       - uses: actions/download-artifact@v3
-        if: ${{ github.event_name == 'push' }}
         name: Download Signing Scripts Artifacts
+        if: ${{ github.event_name == 'push' }}
         with:
           name: SigningScripts
           path: "${{ github.workspace }}/SigningScripts"
@@ -331,10 +331,9 @@ jobs:
           fail_on_unmatched_files: true
           token: ${{ secrets.GITHUB_TOKEN }}
           files: |
-            ${{ github.workspace }}/StandaloneSigned/**/*.zip
-            ${{ github.workspace }}/StandaloneSigned/**/*.sha256"
-            ${{ github.workspace }}/ReleaseSigned/**/*appx.sha256"
-            ${{ github.workspace }}/ReleaseSigned/**/.appxbundle"
+            *.zip
+            *.sha256
+            *.appxbundle
 
       - name: Setup tmate session
         if: ${{ failure() }}
