@@ -334,7 +334,7 @@ jobs:
             StandaloneSigned/*.zip
             StandaloneSigned/*.sha256
             ReleaseSigned/*.sha256
-            ReleaseSigned/*.appxbundle
+            ReleaseSigned/**/*.appxbundle
 
       - name: Setup tmate session
         if: ${{ failure() }}
