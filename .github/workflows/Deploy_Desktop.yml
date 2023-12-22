@@ -59,7 +59,7 @@ jobs:
 
     - name: Add Secrets to appsettings.json
       run: |
-        ./Build/scripts/update-desktop-settings.ps1 -Release ${{ matrix.ChannelName}} -Version "${{ env.GitBuildVersionSimple }}" -ApplicationId "${{ secrets.ApplicationId }}" `
+        ./Build/scripts/update-desktop-settings.ps1 -Release "${{ matrix.ChannelName}}" -Version "${{ env.GitBuildVersionSimple }}" -ApplicationId "${{ secrets.ApplicationId }}" `
         -ClientSecret "${{ secrets.ClientSecret }}" -InstrumentationKey "${{ secrets.InstrumentationKey }}" `
         -LIFXClientId "${{ secrets.LIFXClientId }}" -LIFXClientSecret "${{ secrets.LIFXClientSecret }}" `
         -RemoteHueClientId "${{ secrets.RemoteHueClientId }}" -RemoteHueClientSecret "${{ secrets.RemoteHueClientSecret }}" `
@@ -91,6 +91,10 @@ jobs:
         path: .chocolatey
         name: Chocolatey
       if:  ${{ success() && matrix.ChannelName  == 'Standalone' }}
+
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
+      timeout-minutes: 15
 
   Build_WPF:
     name: Build WPF
