@@ -131,12 +131,10 @@ jobs:
         name: SigningScripts
         path: "${{ github.workspace }}/SigningScripts"
 
-    - name: Get Version from Artifact
+    - name: Set GitBuildVersionSimple environment variable
       run: |
-        - name: Set GitBuildVersionSimple environment variable
-          run: |
-            $version = Get-Content "${{ github.workspace }}\SigningScripts\version.txt"
-            echo "GitBuildVersionSimple=$version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        $version = Get-Content "${{ github.workspace }}\SigningScripts\version.txt"
+        echo "GitBuildVersionSimple=$version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
       shell: pwsh
 
     - name: Create Directory for Channel
