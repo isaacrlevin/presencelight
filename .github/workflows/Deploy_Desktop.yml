@@ -131,7 +131,7 @@ jobs:
         name: SigningScripts
         path: "${{ github.workspace }}/SigningScripts"
 
-    - name: Set GitBuildVersionSimple environment variable
+    - name: Set GitBuildVersionSimple Environment Variable
       run: |
         $version = Get-Content "${{ github.workspace }}\SigningScripts\version.txt"
         echo "GitBuildVersionSimple=$version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
