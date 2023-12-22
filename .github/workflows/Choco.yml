@@ -21,14 +21,14 @@ jobs:
           path: "${{ github.workspace }}\\StandaloneSigned"
 
       - uses: actions/download-artifact@v3
-        if: ${{ github.event_name == 'workflow_call' }}
+        if: ${{ github.event_name == 'push' }}
         name: Download Signing Scripts Artifacts
         with:
           name: SigningScripts
           path: "${{ github.workspace }}/SigningScripts"
 
       - name: Get Version from File
-        if: ${{ github.event_name == 'workflow_call' }}
+        if: ${{ github.event_name == 'push' }}
         run: |
           $version = Get-Content "${{ github.workspace }}/SigningScripts/version.txt"
           echo "VERSION=$version" >> $GITHUB_ENV
