@@ -10,10 +10,11 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <TieredCompilationQuickJitForLoops>true</TieredCompilationQuickJitForLoops>
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <ApplicationIcon>Icons\Icon.ico</ApplicationIcon>
   </PropertyGroup>
 
-  <ItemGroup>     
+  <ItemGroup>
     <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.22.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Wpf" Version="8.0.3" />
     <PackageReference Update="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.2" />

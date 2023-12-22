@@ -23,7 +23,7 @@ jobs:
 
   Setup_Desktop:
     name: Setup Desktop
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         ChannelName:
@@ -64,13 +64,13 @@ jobs:
         -LIFXClientId "${{ secrets.LIFXClientId }}" -LIFXClientSecret "${{ secrets.LIFXClientSecret }}" `
         -RemoteHueClientId "${{ secrets.RemoteHueClientId }}" -RemoteHueClientSecret "${{ secrets.RemoteHueClientSecret }}" `
         -RemoteHueClientAppName "${{ secrets.RemoteHueClientAppName }}"
-      shell: powershell
+      shell: pwsh
       if: ${{ success() && github.event_name != 'pull_request' }}
 
     - name: Create Version File to Artifact
       run : |
-        New-Item -Path ${{ github.workspace }}\Build -Name "version.txt" -ItemType "file" -Value "${{ env.GitBuildVersionSimple }}"
-      shell: powershell
+        New-Item -Path ${{ github.workspace }}/Build -Name "version.txt" -ItemType "file" -Value "${{ env.GitBuildVersionSimple }}"
+      shell: pwsh
 
     - name: Publish Arifacts
       uses: actions/upload-artifact@v3
@@ -193,8 +193,6 @@ jobs:
 
     - name: Build Appx Package
       run: |
-        #dotnet restore .\src\DesktopClient\PresenceLight\PresenceLight.csproj
-        #msbuild /t:restore .\src\DesktopClient\PresenceLight.Package\PresenceLight.Package.wapproj
         msbuild '.\src\DesktopClient\PresenceLight.Package\PresenceLight.Package.wapproj' /p:VersionNumber=${{ env.GitBuildVersionSimple }} `
         /p:ChannelName=${{ matrix.ChannelName }} /p:configuration='${{ env.BuildConfiguration }}' /p:IncludeSymbols=true `
         /p:AppxPackageDir="${{ github.workspace }}\${{ matrix.ChannelName }}\\"

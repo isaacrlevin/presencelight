@@ -21,7 +21,7 @@ on:
 jobs:
   Setup_Web:
     name: Setup Web
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     env:
       DOTNET_CLI_TELEMETRY_OPTOUT: 1
@@ -55,18 +55,18 @@ jobs:
         -LIFXClientId "${{ secrets.LIFXClientId }}" -LIFXClientSecret "${{ secrets.LIFXClientSecret }}" `
         -RemoteHueClientId "${{ secrets.RemoteHueClientId }}" -RemoteHueClientSecret "${{ secrets.RemoteHueClientSecret }}" `
         -RemoteHueClientAppName "${{ secrets.RemoteHueClientAppName }}"
-      shell: powershell
+      shell: pwsh
       if: ${{ success() && github.event_name != 'pull_request' }}
 
     - name: Create Version File to Artifact
       run : |
-        New-Item -Path ${{ github.workspace }}\Build -Name "version.txt" -ItemType "file" -Value "${{ env.GitBuildVersionSimple }}"
-      shell: powershell
+        New-Item -Path ${{ github.workspace }}/Build -Name "version.txt" -ItemType "file" -Value "${{ env.GitBuildVersionSimple }}"
+      shell: pwsh
 
     - name: Publish Arifacts
       uses: actions/upload-artifact@v3
       with:
-        path: ${{ github.workspace }}\src
+        path: ${{ github.workspace }}/src
         name: PreBuild
 
     - name: Publish signing scripts

@@ -12,7 +12,7 @@ on:
 
 jobs:
   publish:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     defaults:
       run:
         shell: pwsh
@@ -32,19 +32,20 @@ jobs:
         run: |
           $version = Get-Content "${{ github.workspace }}/SigningScripts/version.txt"
           echo "VERSION=$version" >> $GITHUB_ENV
-        shell: powershell
+        shell: pwsh
 
       - name: Get Version from Input
         if: ${{ github.event_name == 'workflow_dispatch' }}
         run: |
           $version = "${{ inputs.Version }}"
           echo "VERSION=$version" >> $GITHUB_ENV
-        shell: powershell
+        shell: pwsh
 
       - name: Create manifest and submit PR
         working-directory: ${{ github.workspace }}/SigningScripts/winget
         run: |
           ./build.ps1 -Version "${{ env.VERSION }}" -Token "${{ secrets.WINGETCREATE_TOKEN }}"
+        shell: pwsh
 
       - name: Setup tmate session
         if: ${{ failure() }}
