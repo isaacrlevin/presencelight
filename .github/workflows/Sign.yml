@@ -59,7 +59,7 @@ jobs:
         ./sign code azure-key-vault
         '**/*.{exe,zip,appxbundle,appinstaller}'
         --timestamp-url "http://timestamp.digicert.com"
-        --base-directory ".\ToSign"
+        --base-directory "${{ github.workspace }}\ToSign"
         --file-list ".\SigningScripts\Signing\filelist.txt"
         --publisher-name "Isaac Levin"
         --description "PresenceLight"
