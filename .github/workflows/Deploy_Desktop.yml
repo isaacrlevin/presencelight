@@ -292,10 +292,19 @@ jobs:
           name: Release_Signed
           path: "${{ github.workspace }}/ReleaseSigned"
 
+      - uses: actions/download-artifact@v3
+        if: ${{ github.event_name == 'workflow_call' }}
+        name: Download Signing Scripts Artifacts
+        with:
+          name: SigningScripts
+          path: "${{ github.workspace }}/SigningScripts"
+
       - name: Get Version from File
+        if: ${{ github.event_name == 'workflow_call' }}
         run: |
-          version=$(<"${{ github.workspace }}/StandaloneSigned/version.txt")
+          $version = Get-Content "${{ github.workspace }}/SigningScripts/version.txt"
           echo "VERSION=$version" >> $GITHUB_ENV
+        shell: powershell
 
       - name: Add hashes
         run: |
