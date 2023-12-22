@@ -50,7 +50,7 @@ jobs:
       with:
         dotnet-version: 8.0.x
 
-    - name: Nerdbank.GitVersioning
+    - name: Get Version from Nerdbank.GitVersioning
       uses: dotnet/nbgv@v0.4.1
       with:
         setCommonVars: true
