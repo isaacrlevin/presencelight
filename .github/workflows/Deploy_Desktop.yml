@@ -156,19 +156,19 @@ jobs:
     - name: Build Standalone Presence Light x86
       run: |
         dotnet restore .\src\DesktopClient\PresenceLight\PresenceLight.csproj
-        dotnet publish .\src\DesktopClient\PresenceLight\PresenceLight.csproj -c ${{ env.BuildConfiguration }} /p:PublishProfile=Properties/PublishProfiles/WinX86.pubxml --property WarningLevel=0
+        dotnet publish .\src\DesktopClient\PresenceLight\PresenceLight.csproj -c ${{ env.BuildConfiguration }} /p:VersionNumber=${{ env.GitBuildVersionSimple }} /p:PublishProfile=Properties/PublishProfiles/WinX86.pubxml --property WarningLevel=0
       if:  ${{ success() && matrix.ChannelName  == 'Standalone' }}
 
     - name: Build Standalone Presence Light x64
       run: |
         dotnet restore .\src\DesktopClient\PresenceLight\PresenceLight.csproj
-        dotnet publish .\src\DesktopClient\PresenceLight\PresenceLight.csproj -c ${{ env.BuildConfiguration }} /p:PublishProfile=Properties/PublishProfiles/WinX64.pubxml --property WarningLevel=0
+        dotnet publish .\src\DesktopClient\PresenceLight\PresenceLight.csproj -c ${{ env.BuildConfiguration }} /p:VersionNumber=${{ env.GitBuildVersionSimple }} /p:PublishProfile=Properties/PublishProfiles/WinX64.pubxml --property WarningLevel=0
       if:  ${{ success() && matrix.ChannelName  == 'Standalone' }}
 
     - name: Build Standalone Presence Light ARM64
       run: |
         dotnet restore .\src\DesktopClient\PresenceLight\PresenceLight.csproj
-        dotnet publish .\src\DesktopClient\PresenceLight\PresenceLight.csproj -c ${{ env.BuildConfiguration }} /p:PublishProfile=Properties/PublishProfiles/WinARM64.pubxml --property WarningLevel=0
+        dotnet publish .\src\DesktopClient\PresenceLight\PresenceLight.csproj -c ${{ env.BuildConfiguration }} /p:VersionNumber=${{ env.GitBuildVersionSimple }} /p:PublishProfile=Properties/PublishProfiles/WinARM64.pubxml --property WarningLevel=0
       if:  ${{ success() && matrix.ChannelName  == 'Standalone' }}
 
     - name: Zip Standalone PresenceLight x86 Files
