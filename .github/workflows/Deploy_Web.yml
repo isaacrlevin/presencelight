@@ -196,7 +196,7 @@ jobs:
       - name: Get Version from File
         run: |
           version=$(<"${{ github.workspace }}/SigningScripts/version.txt")
-            echo "VERSION=$version" >> $GITHUB_ENV
+          echo "VERSION=$version" >> $GITHUB_ENV
 
       - name: Update Docker Files
         run: |
@@ -390,7 +390,7 @@ jobs:
       - name: Get Version from File
         run: |
           version=$(<"${{ github.workspace }}/SigningScripts/version.txt")
-            echo "VERSION=$version" >> $GITHUB_ENV
+          echo "VERSION=$version" >> $GITHUB_ENV
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844

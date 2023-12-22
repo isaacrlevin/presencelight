@@ -298,11 +298,9 @@ jobs:
           path: "${{ github.workspace }}/SigningScripts"
 
       - name: Get Version from File
-        if: ${{ github.event_name == 'push' }}
         run: |
-          $version = Get-Content "${{ github.workspace }}/SigningScripts/version.txt"
+          version=$(<"${{ github.workspace }}/SigningScripts/version.txt")
           echo "VERSION=$version" >> $GITHUB_ENV
-        shell: pwsh
 
       - name: Add hashes
         run: |

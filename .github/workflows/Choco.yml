@@ -30,14 +30,14 @@ jobs:
       - name: Get Version from File
         if: ${{ github.event_name == 'push' }}
         run: |
-          $version = Get-Content "${{ github.workspace }}/SigningScripts/version.txt"
+          $version = Get-Content "${{ github.workspace }}/SigningScripts/version.txt" -Raw
           echo "VERSION=$version" >> $GITHUB_ENV
         shell: powershell
 
       - name: Get Version from File
         if: ${{ github.event_name == 'workflow_dispatch' }}
         run: |
-          version = "${{ inputs.vERSION }}"
+          version = "${{ inputs.Version }}"
           echo "VERSION=$version" >> $GITHUB_ENV
         shell: powershell
 
