@@ -131,10 +131,12 @@ jobs:
         name: SigningScripts
         path: "${{ github.workspace }}/SigningScripts"
 
-    - name: Get Version from File
+    - name: Get Version from Artifact
       run: |
-        $version = Get-Content "${{ github.workspace }}/SigningScripts/version.txt"
-        echo "GitBuildVersionSimple=$version" >> $GITHUB_ENV
+        - name: Set GitBuildVersionSimple environment variable
+          run: |
+            $version = Get-Content "${{ github.workspace }}/SigningScripts/version.txt"
+            echo "GitBuildVersionSimple=$version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
     - name: Create Directory for Channel
       run: mkdir ${{ github.workspace }}/${{ matrix.ChannelName }}
@@ -297,7 +299,7 @@ jobs:
           name: SigningScripts
           path: "${{ github.workspace }}/SigningScripts"
 
-      - name: Get Version from File
+      - name: Get Version from Artifact
         run: |
           version=$(<"${{ github.workspace }}/SigningScripts/version.txt")
           echo "VERSION=$version" >> $GITHUB_ENV

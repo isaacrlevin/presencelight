@@ -125,7 +125,7 @@ jobs:
         name: SigningScripts
         path: "${{ github.workspace }}/SigningScripts"
 
-    - name: Get Version from File
+    - name: Get Version from Artifact
       run: |
         version=$(<"${{ github.workspace }}/SigningScripts/version.txt")
           echo "GitBuildVersionSimple=$version" >> $GITHUB_ENV
@@ -193,7 +193,7 @@ jobs:
           name: SigningScripts
           path: "${{ github.workspace }}/SigningScripts"
 
-      - name: Get Version from File
+      - name: Get Version from Artifact
         run: |
           version=$(<"${{ github.workspace }}/SigningScripts/version.txt")
           echo "VERSION=$version" >> $GITHUB_ENV
@@ -387,7 +387,7 @@ jobs:
           name: SigningScripts
           path: "${{ github.workspace }}/SigningScripts"
 
-      - name: Get Version from File
+      - name: Get Version from Artifact
         run: |
           version=$(<"${{ github.workspace }}/SigningScripts/version.txt")
           echo "VERSION=$version" >> $GITHUB_ENV
