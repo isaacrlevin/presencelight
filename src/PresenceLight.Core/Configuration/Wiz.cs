@@ -1,7 +1,4 @@
-﻿/// <summary>
-/// Represents a Wiz light configuration.
-/// </summary>
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace PresenceLight.Core
 {

@@ -14,6 +14,9 @@ using Microsoft.Extensions.Logging;
 
 namespace PresenceLight.Core
 {
+    /// <summary>
+    /// Represents the status of hours passed.
+    /// </summary>
     public enum HoursPassedStatus
     {
         Off,
@@ -21,8 +24,15 @@ namespace PresenceLight.Core
         White
     }
 
+    /// <summary>
+    /// Provides helper methods for various operations.
+    /// </summary>
     public static class Helpers
     {
+        /// <summary>
+        /// Opens the specified URL in the default browser.
+        /// </summary>
+        /// <param name="url">The URL to open.</param>
         public static void OpenBrowser(string url)
         {
             // Opens request in the browser.
@@ -53,6 +63,11 @@ namespace PresenceLight.Core
             }
         }
 
+        /// <summary>
+        /// Converts a camel case or pascal case string into a human-readable format by inserting spaces between words.
+        /// </summary>
+        /// <param name="text">The input string to be converted.</param>
+        /// <returns>The converted string with spaces between words.</returns>
         public static string HumanifyText(string text)
         {
             var r = new Regex(@"
@@ -63,6 +78,11 @@ namespace PresenceLight.Core
             return r.Replace(text, " ");
         }
 
+        /// <summary>
+        /// Converts the given HoursPassedStatus value to its corresponding string representation.
+        /// </summary>
+        /// <param name="status">The HoursPassedStatus value to convert.</param>
+        /// <returns>The string representation of the HoursPassedStatus value.</returns>
         public static string HoursPassedStatusString(HoursPassedStatus status) =>
             status switch
             {
