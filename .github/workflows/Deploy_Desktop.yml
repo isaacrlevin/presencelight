@@ -205,7 +205,7 @@ jobs:
         path: .\${{ matrix.ChannelName }}
         name: ${{ matrix.ChannelName }}
 
-    - name: Setup tmate session
+    - name: Setup Tmate session
       if: ${{ failure() }}
       uses: mxschmitt/action-tmate@v3
       timeout-minutes: 15

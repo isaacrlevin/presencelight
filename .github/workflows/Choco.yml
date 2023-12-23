@@ -41,9 +41,7 @@ jobs:
 
       - name: Populate Version Environment Variable
         run: |
-          - name: Set GitBuildVersionSimple environment variable
-            run: |
-              echo "GitBuildVersionSimple=$version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "GitBuildVersionSimple=$version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         shell: powershell
 
       - uses: actions/download-artifact@v2
