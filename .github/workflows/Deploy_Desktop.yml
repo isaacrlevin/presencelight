@@ -205,13 +205,6 @@ jobs:
         path: .\${{ matrix.ChannelName }}
         name: ${{ matrix.ChannelName }}
 
-    - name: Publish signing scripts
-      uses: actions/upload-artifact@v3
-      with:
-        path: Build
-        name: SigningScripts
-      if:  ${{ success() && matrix.ChannelName  == 'Release' }}
-
     - name: Setup tmate session
       if: ${{ failure() }}
       uses: mxschmitt/action-tmate@v3
@@ -253,7 +246,7 @@ jobs:
 
     - name: Copy files to same directory
       run: |
-        Copy-Item "//NightlySigned" -Destination "./Upload" -Recurse -Verbose
+        Copy-Item "./NightlySigned" -Destination "./Upload" -Recurse -Verbose
         dir .\Upload\
         az storage blob upload --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} -f ./Upload/ci_badge.svg -n ci_badge.svg -c nightly --content-type image/svg+xml  --debug --overwrite
         az storage blob upload --account-key ${{ secrets.ACCOUNT_KEY }} --account-name ${{ secrets.ACCOUNT_NAME }} -f ./Upload/PresenceLight.Package.appinstaller -n PresenceLight.Package.appinstaller -c nightly --content-type application/xml  --debug --overwrite
