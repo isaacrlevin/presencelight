@@ -1,4 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿/// <summary>
+/// Represents a Wiz light configuration.
+/// </summary>
+using System.ComponentModel.DataAnnotations;
 
 namespace PresenceLight.Core
 {

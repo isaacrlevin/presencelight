@@ -181,7 +181,7 @@ jobs:
     - name: Zip Standalone PresenceLight x64 Files
       run: |
         Compress-Archive -Path '.\src\DesktopClient\PresenceLight\bin\${{ env.BuildConfiguration }}\${{ env.Win10RID }}\win-x64\publish\*' `
-        -DestinationPath ".}\${{ matrix.ChannelName }}\PresenceLight.${{ env.GitBuildVersionSimple }}-x64.zip"
+        -DestinationPath ".\${{ matrix.ChannelName }}\PresenceLight.${{ env.GitBuildVersionSimple }}-x64.zip"
       shell: powershell
       if:  ${{ success() && matrix.ChannelName  == 'Standalone' }}
 
