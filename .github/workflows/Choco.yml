@@ -30,7 +30,7 @@ jobs:
       - name: Get Version from Artifact (Push)
         if: ${{ github.event_name == 'push' }}
         run: |
-          $version = Get-Content .\SigningScripts\version.txt"
+          $version = Get-Content .\SigningScripts\version.txt
         shell: powershell
 
       - name: Get Version from Input (Workflow Dispatch)

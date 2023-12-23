@@ -29,19 +29,16 @@ jobs:
 
       - name: Get Version from Artifact (Push)
         run: |
-          version=$(<"${{ github.workspace }}/SigningScripts/version.txt")
+          version=$(<"./SigningScripts/version.txt")
 
       - name: Get Version from Input (Workflow Dispatch)
         if: ${{ github.event_name == 'workflow_dispatch' }}
         run: |
-          $version = "${{ inputs.Version }}"
-        shell: pwsh
+          version = "${{ inputs.Version }}"
 
       - name: Populate Version Environment Variable
         run: |
-          echo "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-        shell: pwsh
-
+          echo "VERSION=$version" >> $GITHUB_ENV
 
       - name: Create manifest and submit PR
         working-directory: ${{ github.workspace }}/SigningScripts/winget

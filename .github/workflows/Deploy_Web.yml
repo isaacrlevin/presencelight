@@ -128,7 +128,7 @@ jobs:
     - name: Get Version from Artifact
       run: |
         version=$(<"./SigningScripts/version.txt")
-          echo "GitBuildVersionSimple=$version" >> $GITHUB_ENV
+        echo "GitBuildVersionSimple=$version" >> $GITHUB_ENV
 
     - name: Create Directory for Channel
       run: mkdir ./${{ matrix.ChannelName }}

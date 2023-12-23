@@ -244,7 +244,7 @@ jobs:
         name: Nightly_Signed
         path: "./NightlySigned"
 
-    - name: Copy files to same directory
+    - name: Upload Nightly to Azure Blob Storage
       run: |
         Copy-Item "./NightlySigned" -Destination "./Upload" -Recurse -Verbose
         dir .\Upload\
