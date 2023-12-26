@@ -13,9 +13,7 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: pwsh
+
     env:
       WINGETCREATE_TOKEN: ${{ secrets.WINGETCREATE_TOKEN }}
     steps:
@@ -29,7 +27,7 @@ jobs:
 
       - name: Get Version from Artifact (Push)
         run: |
-          version=$(<"${{ github.workspace }}/SigningScripts/version.txt")
+          version=$(<"./SigningScripts/version.txt")
 
       - name: Get Version from Input (Workflow Dispatch)
         if: ${{ github.event_name == 'workflow_dispatch' }}
