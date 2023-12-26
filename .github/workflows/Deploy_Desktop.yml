@@ -340,7 +340,6 @@ jobs:
     uses: isaacrlevin/presencelight/.github/workflows/Choco.yml@main
     secrets: inherit
 
-
   Deploy_Store:
     needs: Deploy_Azure_Blob
     if: ${{ github.event_name != 'pull_request' }}
