@@ -27,20 +27,17 @@ jobs:
           name: SigningScripts
           path: .\SigningScripts
 
-      - name: Get Version from Artifact (Push)
+      - name: Set VERSION Environment Variable (PUSH)
         if: ${{ github.event_name == 'push' }}
         run: |
-          $version = Get-Content .\SigningScripts\version.txt
+          $version = Get-Content ".\SigningScripts\version.txt"
+          echo "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         shell: powershell
 
-      - name: Get Version from Input (Workflow Dispatch)
+      - name: Set VERSION Environment Variable (Workflow Dispatch)
         if: ${{ github.event_name == 'workflow_dispatch' }}
         run: |
           version = "${{ inputs.Version }}"
-        shell: powershell
-
-      - name: Populate Version Environment Variable
-        run: |
           echo "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         shell: powershell
 
