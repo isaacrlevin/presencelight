@@ -307,10 +307,10 @@ jobs:
             $zip64Hash.Hash | Out-File -Encoding 'UTF8' "./StandaloneSigned/PresenceLight.${{ env.VERSION }}-x64.zip.sha256"
 
             $zip86Hash = Get-FileHash "./StandaloneSigned/PresenceLight.${{ env.VERSION }}-x86.zip" -Algorithm SHA256
-            $zip86Hash.Hash | Out-File -Encoding 'UTF8' "./StandaloneSigned/PresenceLight.${{ env.VERSION }}-x86-zip.sha256"
+            $zip86Hash.Hash | Out-File -Encoding 'UTF8' "./StandaloneSigned/PresenceLight.${{ env.VERSION }}-x86.zip.sha256"
 
             $zipARMHash = Get-FileHash "./StandaloneSigned/PresenceLight.${{ env.VERSION }}-win-arm64.zip" -Algorithm SHA256
-            $zipARMHash.Hash | Out-File -Encoding 'UTF8' "./StandaloneSigned/PresenceLight.${{ env.VERSION }}-win-arm64.zip.sha256"
+            $zipARMHash.Hash | Out-File -Encoding 'UTF8' "./StandaloneSigned/PresenceLight.${{ env.VERSION }}-win.arm64.zip.sha256"
 
             $appxHash = Get-FileHash "./ReleaseSigned/PresenceLight.Package_${{ env.VERSION }}.0_Test/PresenceLight.Package_${{ env.VERSION }}.0_x64_x86_ARM64.appxbundle" -Algorithm SHA256
             $appxHash.Hash | Out-File -Encoding 'UTF8' "./ReleaseSigned/PresenceLight.Package_${{ env.VERSION }}.0_x64_x86_ARM64.appxbundle.sha256"
