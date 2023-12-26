@@ -304,7 +304,7 @@ jobs:
       - name: Add hashes
         run: |
             $zip64Hash = Get-FileHash "./StandaloneSigned/PresenceLight.${{ env.VERSION }}-x64.zip" -Algorithm SHA256
-            $zip64Hash.Hash | Out-File -Encoding 'UTF8' "./PresenceLight.${{ env.VERSION }}-x64.zip.sha256"
+            $zip64Hash.Hash | Out-File -Encoding 'UTF8' "./StandaloneSigned/PresenceLight.${{ env.VERSION }}-x64.zip.sha256"
 
             $zip86Hash = Get-FileHash "./StandaloneSigned/PresenceLight.${{ env.VERSION }}-x86.zip" -Algorithm SHA256
             $zip86Hash.Hash | Out-File -Encoding 'UTF8' "./StandaloneSigned/PresenceLight.${{ env.VERSION }}-x86-zip.sha256"

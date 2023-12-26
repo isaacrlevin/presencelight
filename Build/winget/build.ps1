@@ -41,7 +41,7 @@ function Write-MetaData {
 
 New-Item -Path $PWD -Name $Version -ItemType "directory"
 # Get all files inside the folder and adjust the version/hash
-$Hash = Get-Hash -Version $Version
+$Hash = Get-Hash -Version "$Version"
 Get-ChildItem '*.yaml' | ForEach-Object -Process {
     Write-MetaData -FileName $_.Name -Version $Version -Hash $Hash
 }
