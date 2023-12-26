@@ -316,6 +316,7 @@ jobs:
             $appxHash.Hash | Out-File -Encoding 'UTF8' "./ReleaseSigned/PresenceLight.Package_${{ env.VERSION }}.0_x64_x86_ARM64.appxbundle.sha256"
         shell: pwsh
 
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844
         with:

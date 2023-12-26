@@ -15,7 +15,7 @@ function Get-Hash {
         [string]
         $Version
     )
-    $hash = (new-object Net.WebClient).DownloadString("https://github.com/isaacrlevin/presencelight/releases/download/Desktop-v$Version/appx.sha256")
+    $hash = (new-object Net.WebClient).DownloadString("https://github.com/isaacrlevin/presencelight/releases/download/Desktop-v$Version/PresenceLight.Package_$Version.0_x64_x86_ARM64.appxbundle.sha256")
     return $hash
 }
 
