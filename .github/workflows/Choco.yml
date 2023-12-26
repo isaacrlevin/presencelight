@@ -52,12 +52,12 @@ jobs:
 
       - name: Update Chocolatey Files
         run: |
-          .\Build\scripts\hash-files.ps1 -Version "${{ env.VERSION }}"
+          .\SigningScripts\scripts\hash-files.ps1 -Version "${{ env.VERSION }}"
         shell: powershell
 
       - name: Push to Chocolatey
         run: |
-          .\Build\scripts\push-choco.ps1 -Version "${{ env.VERSION}}" -CHOCOAPIKEY "${{ secrets.CHOCOAPIKEY}}"
+          .\SigningScripts\scripts\push-choco.ps1 -Version "${{ env.VERSION}}" -CHOCOAPIKEY "${{ secrets.CHOCOAPIKEY}}"
         shell: powershell
 
       - name: Setup tmate session

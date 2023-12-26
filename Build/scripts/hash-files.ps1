@@ -8,9 +8,11 @@ $GitHubReleaseUrl = "https://github.com/isaacrlevin/presencelight/releases/downl
 
 # Hash the Zip Files
 mkdir .\Download
-Invoke-WebRequest -Uri "${GitHubReleaseUrl}v${Version}\x86-zip.sha256" -OutFile ".\Download\x86-zip.sha256"
-Invoke-WebRequest -Uri "${GitHubReleaseUrl}v${Version}\x64-zip.sha256" -OutFile ".\Download\x64-zip.sha256"
-Invoke-WebRequest -Uri "${GitHubReleaseUrl}v${Version}\win-arm64-zip.sha256" -OutFile ".\Download\win-arm64-zip.sha256"
+
+#https://github.com/isaacrlevin/presencelight/releases/download/Desktop-v5.6.101/PresenceLight.5.6.101-x86-zip.sha256
+Invoke-WebRequest -Uri "${GitHubReleaseUrl}v${Version}\PresenceLight.${Version}-x86-zip.sha256" -OutFile ".\Download\x86-zip.sha256"
+Invoke-WebRequest -Uri "${GitHubReleaseUrl}v${Version}\PresenceLight.${Version}-x64-zip.sha256" -OutFile ".\Download\x64-zip.sha256"
+Invoke-WebRequest -Uri "${GitHubReleaseUrl}v${Version}\PresenceLight.${Version}-win-arm64-zip.sha256" -OutFile ".\Download\win-arm64-zip.sha256"
 $hash86 = get-content ".\Download\x86-zip.sha256"
 $hash64 = get-content ".\Download\x64-zip.sha256"
 $hashARM = get-content ".\Download\win-arm64-zip.sha256"

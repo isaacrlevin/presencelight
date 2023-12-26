@@ -26,13 +26,16 @@ jobs:
           path: ./SigningScripts
 
       - name: Get Version from Artifact (Push)
+        if: ${{ github.event_name == 'push' }}
         run: |
           version=$(<"./SigningScripts/version.txt")
+          echo $version
 
       - name: Get Version from Input (Workflow Dispatch)
         if: ${{ github.event_name == 'workflow_dispatch' }}
         run: |
           version = "${{ inputs.Version }}"
+          echo $version
 
       - name: Populate Version Environment Variable
         run: |
