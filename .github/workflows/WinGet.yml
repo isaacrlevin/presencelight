@@ -12,7 +12,7 @@ on:
 
 jobs:
   publish:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     env:
       WINGETCREATE_TOKEN: ${{ secrets.WINGETCREATE_TOKEN }}
@@ -23,12 +23,12 @@ jobs:
         name: Download Signing Scripts Artifacts
         with:
           name: SigningScripts
-          path: ./SigningScripts
+          path: .\SigningScripts
 
       - name: Set VERSION Environment Variable (PUSH)
         if: ${{ github.event_name == 'push' }}
         run: |
-          $version = Get-Content "./SigningScripts/version.txt"
+          $version = Get-Content ".\SigningScripts\version.txt"
           echo "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         shell: pwsh
 
@@ -40,9 +40,9 @@ jobs:
         shell: pwsh
 
       - name: Create manifest and submit PR
-        working-directory: ${{ github.workspace }}/SigningScripts/winget
+        working-directory: ${{ github.workspace }}\SigningScripts\winget
         run: |
-          ./build.ps1 -Version "${{ env.VERSION }}" -Token "${{ secrets.WINGETCREATE_TOKEN }}"
+          .\build.ps1 -Version "${{ env.VERSION }}" -Token "${{ secrets.WINGETCREATE_TOKEN }}"
         shell: pwsh
 
       - name: Setup tmate session
