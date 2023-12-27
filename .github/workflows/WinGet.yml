@@ -1,4 +1,4 @@
-name: Winget
+name: Winget Publish
 on:
   workflow_dispatch:
     inputs:
@@ -18,9 +18,9 @@ jobs:
       WINGETCREATE_TOKEN: ${{ secrets.WINGETCREATE_TOKEN }}
     steps:
 
-      - uses: actions/download-artifact@v3
+      - name: Download Artifacts for Winget Publish
+        uses: actions/download-artifact@v3
         if: ${{ github.event_name == 'push' }}
-        name: Download Signing Scripts Artifacts
         with:
           name: SigningScripts
           path: .\SigningScripts
@@ -39,13 +39,13 @@ jobs:
           echo "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         shell: pwsh
 
-      - name: Create manifest and submit PR
+      - name: Publish App to Winget
         working-directory: ${{ github.workspace }}\SigningScripts\winget
         run: |
           .\build.ps1 -Version "${{ env.VERSION }}" -Token "${{ secrets.WINGETCREATE_TOKEN }}"
         shell: pwsh
 
-      - name: Setup tmate session
+      - name: Setup Tmate session
         if: ${{ failure() }}
         uses: mxschmitt/action-tmate@v3
         timeout-minutes: 15

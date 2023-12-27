@@ -10,7 +10,7 @@ on:
 jobs:
 
   Deploy_Choco:
-    name: Deploy WPF Chocolatey
+    name: Publish App to Chocolatey
     runs-on: windows-latest
 
     steps:

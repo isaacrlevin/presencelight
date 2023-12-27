@@ -31,7 +31,8 @@ jobs:
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout Code
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
@@ -47,7 +48,7 @@ jobs:
 
     - run: echo "BuildNumber - ${{ env.GitBuildVersionSimple }}"
 
-    - name: Update appsettings.json
+    - name: Add Secrets to appsettings.json
       run: |
         ./Build/scripts/update-web-json.ps1 -Version "${{ env.GitBuildVersionSimple }}" -ApplicationId "${{ secrets.ApplicationId }}" `
         -ClientSecret "${{ secrets.ClientSecret }}" -InstrumentationKey "${{ secrets.InstrumentationKey }}" `
@@ -62,13 +63,13 @@ jobs:
         New-Item -Path ./Build -Name "version.txt" -ItemType "file" -Value "${{ env.GitBuildVersionSimple }}"
       shell: pwsh
 
-    - name: Publish Arifacts
+    - name: Publish PreBuild Arifacts
       uses: actions/upload-artifact@v3
       with:
         path: ./src
         name: PreBuild
 
-    - name: Publish signing scripts
+    - name: Publish Files for Build
       uses: actions/upload-artifact@v3
       with:
         path: Build
@@ -117,8 +118,8 @@ jobs:
         name: PreBuild
         path: ./src
 
-    - uses: actions/download-artifact@v3
-      name: Download Signing Scripts Artifacts
+    - name: Download Signing Scripts Artifacts
+      uses: actions/download-artifact@v3
       with:
         name: SigningScripts
         path: ./SigningScripts
@@ -128,11 +129,11 @@ jobs:
         version=$(<"${{ github.workspace }}/SigningScripts/version.txt")
         echo "GitBuildVersionSimple=$version" >> $GITHUB_ENV
 
-    - name: Create Directory for Channel
+    - name: Create Directory for ${{ matrix.ChannelName }} Channel
       run: mkdir ./${{ matrix.ChannelName }}
 
-    - run: dotnet publish './src/PresenceLight.Web/PresenceLight.Web.csproj' -r ${{ matrix.RID }} -c ${{ env.BuildConfiguration }} /p:PublishSingleFile=true -o ./PresenceLight.${{ env.GitBuildVersionSimple }}_${{ matrix.ChannelName }} /p:Version=${{ env.GitBuildVersionSimple }} --property WarningLevel=0
-      name: dotnet publish ${{ matrix.RID }}
+    - name: dotnet publish ${{ matrix.RID }}
+      run: dotnet publish './src/PresenceLight.Web/PresenceLight.Web.csproj' -r ${{ matrix.RID }} -c ${{ env.BuildConfiguration }} /p:PublishSingleFile=true -o ./PresenceLight.${{ env.GitBuildVersionSimple }}_${{ matrix.ChannelName }} /p:Version=${{ env.GitBuildVersionSimple }} --property WarningLevel=0
       if: ${{ success() }}
 
     - name: Zip PresenceLight Web Files
@@ -141,13 +142,14 @@ jobs:
         -DestinationPath ./${{ matrix.ChannelName }}/PresenceLight.${{ matrix.ChannelName }}.${{ env.GitBuildVersionSimple }}.zip
       shell: pwsh
 
-    - name: Publish Arifacts
+    - name: Publish ${{ matrix.ChannelName }} Arifacts
       uses: actions/upload-artifact@v3
       with:
         path: ./${{ matrix.ChannelName }}
         name: ${{ matrix.ChannelName }}
 
   Code_Signing:
+    name: Code Sign Worker
     needs: Build_Web
     strategy:
       matrix:
@@ -159,7 +161,7 @@ jobs:
 
   Deploy_Azure_Blob:
     needs: Code_Signing
-    name: Deploy Worker to Blob Storage
+    name: Deploy Worker to Azure Blob Storage
     if: ${{ github.event_name != 'pull_request' }}
     strategy:
       matrix:
@@ -170,12 +172,12 @@ jobs:
     secrets: inherit
 
   Deploy_Containers:
+    name: Deploy Web Containers (DockerHub / GitHub Packages)
     needs: Build_Web
     if: ${{ github.event_name != 'pull_request' }}
     environment:
         name: Deploy_Containers
         url: ${{ steps.deploy_staging.outputs.webapp-url }}
-    name: Deploy Web Containers (DockerHub / GitHub Packages)
     runs-on: ubuntu-latest
 
     steps:
@@ -185,8 +187,8 @@ jobs:
           name: PreBuild
           path: ./src
 
-      - uses: actions/download-artifact@v3
-        name: Download Signing Scripts Artifacts
+      - name: Download Signing Scripts Artifacts
+        uses: actions/download-artifact@v3
         with:
           name: SigningScripts
           path: ./SigningScripts
@@ -239,7 +241,7 @@ jobs:
           TAG_NAME: "debian-arm32"
           BUILD_PATH: "./src/"
 
-      - name: Push ARM64 tag to GitHub
+      - name: Push ARM64 tag to GitHub Registry
         uses: opspresso/action-docker@master
         with:
           args: --docker
@@ -252,7 +254,7 @@ jobs:
           TAG_NAME: "debian-arm64"
           BUILD_PATH: "./src/"
 
-      - name: Push ARM to DockerHub (Versioned)
+      - name: Push ARM tagto DockerHub (Versioned)
         uses: opspresso/action-docker@master
         with:
           args: --docker
@@ -264,7 +266,7 @@ jobs:
           TAG_NAME: "${{ env.VERSION }}-debian-arm32"
           BUILD_PATH: "./src/"
 
-      - name: Push ARM to DockerHub (Latest)
+      - name: Push ARM tag to DockerHub (Latest)
         uses: opspresso/action-docker@master
         with:
           args: --docker
@@ -276,7 +278,7 @@ jobs:
           TAG_NAME: "debian-arm32"
           BUILD_PATH: "./src/"
 
-      - name: Push ARM64 to DockerHub (Versioned)
+      - name: Push ARM64 tag to DockerHub (Versioned)
         uses: opspresso/action-docker@master
         with:
           args: --docker
@@ -288,7 +290,7 @@ jobs:
           TAG_NAME: "${{ env.VERSION }}-debian-arm64"
           BUILD_PATH: "./src/"
 
-      - name: Push ARM64 to DockerHub (Latest)
+      - name: Push ARM64 tag to DockerHub (Latest)
         uses: opspresso/action-docker@master
         with:
           args: --docker
@@ -300,7 +302,7 @@ jobs:
           TAG_NAME: "debian-arm64"
           BUILD_PATH: "./src/"
 
-      - name: Push latest to DockerHub
+      - name: Push latest tag to DockerHub
         uses: opspresso/action-docker@master
         with:
           args: --docker

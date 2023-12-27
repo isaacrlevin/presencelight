@@ -211,7 +211,7 @@ jobs:
       timeout-minutes: 15
 
   Code_Signing:
-    name: Code Sign Standalone, Nightly, and Release App
+    name: Code Sign
     needs: Build_WPF
     strategy:
       matrix:
