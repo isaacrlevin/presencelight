@@ -57,17 +57,18 @@ jobs:
           # Loop through the blobs and copy each one to the destination container
           for blob in $blobs
           do
-            echo "Copying blob $blob"
+            echo "Copying blob $blob from $source_container to $destination_container"
             az storage blob copy start \
-              --source-account-name $account_name
-              --source-account-key $account_key \
-              --source-container $source_container \
               --account-name $account_name \
               --account-key $account_key \
               --destination-container $destination_container \
-              --source-blob $blob \
-              --destination-blob $blob
+              --destination-blob $blob \
+              --source-account-name $account_name
+              --source-account-key $account_key \
+              --source-container $source_container \
+              --source-blob $blob
 
+            echo "Deleting blob $blob from $source_container"
             az storage blob delete \
               --account-key $account_key \
               --account-name $account_name \
