@@ -29,7 +29,6 @@ jobs:
       DOTNET_NOLOGO: true
       BuildConfiguration: Release
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
-      GitHubReleaseUrl: https://github.com/isaacrlevin/presencelight/releases/download/Web-
 
     steps:
     - uses: actions/checkout@v4
@@ -104,7 +103,6 @@ jobs:
       DOTNET_NOLOGO: true
       BuildConfiguration: Release
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
-      GitHubReleaseUrl: https://github.com/isaacrlevin/presencelight/releases/download/Web-
 
     steps:
 

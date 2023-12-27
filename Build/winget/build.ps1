@@ -15,7 +15,10 @@ function Get-Hash {
         [string]
         $Version
     )
-    $hash = (new-object Net.WebClient).DownloadString("https://github.com/isaacrlevin/presencelight/releases/download/Desktop-v$Version/PresenceLight.Package_$Version.0_x64_x86_ARM64.appxbundle.sha256")
+    $github = Invoke-RestMethod -uri "https://api.github.com/repos/microsoft/devhome/releases"
+    $targetRelease = $github | Where-Object -Property name -match "Desktop-v$Version" | Select-Object -First 1
+    $hashUrl = $targetRelease | Select-Object -ExpandProperty assets -First 1 | Where-Object -Property name -match '.*?.appxbundle.sha256' | Select-Object -ExpandProperty browser_download_url
+    $hash = (new-object Net.WebClient).DownloadString($hashUrl)
     return $hash
 }
 
