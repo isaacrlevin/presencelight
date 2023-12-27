@@ -42,29 +42,38 @@ function Write-MetaData {
     $content | Out-File -Encoding 'UTF8' "./$Version/$FileName"
 }
 
-New-Item -Path $PWD -Name $Version -ItemType "directory"
-# Get all files inside the folder and adjust the version/hash
-$Hash = Get-Hash -Version "$Version"
-Get-ChildItem '*.yaml' | ForEach-Object -Process {
-    Write-MetaData -FileName $_.Name -Version $Version -Hash $Hash
-}
-if (-not $Token) {
-    return
-}
+# New-Item -Path $PWD -Name $Version -ItemType "directory"
+# # Get all files inside the folder and adjust the version/hash
+# $Hash = Get-Hash -Version "$Version"
+# Get-ChildItem '*.yaml' | ForEach-Object -Process {
+#     Write-MetaData -FileName $_.Name -Version $Version -Hash $Hash
+# }
+# if (-not $Token) {
+#     return
+# }
 
-# Install the latest wingetcreate exe
-# Need to do things this way, see https://github.com/PowerShell/PowerShell/issues/13138
-Import-Module Appx -UseWindowsPowerShell
+# # Install the latest wingetcreate exe
+# # Need to do things this way, see https://github.com/PowerShell/PowerShell/issues/13138
+# Import-Module Appx -UseWindowsPowerShell
 
-# Download and install C++ Runtime framework package.
-$vcLibsBundleFile = ".\Microsoft.VCLibs.Desktop.appx"
-Invoke-WebRequest https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx -OutFile $vcLibsBundleFile
-Add-AppxPackage $vcLibsBundleFile
+# # Download and install C++ Runtime framework package.
+# $vcLibsBundleFile = ".\Microsoft.VCLibs.Desktop.appx"
+# Invoke-WebRequest https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx -OutFile $vcLibsBundleFile
+# Add-AppxPackage $vcLibsBundleFile
 
-# Download Winget-Create msixbundle, install, and execute update.
-$appxBundleFile = ".\wingetcreate.msixbundle"
-Invoke-WebRequest https://aka.ms/wingetcreate/latest/msixbundle -OutFile $appxBundleFile
-Add-AppxPackage $appxBundleFile
+# # Download Winget-Create msixbundle, install, and execute update.
+# $appxBundleFile = ".\wingetcreate.msixbundle"
+# Invoke-WebRequest https://aka.ms/wingetcreate/latest/msixbundle -OutFile $appxBundleFile
+# Add-AppxPackage $appxBundleFile
+
+$github = Invoke-RestMethod -uri "https://api.github.com/repos/microsoft/devhome/releases"
+$targetRelease = $github | Where-Object -Property name -match "Desktop-v$Version" | Select-Object -First 1
+
+$installerUrl = $targetRelease | Select-Object -ExpandProperty assets -First 1 | Where-Object -Property name -match '*.appxbundle' | Select-Object -ExpandProperty browser_download_url
+
+# Update package using wingetcreate
+Invoke-WebRequest https://aka.ms/wingetcreate/latest -OutFile wingetcreate.exe
+.\wingetcreate.exe update "isaaclevin.presencelight" --version $Version --urls "$installerUrl" --submit --token $gitToken
 
 # Create the PR
-wingetcreate submit --token $Token $Version
+#wingetcreate submit --token $Token $Version
