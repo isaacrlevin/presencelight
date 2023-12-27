@@ -66,7 +66,7 @@ function Write-MetaData {
 # Invoke-WebRequest https://aka.ms/wingetcreate/latest/msixbundle -OutFile $appxBundleFile
 # Add-AppxPackage $appxBundleFile
 
-$github = Invoke-RestMethod -uri "https://api.github.com/repos/microsoft/devhome/releases"
+$github = Invoke-RestMethod -uri "https://api.github.com/repos/isaacrlevin/presencelight/releases"
 $targetRelease = $github | Where-Object -Property name -match "Desktop-v$Version" | Select-Object -First 1
 
 $installerUrl = $targetRelease | Select-Object -ExpandProperty assets -First 1 | Where-Object -Property name -match '*.appxbundle' | Select-Object -ExpandProperty browser_download_url

@@ -22,7 +22,7 @@ on:
 jobs:
 
   Setup_Desktop:
-    name: Setup Desktop
+    name: Setup App for Build
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -40,7 +40,9 @@ jobs:
       Win10RID: net8.0-windows10.0.19041
 
     steps:
-    - uses: actions/checkout@v4
+
+    - name: Checkout Code
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
@@ -71,13 +73,13 @@ jobs:
         New-Item -Path ./Build -Name "version.txt" -ItemType "file" -Value "${{ env.GitBuildVersionSimple }}"
       shell: pwsh
 
-    - name: Publish Arifacts
+    - name: Publish ${{ matrix.ChannelName }} Arifacts
       uses: actions/upload-artifact@v3
       with:
         path: ./src
         name: PreBuild-${{ matrix.ChannelName }}
 
-    - name: Publish signing scripts
+    - name: Publish Files for Build
       uses: actions/upload-artifact@v3
       with:
         path: Build
@@ -92,7 +94,7 @@ jobs:
       if:  ${{ success() && matrix.ChannelName  == 'Standalone' }}
 
   Build_WPF:
-    name: Build WPF
+    name: Build App
     needs: Setup_Desktop
     runs-on: windows-latest
     strategy:
@@ -123,8 +125,8 @@ jobs:
         name: PreBuild-${{ matrix.ChannelName }}
         path: ./src
 
-    - uses: actions/download-artifact@v3
-      name: Download Signing Scripts Artifacts
+    - name: Download Signing Scripts Artifacts
+      uses: actions/download-artifact@v3
       with:
         name: SigningScripts
         path: ./SigningScripts
@@ -209,6 +211,7 @@ jobs:
       timeout-minutes: 15
 
   Code_Signing:
+    name: Code Sign Standalone, Nightly, and Release App
     needs: Build_WPF
     strategy:
       matrix:
@@ -219,30 +222,30 @@ jobs:
     secrets: inherit
 
   Deploy_Azure_Blob:
+    name: Deploy Nightly App to Azure Blob Storage
     needs: Code_Signing
     if: ${{ github.event_name != 'pull_request' }}
     environment:
         name: Deploy_Azure_Blob
         url: ${{ steps.deploy_staging.outputs.webapp-url }}
-    name: Deploy WPF Nightly
     permissions:
       id-token: write # Required for requesting the JWT
     runs-on: ubuntu-latest
     steps:
-    - name: Azure login
+    - name: Azure Login
       uses: azure/login@v1.5.1
       with:
         client-id: ${{ secrets.AZURE_CLIENT_ID }}
         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-    - uses: actions/download-artifact@v3
-      name: Download Nightly Signed
+    - name: Download Nightly Signed
+      uses: actions/download-artifact@v3
       with:
         name: Nightly_Signed
         path: "./NightlySigned"
 
-    - name: Upload Nightly to Azure Blob Storage
+    - name: Upload Nightly App to Azure Blob Storage
       run: |
         Copy-Item "./NightlySigned" -Destination "./Upload" -Recurse -Verbose
         dir .\Upload\
@@ -252,20 +255,20 @@ jobs:
       shell: pwsh
 
   Deploy_GitHub_Release:
+    name: Deploy App to GitHub Release
     needs: Deploy_Azure_Blob
     if: ${{ github.event_name != 'pull_request' }}
     environment:
         name: Deploy_GitHub_Release
         url: ${{ steps.deploy_staging.outputs.webapp-url }}
-    name: Deploy WPF GitHub Release
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Generate changelog
+      - name: Generate Changelog for Latest Commit
         id: changelog
         uses: jaywcjlove/changelog-generator@main
         with:
@@ -275,20 +278,20 @@ jobs:
           commitMode: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/download-artifact@v3
-        name: Download Standalone Signed
+      - name: Download Standalone Signed App
+        uses: actions/download-artifact@v3
         with:
           name: Standalone_Signed
           path: ./StandaloneSigned
 
-      - uses: actions/download-artifact@v3
-        name: Download Release Signed
+      - name: Download Release Signed App
+        uses: actions/download-artifact@v3
         with:
           name: Release_Signed
           path: ./ReleaseSigned
 
-      - uses: actions/download-artifact@v3
-        name: Download Signing Scripts Artifacts
+      - name: Download Signing Scripts Artifacts
+        uses: actions/download-artifact@v3
         if: ${{ github.event_name == 'push' }}
         with:
           name: SigningScripts
@@ -299,7 +302,7 @@ jobs:
           version=$(<"./SigningScripts/version.txt")
           echo "VERSION=$version" >> $GITHUB_ENV
 
-      - name: Add hashes
+      - name: Add hashes for Standalone App
         run: |
             $zip64Hash = Get-FileHash "./StandaloneSigned/PresenceLight.${{ env.VERSION }}-x64.zip" -Algorithm SHA256
             $zip64Hash.Hash | Out-File -Encoding 'UTF8' "./StandaloneSigned/PresenceLight.${{ env.VERSION }}-x64.zip.sha256"
@@ -333,22 +336,24 @@ jobs:
         timeout-minutes: 15
 
   Deploy_Choco:
+    name: Deploy Standalone App Chocolatey
     needs: Deploy_GitHub_Release
     if: ${{ github.event_name != 'pull_request' }}
     uses: isaacrlevin/presencelight/.github/workflows/Choco.yml@main
     secrets: inherit
 
   Deploy_Store:
+    name: Deploy App to Windows Store
     needs: Deploy_Azure_Blob
     if: ${{ github.event_name != 'pull_request' }}
     environment:
         name: Deploy_Store
         url: ${{ steps.deploy_staging.outputs.webapp-url }}
-    name: Deploy WPF Windows Store
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/download-artifact@v2
-      name: Download Release Signed
+
+    - name: Download Release Signed
+      uses: actions/download-artifact@v2
       with:
         name: Release_Signed
         path: ./ReleaseSigned
@@ -368,6 +373,7 @@ jobs:
         package-path: "./ReleaseSigned/"
 
   Deploy_Winget:
+    name: Deploy App to WinGet
     needs: Deploy_GitHub_Release
     if: ${{ github.event_name != 'pull_request' }}
     uses: isaacrlevin/presencelight/.github/workflows/WinGet.yml@main

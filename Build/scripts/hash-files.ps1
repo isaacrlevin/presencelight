@@ -25,9 +25,9 @@ foreach ($url in $hashUrls) {
     }
 }
 
-$hash86 = get-content ".\Download\x86-zip.sha256"
-$hash64 = get-content ".\Download\x64-zip.sha256"
-$hashARM = get-content ".\Download\win-arm64-zip.sha256"
+$hash86 = get-content ".\Download\x86.zip.sha256"
+$hash64 = get-content ".\Download\x64.zip.sha256"
+$hashARM = get-content ".\Download\win-arm64.zip.sha256"
 
 # Update ChocolateyInstall.ps1 with Hashes
 $installFile = Get-Content -path ".\Chocolatey\tools\ChocolateyInstall.ps1" -Raw

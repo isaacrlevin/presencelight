@@ -212,7 +212,7 @@ jobs:
         shell: pwsh
         if: ${{ success() && github.event_name != 'pull_request' }}
 
-      - name: Push latest to GitHub
+      - name: Push latest Container tag to GitHub Registry
         uses: opspresso/action-docker@master
         with:
           args: --docker
@@ -226,7 +226,7 @@ jobs:
           LATEST: "true"
           BUILD_PATH: "./src/"
 
-      - name: Push ARM to GitHub
+      - name: Push ARM Container tag to GitHub Registry
         uses: opspresso/action-docker@master
         with:
           args: --docker
@@ -239,7 +239,7 @@ jobs:
           TAG_NAME: "debian-arm32"
           BUILD_PATH: "./src/"
 
-      - name: Push ARM64 to GitHub
+      - name: Push ARM64 tag to GitHub
         uses: opspresso/action-docker@master
         with:
           args: --docker
@@ -314,20 +314,21 @@ jobs:
           BUILD_PATH: "./src/"
 
   Deploy_GitHub_Release:
+    name: Deploy Web to GitHub Release
     needs: Deploy_Azure_Blob
     if: ${{ github.event_name != 'pull_request' }}
     environment:
         name: Deploy_GitHub_Release
         url: ${{ steps.deploy_staging.outputs.webapp-url }}
-    name: Deploy Web GitHub Release
     runs-on: ubuntu-latest
     steps:
+
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Generate changelog
+      - name: Generate Changelog
         id: changelog
         uses: jaywcjlove/changelog-generator@main
         with:
@@ -379,8 +380,8 @@ jobs:
           name: Linux_Musl_ARM_x64
           path: ./Sign/Linux_Musl_ARM_x64
 
-      - uses: actions/download-artifact@v3
-        name: Download Signing Scripts Artifacts
+      - name: Download Signing Scripts Artifacts
+        uses: actions/download-artifact@v3
         with:
           name: SigningScripts
           path: "./SigningScripts"
@@ -400,7 +401,7 @@ jobs:
           files: |
             ./Sign/**/*.zip
 
-      - name: Setup tmate session
+      - name: Setup Tmate session
         if: ${{ failure() }}
         uses: mxschmitt/action-tmate@v3
         timeout-minutes: 15
