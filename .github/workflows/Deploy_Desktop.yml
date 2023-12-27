@@ -80,14 +80,14 @@ jobs:
         path: ./src
         name: PreBuild-${{ matrix.ChannelName }}
 
-    - name: Publish Files for Build
+    - name: Publish Build Artifacts
       uses: actions/upload-artifact@v3
       with:
         path: Build
-        name: SigningScripts
+        name: BuildArtifacts
       if:  ${{ success() && matrix.ChannelName  == 'Standalone' }}
 
-    - name: Publish .chocolatey scripts
+    - name: Publish Chocolatey Artifacts
       uses: actions/upload-artifact@v3
       with:
         path: .chocolatey
@@ -126,15 +126,15 @@ jobs:
         name: PreBuild-${{ matrix.ChannelName }}
         path: ./src
 
-    - name: Download Signing Scripts Artifacts
+    - name: Download Build Artifacts
       uses: actions/download-artifact@v3
       with:
-        name: SigningScripts
-        path: ./SigningScripts
+        name: BuildArtifacts
+        path: ./BuildArtifacts
 
     - name: Set GitBuildVersionSimple Environment Variable
       run: |
-        $version = Get-Content ".\SigningScripts\version.txt"
+        $version = Get-Content ".\BuildArtifacts\version.txt"
         echo "GitBuildVersionSimple=$version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
       shell: pwsh
 
@@ -144,11 +144,11 @@ jobs:
     - name: Update Badge Versions
       run: |
         # Update badges
-        [xml]$badge = Get-Content ".\SigningScripts\ci_badge.svg"
+        [xml]$badge = Get-Content ".\BuildArtifacts\ci_badge.svg"
         $badge.svg.g[1].text[2].InnerText = "${{ env.GitBuildVersionSimple }}.0"
         $badge.svg.g[1].text[3].InnerText = "${{ env.GitBuildVersionSimple }}.0"
         $badge.Save(".\${{ matrix.ChannelName }}\ci_badge.svg")
-        [xml]$badge = Get-Content ".\SigningScripts\store_badge.svg"
+        [xml]$badge = Get-Content ".\BuildArtifacts\store_badge.svg"
         $badge.svg.g[1].text[2].InnerText = "${{ env.GitBuildVersionSimple }}.0"
         $badge.svg.g[1].text[3].InnerText = "${{ env.GitBuildVersionSimple }}.0"
         $badge.Save(".\${{ matrix.ChannelName }}\stable_badge.svg")
@@ -291,16 +291,16 @@ jobs:
           name: Release_Signed
           path: ./ReleaseSigned
 
-      - name: Download Signing Scripts Artifacts
+      - name: Download Build Artifacts
         uses: actions/download-artifact@v3
         if: ${{ github.event_name == 'push' }}
         with:
-          name: SigningScripts
-          path: ./SigningScripts
+          name: BuildArtifacts
+          path: ./BuildArtifacts
 
       - name: Get Version from Artifact
         run: |
-          version=$(<"./SigningScripts/version.txt")
+          version=$(<"./BuildArtifacts/version.txt")
           echo "VERSION=$version" >> $GITHUB_ENV
 
       - name: Add hashes for Standalone App

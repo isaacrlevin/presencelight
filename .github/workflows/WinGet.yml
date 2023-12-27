@@ -13,7 +13,7 @@ on:
 jobs:
   publish:
     runs-on: windows-latest
-
+    name: Publish App to Winget
     env:
       WINGETCREATE_TOKEN: ${{ secrets.WINGETCREATE_TOKEN }}
     steps:
@@ -22,13 +22,13 @@ jobs:
         uses: actions/download-artifact@v3
         if: ${{ github.event_name == 'push' }}
         with:
-          name: SigningScripts
-          path: .\SigningScripts
+          name: BuildArtifacts
+          path: .\BuildArtifacts
 
       - name: Set VERSION Environment Variable (PUSH)
         if: ${{ github.event_name == 'push' }}
         run: |
-          $version = Get-Content ".\SigningScripts\version.txt"
+          $version = Get-Content ".\BuildArtifacts\version.txt"
           echo "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         shell: pwsh
 
@@ -40,9 +40,9 @@ jobs:
         shell: pwsh
 
       - name: Publish App to Winget
-        working-directory: ${{ github.workspace }}\SigningScripts\winget
+        working-directory: ${{ github.workspace }}\BuildArtifacts\scripts
         run: |
-          .\build.ps1 -Version "${{ env.VERSION }}" -Token "${{ secrets.WINGETCREATE_TOKEN }}"
+          .\push-winget.ps1 -Version "${{ env.VERSION }}" -Token "${{ secrets.WINGETCREATE_TOKEN }}"
         shell: pwsh
 
       - name: Setup Tmate session

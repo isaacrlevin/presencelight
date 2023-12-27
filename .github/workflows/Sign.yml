@@ -32,11 +32,11 @@ jobs:
         name: ${{ inputs.target }}
         path: .\ToSign\${{ inputs.target }}
 
-    - name: Download Signing Scripts Artifacts
+    - name: Download Build Artifacts
       uses: actions/download-artifact@v3
       with:
-        name: SigningScripts
-        path: .\SigningScripts
+        name: BuildArtifacts
+        path: .\BuildArtifacts
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
@@ -60,7 +60,7 @@ jobs:
         '**/*.{exe,zip,appxbundle,appinstaller}'
         --timestamp-url "http://timestamp.digicert.com"
         --base-directory "${{ github.workspace }}\ToSign"
-        --file-list "${{ github.workspace }}\SigningScripts\Signing\filelist.txt"
+        --file-list "${{ github.workspace }}\BuildArtifacts\Signing\filelist.txt"
         --publisher-name "Isaac Levin"
         --description "PresenceLight"
         --description-url "https://github.com/isaacrlevin/presencelight"
