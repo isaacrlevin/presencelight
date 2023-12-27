@@ -72,7 +72,7 @@ $targetRelease = $github | Where-Object -Property name -match "Desktop-v$Version
 $installerUrl = $targetRelease | Select-Object -ExpandProperty assets | Where-Object { $_.name -like '*.appxbundle' } | Select-Object -ExpandProperty browser_download_url
 # Update package using wingetcreate
 Invoke-WebRequest https://aka.ms/wingetcreate/latest -OutFile wingetcreate.exe
-.\wingetcreate.exe update "isaaclevin.presencelight" --version $Version --urls "$installerUrl" --submit --token $gitToken
+.\wingetcreate.exe update "isaaclevin.presencelight" --version $Version --urls "$installerUrl" --submit --token $Token
 
 # Create the PR
 #wingetcreate submit --token $Token $Version

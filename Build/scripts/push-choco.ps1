@@ -7,7 +7,9 @@ Param
 )
 
 # Chocolatey Pack
-& choco.exe pack ".\Chocolatey\PresenceLight.nuspec" --version "${Version.Trim()}.0" --OutputDirectory ".\Chocolatey"
+& choco.exe pack ".\Chocolatey\PresenceLight.nuspec" --version "${Version}.0" --OutputDirectory ".\Chocolatey"
+
+$CHOCOAPIKEY = $CHOCOAPIKEY -replace "`n","" -replace "`r","" -replace " ", ""
 
 & choco.exe apikey --key "${CHOCOAPIKEY}" --source https://push.chocolatey.org/
 
