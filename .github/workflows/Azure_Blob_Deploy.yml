@@ -45,18 +45,35 @@ jobs:
       uses: azure/cli@v1.0.9
       with:
         inlineScript: |
-          az storage blob copy start-batch \
-          --account-key ${{ secrets.ACCOUNT_KEY }} \
-          --account-name ${{ secrets.ACCOUNT_NAME }} \
-          --destination-container ${{ secrets.WORKER_ARCHIVE_CONTAINER }} \
-          --source-account-key ${{ secrets.ACCOUNT_KEY }} \
-          --source-account-name ${{ secrets.ACCOUNT_NAME }} \
-          --source-container ${{ secrets.WORKER_CONTAINER }}
+          account_name="${{ secrets.ACCOUNT_NAME }}"
+          account_key="${{ secrets.ACCOUNT_KEY }}"
+          source_container="${{ secrets.WORKER_CONTAINER }}"
+          destination_container="${{ secrets.WORKER_ARCHIVE_CONTAINER }}"
+          pattern="${{ inputs.target }}"
 
-          az storage blob delete-batch \
-          --account-key ${{ secrets.ACCOUNT_KEY }} \
-          --account-name ${{ secrets.ACCOUNT_NAME }} \
-          --source ${{ secrets.WORKER_CONTAINER }}
+          # Get a list of blobs in the source container that match the pattern
+          blobs=$(az storage blob list --account-name $account_name --account-key $account_key --container-name $source_container --query "[?contains(name, '$pattern')].name" -o tsv)
+
+          # Loop through the blobs and copy each one to the destination container
+          for blob in $blobs
+          do
+            echo "Copying blob $blob"
+            az storage blob copy start \
+              --source-account-name $account_name
+              --source-account-key $account_key \
+              --source-container $source_container \
+              --account-name $account_name \
+              --account-key $account_key \
+              --destination-container $destination_container \
+              --source-blob $blob \
+              --destination-blob $blob
+
+            az storage blob delete \
+              --account-key $account_key \
+              --account-name $account_name \
+              --source $source_container \
+              --name $blob
+          done
         azcliversion: latest
 
     - name: Upload Release to Blob Storage
