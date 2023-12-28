@@ -8,7 +8,7 @@
         <MudText Typo="Typo.h3">Configure LIFX</MudText>
         <MudGrid Class="mt-10" Justify="Justify.Center">
             <MudItem xs="12">
-                <MudCheckBox @bind-Checked="@appState.Config.LightSettings.LIFX.IsEnabled" Label="Connect to LIFX"></MudCheckBox>
+                <MudCheckBox @bind-Value="@appState.Config.LightSettings.LIFX.IsEnabled" Label="Connect to LIFX"></MudCheckBox>
             </MudItem>
         </MudGrid>
         @if (appState.Config.LightSettings.LIFX.IsEnabled)
@@ -91,7 +91,6 @@
 @code {
     bool settingsSaved = false;
     string message;
-    string lifxMessageClass;
 
     bool showLifxMessage = false;
     string lifxMessage;
@@ -210,16 +209,14 @@
 
                     showLifxMessage = true;
                     lifxMessage = "Connected to LIFX Cloud";
-                    lifxMessageClass = "text-success";
 
                     _logger.LogInformation($"Get LIFX {type} Successful");
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e, "Error Occured Getting LIFX Lights");
+                    _logger.LogError(e, "Error Occurred Getting LIFX Lights");
                     showLifxMessage = true;
-                    lifxMessage = "Error Occured Connecting to LIFX, please try again";
-                    lifxMessageClass = "text-danger";
+                    lifxMessage = "Error Occurred Connecting to LIFX, please try again";
                     this.StateHasChanged();
                     appState.SetLIFXLights(new List<LifxCloud.NET.Models.Light>());
                 }

@@ -8,10 +8,10 @@
         <MudText Typo="Typo.h3">Configure Phlips Hue</MudText>
         <MudGrid Class="mt-10" Justify="Justify.Center">
             <MudItem xs="4">
-                <MudCheckBox @bind-Checked="@appState.Config.LightSettings.Hue.IsEnabled" Label="Connect to Philips Hue"></MudCheckBox>
+                <MudCheckBox @bind-Value="@appState.Config.LightSettings.Hue.IsEnabled" Label="Connect to Philips Hue"></MudCheckBox>
             </MudItem>
             <MudItem xs="4">
-                <MudCheckBox @bind-Checked="@appState.Config.LightSettings.Hue.UseRemoteApi" Label="Use Remote API"></MudCheckBox>
+                <MudCheckBox @bind-Value="@appState.Config.LightSettings.Hue.UseRemoteApi" Label="Use Remote API"></MudCheckBox>
             </MudItem>
             <MudItem xs="4">
                 <MudButton Disabled="@(!appState.Config.LightSettings.Hue.UseRemoteApi)" OnClick="LoginRemoteApi" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">Login to Hue Cloud</MudButton>
@@ -218,7 +218,7 @@
 
         var result = await dialog.Result;
 
-        if (result.Cancelled)
+        if (result.Canceled)
         {
             _logger.LogInformation("Hue Bridge Registration Cancelled");
         }

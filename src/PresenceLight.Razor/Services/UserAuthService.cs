@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Configuration;
-using Microsoft.Graph.Communications.Presences.Item.SetUserPreferredPresence;
 using Microsoft.Identity.Client;
 using Microsoft.Identity.Client.Extensions.Msal;
 using Microsoft.Kiota.Abstractions;
@@ -19,7 +17,6 @@ namespace PresenceLight.Razor
         static string[] graphScopes = { "https://graph.microsoft.com/.default" };
         private readonly IConfidentialClientApplication _msalClient;
         private IAccount _userAccount;
-
         public UserAuthService(IConfiguration Configuration)
         {
             if (string.IsNullOrEmpty(Configuration["AzureAd:ClientId"]) ||
@@ -37,8 +34,6 @@ namespace PresenceLight.Razor
                      .WithAuthority($"{Configuration["AzureAd:Instance"]}common/v2.0")
                      .WithRedirectUri($"{Configuration["AzureAd:RedirectHost"].ToString()}{Configuration["AzureAd:CallbackPath"]}")
                      .Build();
-
-
                 var cacheHelper = CreateCacheHelperAsync(Configuration["AzureAd:ClientId"]);
                 cacheHelper.RegisterCache(_msalClient.UserTokenCache);
             }
@@ -46,50 +41,56 @@ namespace PresenceLight.Razor
 
         private static MsalCacheHelper CreateCacheHelperAsync(string clientId)
         {
-            StorageCreationPropertiesBuilder storageProperties;
+            StorageCreationProperties storageProperties;
 
             try
             {
-                storageProperties = new StorageCreationPropertiesBuilder(
-                    Path.GetFileName("cache.plaintext"),
-                    Path.GetDirectoryName(System.AppContext.BaseDirectory))
-                    .WithLinuxUnprotectedFile();
+                storageProperties =
+                    new StorageCreationPropertiesBuilder(
+                    "cache.plaintext",
+                    System.AppContext.BaseDirectory,
+                    clientId)
+                    .WithLinuxUnprotectedFile()
+                    .Build();
 
-                var cacheHelper = MsalCacheHelper.CreateAsync(storageProperties.Build()).Result;
+                var cacheHelper = MsalCacheHelper.CreateAsync(storageProperties).Result;
                 return cacheHelper;
 
             }
-            catch (MsalCachePersistenceException)
+            catch (MsalCachePersistenceException e)
             {
-                storageProperties = new StorageCreationPropertiesBuilder(
-                    Path.GetFileName("cache.plaintext"),
-                    Path.GetDirectoryName(System.AppContext.BaseDirectory))
-                    .WithLinuxUnprotectedFile();
+                storageProperties =
+                    new StorageCreationPropertiesBuilder(
+                    "cache.plaintext",
+                    System.AppContext.BaseDirectory,
+                    clientId)
+                    .WithLinuxUnprotectedFile()
+                    .Build();
 
-                var cacheHelper = MsalCacheHelper.CreateAsync(storageProperties.Build()).Result;
+                var cacheHelper = MsalCacheHelper.CreateAsync(storageProperties).Result;
 
                 cacheHelper.VerifyPersistence();
 
                 return cacheHelper;
             }
         }
-
         public async Task<bool> IsUserAuthenticated()
         {
             // If we already have the user account we're
             // authenticated
-            if (_userAccount != null)
+            if (null != _userAccount)
             {
                 return true;
             }
-
             if (_msalClient == null)
             {
                 return false;
             }
 
             // See if there are any accounts in the cache
-            _userAccount = (await _msalClient.GetAccountsAsync()).FirstOrDefault();
+            var accounts = await _msalClient.GetAccountsAsync();
+
+            _userAccount = accounts.FirstOrDefault();
             return null != _userAccount;
         }
 

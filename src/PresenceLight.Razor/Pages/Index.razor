@@ -11,9 +11,8 @@
     <SpinLoader IsLoading="@(appState.Presence == null)">
         <LoadingTemplate>
             <div style="height:400px; position:relative; ">
-                <Circle
-                    style=" margin: 0; position: absolute; top: 50%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%);"
-                    Center="true" />
+                <Circle style=" margin: 0; position: absolute; top: 50%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%);"
+                        Center="true" />
             </div>
         </LoadingTemplate>
         <ContentTemplate>
@@ -25,12 +24,14 @@
                         </MudItem>
                         <MudItem xs="12">
                             <MudAvatar class="mt-10"
-                                Image="@(@appState.ProfileImage != null ? @appState.ProfileImage : "/_content/PresenceLight.Razor/images/unknownprofile.png")"
-                                Style="height:300px; width:300px"></MudAvatar>
+                                       Style="height:300px; width:300px">
+                                <MudImage Src="@(@appState.ProfileImage != null ? @appState.ProfileImage : "/_content/PresenceLight.Razor/images/unknownprofile.png")" />
+                            </MudAvatar>
                             <div class="circle bottom-right @appState.Presence?.Availability"></div>
                         </MudItem>
                         <MudItem Class="mt-n16" xs="12">
-                            <MudText Typo="Typo.h5">Availability: @Helpers.HumanifyText(appState.Presence?.Availability)
+                            <MudText Typo="Typo.h5">
+                                Availability: @Helpers.HumanifyText(appState.Presence?.Availability)
                             </MudText>
                             <MudText Typo="Typo.h5">Activity: @Helpers.HumanifyText(appState.Presence?.Activity)</MudText>
                         </MudItem>

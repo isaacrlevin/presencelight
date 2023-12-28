@@ -8,7 +8,7 @@
         <MudText Typo="Typo.h3">Configure Custom API</MudText>
         <MudGrid Class="mt-10" Justify="Justify.Center">
             <MudItem xs="12">
-                <MudCheckBox @bind-Checked="@appState.Config.LightSettings.CustomApi.IsEnabled" Label="Connect to Custom API"></MudCheckBox>
+                <MudCheckBox @bind-Value="@appState.Config.LightSettings.CustomApi.IsEnabled" Label="Connect to Custom API"></MudCheckBox>
             </MudItem>
         </MudGrid>
         @if (appState.Config.LightSettings.CustomApi.IsEnabled)
@@ -116,7 +116,7 @@
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Error Occured loading Custom API Page");
+            _logger.LogError(e, "Error Occurred loading Custom API Page");
             throw;
         }
         await Task.CompletedTask;
@@ -135,7 +135,7 @@
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Error Occured Saving Custom API Settings");
+            _logger.LogError(e, "Error Occurred Saving Custom API Settings");
             throw;
         }
     }

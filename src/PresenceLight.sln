@@ -13,8 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		..\.gitignore = ..\.gitignore
 		..\.github\workflows\Deploy_Desktop.yml = ..\.github\workflows\Deploy_Desktop.yml
-		global.json = global.json
 		..\.github\workflows\Deploy_Web.yml = ..\.github\workflows\Deploy_Web.yml
+		global.json = global.json
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Readmes", "Readmes", "{AEA7D3CB-0200-4256-BB51-D9A63E788C97}"

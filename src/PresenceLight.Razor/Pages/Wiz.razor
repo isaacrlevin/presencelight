@@ -8,7 +8,7 @@
         <MudText Typo="Typo.h3">Configure Wiz</MudText>
         <MudGrid Class="mt-10" Justify="Justify.Center">
             <MudItem xs="12">
-                <MudCheckBox @bind-Checked="@appState.Config.LightSettings.Wiz.IsEnabled" Label="Connect to Wiz"></MudCheckBox>
+                <MudCheckBox @bind-Value="@appState.Config.LightSettings.Wiz.IsEnabled" Label="Connect to Wiz"></MudCheckBox>
             </MudItem>
         </MudGrid>
         @if (appState.Config.LightSettings.Wiz.IsEnabled)
@@ -72,7 +72,6 @@
     bool settingsSaved = false;
     bool isLoadingLights = false;
     string message;
-    string wizMessageClass;
     string selectedLightLabel = "";
 
     protected override async Task OnInitializedAsync()
@@ -91,7 +90,7 @@
 
         catch (Exception e)
         {
-            _logger.LogError(e, "Error Occured loading Wiz");
+            _logger.LogError(e, "Error Occurred loading Wiz");
             throw;
         }
         await Task.CompletedTask;
@@ -108,7 +107,7 @@
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Error Occured Saving Wiz Settings");
+            _logger.LogError(e, "Error Occurred Saving Wiz Settings");
             throw;
         }
     }
@@ -145,7 +144,7 @@
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occured Finding Wiz Lights");
+                _logger.LogError(ex, "Error occurred Finding Wiz Lights");
                 throw;
             }
         }

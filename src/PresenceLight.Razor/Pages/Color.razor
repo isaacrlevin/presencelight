@@ -23,7 +23,6 @@
 </MudPaper>
 
 @code {
-    bool isGraphDisabled = false;
     string color;
 
 
@@ -33,8 +32,7 @@
         {
             appState.SetLightMode("Custom");
             _logger.LogInformation("Light Mode: Custom");
-            isGraphDisabled = false;
-
+ 
             if (appState.LightMode == "Custom")
             {
                 appState.SetCustomColor(color);
@@ -108,14 +106,13 @@
         }
         catch (Exception e)
         {
-            _logger.LogError(e, $"Error Occured Setting Custom Color {color}");
+            _logger.LogError(e, $"Error Occurred Setting Custom Color {color}");
             throw;
         }
     }
 
     void SyncTeamsPresence()
     {
-        isGraphDisabled = true;
         appState.SetLightMode("Graph");
         _logger.LogInformation("Light Mode: Graph");
     }
