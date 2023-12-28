@@ -58,12 +58,15 @@ jobs:
           for blob in $blobs
           do
             echo "Copying blob $blob from $source_container to $destination_container"
+
+            blob=$(echo $blob | tr -d '\r')
+
             az storage blob copy start \
               --account-name $account_name \
               --account-key $account_key \
               --destination-container $destination_container \
               --destination-blob $blob \
-              --source-account-name $account_name
+              --source-account-name $account_name \
               --source-account-key $account_key \
               --source-container $source_container \
               --source-blob $blob
@@ -72,7 +75,7 @@ jobs:
             az storage blob delete \
               --account-key $account_key \
               --account-name $account_name \
-              --source $source_container \
+              --container-name $source_container \
               --name $blob
           done
         azcliversion: latest
