@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <Authors>Isaac Levin</Authors>
-    <Copyright>© 2020 Isaac Levin</Copyright>
+    <Copyright>© 2023 Isaac Levin</Copyright>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <DefaultLanguage>en-US</DefaultLanguage>
     <NoWarn>1701;1702;1705;1591;NU1701</NoWarn>
@@ -28,7 +28,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nerdbank.GitVersioning" Version="3.3.37" PrivateAssets="all" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
   </ItemGroup>
 

@@ -8,10 +8,10 @@
         <MudText Typo="Typo.h3">Settings</MudText>   <MudLink Typo="Typo.body1" Href="" title="Click to download configuration file" @onclick="@((ev) => DownloadSettings(@localConfigurationPath))" Align="Align.Left">Download File</MudLink>
         <MudGrid Class="mt-10" Justify="Justify.Center">
             <MudItem xs="6">
-                <MudCheckBox @bind-Checked="@appState.Config.LightSettings.SyncLights" Label="Light Sync Enabled"></MudCheckBox>
+                <MudCheckBox @bind-Value="@appState.Config.LightSettings.SyncLights" Label="Light Sync Enabled"></MudCheckBox>
             </MudItem>
             <MudItem xs="6">
-                <MudCheckBox @bind-Checked="@appState.Config.LightSettings.UseWorkingHours" Label="Configure Working Hours"></MudCheckBox>
+                <MudCheckBox @bind-Value="@appState.Config.LightSettings.UseWorkingHours" Label="Configure Working Hours"></MudCheckBox>
             </MudItem>
             @if (appState.Config.LightSettings.UseWorkingHours)
             {
@@ -54,7 +54,7 @@
                         <MudItem xs="4">
                             <MudText Typo="Typo.h5">Light Syncing Schedule (Working Hours)</MudText>
                             <br />
-                            <MudCheckBox @bind-Checked="@appState.Config.LightSettings.UseAmPm" Label="Use AM PM Format"></MudCheckBox>
+                            <MudCheckBox @bind-Value="@appState.Config.LightSettings.UseAmPm" Label="Use AM PM Format"></MudCheckBox>
                         </MudItem>
                         <MudItem xs="3">
                             <MudTimePicker Label="Start Time" AmPm="@appState.Config.LightSettings.UseAmPm" @bind-Time="startTimeSpan" />
@@ -73,17 +73,17 @@
                             <MudText Typo="Typo.h5">Light Status When After Hours Are Reached</MudText>
                         </MudItem>
                         <MudItem xs="4">
-                            <MudRadioGroup @bind-SelectedOption="@appState.Config.LightSettings.HoursPassedStatus">
-                                <MudRadio Option="@("Off")" Color="MudBlazor.Color.Default" Dense="true">Off</MudRadio>
-                                <MudRadio Option="@("White")" Color="MudBlazor.Color.Default" Dense="true">White</MudRadio>
-                                <MudRadio Option="@("Keep")" Color="MudBlazor.Color.Default" Dense="true">Keep</MudRadio>
+                            <MudRadioGroup @bind-Value="@appState.Config.LightSettings.HoursPassedStatus">
+                                <MudRadio Value="@("Off")" Color="MudBlazor.Color.Default" Dense="true">Off</MudRadio>
+                                <MudRadio Value="@("White")" Color="MudBlazor.Color.Default" Dense="true">White</MudRadio>
+                                <MudRadio Value="@("Keep")" Color="MudBlazor.Color.Default" Dense="true">Keep</MudRadio>
                             </MudRadioGroup>
                         </MudItem>
                     </MudGrid>
                 </MudItem>
             }
             <MudItem xs="12">
-                <MudCheckBox @bind-Checked="@appState.Config.LightSettings.UseDefaultBrightness" Label="Lights Use Same Brightness"></MudCheckBox>
+                <MudCheckBox @bind-Value="@appState.Config.LightSettings.UseDefaultBrightness" Label="Lights Use Same Brightness"></MudCheckBox>
             </MudItem>
             @if (appState.Config.LightSettings.UseDefaultBrightness)
             {
@@ -122,13 +122,13 @@
                             <MudText Typo="Typo.h5">Icon Type</MudText>
                         </MudItem>
                         <MudItem xs="4">
-                            <MudRadioGroup @bind-SelectedOption="@appState.Config.IconType">
-                                <MudRadio Option="@("Transparent")" Color="MudBlazor.Color.Default" Dense="true">Transparent</MudRadio>
-                                <MudRadio Option="@("White")" Color="MudBlazor.Color.Default" Dense="true">White</MudRadio>
+                            <MudRadioGroup @bind-Value="@appState.Config.IconType">
+                                <MudRadio Value="@("Transparent")" Color="MudBlazor.Color.Default" Dense="true">Transparent</MudRadio>
+                                <MudRadio Value="@("White")" Color="MudBlazor.Color.Default" Dense="true">White</MudRadio>
                             </MudRadioGroup>
                         </MudItem>
                         <MudItem xs="12">
-                            <MudCheckBox @bind-Checked="@appState.Config.StartMinimized" Label="Start Minimized"></MudCheckBox>
+                            <MudCheckBox @bind-Value="@appState.Config.StartMinimized" Label="Start Minimized"></MudCheckBox>
                         </MudItem>
                     </MudGrid>
                 </MudItem>
@@ -157,9 +157,6 @@
     bool Saturday;
     bool Sunday;
 
-    bool statusOff;
-    bool statusWhite;
-    bool statusKeep;
 
     TimeSpan? startTimeSpan;
     TimeSpan? endTimeSpan;
@@ -196,7 +193,7 @@
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Error Occured Saving Settings from Settings Page");
+            _logger.LogError(e, "Error Occurred Saving Settings from Settings Page");
             throw;
         }
     }

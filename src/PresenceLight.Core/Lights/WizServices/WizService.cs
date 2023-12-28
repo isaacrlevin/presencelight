@@ -34,7 +34,7 @@ namespace PresenceLight.Core
 
         public async Task<IEnumerable<WizLight>> GetLights()
         {
-            var lights = GetHomeIds();
+            var lights = await GetHomeIds();
             List<WizLight> wizLights = new List<WizLight>();
             foreach (var light in lights)
             {
@@ -59,7 +59,7 @@ namespace PresenceLight.Core
 
             try
             {
-                var o = Handle(_appState.Config.LightSettings.Wiz.UseActivityStatus ? activity : availability, lightId);
+                var o = await Handle(_appState.Config.LightSettings.Wiz.UseActivityStatus ? activity : availability, lightId);
 
                 if (o.returnFunc)
                 {
@@ -92,7 +92,7 @@ namespace PresenceLight.Core
                 {
                     command.State = false;
 
-                    UpdateLight(command, lightId);
+                    await UpdateLight(command, lightId);
                     message = $"Turning Wiz Light {lightId} Off";
                     _logger.LogInformation(message);
                     return;
@@ -125,7 +125,7 @@ namespace PresenceLight.Core
                     }
                 }
 
-                UpdateLight(command, lightId);
+                await UpdateLight(command, lightId);
 
                 message = $"Setting Wiz Light {lightId} to {color}";
                 _logger.LogInformation(message);
@@ -137,7 +137,7 @@ namespace PresenceLight.Core
             }
         }
 
-        private static IEnumerable<(string LightName, string MacAddress)> GetHomeIds()
+        private async Task<IEnumerable<(string LightName, string MacAddress)>> GetHomeIds()
         {
             WizSocket socket = new WizSocket();
             socket.GetSocket().EnableBroadcast = true; // This will enable sending to the broadcast address
@@ -147,7 +147,8 @@ namespace PresenceLight.Core
             WizState state = WizState.MakeGetSystemConfig();
 
             socket.GetSocket().ReceiveTimeout = 10000; // This will prevent the demo from running indefinitely
-            socket.SendTo(state, handle);
+
+            await Task.Run(() => socket.SendTo(state, handle));
 
             List<(string LightName, string MacAddress)> homeIds = new List<(string LightName, string MacAddress)>();
 
@@ -175,7 +176,7 @@ namespace PresenceLight.Core
             return homeIds;
         }
 
-        private (string color, WizParams command, bool returnFunc) Handle(string presence, string lightId)
+        private async Task<(string color, WizParams command, bool returnFunc)> Handle(string presence, string lightId)
         {
             var props = _appState.Config.LightSettings.Hue.Statuses.GetType().GetProperties().ToList();
 
@@ -210,13 +211,13 @@ namespace PresenceLight.Core
                     if (!value.Disabled)
                     {
                         command.State = true;
-                        color = value.Colour;
+                        color = value.Color;
                         return (color, command, false);
                     }
                     else
                     {
                         command.State = false;
-                        UpdateLight(command, lightId);
+                        await UpdateLight(command, lightId);
                         message = $"Turning Hue Light {lightId} Off";
                         _logger.LogInformation(message);
                         return (color, command, true);
@@ -225,7 +226,7 @@ namespace PresenceLight.Core
             }
             return (color, command, false);
         }
-        private static WizResult UpdateLight(WizParams wizParams, string lightId)
+        private async Task<WizResult> UpdateLight(WizParams wizParams, string lightId)
         {
             WizSocket socket = new WizSocket();
             socket.GetSocket().EnableBroadcast = true; // This will enable sending to the broadcast address
@@ -238,7 +239,7 @@ namespace PresenceLight.Core
                 Params = wizParams
             };
 
-            socket.SendTo(state, handle);
+            await Task.Run(() => socket.SendTo(state, handle));
 
             WizResult pilot;
             while (true)

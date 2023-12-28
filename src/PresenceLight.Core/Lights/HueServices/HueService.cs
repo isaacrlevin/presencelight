@@ -207,7 +207,7 @@ namespace PresenceLight.Core
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error Occurred Getting Bridge", e);
+                _logger.LogError(e, message: "Error Occurred Getting Bridge");
                 throw;
             }
         }
@@ -225,7 +225,7 @@ namespace PresenceLight.Core
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error Occurred Getting Bridge", e);
+                _logger.LogError(e, "Error Occurred Getting Bridge");
                 throw;
             }
         }
@@ -264,7 +264,7 @@ namespace PresenceLight.Core
                     if (!value.Disabled)
                     {
                         command.On = true;
-                        color = value.Colour;
+                        color = value.Color;
                         return (color, command, false);
                     }
                     else

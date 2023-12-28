@@ -24,13 +24,13 @@ namespace PresenceLight.Graph
         {
             AuthenticationResult authResult = null;
 
-            var accounts = await Application.GetAccountsAsync().ConfigureAwait(true);
+            var accounts = await Application.GetAccountsAsync();
             var firstAccount = accounts.FirstOrDefault();
 
             try
             {
                 authResult = await Application.AcquireTokenSilent(_scopes, accounts.FirstOrDefault())
-                .ExecuteAsync().ConfigureAwait(true);
+                .ExecuteAsync();
 
             }
             catch (MsalUiRequiredException)
@@ -41,8 +41,8 @@ namespace PresenceLight.Graph
                      {
                          authResult = await Application.AcquireTokenInteractive(_scopes)
                             .WithUseEmbeddedWebView(false)
-                            .ExecuteAsync().ConfigureAwait(true);
-                     }).ConfigureAwait(true);
+                            .ExecuteAsync();
+                     });
                 }
                 catch 
                 {

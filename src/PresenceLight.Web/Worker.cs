@@ -101,7 +101,7 @@ namespace PresenceLight.Web
 
                 try
                 {
-                    await Task.Delay(Convert.ToInt32(_appState.Config.LightSettings.PollingInterval * 1000)).ConfigureAwait(true);
+                    await Task.Delay(Convert.ToInt32(_appState.Config.LightSettings.PollingInterval * 1000));
 
                     bool touchLight = false;
                     string newColor = "";
@@ -155,15 +155,15 @@ namespace PresenceLight.Web
                         {
                             case "Graph":
                                 _logger.LogInformation("PresenceLight Running in Teams Mode");
-                                _appState.Presence = await System.Threading.Tasks.Task.Run(() => GetPresence()).ConfigureAwait(true);
+                                _appState.Presence = await System.Threading.Tasks.Task.Run(() => GetPresence());
 
                                 if (newColor == string.Empty)
                                 {
-                                    await SetColor(_appState.Presence.Availability, _appState.Presence.Activity).ConfigureAwait(true);
+                                    await SetColor(_appState.Presence.Availability, _appState.Presence.Activity);
                                 }
                                 else
                                 {
-                                    await SetColor(newColor, newColor).ConfigureAwait(true);
+                                    await SetColor(newColor, newColor);
                                 }
                                 break;
                             default:
@@ -251,12 +251,12 @@ namespace PresenceLight.Web
                                     Availability = color,
                                     LightId = _appState.Config.LightSettings.Hue.SelectedItemId,
                                     BridgeId = _appState.Config.LightSettings.Hue.RemoteBridgeId
-                                }).ConfigureAwait(true);
+                                });
                             }
                         }
                         else
                         {
-                            await _mediator.Send(new Core.HueServices.SetColorCommand() { Activity = activity, Availability = color, LightID = _appState.Config.LightSettings.Hue.SelectedItemId }).ConfigureAwait(true);
+                            await _mediator.Send(new Core.HueServices.SetColorCommand() { Activity = activity, Availability = color, LightID = _appState.Config.LightSettings.Hue.SelectedItemId });
 
                         }
                     }
@@ -264,12 +264,12 @@ namespace PresenceLight.Web
 
                 if (_appState.Config.LightSettings.LIFX.IsEnabled && !string.IsNullOrEmpty(_appState.Config.LightSettings.LIFX.LIFXApiKey))
                 {
-                    await _mediator.Send(new Core.LifxServices.SetColorCommand() { Availability = color, Activity = activity, LightId = _appState.Config.LightSettings.LIFX.SelectedItemId }).ConfigureAwait(true);
+                    await _mediator.Send(new Core.LifxServices.SetColorCommand() { Availability = color, Activity = activity, LightId = _appState.Config.LightSettings.LIFX.SelectedItemId });
                 }
 
                 if (_appState.Config.LightSettings.Yeelight.IsEnabled && !string.IsNullOrEmpty(_appState.Config.LightSettings.Yeelight.SelectedItemId))
                 {
-                    await _mediator.Send(new PresenceLight.Core.YeelightServices.SetColorCommand { Activity = activity, Availability = color, LightId = _appState.Config.LightSettings.Yeelight.SelectedItemId }).ConfigureAwait(true);
+                    await _mediator.Send(new PresenceLight.Core.YeelightServices.SetColorCommand { Activity = activity, Availability = color, LightId = _appState.Config.LightSettings.Yeelight.SelectedItemId });
                 }
 
                 if (_appState.Config.LightSettings.CustomApi.IsEnabled)

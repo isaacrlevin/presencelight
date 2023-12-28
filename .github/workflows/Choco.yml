@@ -1,0 +1,58 @@
+on:
+  workflow_call:
+
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to deploy'
+        required: true
+
+jobs:
+
+  Deploy_Choco:
+    name: Publish App to Chocolatey
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/download-artifact@v2
+        name: Download Standalone Signed App Artifacts
+        with:
+          name: Standalone_Signed
+          path: .\StandaloneSigned
+
+      - uses: actions/download-artifact@v3
+        if: ${{ github.event_name == 'push' }}
+        name: Download Build Artifacts
+        with:
+          name: BuildArtifacts
+          path: .\BuildArtifacts
+
+      - name: Set VERSION Environment Variable (PUSH)
+        if: ${{ github.event_name == 'push' }}
+        run: |
+          $version = Get-Content ".\BuildArtifacts\version.txt"
+          echo "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        shell: powershell
+
+      - name: Set VERSION Environment Variable (Workflow Dispatch)
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        run: |
+          version = "${{ inputs.Version }}"
+          echo "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        shell: powershell
+
+      - uses: actions/download-artifact@v2
+        name: Download Chocolatey Artifacts
+        with:
+          name: Chocolatey
+          path: .\Chocolatey
+
+      - name: Push to Chocolatey
+        run: |
+          .\BuildArtifacts\scripts\push-choco.ps1 -Version "${{ env.VERSION}}" -CHOCOAPIKEY "${{ secrets.CHOCOAPIKEY}}"
+        shell: powershell
+
+      - name: Setup tmate session
+        if: ${{ failure() }}
+        uses: mxschmitt/action-tmate@v3
+        timeout-minutes: 15

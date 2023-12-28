@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>net7.0-windows10.0.19041</TargetFramework>
+    <TargetFramework>net8.0-windows10.0.19041</TargetFramework>
     <OutputType>WinExe</OutputType>
     <AssemblyName>PresenceLight</AssemblyName>
     <Title>PresenceLight</Title>
@@ -10,15 +10,16 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <TieredCompilationQuickJitForLoops>true</TieredCompilationQuickJitForLoops>
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <ApplicationIcon>Icons\Icon.ico</ApplicationIcon>
   </PropertyGroup>
 
-  <ItemGroup>     
-    <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.21.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Wpf" Version="7.0.86" />
+  <ItemGroup>
+    <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.22.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Wpf" Version="8.0.3" />
     <PackageReference Update="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.2" />
-    <PackageReference Update="Microsoft.SourceLink.GitHub" Version="1.1.1" />
-    <PackageReference Update="Nerdbank.GitVersioning" Version="3.6.132" />
+    <PackageReference Update="Microsoft.SourceLink.GitHub" Version="8.0.0" />
+    <PackageReference Update="Nerdbank.GitVersioning" Version="3.6.133" />
     <PackageReference Include="Serilog.Sinks.ApplicationInsights" Version="4.0.0" />
     <ProjectReference Include="..\..\PresenceLight.Core\PresenceLight.Core.csproj" />
     <ProjectReference Include="..\..\PresenceLight.Razor\PresenceLight.Razor.csproj" />

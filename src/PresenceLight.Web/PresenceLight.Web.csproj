@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <AssemblyName>PresenceLight</AssemblyName>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -15,11 +15,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.5" NoWarn="NU1605" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="7.0.5" NoWarn="NU1605" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" NoWarn="NU1605" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="8.0.0" NoWarn="NU1605" />
     <PackageReference Include="Microsoft.Identity.Web" Version="1.25.10" />
     <PackageReference Include="Microsoft.Identity.Web.UI" Version="1.25.10" />
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.18.1" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.5" />
   </ItemGroup>
 
   <ItemGroup>
@@ -31,6 +31,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="PresenceLightSettings.Development.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Update="PresenceLightSettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

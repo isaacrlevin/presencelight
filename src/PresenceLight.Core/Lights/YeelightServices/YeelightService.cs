@@ -194,7 +194,7 @@ namespace PresenceLight.Core
                         if (!value.Disabled)
                         {
                             await device.TurnOn();
-                            color = value.Colour;
+                            color = value.Color;
                             return (color, device, false);
                         }
                         else

@@ -23,7 +23,6 @@
 </MudPaper>
 
 @code {
-    bool isGraphDisabled = false;
     string color;
 
 
@@ -33,8 +32,7 @@
         {
             appState.SetLightMode("Custom");
             _logger.LogInformation("Light Mode: Custom");
-            isGraphDisabled = false;
-
+ 
             if (appState.LightMode == "Custom")
             {
                 appState.SetCustomColor(color);
@@ -56,12 +54,12 @@
                                         Availability = appState.CustomColor,
                                         LightId = appState.Config.LightSettings.Hue.SelectedItemId,
                                         BridgeId = appState.Config.LightSettings.Hue.RemoteBridgeId
-                                    }).ConfigureAwait(true);
+                                    });
                             }
                         }
                         else
                         {
-                            await _mediator.Send(new Core.HueServices.SetColorCommand() { Activity = appState.CustomColor, Availability = appState.CustomColor, LightID = appState.Config.LightSettings.Hue.SelectedItemId }).ConfigureAwait(true);
+                            await _mediator.Send(new Core.HueServices.SetColorCommand() { Activity = appState.CustomColor, Availability = appState.CustomColor, LightID = appState.Config.LightSettings.Hue.SelectedItemId });
 
                         }
                     }
@@ -69,12 +67,12 @@
 
                 if (appState.Config.LightSettings.LIFX.IsEnabled && !string.IsNullOrEmpty(appState.Config.LightSettings.LIFX.LIFXApiKey))
                 {
-                    await _mediator.Send(new Core.LifxServices.SetColorCommand() { Availability = appState.CustomColor, Activity = appState.CustomColor, LightId = appState.Config.LightSettings.LIFX.SelectedItemId }).ConfigureAwait(true);
+                    await _mediator.Send(new Core.LifxServices.SetColorCommand() { Availability = appState.CustomColor, Activity = appState.CustomColor, LightId = appState.Config.LightSettings.LIFX.SelectedItemId });
                 }
 
                 if (appState.Config.LightSettings.Yeelight.IsEnabled && !string.IsNullOrEmpty(appState.Config.LightSettings.Yeelight.SelectedItemId))
                 {
-                    await _mediator.Send(new PresenceLight.Core.YeelightServices.SetColorCommand { Activity = appState.CustomColor, Availability = appState.CustomColor, LightId = appState.Config.LightSettings.Yeelight.SelectedItemId }).ConfigureAwait(true);
+                    await _mediator.Send(new PresenceLight.Core.YeelightServices.SetColorCommand { Activity = appState.CustomColor, Availability = appState.CustomColor, LightId = appState.Config.LightSettings.Yeelight.SelectedItemId });
                 }
 
                 if (appState.Config.LightSettings.CustomApi.IsEnabled)
@@ -108,14 +106,13 @@
         }
         catch (Exception e)
         {
-            _logger.LogError(e, $"Error Occured Setting Custom Color {color}");
+            _logger.LogError(e, $"Error Occurred Setting Custom Color {color}");
             throw;
         }
     }
 
     void SyncTeamsPresence()
     {
-        isGraphDisabled = true;
         appState.SetLightMode("Graph");
         _logger.LogInformation("Light Mode: Graph");
     }

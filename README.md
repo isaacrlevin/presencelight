@@ -4,8 +4,8 @@
 ### NOTE: The new version of PresenceLight for now has a requirement on WebView2. If you experience issues with PresenceLight, please install from this [location](https://go.microsoft.com/fwlink/p/?LinkId=2124703)
 
 
-![.github/workflows/Web_Build.yml](https://github.com/isaacrlevin/presencelight/workflows/.github/workflows/Web_Build.yml/badge.svg)
-![.github/workflows/Desktop_Build.yml](https://github.com/isaacrlevin/presencelight/workflows/.github/workflows/Desktop_Build.yml/badge.svg)
+![.github/workflows/Deploy_Web.yml](https://github.com/isaacrlevin/presencelight/workflows/.github/workflows/Deploy_Web.yml/badge.svg)
+![.github/workflows/Deploy_Desktop.yml](https://github.com/isaacrlevin/presencelight/workflows/.github/workflows/Deploy_Desktop.yml/badge.svg)
 
 ### Get PresenceLight
 
@@ -58,8 +58,8 @@ Presence Light would not be possible without the amazing work from the contribut
 - [MediatR](https://github.com/jbogard/MediatR)
 - [Polly](https://github.com/App-vNext/Polly)
 - [Serilog](https://github.com/serilog/serilog)
-- [Blazored.Modal](https://github.com/Blazored/Modal)
 - [Blazorise](https://github.com/Megabit/Blazorise)
 - [BlazorPro.Spinkit](https://github.com/EdCharbeneau/BlazorPro.Spinkit)
 - [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json)
 - [IdentityModel.OidcClient](https://github.com/IdentityModel/IdentityModel.OidcClient)
+- [MudBlazor](https://www.mudblazor.com/)

@@ -8,7 +8,7 @@
         <MudText Typo="Typo.h3">Configure Local Serial </MudText>
         <MudGrid Class="mt-10" Justify="Justify.Center">
             <MudItem xs="12">
-                <MudCheckBox @bind-Checked="@appState.Config.LightSettings.LocalSerialHost.IsEnabled" Label="Connect to Local Serial Host"></MudCheckBox>
+                <MudCheckBox @bind-Value="@appState.Config.LightSettings.LocalSerialHost.IsEnabled" Label="Connect to Local Serial Host"></MudCheckBox>
             </MudItem>
         </MudGrid>
         @if (appState.Config.LightSettings.LocalSerialHost.IsEnabled)
@@ -149,7 +149,7 @@
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Error Occured loading Local Serial Host Page");
+            _logger.LogError(e, "Error Occurred loading Local Serial Host Page");
             throw;
         }
         await Task.CompletedTask;
@@ -168,7 +168,7 @@
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Error Occured Saving Local Serial Host Settings");
+            _logger.LogError(e, "Error Occurred Saving Local Serial Host Settings");
             throw;
         }
     }

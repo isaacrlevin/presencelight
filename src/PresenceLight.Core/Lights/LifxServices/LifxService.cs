@@ -211,7 +211,7 @@ namespace PresenceLight.Core
                     if (!value.Disabled)
                     {
                         command.Power = PowerState.On;
-                        color = value.Colour;
+                        color = value.Color;
                         return (color, command, false);
                     }
                     else

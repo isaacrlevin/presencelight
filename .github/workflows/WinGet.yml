@@ -1,0 +1,51 @@
+name: Winget Publish
+on:
+  workflow_dispatch:
+    inputs:
+      Version:
+        description: 'Release'
+        required: true
+        default: '5.0'
+        type: string
+
+  workflow_call:
+
+jobs:
+  publish:
+    runs-on: windows-latest
+    name: Publish App to Winget
+    env:
+      WINGETCREATE_TOKEN: ${{ secrets.WINGETCREATE_TOKEN }}
+    steps:
+
+      - name: Download Artifacts for Winget Publish
+        uses: actions/download-artifact@v3
+        if: ${{ github.event_name == 'push' }}
+        with:
+          name: BuildArtifacts
+          path: .\BuildArtifacts
+
+      - name: Set VERSION Environment Variable (PUSH)
+        if: ${{ github.event_name == 'push' }}
+        run: |
+          $version = Get-Content ".\BuildArtifacts\version.txt"
+          echo "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        shell: pwsh
+
+      - name: Set VERSION Environment Variable (Workflow Dispatch)
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        run: |
+          version = "${{ inputs.Version }}"
+          echo "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        shell: pwsh
+
+      - name: Publish App to Winget
+        working-directory: ${{ github.workspace }}\BuildArtifacts\scripts
+        run: |
+          .\push-winget.ps1 -Version "${{ env.VERSION }}" -Token "${{ secrets.WINGETCREATE_TOKEN }}"
+        shell: pwsh
+
+      - name: Setup Tmate session
+        if: ${{ failure() }}
+        uses: mxschmitt/action-tmate@v3
+        timeout-minutes: 15

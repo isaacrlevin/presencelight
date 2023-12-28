@@ -5,7 +5,7 @@
 {
     @if (appState.SignedIn && appState.User != null)
     {
-        <MudMenu Direction="MudBlazor.Direction.Right" OffsetX="true" Dense="true" Class="mt-1 ml-4">
+        <MudMenu AnchorOrigin="Origin.CenterCenter" Dense="true" Class="mt-1 ml-4">
             <ActivatorContent>
                 <MudText Typo="Typo.body2" Class="px-4 py-2"> Hello, @appState.User.DisplayName!</MudText>
             </ActivatorContent>
@@ -21,7 +21,7 @@ else
 {
     <AuthorizeView>
         <Authorized>
-            <MudMenu Direction="MudBlazor.Direction.Right" OffsetX="true" Dense="true" Class="mt-1 ml-4">
+            <MudMenu AnchorOrigin="Origin.CenterCenter" Dense="true" Class="mt-1 ml-4">
                 <ActivatorContent>
                     <MudText Typo="Typo.body2" Class="px-4 py-2"> Hello, @context.User.Identity.Name!</MudText>
                 </ActivatorContent>
@@ -80,4 +80,4 @@ else
     {
         InvokeAsync(StateHasChanged);
     }
-    }
+}

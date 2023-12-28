@@ -117,7 +117,7 @@ When running under a container, logs will save to  `/app/config/logs` as well.
 
 PresenceLight would not be possible without the amazing work from the contributors to the following third party libraries!
 
-- [Blazored.Modal](https://github.com/Blazored/Modal)
 - [Blazorise](https://github.com/stsrki/Blazorise)
 - [IdentityModel.OidcClient](https://github.com/IdentityModel/IdentityModel.OidcClient)
 - [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json)
+- [MudBlazor](https://www.mudblazor.com/)

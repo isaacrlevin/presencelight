@@ -7,7 +7,7 @@
         <MudText Typo="Typo.h3">Configure Yeelight</MudText>
         <MudGrid Class="mt-10" Justify="Justify.Center">
             <MudItem xs="12">
-                <MudCheckBox @bind-Checked="@appState.Config.LightSettings.Yeelight.IsEnabled" Label="Connect to Yeelight"></MudCheckBox>
+                <MudCheckBox @bind-Value="@appState.Config.LightSettings.Yeelight.IsEnabled" Label="Connect to Yeelight"></MudCheckBox>
             </MudItem>
         </MudGrid>
         @if (appState.Config.LightSettings.Yeelight.IsEnabled)
@@ -87,7 +87,7 @@
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Error Occured loading Yeelight");
+            _logger.LogError(e, "Error Occurred loading Yeelight");
             throw;
         }
         await Task.CompletedTask;
@@ -104,7 +104,7 @@
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Error Occured Saving Yeelight Settings");
+            _logger.LogError(e, "Error Occurred Saving Yeelight Settings");
             throw;
         }
     }
@@ -141,7 +141,7 @@
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occured Finding YeeLights");
+                _logger.LogError(ex, "Error occurred Finding YeeLights");
                 throw;
             }
         }
