@@ -39,8 +39,8 @@ Param
 # Update AppSettings.json. This must be done before build.
 $appsettings = get-content ".\src\PresenceLight.Web\appsettings.json" -raw | ConvertFrom-Json
 
-$appsettings.azureAd.clientId = $ApplicationId
-$appsettings.azureAd.clientSecret = $ClientSecret
+$appsettings.AADSettings.clientId = $ApplicationId
+$appsettings.AADSettings.clientSecret = $ClientSecret
 
 $appsettings.appVersion = $GitBuildVersionSimple
 
