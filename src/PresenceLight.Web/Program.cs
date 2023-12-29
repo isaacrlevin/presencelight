@@ -7,14 +7,11 @@ using Blazorise.Icons.FontAwesome;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
-
-using MudBlazor;
-using MudBlazor.Services;
 
 using PresenceLight.Core;
 using PresenceLight.Razor;
@@ -23,6 +20,9 @@ using PresenceLight.Web;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+WebApplication app = null;
+
 
 ConfigurationBuilder configBuilderForMain = new ConfigurationBuilder();
 
@@ -87,10 +87,11 @@ builder.Configuration.AddEnvironmentVariables();
 builder.Logging.AddSerilog();
 builder.Host.UseSerilog();
 
+
 var initialScopes = builder.Configuration.GetValue<string>("DownstreamApi:Scopes")?.Split(' ');
 
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-    .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAd"))
+    .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AADSettings"))
         .EnableTokenAcquisitionToCallDownstreamApi(initialScopes)
             .AddMicrosoftGraph(builder.Configuration.GetSection("DownstreamApi"))
             .AddInMemoryTokenCaches();
@@ -99,15 +100,12 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
 builder.Services.AddControllersWithViews()
     .AddMicrosoftIdentityUI();
 
-var userAuthService = new UserAuthService(builder.Configuration);
-builder.Services.AddSingleton(userAuthService);
-
 builder.Services.AddOptions<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme)
  .Configure<IServiceProvider>((options, serviceProvider) =>
  {
      options.ResponseType = OpenIdConnectResponseType.Code;
      options.UsePkce = false;
-     options.Authority = $"{builder.Configuration["AzureAd:Instance"]}common/v2.0";
+     options.Authority = $"{builder.Configuration["AADSettings:Instance"]}common/v2.0";
 
      options.Scope.Add("offline_access");
      options.Scope.Add("User.Read");
@@ -132,14 +130,18 @@ builder.Services.AddOptions<OpenIdConnectOptions>(OpenIdConnectDefaults.Authenti
 
              context.HandleCodeRedemption();
 
-             var idToken = await userAuthService
+
+             var loginService = app.Services.GetRequiredService<LoginService>();
+
+             var idToken = await loginService
                    .AddUserToTokenCache(context.ProtocolMessage.Code);
 
              context.HandleCodeRedemption(null, idToken);
          },
          OnRedirectToIdentityProviderForSignOut = async context =>
          {
-             await userAuthService.SignOut();
+             var loginService = app.Services.GetRequiredService<LoginService>();
+             await loginService.SignOut();
          }
      };
  });
@@ -172,7 +174,10 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
         ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
 });
 
-var app = builder.Build();
+builder.Services.AddSingleton<AuthorizationProvider, AuthorizationProvider>();
+builder.Services.AddSingleton<LoginService, LoginService>();
+
+app = builder.Build();
 
 app.UseForwardedHeaders();
 
@@ -191,6 +196,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+app.UseAntiforgery();
 
 app.UseAuthentication();
 app.UseAuthorization();

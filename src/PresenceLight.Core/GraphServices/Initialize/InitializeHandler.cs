@@ -1,12 +1,7 @@
-﻿using MediatR;
-
-using Microsoft.Graph;
-
-using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 
-using YeelightAPI.Models;
+using MediatR;
 
 namespace PresenceLight.Core.GraphServices
 {
@@ -21,7 +16,7 @@ namespace PresenceLight.Core.GraphServices
 
         async Task IRequestHandler<InitializeCommand>.Handle(InitializeCommand command, CancellationToken cancellationToken)
         {
-            _graph.Initialize(command.Client);
+            await _graph.Initialize();
             await Task.CompletedTask;
         }
     }

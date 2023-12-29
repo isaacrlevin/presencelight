@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
@@ -18,6 +19,10 @@ namespace PresenceLight.Core
         public string? ClientId { get; set; }
 
         /// <summary>
+        /// Gets or sets the Client Secret for AAD authentication.
+        /// </summary>
+        public string? ClientSecret { get; set; }
+        /// <summary>
         /// Gets or sets the AAD instance URL.
         /// </summary>
         public string? Instance { get; set; }
@@ -26,5 +31,20 @@ namespace PresenceLight.Core
         /// Gets or sets the redirect URI for AAD authentication.
         /// </summary>
         public string? RedirectUri { get; set; }
+
+        /// <summary>
+        /// Gets or sets the redirect host for AAD authentication.
+        /// </summary>
+        public string? RedirectHost { get; set; }
+
+        /// <summary>
+        /// Gets or sets the CallbackPath for AAD authentication.
+        /// </summary>
+        public string? CallbackPath { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Scopes for AAD authentication.
+        /// </summary>
+        public List<string>? Scopes { get; set; }
     }
 }

@@ -172,7 +172,7 @@ namespace PresenceLight.Core
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error Occured Setting Color");
+                _logger.LogError(e, "Error Occurred Setting Color");
                 throw;
             }
         }

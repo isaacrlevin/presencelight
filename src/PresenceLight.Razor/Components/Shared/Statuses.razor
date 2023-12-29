@@ -22,7 +22,7 @@
 
                     <MudGrid Justify="Justify.Center">
                         <MudItem xs="4">
-                            <MudText Typo=Typo.h6>@Helpers.HumanifyText(lightStatus.Name.Replace("Status","").Replace("Availability","").Replace("Activity","")) Color</MudText>
+                            <MudText Typo=Typo.h6>@Helpers.HumanifyText(lightStatus.Name.Replace("Status", "").Replace("Availability", "").Replace("Activity", "")) Color</MudText>
                         </MudItem>
                         <MudItem xs="4">
                             <ColorEdit Color="@status.Color" @onchange="@((ChangeEventArgs e) => ChangeStatusColor(e, status))" />

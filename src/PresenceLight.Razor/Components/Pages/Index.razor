@@ -3,7 +3,7 @@
 @using Microsoft.Identity.Web
 @using Microsoft.Graph
 @inject ILogger<Index> _logger;
-@inject UserAuthService _userAuthService
+@inject LoginService _loginService;
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor _httpContextAccessor
 
 @if (appState.SignedIn)
@@ -56,7 +56,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         appState.OnChange += RaiseStateHasChanged;
-        bool isUserAuth = await _userAuthService.IsUserAuthenticated();
+        bool isUserAuth = await _loginService.IsUserAuthenticated();
         if (!isUserAuth && appState.User == null)
         {
             appState.SetLightMode("");

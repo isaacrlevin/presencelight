@@ -1,10 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
-
-using Newtonsoft.Json;
-
-namespace PresenceLight.Core
+﻿namespace PresenceLight.Core
 {
     /// <summary>
     /// Represents the base configuration for the application.
@@ -35,5 +29,11 @@ namespace PresenceLight.Core
         /// Gets or sets the type of application.
         /// </summary>
         public string AppType { get; set; }
+
+
+        /// <summary>
+        /// Gets or sets the Microsoft Entra Settings.
+        /// </summary>
+        public AADSettings AADSettings { get; set; }
     }
 }

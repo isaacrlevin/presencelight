@@ -1,8 +1,9 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
-@using PresenceLight.Razor.Shared
+@using PresenceLight.Razor.Components
+@using PresenceLight.Razor.Components.Layout
 @using Microsoft.AspNetCore.Components.Routing
 <CascadingAuthenticationState>
-    <Router AppAssembly="@typeof(PresenceLight.Razor.PresenceLightClientApp).Assembly">
+    <Router AppAssembly="@typeof(PresenceLightClientApp).Assembly">
         <Found Context="routeData">
             <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
             <FocusOnNavigate RouteData="@routeData" Selector="h1" />

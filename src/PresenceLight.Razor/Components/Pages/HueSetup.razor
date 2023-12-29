@@ -139,7 +139,7 @@
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Error Occured loading Hue Page");
+            _logger.LogError(e, "Error Occurred loading Hue Page");
             throw;
         }
     }
@@ -159,7 +159,7 @@
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Error Occured Saving Hue Settings");
+            _logger.LogError(e, "Error Occurred Saving Hue Settings");
             throw;
         }
     }
@@ -188,7 +188,7 @@
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error Occured Getting Cloud Hue Api Key");
+                _logger.LogError(ex, "Error Occurred Getting Cloud Hue Api Key");
             }
         }
     }
@@ -203,7 +203,7 @@
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error Occured Getting Finding Hue Bridge");
+            _logger.LogError(ex, "Error Occurred Getting Finding Hue Bridge");
         }
     }
 
@@ -232,8 +232,8 @@
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error Occured Registering Hue Bridge");
-                hueMessage = "Error Occured registering bridge, please try again";
+                _logger.LogError(ex, "Error Occurred Registering Hue Bridge");
+                hueMessage = "Error Occurred registering bridge, please try again";
                 showHueMessage = true;
                 hueMessageClass = "text-danger";
             }
@@ -256,7 +256,7 @@
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e, "Error Occured Getting Hue Lights");
+                    _logger.LogError(e, "Error Occurred Getting Hue Lights");
                     throw;
                 }
 
@@ -368,9 +368,9 @@
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e, "Error Occured Getting Hue Lights");
+                    _logger.LogError(e, "Error Occurred Getting Hue Lights");
                     showHueMessage = true;
-                    hueMessage = "Error Occured Connecting to Hue, please try again";
+                    hueMessage = "Error Occurred Connecting to Hue, please try again";
                     hueMessageClass = "text-danger";
                     this.StateHasChanged();
                     appState.SetHueLights(new List<Q42.HueApi.Light>());

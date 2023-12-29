@@ -1,7 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Net.NetworkInformation;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -12,10 +11,11 @@ using System.Windows.Media.Imaging;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Graph;
+using Microsoft.Graph.Models;
 using Microsoft.Identity.Client;
 
 using PresenceLight.Core;
-using PresenceLight.Graph;
+
 using PresenceLight.Telemetry;
 
 namespace PresenceLight
@@ -33,7 +33,7 @@ namespace PresenceLight
 
         private MediatR.IMediator _mediator;
 
-        private readonly IGraphService _graphservice;
+        private readonly LoginService _loginService;
         private DiagnosticsClient _diagClient;
         private ISettingsService _settingsService;
         private WindowState lastWindowState;
@@ -42,7 +42,7 @@ namespace PresenceLight
         private readonly AppState _appState = new AppState();
 
         #region Init
-        public MainWindow(IGraphService graphService,
+        public MainWindow(LoginService loginService,
                           MediatR.IMediator mediator,
                           IOptionsMonitor<BaseConfig> optionsAccessor,
                           DiagnosticsClient diagClient,
@@ -58,7 +58,7 @@ namespace PresenceLight
             _logger = logger;
             System.Windows.Application.Current.SessionEnding += new SessionEndingCancelEventHandler(Current_SessionEnding);
 
-            _graphservice = graphService;
+            _loginService = loginService;
 
 
             _mediator = mediator;
@@ -67,59 +67,59 @@ namespace PresenceLight
             _settingsService = settingsService;
 
             LoadSettings().ContinueWith(
-        async t =>
-        {
-            if (t.IsFaulted)
-            { }
-
-            await Task.Run(async () =>
-            {
-                this.Dispatcher.Invoke(() =>
+                async t =>
                 {
-                    appState.SignedIn = false;
-                    LoadApp();
-
-                    var tbContext = notificationIcon.DataContext;
-                    DataContext = _appState.Config;
-                    notificationIcon.DataContext = tbContext;
-
-                    if (_appState.Config.StartMinimized)
+                    if (t.IsFaulted)
                     {
-                        this.Hide();
+                        var foo = "";
                     }
-
-                });
-
-                while (true)
-                {
 
                     await Task.Run(async () =>
                     {
-                        Thread.Sleep(100);
-                        if (_appState.SignInRequested)
+                        this.Dispatcher.Invoke(() =>
                         {
-                            _appState.SignInRequested = false;
+                            appState.SignedIn = false;
+                            LoadApp();
 
-                            await this.Dispatcher.Invoke(async () =>
-                             {
-                                 await SignIn();
-                             });
-                        }
+                            var tbContext = notificationIcon.DataContext;
+                            DataContext = _appState.Config;
+                            notificationIcon.DataContext = tbContext;
 
-                        if (_appState.SignOutRequested)
+                            if (_appState.Config.StartMinimized)
+                            {
+                                this.Hide();
+                            }
+
+                        });
+
+                        while (true)
                         {
-                            _appState.SignOutRequested = false;
-                            await this.Dispatcher.Invoke(async () =>
-                             {
-                                 await SignOut();
-                             });
+
+                            await Task.Run(async () =>
+                            {
+                                Thread.Sleep(100);
+                                if (_appState.SignInRequested)
+                                {
+                                    _appState.SignInRequested = false;
+
+                                    await this.Dispatcher.BeginInvoke(async () =>
+                                     {
+                                         await SignIn();
+                                     });
+                                }
+
+                                if (_appState.SignOutRequested)
+                                {
+                                    _appState.SignOutRequested = false;
+                                    await this.Dispatcher.BeginInvoke(async () =>
+                                     {
+                                         await SignOut();
+                                     });
+                                }
+                            });
                         }
                     });
-                }
-            });
-
-
-        }, TaskScheduler.Current);
+                }, TaskScheduler.Current);
         }
 
         private async Task LoadSettings()
@@ -140,7 +140,7 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error occured Loading Settings");
+                _logger.LogError(e, "Error occurred Loading Settings");
                 _diagClient.TrackException(e);
             }
         }
@@ -163,7 +163,7 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
-                _logger.LogError(e, $"Error occured - {e.Message}");
+                _logger.LogError(e, $"Error occurred - {e.Message}");
             }
         }
 
@@ -184,12 +184,9 @@ namespace PresenceLight
             {
                 await _mediator.Send(new Core.GraphServices.InitializeCommand()
                 {
-                    Client = _graphservice.GetAuthenticatedGraphClient()
                 });
-
+                _appState.SignedIn = true;
             }
-
-            _appState.SignedIn = true;
 
             try
             {
@@ -202,7 +199,7 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error occured calling Graph");
+                _logger.LogError(e, "Error occurred calling Graph");
             }
         }
 
@@ -246,7 +243,7 @@ namespace PresenceLight
 
                 if (_appState.Config.LightSettings.Wiz.IsEnabled)
                 {
-                   // await _mediator.Send(new PresenceLight.Core.WizServices.SetColorCommand { Activity = activity, Availability = color, LightID = _appState.Config.LightSettings.Wiz.SelectedItemId });
+                    // await _mediator.Send(new PresenceLight.Core.WizServices.SetColorCommand { Activity = activity, Availability = color, LightID = _appState.Config.LightSettings.Wiz.SelectedItemId });
 
                 }
 
@@ -261,14 +258,14 @@ namespace PresenceLight
                     string response = await _mediator.Send(new Core.CustomApiServices.SetColorCommand() { Activity = activity, Availability = color });
                 }
 
-                if(_appState.Config.LightSettings.LocalSerialHost.IsEnabled)
+                if (_appState.Config.LightSettings.LocalSerialHost.IsEnabled)
                 {
                     string response = await _mediator.Send(new Core.LocalSerialHostServices.SetColorCommand() { Activity = activity, Availability = color });
                 }
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error occured Setting Color");
+                _logger.LogError(e, "Error occurred Setting Color");
             }
         }
 
@@ -277,25 +274,24 @@ namespace PresenceLight
             _logger.LogInformation("Signing out of Graph PresenceLight Sync");
 
             _appState.SetLightMode("Graph");
-            var accounts = await WPFAuthorizationProvider.Application.GetAccountsAsync();
-            if (accounts.Any())
+            try
             {
-                try
-                {
-                    await WPFAuthorizationProvider.Application.RemoveAsync(accounts.FirstOrDefault());
-                    _appState.SignedIn = false;
-                    _appState.SetUserInfo(null, null, null);
-                    notificationIcon.Text = $"PresenceLight Status - {PresenceConstants.Inactive}";
-                    notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(string.Empty, string.Empty)));
+                await _loginService.SignOut();
 
-                    await SetColor("Off");
-                }
-                catch (MsalException)
-                {
-                }
+                _appState.SignedIn = false;
+                _appState.SetUserInfo(null, null, null);
+                notificationIcon.Text = $"PresenceLight Status - {PresenceConstants.Inactive}";
+                notificationIcon.Icon = new BitmapImage(new Uri(IconConstants.GetIcon(string.Empty, string.Empty)));
+
+                await SetColor("Off");
             }
+            catch (MsalException)
+            {
+            }
+
             await _settingsService.SaveSettings(_appState.Config);
         }
+
         #endregion
 
         #region UI Helpers
@@ -320,7 +316,7 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error Occured in LoadImager");
+                _logger.LogError(e, "Error occurred in LoadImager");
                 throw;
             }
         }
@@ -353,7 +349,7 @@ namespace PresenceLight
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error occured Getting Presence");
+                _logger.LogError(e, "Error occurred Getting Presence");
                 throw;
             }
         }
@@ -370,17 +366,17 @@ namespace PresenceLight
                 }
                 else
                 {
-                    return ReadFully(photo);
+                    return StreamToByteArray(photo);
                 }
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error occured Getting Photo");
+                _logger.LogError(e, "Error occurred Getting Photo");
                 return null;
             }
         }
 
-        public static byte[] ReadFully(Stream input)
+        public static byte[] StreamToByteArray(Stream input)
         {
             byte[] buffer = new byte[16 * 1024];
             using (MemoryStream ms = new MemoryStream())
@@ -442,7 +438,7 @@ namespace PresenceLight
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error Occured turning Off Sync");
+                _logger.LogError(ex, "Error occurred turning Off Sync");
             }
             _logger.LogInformation("Turning Off PresenceLight Sync");
         }
@@ -458,7 +454,7 @@ namespace PresenceLight
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error Occured Exiting");
+                _logger.LogError(ex, "Error occurred Exiting");
             }
             _logger.LogInformation("PresenceLight Exiting");
         }
@@ -473,7 +469,7 @@ namespace PresenceLight
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error Occured Ending Session");
+                _logger.LogError(ex, "Error occurred Ending Session");
             }
 
             _logger.LogInformation("PresenceLight Session Ending");
@@ -491,7 +487,7 @@ namespace PresenceLight
                 {
                     if (_appState.SignedIn)
                     {
-                        if (_appState.User == null)
+                        if (_appState.User == null || string.IsNullOrEmpty(_appState.User.DisplayName))
                         {
                             var (profile, presence) = await _mediator.Send(new Core.GraphServices.GetProfileAndPresenceCommand());
 
@@ -608,7 +604,7 @@ namespace PresenceLight
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e, "Error occured interacting with lights");
+                    _logger.LogError(e, "Error occurred interacting with lights");
                 }
             }
         }

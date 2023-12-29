@@ -359,7 +359,7 @@
       }
     },
     "CustomApi": {
-      "IsEnabled": true,
+      "IsEnabled": false,
       "SelectedItemId": "",
       "Brightness": 100,
       "UseActivityStatus": false,
@@ -399,11 +399,11 @@
         "Method": "",
         "Uri": ""
       },
-      "CustomApiActivityInAMeeting": {
+      "CustomApiActivityInAConferenceCall": {
         "Method": "",
         "Uri": ""
       },
-      "CustomApiActivityInAConferenceCall": {
+      "CustomApiActivityInAMeeting": {
         "Method": "",
         "Uri": ""
       },
@@ -443,17 +443,23 @@
         "Method": "",
         "Uri": ""
       },
+      "CustomApiActivityOffWork": {
+        "Method": "",
+        "Uri": ""
+      },
       "CustomApiTimeout": 100,
       "IgnoreCertificateErrors": false,
       "UseBasicAuth": false,
       "BasicAuthUserName": "",
-      "BasicAuthUserPassword":  ""
+      "BasicAuthUserPassword": ""
     },
     "LocalSerialHost": {
-      "IsEnabled": true,
+      "IsEnabled": false,
       "SelectedItemId": "",
       "Brightness": 100,
       "UseActivityStatus": false,
+      "BaudRate": "",
+      "PortNumber": "",
       "LocalSerialHostMainSetup": {
         "BaudRate": "",
         "LineEnding": "",
@@ -468,8 +474,8 @@
       "LocalSerialHostOff": "",
       "LocalSerialHostActivityAvailable": "",
       "LocalSerialHostActivityInACall": "",
-      "LocalSerialHostActivityInAMeeting": "",
       "LocalSerialHostActivityInAConferenceCall": "",
+      "LocalSerialHostActivityInAMeeting": "",
       "LocalSerialHostActivityPresenting": "",
       "LocalSerialHostActivityBusy": "",
       "LocalSerialHostActivityAway": "",
@@ -478,12 +484,7 @@
       "LocalSerialHostActivityDoNotDisturb": "",
       "LocalSerialHostActivityIdle": "",
       "LocalSerialHostActivityOffline": "",
-      "LocalSerialHostActivityOff": "",
-      "LocalSerialHostTimeout": 100,
-      "IgnoreCertificateErrors": false,
-      "UseBasicAuth": false,
-      "BasicAuthUserName": "",
-      "BasicAuthUserPassword":  ""
+      "LocalSerialHostActivityOff": ""
     },
     "Wiz": {
       "SelectedItemId": "",

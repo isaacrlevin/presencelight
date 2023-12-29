@@ -106,7 +106,7 @@ namespace PresenceLight.Core
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error Occured Processing Access Token for Remote Bridge");
+                _logger.LogError(e, "Error Occurred Processing Access Token for Remote Bridge");
                 throw;
             }
         }
@@ -179,7 +179,7 @@ namespace PresenceLight.Core
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error Occured Registering Remote Bridge");
+                _logger.LogError(e, "Error Occurred Registering Remote Bridge");
                 throw;
             }
         }
@@ -287,7 +287,7 @@ namespace PresenceLight.Core
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error Occured Setting Color");
+                _logger.LogError(e, "Error Occurred Setting Color");
                 throw;
             }
         }

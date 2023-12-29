@@ -1,18 +1,10 @@
-﻿using System;
-using System.IO;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Text.RegularExpressions;
 
-using LifxCloud.NET.Models;
-
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Graph;
+using Microsoft.Graph.Models;
 
 using PresenceLight.Core;
-using PresenceLight.Razor;
 
 namespace PresenceLight.Web
 {
@@ -20,29 +12,28 @@ namespace PresenceLight.Web
     {
         private readonly AppState _appState;
         private readonly ILogger<Worker> _logger;
-        UserAuthService _userAuthService;
-        private readonly GraphServiceClient _graphClient;
+        LoginService loginService;
+        
         private MediatR.IMediator _mediator;
 
         public Worker(ILogger<Worker> logger,
                       IOptionsMonitor<BaseConfig> optionsAccessor,
                       AppState appState,
-                      UserAuthService userAuthService,
+                      LoginService _loginService,
                       MediatR.IMediator mediator)
         {
             _mediator = mediator;
-            _userAuthService = userAuthService;
+            loginService = _loginService;
             _logger = logger;
             _appState = appState;
             _appState.Config = optionsAccessor.CurrentValue;
-            _graphClient = new GraphServiceClient(userAuthService);
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                if (await _userAuthService.IsUserAuthenticated())
+                if (await loginService.IsUserAuthenticated())
                 {
                     _logger.LogInformation("User is Authenticated, starting worker");
                     try
@@ -51,7 +42,7 @@ namespace PresenceLight.Web
                     }
                     catch (Exception e)
                     {
-                        _logger.LogError(e, "Exception occured restarting worker");
+                        _logger.LogError(e, "Exception occurred restarting worker");
                     }
                 }
                 else
@@ -68,11 +59,17 @@ namespace PresenceLight.Web
 
             try
             {
+                if (!await _mediator.Send(new Core.GraphServices.GetIsInitializedCommand()))
+                {
+                    await _mediator.Send(new Core.GraphServices.InitializeCommand()
+                    {
+                    });
+                    _appState.SignedIn = true;
+                }
 
-                var user = await GetUserInformation();
+                var (user, presence) = await GetUserAndPresence();
                 var photo = await GetPhotoAsBase64Async();
-                var presence = await GetPresence();
-
+                
                 //Attach properties to all logging within this context..
                 using (Serilog.Context.LogContext.PushProperty("Availability", presence.Availability))
                 using (Serilog.Context.LogContext.PushProperty("Activity", presence.Activity))
@@ -85,7 +82,7 @@ namespace PresenceLight.Web
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Exception occured in running worker");
+                _logger.LogError(e, "Exception occurred in running worker");
                 throw;
             }
         }
@@ -93,7 +90,7 @@ namespace PresenceLight.Web
         private async Task InteractWithLights()
         {
             bool previousWorkingHours = false;
-            while (await _userAuthService.IsUserAuthenticated())
+            while (await loginService.IsUserAuthenticated())
             {
 
                 bool useWorkingHours = await _mediator.Send(new Core.WorkingHoursServices.UseWorkingHoursCommand());
@@ -173,18 +170,19 @@ namespace PresenceLight.Web
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e, "Error Occured Interacting with Lights");
+                    _logger.LogError(e, "Error Occurred Interacting with Lights");
                 }
             }
         }
 
-        private async Task<User> GetUserInformation()
+        private async Task<(User, Presence)> GetUserAndPresence()
         {
             try
             {
-                var me = await _graphClient.Me.Request().GetAsync();
-                _logger.LogInformation($"User is {me.DisplayName}");
-                return me;
+                var (profile, presence) = await _mediator.Send(new Core.GraphServices.GetProfileAndPresenceCommand());
+
+                _logger.LogInformation($"User is {profile.DisplayName}");
+                return (profile, presence);
             }
             catch (Exception ex)
             {
@@ -197,7 +195,7 @@ namespace PresenceLight.Web
         {
             try
             {
-                var photoStream = await _graphClient.Me.Photo.Content.Request().GetAsync();
+                var photoStream = await _mediator.Send(new Core.GraphServices.GetPhotoCommand());
                 var memoryStream = new MemoryStream();
                 photoStream.CopyTo(memoryStream);
 
@@ -213,23 +211,15 @@ namespace PresenceLight.Web
             }
         }
 
-        private async Task<Presence> GetPresence()
+        public async Task<Presence> GetPresence()
         {
             try
             {
-                var presence = await _graphClient.Me.Presence.Request().GetAsync();
-
-                var r = new Regex(@"
-                (?<=[A-Z])(?=[A-Z][a-z]) |
-                 (?<=[^A-Z])(?=[A-Z]) |
-                 (?<=[A-Za-z])(?=[^A-Za-z])", RegexOptions.IgnorePatternWhitespace);
-
-                _logger.LogInformation($"Presence is {presence.Availability}");
-                return presence;
+                return await _mediator.Send(new Core.GraphServices.GetPresenceCommand());
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                _logger.LogError(ex, "Exception getting presence");
+                _logger.LogError(e, "Error occurred Getting Presence");
                 throw;
             }
         }
@@ -281,7 +271,7 @@ namespace PresenceLight.Web
                     });
                 }
 
-                 if (_appState.Config.LightSettings.LocalSerialHost.IsEnabled && !string.IsNullOrEmpty(_appState.Config.LightSettings.LocalSerialHost.SelectedItemId))
+                if (_appState.Config.LightSettings.LocalSerialHost.IsEnabled && !string.IsNullOrEmpty(_appState.Config.LightSettings.LocalSerialHost.SelectedItemId))
                 {
                     string response = await _mediator.Send(new Core.LocalSerialHostServices.SetColorCommand
                     {

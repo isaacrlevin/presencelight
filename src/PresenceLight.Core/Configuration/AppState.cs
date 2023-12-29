@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 using Microsoft.Graph;
+using Microsoft.Graph.Models;
 
 using PresenceLight.Core.WizServices;
 

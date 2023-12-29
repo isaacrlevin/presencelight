@@ -13,7 +13,7 @@ using MudBlazor.Services;
 using PresenceLight.Core;
 using PresenceLight.Razor;
 using PresenceLight.Razor.Services;
-
+using PresenceLight.Razor.Components;
 namespace PresenceLight.Web
 {
     public static class ServiceCollectionExtensions

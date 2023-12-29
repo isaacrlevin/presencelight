@@ -2,7 +2,7 @@
 using System;
 using System.Reflection;
 
-namespace PresenceLight.Graph
+namespace PresenceLight
 {
     public static class PresenceConstants
     {

@@ -12,7 +12,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 using PresenceLight.Core;
-using PresenceLight.Graph;
 using PresenceLight.Razor;
 using PresenceLight.Razor.Services;
 using PresenceLight.Services;
@@ -168,9 +167,10 @@ namespace PresenceLight
             services.AddSingleton<AppState>();
             services.AddSingleton<AppInfo, AppInfo>();
 
-            var userAuthService = new UserAuthService(Configuration);
-            services.AddSingleton(userAuthService);
-            services.AddSingleton<IGraphService, GraphService>();
+            services.AddSingleton<LoginService, LoginService>();
+            services.AddSingleton<AuthorizationProvider, AuthorizationProvider>();
+
+
 
             services.AddPresenceServices();
 
