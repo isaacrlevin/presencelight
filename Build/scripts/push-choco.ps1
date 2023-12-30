@@ -77,7 +77,7 @@ function Hash-Files {
 Hash-Files -Version $Version
 
 # Chocolatey Pack
-& choco.exe pack ".\Chocolatey\PresenceLight.nuspec" --version "${Version}.0" --OutputDirectory ".\Chocolatey"
+& choco.exe pack ".\Chocolatey\PresenceLight.nuspec" --version "${Version}" --OutputDirectory ".\Chocolatey"
 
 $CHOCOAPIKEY = $CHOCOAPIKEY -replace "`n", "" -replace "`r", "" -replace " ", ""
 

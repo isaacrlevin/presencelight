@@ -145,12 +145,12 @@ jobs:
       run: |
         # Update badges
         [xml]$badge = Get-Content ".\BuildArtifacts\ci_badge.svg"
-        $badge.svg.g[1].text[2].InnerText = "${{ env.GitBuildVersionSimple }}.0"
-        $badge.svg.g[1].text[3].InnerText = "${{ env.GitBuildVersionSimple }}.0"
+        $badge.svg.g[1].text[2].InnerText = "${{ env.GitBuildVersionSimple }}"
+        $badge.svg.g[1].text[3].InnerText = "${{ env.GitBuildVersionSimple }}"
         $badge.Save(".\${{ matrix.ChannelName }}\ci_badge.svg")
         [xml]$badge = Get-Content ".\BuildArtifacts\store_badge.svg"
-        $badge.svg.g[1].text[2].InnerText = "${{ env.GitBuildVersionSimple }}.0"
-        $badge.svg.g[1].text[3].InnerText = "${{ env.GitBuildVersionSimple }}.0"
+        $badge.svg.g[1].text[2].InnerText = "${{ env.GitBuildVersionSimple }}"
+        $badge.svg.g[1].text[3].InnerText = "${{ env.GitBuildVersionSimple }}"
         $badge.Save(".\${{ matrix.ChannelName }}\stable_badge.svg")
       shell: powershell
 
