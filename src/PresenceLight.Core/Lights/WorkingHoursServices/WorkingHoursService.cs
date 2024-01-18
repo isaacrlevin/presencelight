@@ -35,7 +35,9 @@ namespace PresenceLight.Core
 
             bool IsWorkingHours = false;
 
-            if (string.IsNullOrEmpty(_appState.Config.LightSettings.WorkingHoursStartTime) || string.IsNullOrEmpty(_appState.Config.LightSettings.WorkingHoursEndTime) || string.IsNullOrEmpty(_appState.Config.LightSettings.WorkingDays))
+            if (!Helpers.AreStringsNotEmpty(new string[] {_appState.Config.LightSettings.WorkingHoursStartTime,
+                                            _appState.Config.LightSettings.WorkingHoursEndTime,
+                                            _appState.Config.LightSettings.WorkingDays}))
             {
                 IsWorkingHours = false;
                 return false;

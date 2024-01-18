@@ -171,7 +171,7 @@ namespace PresenceLight.Core
         {
             try
             {
-                IBridgeLocator locator = new HttpBridgeLocator(); //Or: LocalNetworkScanBridgeLocator, MdnsBridgeLocator, MUdpBasedBridgeLocator
+                IBridgeLocator locator = new HttpBridgeLocator();
                 var bridges = await locator.LocateBridgesAsync(TimeSpan.FromSeconds(5));
                 if (bridges.Any())
                 {

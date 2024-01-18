@@ -39,11 +39,11 @@ namespace PresenceLight.Core
                 if (optionsAccessor != null && optionsAccessor.Value != null)
                 {
                     config = optionsAccessor.Value;
-                    if (string.IsNullOrEmpty(config.AADSettings.ClientId) ||
-                        string.IsNullOrEmpty(config.AADSettings.ClientSecret) ||
-                        string.IsNullOrEmpty(config.AADSettings.Instance) ||
-                        string.IsNullOrEmpty(config.AADSettings.RedirectHost) ||
-                        string.IsNullOrEmpty(config.AADSettings.CallbackPath))
+                    if (!Helpers.AreStringsNotEmpty(new string[] { config.AADSettings.ClientId,
+                                                        config.AADSettings.ClientSecret,
+                                                        config.AADSettings.Instance,
+                                                        config.AADSettings.RedirectHost,
+                                                        config.AADSettings.CallbackPath }))
                     { }
                     else
                     {

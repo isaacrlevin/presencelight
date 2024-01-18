@@ -230,7 +230,9 @@ namespace PresenceLight.Web
             {
                 if (_appState.Config.LightSettings.Hue.IsEnabled)
                 {
-                    if (!string.IsNullOrEmpty(_appState.Config.LightSettings.Hue.HueApiKey) && !string.IsNullOrEmpty(_appState.Config.LightSettings.Hue.HueIpAddress) && !string.IsNullOrEmpty(_appState.Config.LightSettings.Hue.SelectedItemId))
+                    if (Helpers.AreStringsNotEmpty(new string[] {_appState.Config.LightSettings.Hue.HueApiKey,
+                                                    _appState.Config.LightSettings.Hue.HueIpAddress,
+                                                    _appState.Config.LightSettings.Hue.SelectedItemId }))
                     {
                         if (_appState.Config.LightSettings.Hue.UseRemoteApi)
                         {
@@ -239,6 +241,7 @@ namespace PresenceLight.Web
                                 await _mediator.Send(new Core.RemoteHueServices.SetColorCommand
                                 {
                                     Availability = color,
+                                    Activity = activity,
                                     LightId = _appState.Config.LightSettings.Hue.SelectedItemId,
                                     BridgeId = _appState.Config.LightSettings.Hue.RemoteBridgeId
                                 });

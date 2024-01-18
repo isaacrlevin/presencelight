@@ -29,6 +29,19 @@ namespace PresenceLight.Core
     /// </summary>
     public static class Helpers
     {
+
+        public static bool AreStringsNotEmpty(string[] strings)
+        {
+            bool result = true;
+
+            foreach (var s in strings)
+            {
+                result = result && !string.IsNullOrEmpty(s);
+            }
+
+            return result;
+        }
+
         /// <summary>
         /// Opens the specified URL in the default browser.
         /// </summary>

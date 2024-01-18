@@ -1,12 +1,19 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using OpenWiz;
 using System.Net;
+using System.Threading.Tasks;
+
 using Microsoft.Extensions.Logging;
-using Q42.HueApi.ColorConverters;
+
+using OpenWiz;
+
+using PresenceLight.Core.Lights.WizServices;
 using PresenceLight.Core.WizServices;
+
+using Q42.HueApi.ColorConverters;
+using Q42.HueApi.Models.Bridge;
 
 namespace PresenceLight.Core
 {
@@ -20,6 +27,8 @@ namespace PresenceLight.Core
     {
         private AppState _appState;
         private readonly ILogger<WizService> _logger;
+
+        private IPAddress _loopbackAddress;
 
         public WizService(AppState appState, ILogger<WizService> logger)
         {
@@ -139,10 +148,11 @@ namespace PresenceLight.Core
 
         private async Task<IEnumerable<(string LightName, string MacAddress)>> GetHomeIds()
         {
+            GetLoopbackIP();
             WizSocket socket = new WizSocket();
             socket.GetSocket().EnableBroadcast = true; // This will enable sending to the broadcast address
 
-            WizHandle handle = new WizHandle("000000000000", IPAddress.Broadcast); // MAC doesn't matter here
+            WizHandle handle = new WizHandle("000000000000", IPAddress.Parse(_loopbackAddress.ToString())); // MAC doesn't matter here
 
             WizState state = WizState.MakeGetSystemConfig();
 
@@ -169,7 +179,6 @@ namespace PresenceLight.Core
                 }
                 catch (Exception e)
                 {
-                    var foo = e.Message;
                 }
             }
 
@@ -178,9 +187,9 @@ namespace PresenceLight.Core
 
         private async Task<(string color, WizParams command, bool returnFunc)> Handle(string presence, string lightId)
         {
-            var props = _appState.Config.LightSettings.Hue.Statuses.GetType().GetProperties().ToList();
+            var props = _appState.Config.LightSettings.Wiz.Statuses.GetType().GetProperties().ToList();
 
-            if (_appState.Config.LightSettings.Hue.UseActivityStatus)
+            if (_appState.Config.LightSettings.Wiz.UseActivityStatus)
             {
                 props = props.Where(a => a.Name.ToLower().StartsWith("activity")).ToList();
             }
@@ -206,7 +215,7 @@ namespace PresenceLight.Core
             {
                 if (presence == prop.Name.Replace("Status", "").Replace("Availability", "").Replace("Activity", ""))
                 {
-                    var value = (AvailabilityStatus)prop.GetValue(_appState.Config.LightSettings.Hue.Statuses);
+                    var value = (AvailabilityStatus)prop.GetValue(_appState.Config.LightSettings.Wiz.Statuses);
 
                     if (!value.Disabled)
                     {
@@ -218,7 +227,7 @@ namespace PresenceLight.Core
                     {
                         command.State = false;
                         await UpdateLight(command, lightId);
-                        message = $"Turning Hue Light {lightId} Off";
+                        message = $"Turning Wiz Light {lightId} Off";
                         _logger.LogInformation(message);
                         return (color, command, true);
                     }
@@ -226,12 +235,25 @@ namespace PresenceLight.Core
             }
             return (color, command, false);
         }
+
+        private void GetLoopbackIP()
+        {
+            var netInterface = NetworkInterfaceExtensions.GetAllUpNetworkInterfacesFirstPrivateIPv4();
+
+            _loopbackAddress = netInterface.Address.GetNetworkLoopbackAddress(netInterface.IPv4Mask);
+
+        }
         private async Task<WizResult> UpdateLight(WizParams wizParams, string lightId)
         {
+            if (_loopbackAddress == null)
+            {
+                GetLoopbackIP();
+            }
+
             WizSocket socket = new WizSocket();
             socket.GetSocket().EnableBroadcast = true; // This will enable sending to the broadcast address
             socket.GetSocket().ReceiveTimeout = 1000; // This will prevent the demo from running indefinitely
-            WizHandle handle = new WizHandle(lightId, IPAddress.Broadcast); // MAC doesn't matter here
+            WizHandle handle = new WizHandle(lightId, IPAddress.Parse(_loopbackAddress.ToString())); // MAC doesn't matter here
 
             WizState state = new WizState
             {

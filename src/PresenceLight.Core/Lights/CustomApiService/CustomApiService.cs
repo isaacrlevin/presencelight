@@ -222,7 +222,7 @@ namespace PresenceLight.Core
             using (Serilog.Context.LogContext.PushProperty("method", method))
             using (Serilog.Context.LogContext.PushProperty("uri", uri))
             {
-                if (!string.IsNullOrEmpty(method) && !string.IsNullOrEmpty(uri))
+                if (Helpers.AreStringsNotEmpty(new string[] { method, uri }))
                 {
                     try
                     {

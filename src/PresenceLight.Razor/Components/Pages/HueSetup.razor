@@ -177,7 +177,7 @@
             {
                 _logger.LogInformation("Cloud Hue Login Initialized");
                 var (bridgeId, apiKey, bridgeIp) = await _mediator.Send(new PresenceLight.Core.RemoteHueServices.RegisterBridgeCommand());
-                if (!string.IsNullOrEmpty(apiKey) && !string.IsNullOrEmpty(bridgeId))
+                if (Helpers.AreStringsNotEmpty(new string[] { apiKey, bridgeId }))
                 {
                     appState.Config.LightSettings.Hue.HueApiKey = apiKey;
                     appState.Config.LightSettings.Hue.RemoteBridgeId = bridgeId;
@@ -385,6 +385,15 @@
         var light = e;
         appState.Config.LightSettings.Hue.SelectedItemId = light;
         appState.SetHueLight(light);
+        if (lastType == "Groups")
+        {
+            selectedLightLabel = ((Q42.HueApi.Models.Groups.Group)appState.HueLights.Where(a => ((Q42.HueApi.Models.Groups.Group)a).Id == appState.Config.LightSettings.Hue.SelectedItemId.Replace("group_id:", "")).FirstOrDefault()).Name;
+        }
+        else
+        {
+            selectedLightLabel = ((Q42.HueApi.Light)appState.HueLights.Where(a => ((Q42.HueApi.Light)a).Id == appState.Config.LightSettings.Hue.SelectedItemId.Replace("id:", "")).FirstOrDefault()).Name;
+        }        
+
         _logger.LogInformation($"Selected Hue Light Set: {light}");
     }
 

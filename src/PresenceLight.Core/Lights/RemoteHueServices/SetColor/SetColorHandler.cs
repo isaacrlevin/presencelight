@@ -15,7 +15,7 @@ namespace PresenceLight.Core.RemoteHueServices
 
         public async Task<Unit> Handle(SetColorCommand command, CancellationToken cancellationToken)
         {
-            await _service.SetColor(command.Availability, command.LightId, command.BridgeId);
+            await _service.SetColor(command.Availability, command.Activity, command.LightId, command.BridgeId);
             return default;
         }
     }
