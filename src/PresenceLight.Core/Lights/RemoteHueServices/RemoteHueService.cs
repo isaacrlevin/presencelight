@@ -34,8 +34,8 @@ namespace PresenceLight.Core
         private IRemoteAuthenticationClient _authClient;
         private readonly ILogger<RemoteHueService> _logger;
         private MediatR.IMediator _mediator;
-        private string _cacheFile = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "/huetoken.cache";
-
+        private string _cacheFile = $"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\\PresenceLight\\huetoken.cache";
+        
         public RemoteHueService(AppState appState, ILogger<RemoteHueService> logger, MediatR.IMediator mediator)
         {
             _mediator = mediator;
