@@ -280,9 +280,19 @@ namespace PresenceLight.Core
                                 response = await _client.GetAsync(uri, cancellationToken);
                                 break;
                             case "POST":
-                                var content = new StringContent(body, Encoding.UTF8, "application/json");
-                                response = await _client.PostAsync(uri, content, cancellationToken);
-                                break;
+                                // check if body is empty
+                                if (string.IsNullOrEmpty(body))
+                                {
+                                    response = await _client.PostAsync(uri, null, cancellationToken);
+                                    break;
+                                }
+                                else
+                                {
+                                    var content = new StringContent(body, Encoding.UTF8, "application/json");
+                                    response = await _client.PostAsync(uri, content, cancellationToken);
+                                    break;
+                                }
+                                
                         }
 
 
