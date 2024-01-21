@@ -288,6 +288,13 @@ namespace PresenceLight.Core
                                 }
                                 else
                                 {
+                                    // Replace any variables in the body
+                                    // The following variables are supported:
+                                    // {{availability}} - The current availability
+                                    // {{activity}} - The current activity
+                                    // Check if the body contains any variables using a regular expression and replace them
+                                    body = Helpers.ReplaceVariables(body, _appState.Presence.Availability, _appState.Presence.Activity);
+
                                     var content = new StringContent(body, Encoding.UTF8, "application/json");
                                     response = await _client.PostAsync(uri, content, cancellationToken);
                                     break;
