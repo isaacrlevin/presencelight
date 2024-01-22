@@ -48,7 +48,7 @@ namespace PresenceLight.Razor
                 return "Web";
             }
 
-            if (Convert.ToBoolean(_config["IsAppPackaged"], CultureInfo.InvariantCulture))
+            if (new DesktopBridge.Helpers().IsRunningAsUwp())
             {
                 return "AppPackage";
             }

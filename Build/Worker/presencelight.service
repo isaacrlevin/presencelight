@@ -1,5 +1,5 @@
 [Unit]
-Description=PresenceLight is a solution to broadcast your various statuses to a Phillips Hue or LIFX light bulb. 
+Description=PresenceLight is a solution to broadcast your various statuses to a Philips Hue or LIFX light bulb.
 
 [Service]
 WorkingDirectory=/home/pi/PresenceLight
