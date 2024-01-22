@@ -45,11 +45,11 @@
 | Philips Wiz |
 | Any light which can be controlled via a GET or POST call to a web API |
 
-## Configure Hardware
+## Docs
 - [Configure Hardware](docs/configure-hardware.md)
-
-## FAQ
 - [FAQ](docs/faq.mdFAQ)
+- [Configure Custom Api Endpoint](docs/configure-custom-api.md)
+- [Configure Microsft Entra ID App (OPTIONAL)](/docs/configure-entra-app.md)
 
 ## Please Contribute
 
@@ -59,15 +59,19 @@ I welcome all contributions here! Before you do, please read the [Contributors G
 
 Presence Light would not be possible without the amazing work from the contributors to the following third party libraries!
 
-- [Q42.HueApi](https://github.com/Q42/Q42.HueApi)
-- [OpenWiz](https://github.com/UselessMnemonic/OpenWiz)
-- [YeelightAPI](https://github.dev/roddone/YeelightAPI)
-- [LifxCloud](https://github.com/isaacrlevin/LifxCloudClient)
-- [MediatR](https://github.com/jbogard/MediatR)
-- [Polly](https://github.com/App-vNext/Polly)
-- [Serilog](https://github.com/serilog/serilog)
-- [Blazorise](https://github.com/Megabit/Blazorise)
-- [BlazorPro.Spinkit](https://github.com/EdCharbeneau/BlazorPro.Spinkit)
-- [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json)
-- [IdentityModel.OidcClient](https://github.com/IdentityModel/IdentityModel.OidcClient)
-- [MudBlazor](https://www.mudblazor.com/)
+- Lights
+  - [Q42.HueApi](https://github.com/Q42/Q42.HueApi)
+  - [OpenWiz](https://github.com/UselessMnemonic/OpenWiz)
+  - [YeelightAPI](https://github.dev/roddone/YeelightAPI)
+  - [LifxCloud](https://github.com/isaacrlevin/LifxCloudClient)
+- UI Components
+  - [MudBlazor](https://www.mudblazor.com/)
+  - [Blazorise](https://github.com/Megabit/Blazorise)
+  - [BlazorPro.Spinkit](https://github.com/EdCharbeneau/BlazorPro.Spinkit)
+- Backend
+  - [MediatR](https://github.com/jbogard/MediatR)
+  - [Polly](https://github.com/App-vNext/Polly)
+  - [Serilog](https://github.com/serilog/serilog)
+  - [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json)
+  - [IdentityModel.OidcClient](https://github.com/IdentityModel/IdentityModel.OidcClient)
+  - [Nerdbank.GitVersioning](https://github.com/dotnet/Nerdbank.GitVersioning)

@@ -52,10 +52,10 @@ If you are adding new functionality to PresenceLight (adding support for a new l
 - ### [PresenceLight.Core](https://github.com/isaacrlevin/presencelight/tree/main/src/PresenceLight.Core)
     This project holds all the shared logic for PresenceLight, including interfacing with Microsoft Entra, Microsoft Graph, all lights, as well as all the models that exist for the solution. More than likely, you will be working inside the [Lights](https://github.com/isaacrlevin/presencelight/tree/main/src/PresenceLight.Core/Lights) folder in this project to add a new folder to include the code to support your feature. The project uses [MediatR](https://github.com/jbogard/MediatR) to send messages in-process across the application. Be sure to follow the existing pattern when adding Requests and Handlers
 
-- ### PresenceLight.Razor
+- ### [PresenceLight.Razor]((https://github.com/isaacrlevin/presencelight/tree/main/src/PresenceLight.Razor))
   This project holds all of the UI for the application, and leverages ASP.NET Core Blazor components to achieve this. If you are adding new functionality, you will either update an existing component or add a new one. If you are adding a new component, you will add a new `.razor` file in the [Pages](https://github.com/isaacrlevin/presencelight/tree/main/src/PresenceLight.Razor/Components/Pages) folder and add an entry in the `NavMenu.razor` for your new component. Please follow the existing patterns that you see in the other `.razor` files.
 
-- [PresenceLight](https://github.com/isaacrlevin/presencelight/tree/main/src/DesktopClient/PresenceLight)
+- ### [PresenceLight](https://github.com/isaacrlevin/presencelight/tree/main/src/DesktopClient/PresenceLight)
     This is the WPF project that runs the desktop version of the application. The application contains a single Window that runs all of the functionality (calling the Graph API, calling handlers to update lights). Once you are ready to test your functionality for the Desktop version, add code to light up the functionality in [`MainWindow.xaml.cs`](https://github.com/isaacrlevin/presencelight/blob/main/src/DesktopClient/PresenceLight/MainWindow.xaml.cs).
 
 - ### [PresenceLight.Package](https://github.com/isaacrlevin/presencelight/tree/main/src/DesktopClient/PresenceLight.Package)
