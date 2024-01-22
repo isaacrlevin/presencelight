@@ -6,6 +6,7 @@ on:
     - 'src/PresenceLight.Web/**'
     - 'src/DockerFiles/**'
     - '*..md'
+    - 'docs/*..md'
     - 'Build/**'
     - '.chocolatey/**'
 
@@ -16,6 +17,7 @@ on:
     - 'src/PresenceLight.Web/**'
     - 'src/DockerFiles/**'
     - '*..md'
+    - 'docs/*..md'
     - 'Build/**'
     - '.chocolatey/**'
 

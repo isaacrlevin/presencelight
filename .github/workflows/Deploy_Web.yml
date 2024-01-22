@@ -6,6 +6,7 @@ on:
     - '.github/workflows/Deploy_Desktop.yml'
     - 'src/DesktopClient/**'
     - '*..md'
+    - 'docs/*..md'
     - 'Build/**'
     - '.chocolatey/**'
 
@@ -15,6 +16,7 @@ on:
     - '.github/workflows/Deploy_Desktop.yml'
     - 'src/DesktopClient/**'
     - '*..md'
+    - 'docs/*..md'
     - 'Build/**'
     - '.chocolatey/**'
 
