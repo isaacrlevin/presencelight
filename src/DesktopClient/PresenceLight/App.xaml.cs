@@ -4,12 +4,15 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Windows;
 
-using MudBlazor;
-using MediatR;
+using Blazorise;
+using Blazorise.Bootstrap;
+using Blazorise.Icons.FontAwesome;
 
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+
+using MudBlazor.Services;
 
 using PresenceLight.Core;
 using PresenceLight.Razor;
@@ -20,10 +23,6 @@ using PresenceLight.Telemetry;
 using Serilog;
 
 using Windows.Storage;
-using MudBlazor.Services;
-using Blazorise;
-using Blazorise.Bootstrap;
-using Blazorise.Icons.FontAwesome;
 
 namespace PresenceLight
 {
@@ -83,7 +82,7 @@ namespace PresenceLight
             StaticConfig = builder.Build();
 
             //Override the save file location for logs if this is a packaged app... 
-            if (Convert.ToBoolean(Configuration["IsAppPackaged"], CultureInfo.InvariantCulture))
+            if (new DesktopBridge.Helpers().IsRunningAsUwp())
             {
                 var _logFilePath = System.IO.Path.Combine(ApplicationData.Current.LocalFolder.Path, "PresenceLight\\logs\\DesktopClient\\log-.json");
 
@@ -125,7 +124,7 @@ namespace PresenceLight
             });
 
 #if DEBUG
-            services.AddBlazorWebViewDeveloperTools();           
+            services.AddBlazorWebViewDeveloperTools();
 #endif
 
 
@@ -178,7 +177,7 @@ namespace PresenceLight
             services.AddSingleton<MainWindow>();
             services.AddTransient<DiagnosticsClient, DiagnosticsClient>();
 
-            if (Convert.ToBoolean(Configuration["IsAppPackaged"], CultureInfo.InvariantCulture))
+            if (new DesktopBridge.Helpers().IsRunningAsUwp())
             {
                 services.AddSingleton<ISettingsService, AppPackageSettingsService>();
             }
@@ -188,7 +187,7 @@ namespace PresenceLight
             }
 
             services.AddSingleton<ITelemetryInitializer, AppVersionTelemetryInitializer>();
-            
+
             //Inject Services Into MainWindow
             ServiceProvider = services.BuildServiceProvider();
 

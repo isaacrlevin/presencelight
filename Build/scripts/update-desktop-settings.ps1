@@ -48,11 +48,6 @@ switch ($Release) {
         [xml]$manifest = get-content  $xmlPath
         $manifest.Package.Identity.Version = "${Version}.0"
         $manifest.save($xmlPath)
-
-        Write-Host "Updating AppSettings for Release"
-        $appsettings = get-content ".\src\DesktopClient\PresenceLight\appsettings.json" -raw | ConvertFrom-Json
-        $appsettings.isAppPackaged = "true"
-        $appsettings | ConvertTo-Json -depth 32 | set-content '.\src\DesktopClient\PresenceLight\appsettings.json'
     }
     "Nightly" {
         Write-Host "Updating AppxManifest for Nightly"
@@ -61,17 +56,8 @@ switch ($Release) {
         [xml]$manifest = get-content  $xmlPath
         $manifest.Package.Identity.Version = "${Version}.0"
         $manifest.save($xmlPath)
-
-        Write-Host "Updating AppSettings for Nightly"
-        $appsettings = get-content ".\src\DesktopClient\PresenceLight\appsettings.json" -raw | ConvertFrom-Json
-        $appsettings.isAppPackaged = "true"
-        $appsettings | ConvertTo-Json -depth 32 | set-content '.\src\DesktopClient\PresenceLight\appsettings.json'
     }
     "Standalone" {
-        Write-Host "Updating AppSettings for Standalone"
-        $appsettings = get-content ".\src\DesktopClient\PresenceLight\appsettings.json" -raw | ConvertFrom-Json
-        $appsettings.isAppPackaged = "false"
-        $appsettings | ConvertTo-Json -depth 32 | set-content '.\src\DesktopClient\PresenceLight\appsettings.json'
     }
 }
 
