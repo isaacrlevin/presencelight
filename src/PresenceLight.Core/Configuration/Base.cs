@@ -6,11 +6,6 @@
     public class BaseConfig
     {
         /// <summary>
-        /// Gets or sets a value indicating whether to send diagnostic data.
-        /// </summary>
-        public bool SendDiagnosticData { get; set; }
-
-        /// <summary>
         /// Gets or sets a value indicating whether the application should start minimized.
         /// </summary>
         public bool StartMinimized { get; set; }

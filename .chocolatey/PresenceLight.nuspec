@@ -7,7 +7,7 @@
     <authors>Isaac Levin</authors>
     <owners>Isaac Levin</owners>
     <packageSourceUrl>https://github.com/isaacrlevin/PresenceLight</packageSourceUrl>
-    <docsUrl>https://github.com/isaacrlevin/PresenceLight/wiki</docsUrl>
+    <docsUrl>https://github.com/isaacrlevin/PresenceLight/README.md</docsUrl>
     <bugTrackerUrl>https://github.com/isaacrlevin/PresenceLight/issues</bugTrackerUrl>
     <licenseUrl>https://github.com/isaacrlevin/PresenceLight/blob/main/LICENSE</licenseUrl>
     <projectUrl>https://github.com/isaacrlevin/PresenceLight/</projectUrl>
@@ -15,7 +15,7 @@
     <iconUrl>https://rawcdn.githack.com/isaacrlevin/PresenceLight/2c388db6a155cf7bbc8b12578222e0609d147ee0/Icon.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>
-PresenceLight is a solution to broadcast your various statuses to a Phillips Hue or LIFX light bulb.
+PresenceLight is a solution to broadcast your various statuses to a Philips Hue or LIFX light bulb.
 Some statuses you can broadcast are: your availability in Microsoft Teams, your current Windows 10 theme, and a theme or color of your choosing.
 
 ## Package Parameters
@@ -24,7 +24,7 @@ Some statuses you can broadcast are: your availability in Microsoft Teams, your 
     </description>
     <summary>Broadcasts colors to various Smart Lights</summary>
     <releaseNotes>https://github.com/isaacrlevin/PresenceLight/releases</releaseNotes>
-    <tags>presence lifx hue phillips teams</tags>
+    <tags>presence lifx hue philips teams</tags>
   </metadata>
   <files>
     <file src="tools\**" target="tools" />

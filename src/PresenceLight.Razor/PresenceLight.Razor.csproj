@@ -14,6 +14,7 @@
     <PackageReference Include="Blazorise.Bootstrap" Version="1.4.1" />
     <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.4.1" />
     <PackageReference Include="BlazorPro.Spinkit" Version="1.2.0" />
+    <PackageReference Include="DesktopBridge.Helpers" Version="1.2.2" />
     <PackageReference Include="IdentityModel" Version="6.2.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.SnapshotCollector" Version="1.4.5" />
