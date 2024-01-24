@@ -26,7 +26,7 @@
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Graph" Version="5.39.0" />
+    <PackageReference Include="Microsoft.Graph" Version="5.40.0" />
     <PackageReference Include="Microsoft.Identity.Client" Version="4.59.0" />
     <PackageReference Include="Microsoft.Identity.Client.Extensions.Msal" Version="4.59.0" />
     <PackageReference Include="OpenWiz" Version="1.1.0" />
