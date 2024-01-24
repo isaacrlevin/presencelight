@@ -14,5 +14,10 @@
         /// Gets or sets the URI of the API.
         /// </summary>
         public string? Uri { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Body of the API.
+        /// </summary>
+        public string? Body { get; set; }
     }
 }

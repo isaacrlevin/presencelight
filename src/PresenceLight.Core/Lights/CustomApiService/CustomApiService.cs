@@ -58,6 +58,7 @@ namespace PresenceLight.Core
         {
             string method = string.Empty;
             string uri = string.Empty;
+            string body = string.Empty;
             string result = string.Empty;
 
             switch (newActivity)
@@ -65,62 +66,75 @@ namespace PresenceLight.Core
                 case "Available":
                     method = _appState.Config.LightSettings.CustomApi.CustomApiActivityAvailable.Method;
                     uri = _appState.Config.LightSettings.CustomApi.CustomApiActivityAvailable.Uri;
+                    body = _appState.Config.LightSettings.CustomApi.CustomApiActivityAvailable.Body;
                     break;
                 case "Presenting":
                     method = _appState.Config.LightSettings.CustomApi.CustomApiActivityPresenting.Method;
                     uri = _appState.Config.LightSettings.CustomApi.CustomApiActivityPresenting.Uri;
+                    body = _appState.Config.LightSettings.CustomApi.CustomApiActivityPresenting.Body;
                     break;
                 case "InACall":
                     method = _appState.Config.LightSettings.CustomApi.CustomApiActivityInACall.Method;
                     uri = _appState.Config.LightSettings.CustomApi.CustomApiActivityInACall.Uri;
+                    body = _appState.Config.LightSettings.CustomApi.CustomApiActivityInACall.Body;
                     break;
                 case "InAConferenceCall":
                     method = _appState.Config.LightSettings.CustomApi.CustomApiActivityInAConferenceCall.Method;
                     uri = _appState.Config.LightSettings.CustomApi.CustomApiActivityInAConferenceCall.Uri;
+                    body = _appState.Config.LightSettings.CustomApi.CustomApiActivityInAConferenceCall.Body;
                     break;
                 case "InAMeeting":
                     method = _appState.Config.LightSettings.CustomApi.CustomApiActivityInAMeeting.Method;
                     uri = _appState.Config.LightSettings.CustomApi.CustomApiActivityInAMeeting.Uri;
+                    body = _appState.Config.LightSettings.CustomApi.CustomApiActivityInAMeeting.Body;
                     break;
                 case "Busy":
                     method = _appState.Config.LightSettings.CustomApi.CustomApiActivityBusy.Method;
                     uri = _appState.Config.LightSettings.CustomApi.CustomApiActivityBusy.Uri;
+                    body = _appState.Config.LightSettings.CustomApi.CustomApiActivityBusy.Body;
                     break;
                 case "Away":
                     method = _appState.Config.LightSettings.CustomApi.CustomApiActivityAway.Method;
                     uri = _appState.Config.LightSettings.CustomApi.CustomApiActivityAway.Uri;
+                    body = _appState.Config.LightSettings.CustomApi.CustomApiActivityAway.Body;
                     break;
                 case "BeRightBack":
                     method = _appState.Config.LightSettings.CustomApi.CustomApiActivityBeRightBack.Method;
                     uri = _appState.Config.LightSettings.CustomApi.CustomApiActivityBeRightBack.Uri;
+                    body = _appState.Config.LightSettings.CustomApi.CustomApiActivityBeRightBack.Body;
                     break;
                 case "DoNotDisturb":
                     method = _appState.Config.LightSettings.CustomApi.CustomApiActivityDoNotDisturb.Method;
                     uri = _appState.Config.LightSettings.CustomApi.CustomApiActivityDoNotDisturb.Uri;
+                    body = _appState.Config.LightSettings.CustomApi.CustomApiActivityDoNotDisturb.Body;
                     break;
                 case "Idle":
                     method = _appState.Config.LightSettings.CustomApi.CustomApiActivityIdle.Method;
                     uri = _appState.Config.LightSettings.CustomApi.CustomApiActivityIdle.Uri;
+                    body = _appState.Config.LightSettings.CustomApi.CustomApiActivityIdle.Body;
                     break;
                 case "Offline":
                     method = _appState.Config.LightSettings.CustomApi.CustomApiActivityOffline.Method;
                     uri = _appState.Config.LightSettings.CustomApi.CustomApiActivityOffline.Uri;
+                    body = _appState.Config.LightSettings.CustomApi.CustomApiActivityOffline.Body;
                     break;
                 case "Off":
                     method = _appState.Config.LightSettings.CustomApi.CustomApiActivityOff.Method;
                     uri = _appState.Config.LightSettings.CustomApi.CustomApiActivityOff.Uri;
+                    body = _appState.Config.LightSettings.CustomApi.CustomApiActivityOff.Body;
                     break;
                 default:
                     break;
             }
 
-            return await PerformWebRequest(method, uri, result, cancellationToken);
+            return await PerformWebRequest(method, uri, body, result, cancellationToken);
         }
 
         private async Task<string> CallCustomApiForAvailabilityChanged(object sender, string newAvailability, CancellationToken cancellationToken)
         {
             string method = string.Empty;
             string uri = string.Empty;
+            string body = string.Empty;
             string result = string.Empty;
 
             switch (newAvailability)
@@ -128,40 +142,48 @@ namespace PresenceLight.Core
                 case "Available":
                     method = _appState.Config.LightSettings.CustomApi.CustomApiAvailable.Method;
                     uri = _appState.Config.LightSettings.CustomApi.CustomApiAvailable.Uri;
+                    body = _appState.Config.LightSettings.CustomApi.CustomApiAvailable.Body;
                     break;
                 case "Busy":
                     method = _appState.Config.LightSettings.CustomApi.CustomApiBusy.Method;
                     uri = _appState.Config.LightSettings.CustomApi.CustomApiBusy.Uri;
+                    body = _appState.Config.LightSettings.CustomApi.CustomApiBusy.Body;
                     break;
                 case "BeRightBack":
                     method = _appState.Config.LightSettings.CustomApi.CustomApiBeRightBack.Method;
                     uri = _appState.Config.LightSettings.CustomApi.CustomApiBeRightBack.Uri;
+                    body = _appState.Config.LightSettings.CustomApi.CustomApiBeRightBack.Body;
                     break;
                 case "Away":
                     method = _appState.Config.LightSettings.CustomApi.CustomApiAway.Method;
                     uri = _appState.Config.LightSettings.CustomApi.CustomApiAway.Uri;
+                    body = _appState.Config.LightSettings.CustomApi.CustomApiAway.Body;
                     break;
                 case "DoNotDisturb":
                     method = _appState.Config.LightSettings.CustomApi.CustomApiDoNotDisturb.Method;
                     uri = _appState.Config.LightSettings.CustomApi.CustomApiDoNotDisturb.Uri;
+                    body = _appState.Config.LightSettings.CustomApi.CustomApiDoNotDisturb.Body;
                     break;
                 case "AvailableIdle":
                     method = _appState.Config.LightSettings.CustomApi.CustomApiAvailableIdle.Method;
                     uri = _appState.Config.LightSettings.CustomApi.CustomApiAvailableIdle.Uri;
+                    body = _appState.Config.LightSettings.CustomApi.CustomApiAvailableIdle.Body;
                     break;
                 case "Offline":
                     method = _appState.Config.LightSettings.CustomApi.CustomApiOffline.Method;
                     uri = _appState.Config.LightSettings.CustomApi.CustomApiOffline.Uri;
+                    body = _appState.Config.LightSettings.CustomApi.CustomApiOffline.Body;
                     break;
                 case "Off":
                     method = _appState.Config.LightSettings.CustomApi.CustomApiOff.Method;
                     uri = _appState.Config.LightSettings.CustomApi.CustomApiOff.Uri;
+                    body = _appState.Config.LightSettings.CustomApi.CustomApiOff.Body;
                     break;
                 default:
                     break;
             }
 
-            return await PerformWebRequest(method, uri, result, cancellationToken);
+            return await PerformWebRequest(method, uri, body, result, cancellationToken);
         }
 
         private async Task<string> SetAvailability(string availability, CancellationToken cancellationToken)
@@ -210,7 +232,7 @@ namespace PresenceLight.Core
         }
 
         static Stack<string> _lastUriCalled = new Stack<string>(1);
-        private async Task<string> PerformWebRequest(string method, string uri, string result, CancellationToken cancellationToken)
+        private async Task<string> PerformWebRequest(string method, string uri, string body, string result, CancellationToken cancellationToken)
         {
             if (_lastUriCalled.Contains($"{method}|{uri}"))
             {
@@ -221,6 +243,7 @@ namespace PresenceLight.Core
 
             using (Serilog.Context.LogContext.PushProperty("method", method))
             using (Serilog.Context.LogContext.PushProperty("uri", uri))
+            using (Serilog.Context.LogContext.PushProperty("body", body))
             {
                 if (Helpers.AreStringsNotEmpty(new string[] { method, uri }))
                 {
@@ -257,18 +280,36 @@ namespace PresenceLight.Core
                                 response = await _client.GetAsync(uri, cancellationToken);
                                 break;
                             case "POST":
-                                response = await _client.PostAsync(uri, null, cancellationToken);
-                                break;
+                                // check if body is empty
+                                if (string.IsNullOrEmpty(body))
+                                {
+                                    response = await _client.PostAsync(uri, null, cancellationToken);
+                                    break;
+                                }
+                                else
+                                {
+                                    // Replace any variables in the body
+                                    // The following variables are supported:
+                                    // {{availability}} - The current availability
+                                    // {{activity}} - The current activity
+                                    // Check if the body contains any variables using a regular expression and replace them
+                                    body = Helpers.ReplaceVariables(body, _appState.Presence.Availability, _appState.Presence.Activity);
+
+                                    var content = new StringContent(body, Encoding.UTF8, "application/json");
+                                    response = await _client.PostAsync(uri, content, cancellationToken);
+                                    break;
+                                }
+                                
                         }
 
 
                         string responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
                         result = $"{(int)response.StatusCode} {response.StatusCode}: {responseBody}";
-                        string message = $"Sending {method} method to {uri}";
+                        string message = $"Sending {method} method to {uri} with body {body}";
 
                         _logger.LogInformation(message);
                         _lastUriCalled.TryPop(out string res);
-                        _lastUriCalled.Push($"{method}|{uri}");
+                        _lastUriCalled.Push($"{method}|{uri}|{body}");
 
                         using (Serilog.Context.LogContext.PushProperty("result", result))
                             _logger.LogDebug(message + " Results");
