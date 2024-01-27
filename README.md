@@ -43,6 +43,7 @@
 | LIFX |
 | Yeelight |
 | Philips Wiz |
+| [WLED](https://kno.wled.ge/) (via serial or web API) |
 | Any light which can be controlled via a GET or POST call to a web API |
 
 ## Docs
