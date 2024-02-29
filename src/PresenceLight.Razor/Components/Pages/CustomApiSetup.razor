@@ -19,9 +19,10 @@
                 {
                     object customApiSettingValue = customApiSetting.GetValue(appState.Config.LightSettings.CustomApi, null);
                     var lab = $"{customApiSetting.Name}Uri";
+                    var  body = $"{customApiSetting.Name}body";
 
                     <MudGrid Class="mt-10" Justify="Justify.Center">
-                        <MudItem xs="3">
+                        <MudItem xs="12">
                             <strong><label for="@lab">@Helpers.HumanifyText(customApiSetting.Name.Replace("CustomApi","")):</label></strong>
                         </MudItem>
                         @if (customApiSettingValue != null)
@@ -33,17 +34,26 @@
                                 if (setting.Name == "Method")
                                 {
                                     <MudItem xs="2">
+                                        <label>Method</label>
                                         <select class="form-control" value="@settingValue?.ToString()" @onchange="@((ChangeEventArgs e) => OnChange(e, setting, customApiSettingValue))">
-                                            <option value="" disabled="disabled">Select</option>
+                                            <option value="">Select</option>
                                             <option value="GET">GET</option>
                                             <option value="POST">POST</option>
                                         </select>
+                                    </MudItem>                                    
+                                }
+                                else if (setting.Name == "Uri")
+                                {                           
+                                    <MudItem xs="4">
+                                        <Label>Uri</Label>
+                                        <input type="text" id="@lab" value="@settingValue?.ToString()" @onchange="@((ChangeEventArgs e) => OnChange(e, setting, customApiSettingValue))" class="form-control" />
                                     </MudItem>
                                 }
-                                else
+                                else if (setting.Name == "Body")
                                 {
-                                    <MudItem xs="7">
-                                        <input type="text" id="@lab" value="@settingValue?.ToString()" @onchange="@((ChangeEventArgs e) => OnChange(e, setting, customApiSettingValue))" class="form-control" />
+                                    <MudItem xs="6">
+                                        <Label>Body</Label>
+                                        <input type="text" id="@body" value="@settingValue?.ToString()" @onchange="@((ChangeEventArgs e) => OnChange(e, setting, customApiSettingValue))" class="form-control" />
                                     </MudItem>
                                 }
                             }
@@ -127,6 +137,36 @@
         try
         {
             SettingsService.SaveSettings(appState.Config);
+            // Check if non of the objects from appState.Config.LightSettings.CustomApi has a property method set without also having the property uri set.
+            foreach (var customApiSetting in appState.Config.LightSettings.CustomApi.GetType().GetProperties())
+            {
+                if (customApiSetting.PropertyType.Name == "CustomApiSetting")
+                {
+                    object customApiSettingValue = customApiSetting.GetValue(appState.Config.LightSettings.CustomApi, null);
+                    foreach (var setting in customApiSettingValue.GetType().GetProperties())
+                    {
+                        if (setting.Name == "Method")
+                        {
+                            object settingValue = setting.GetValue(customApiSettingValue, null);
+                            if (settingValue != null && settingValue.ToString() != "" && customApiSettingValue.GetType().GetProperty("Uri").GetValue(customApiSettingValue, null).ToString() == "")
+                            {
+                                _logger.LogError("Uri is required when Method is set");
+                                throw new Exception("Uri is required when Method is set");
+                            }
+                        }
+                        // Check if the Uri is set without the Method being set.
+                        if (setting.Name == "Uri")
+                        {
+                            object settingValue = setting.GetValue(customApiSettingValue, null);
+                            if (settingValue != null && settingValue.ToString() != "" && customApiSettingValue.GetType().GetProperty("Method").GetValue(customApiSettingValue, null).ToString() == "")
+                            {
+                                _logger.LogError("Method is required when Uri is set");
+                                throw new Exception("Method is required when Uri is set");
+                            }
+                        }
+                    }
+                }
+            }
             _mediator.Send(new InitializeCommand { AppState = appState });
 
             message = "Settings Saved";

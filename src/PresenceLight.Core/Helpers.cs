@@ -104,5 +104,27 @@ namespace PresenceLight.Core
                 HoursPassedStatus.Off => "Off",
                 _ => throw new ArgumentException(message: "Invalid HoursPassedStatus Value", paramName: nameof(status)),
             };
+    
+        /// <summary>
+        /// Replaces the variables in the given body with the provided availability and activity.
+        /// </summary>
+        /// <param name="body">The body in which to replace the variables.</param>
+        /// <param name="availability">The availability to replace the {{availability}} variable.</param>
+        /// <param name="activity">The activity to replace the {{activity}} variable.</param>
+        /// <returns>The body with the variables replaced.</returns>
+        public static string ReplaceVariables(string body, string? availability, string? activity)
+        {
+            if (body.Contains("{{availability}}"))
+            {
+                body = body.Replace("{{availability}}", availability ?? string.Empty);
+            }
+
+            if (body.Contains("{{activity}}"))
+            {
+                body = body.Replace("{{activity}}", activity ?? string.Empty);
+            }
+            return body;
+        }
+
     }
 }
