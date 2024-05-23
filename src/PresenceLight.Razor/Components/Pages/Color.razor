@@ -44,7 +44,6 @@
                 if (appState.Config.LightSettings.Hue.IsEnabled)
                 {
                     if (Helpers.AreStringsNotEmpty(new string[] {appState.Config.LightSettings.Hue.HueApiKey,
-                                                    appState.Config.LightSettings.Hue.HueIpAddress,
                                                     appState.Config.LightSettings.Hue.SelectedItemId }))
                     {
                         if (appState.Config.LightSettings.Hue.UseRemoteApi)
@@ -62,7 +61,10 @@
                         }
                         else
                         {
-                            await _mediator.Send(new Core.HueServices.SetColorCommand() { Activity = appState.CustomColor, Availability = appState.CustomColor, LightID = appState.Config.LightSettings.Hue.SelectedItemId});
+                            if (!string.IsNullOrEmpty(appState.Config.LightSettings.Hue.HueIpAddress))
+                            {
+                                await _mediator.Send(new Core.HueServices.SetColorCommand() { Activity = appState.CustomColor, Availability = appState.CustomColor, LightID = appState.Config.LightSettings.Hue.SelectedItemId });
+                            }
                         }
                     }
                 }
