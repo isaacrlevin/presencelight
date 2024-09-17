@@ -3,11 +3,12 @@
 
 @if (appState.Config.AppType == "Desktop")
 {
-    @if (appState.SignedIn && appState.User != null)
+    if (appState.SignedIn && appState.User != null)
     {
         <MudMenu AnchorOrigin="Origin.CenterCenter" Dense="true" Class="mt-1 ml-4">
             <ActivatorContent>
                 <MudText Typo="Typo.body2" Class="px-4 py-2"> Hello, @appState.User.DisplayName!</MudText>
+                <MudText Typo="Typo.body2" Class="px-4 py-2"> Email: @appState.User.AdditionalData["email"]</MudText>
             </ActivatorContent>
             <ChildContent>
                 <MudListItem Text="Logout" Icon="@Icons.Material.Filled.Logout" OnClick="SignOut" />
@@ -24,6 +25,7 @@ else
             <MudMenu AnchorOrigin="Origin.CenterCenter" Dense="true" Class="mt-1 ml-4">
                 <ActivatorContent>
                     <MudText Typo="Typo.body2" Class="px-4 py-2"> Hello, @context.User.Identity.Name!</MudText>
+                    <MudText Typo="Typo.body2" Class="px-4 py-2"> Email: @context.User.FindFirst("preferred_username")?.Value</MudText>
                 </ActivatorContent>
                 <ChildContent>
                     <div tabindex="0" class="mud-list-item mud-list-item-dense mud-list-item-gutters mud-list-item-clickable mud-ripple">

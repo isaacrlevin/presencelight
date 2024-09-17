@@ -21,7 +21,10 @@ namespace PresenceLight.Core.GraphServices
 
         public async Task<User> Handle(GetProfileCommand command, CancellationToken cancellationToken)
         {
-            return await _graph.GetProfile(cancellationToken);
+            var user = await _graph.GetProfile(cancellationToken);
+            var email = user.Mail ?? user.UserPrincipalName;
+            user.AdditionalData["email"] = email;
+            return user;
         }
     }
 }

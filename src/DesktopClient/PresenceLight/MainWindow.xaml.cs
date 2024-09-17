@@ -609,5 +609,17 @@ private async Task InteractWithLights()
         }
     }
 }
+
+public void SetUserInfo(User? user, Presence? presence, string? photo = null)
+{
+    _appState.User = user;
+    _appState.Presence = presence;
+    _appState.ProfileImage = photo;
+    _appState.User.AdditionalData.TryGetValue("email", out var email);
+    _appState.User.AdditionalData["email"] = email;
+    NotifyStateChanged();
+}
+
+private void NotifyStateChanged() => _appState.OnChange?.Invoke();
     }
 }

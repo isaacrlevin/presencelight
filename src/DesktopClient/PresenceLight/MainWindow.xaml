@@ -1,4 +1,4 @@
-﻿<Window x:Class="PresenceLight.MainWindow"
+<Window x:Class="PresenceLight.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -25,5 +25,9 @@
                 </ContextMenu>
             </l:NotifyIcon.ContextMenu>
         </l:NotifyIcon>
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="10">
+            <TextBlock Text="User Email:" FontWeight="Bold" />
+            <TextBlock Text="{Binding User.AdditionalData[email]}" />
+        </StackPanel>
     </Grid>
 </Window>
