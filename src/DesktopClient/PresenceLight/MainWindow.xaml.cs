@@ -490,7 +490,7 @@ private async Task InteractWithLights()
             {
                 if (_appState.User == null || string.IsNullOrEmpty(_appState.User.DisplayName))
                 {
-                    var (profile, presence) = await _mediator.Send(new Core.GraphServices.GetProfileAndPresenceCommand());
+                    var (profile, presence, email) = await _mediator.Send(new Core.GraphServices.GetProfileAndPresenceCommand());
 
                     var photo = await GetPhoto();
 
@@ -506,6 +506,8 @@ private async Task InteractWithLights()
                         MapUI(presence);
                         _appState.SetUserInfo(profile, presence, $"data:image/gif;base64,{Convert.ToBase64String(photo)}");
                     }
+
+                    _appState.Email = email;
                 }
                 await Task.Delay(Convert.ToInt32(_appState.Config.LightSettings.PollingInterval * 1000));
 

@@ -7,7 +7,7 @@
     {
         <MudMenu AnchorOrigin="Origin.CenterCenter" Dense="true" Class="mt-1 ml-4">
             <ActivatorContent>
-                <MudText Typo="Typo.body2" Class="px-4 py-2"> Hello, @appState.User.DisplayName!</MudText>
+                <MudText Typo="Typo.body2" Class="px-4 py-2"> Hello, @appState.User.DisplayName! (@appState.Email)</MudText>
             </ActivatorContent>
             <ChildContent>
                 <MudListItem Text="Logout" Icon="@Icons.Material.Filled.Logout" OnClick="SignOut" />

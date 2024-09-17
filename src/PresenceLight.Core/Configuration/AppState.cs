@@ -116,6 +116,11 @@ namespace PresenceLight.Core
         public BaseConfig Config { get; set; } = new BaseConfig();
 
         /// <summary>
+        /// Gets or sets the user's email.
+        /// </summary>
+        public string Email { get; set; }
+
+        /// <summary>
         /// Sets the configuration.
         /// </summary>
         /// <param name="config">The configuration to set.</param>
@@ -135,6 +140,7 @@ namespace PresenceLight.Core
             User = user;
             Presence = presence;
             ProfileImage = photo;
+            Email = user?.Mail;
             NotifyStateChanged();
         }
 
