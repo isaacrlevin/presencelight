@@ -39,12 +39,12 @@ jobs:
         fetch-depth: 0
 
     - name: Use .NET Core SDK 8.0.x
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
 
     - name: Nerdbank.GitVersioning
-      uses: dotnet/nbgv@v0.4.1
+      uses: dotnet/nbgv@v0.4.2
       with:
         setCommonVars: true
 
@@ -66,13 +66,13 @@ jobs:
       shell: pwsh
 
     - name: Publish PreBuild Arifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         path: ./src
         name: PreBuild
 
     - name: Publish Files for Build
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         path: Build
         name: BuildArtifacts
@@ -110,18 +110,18 @@ jobs:
     steps:
 
     - name: Use .NET Core SDK 8.0.x
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
 
     - name: Download PreBuild
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: PreBuild
         path: ./src
 
     - name: Download Build Artifacts
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: BuildArtifacts
         path: ./BuildArtifacts
@@ -145,7 +145,7 @@ jobs:
       shell: pwsh
 
     - name: Publish ${{ matrix.ChannelName }} Arifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         path: ./${{ matrix.ChannelName }}
         name: ${{ matrix.ChannelName }}
@@ -184,13 +184,13 @@ jobs:
 
     steps:
       - name: Download PreBuild
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: PreBuild
           path: ./src
 
       - name: Download Build Artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: BuildArtifacts
           path: ./BuildArtifacts
@@ -343,49 +343,49 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download Windows_x64_x86 Artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: Windows_x64_x86
           path: ./Sign/Windows_x64_x86
 
       - name: Download Windows_ARM Artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: Windows_ARM
           path: ./Sign/Windows_ARM
 
       - name: Download macOS Artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: macOS
           path: ./Sign/macOS
 
       - name: Download Linux_ARM Artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: Linux_ARM
           path: ./Sign/Linux_ARM
 
       - name: Download Linux_ARM64 Artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: Linux_ARM64
           path: ./Sign/Linux_ARM64
 
       - name: Download Linux_Musl_x64 Artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: Linux_Musl_x64
           path: ./Sign/Linux_Musl_x64
 
       - name: Download Linux_Musl_ARM_x64 Artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: Linux_Musl_ARM_x64
           path: ./Sign/Linux_Musl_ARM_x64
 
       - name: Download Build Artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: BuildArtifacts
           path: "./BuildArtifacts"
@@ -396,7 +396,7 @@ jobs:
           echo "VERSION=$version" >> $GITHUB_ENV
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: "Web-v${{ env.VERSION }}"
           body: ${{ steps.changelog.outputs.changelog }}

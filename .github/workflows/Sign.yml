@@ -27,19 +27,19 @@ jobs:
 
     steps:
     - name: Download ${{ inputs.target }} Artifacts
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: ${{ inputs.target }}
         path: .\ToSign\${{ inputs.target }}
 
     - name: Download Build Artifacts
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: BuildArtifacts
         path: .\BuildArtifacts
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 6.x
 
@@ -47,7 +47,7 @@ jobs:
       run: dotnet tool install --tool-path . sign --version 0.9.0-beta.23063.3
 
     - name: Azure Login
-      uses: azure/login@v1.5.1
+      uses: azure/login@v2
       with:
         client-id: ${{ secrets.AZURE_CLIENT_ID }}
         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
@@ -70,7 +70,7 @@ jobs:
         --verbosity Trace
 
     - name: Publish Signed ${{ inputs.target }} Packages
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         path: .\ToSign\${{ inputs.target }}
         name: '${{ inputs.target }}_Signed'
