@@ -42,7 +42,7 @@ jobs:
         path: ./Signed/${{ inputs.target }}
 
     - name: Archive Previous Release
-      uses: azure/cli@v1.0.9
+      uses: azure/cli@v2
       with:
         inlineScript: |
           account_name="${{ secrets.ACCOUNT_NAME }}"
@@ -81,7 +81,7 @@ jobs:
         azcliversion: latest
 
     - name: Upload Release to Blob Storage
-      uses: azure/cli@v1.0.9
+      uses: azure/cli@v2
       with:
         inlineScript: |
           az storage blob upload-batch --connection-string "${{ secrets.AZUREBLOBCONNECTIONSTRING }}" \

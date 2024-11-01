@@ -96,6 +96,11 @@ jobs:
         name: Chocolatey
       if:  ${{ success() && matrix.ChannelName  == 'Standalone' }}
 
+    - name: Setup Tmate session
+      if:  ${{ success() && matrix.ChannelName  == 'Standalone' }}
+      uses: mxschmitt/action-tmate@v3
+      timeout-minutes: 15
+
   Build_WPF:
     name: Build App
     needs: Setup_Desktop
