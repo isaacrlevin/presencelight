@@ -7,8 +7,9 @@
         </TitleContent>
         <ChildContent>
             <MudGrid Justify="Justify.Center">
-                <MudItem xs="12">
-                    <MudCheckBox @bind-Checked="@Light.UseActivityStatus" Label="Use Activity Statuses"></MudCheckBox>
+                <MudItem xs="12">                   
+
+                    <MudCheckBox @bind-Value="@Light.UseActivityStatus" Label="Use Activity Statuses"></MudCheckBox>
                 </MudItem>
             </MudGrid>
             <br />
@@ -28,7 +29,7 @@
                             <ColorEdit Color="@status.Color" @onchange="@((ChangeEventArgs e) => ChangeStatusColor(e, status))" />
                         </MudItem>
                         <MudItem xs="4">
-                            <MudCheckBox T="bool" Checked="@status.Disabled" CheckedChanged="@(x => StatusDisabledOnCheck(x, status))" Label="Off?"></MudCheckBox>
+                            <MudCheckBox T="bool" Checked="@status.Disabled" ValueChanged="@(x => StatusDisabledOnCheck(x, status))" Label="Off?"></MudCheckBox>
                         </MudItem>
                     </MudGrid>
                 }

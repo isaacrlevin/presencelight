@@ -10,7 +10,7 @@
                 <MudText Typo="Typo.body2" Class="px-4 py-2"> Hello, @appState.User.DisplayName!</MudText>
             </ActivatorContent>
             <ChildContent>
-                <MudListItem Text="Logout" Icon="@Icons.Material.Filled.Logout" OnClick="SignOut" />
+                <MudListItem T="string" Text="Logout" Icon="@Icons.Material.Filled.Logout" OnClick="SignOut" />
             </ChildContent>
         </MudMenu>
     }
