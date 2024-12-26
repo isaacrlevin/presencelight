@@ -40,7 +40,7 @@ jobs:
       DOTNET_NOLOGO: true
       BuildConfiguration: Release
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
-      Win10RID: net8.0-windows10.0.19041
+      Win10RID: net9.0-windows10.0.19041
 
     steps:
 
@@ -112,7 +112,7 @@ jobs:
       DOTNET_NOLOGO: true
       BuildConfiguration: Release
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
-      Win10RID: net8.0-windows10.0.19041
+      Win10RID: net9.0-windows10.0.19041
 
     steps:
 
