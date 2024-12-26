@@ -25,8 +25,8 @@
 
 | Application Type |  Platforms | Readme
 |--- |  ---- | ---- |
-| Desktop (.NET 8) | Windows 10 (min Version 1803) / Windows 11 | [Desktop Readme](docs/desktop-README.md)
-| Web (ASP.NET 8) | Windows, MacOS, Linux (Debian, AMD x64, ARM, ARM x64),  | [Web Readme](docs/web-README.md)
+| Desktop (.NET 9) | Windows 10 (min Version 1803) / Windows 11 | [Desktop Readme](docs/desktop-README.md)
+| Web (ASP.NET 9) | Windows, MacOS, Linux (Debian, AMD x64, ARM, ARM x64),  | [Web Readme](docs/web-README.md)
 ## What is PresenceLight?
 
 [PresenceLight](https://isaacl.dev/presence-light) is a solution to broadcast your various statuses to various kinds of smart lights. Some statuses you can broadcast are: your availability in Microsoft Teams or color of your choosing. There are other solutions that do something similar to sending Teams Availability to a light, but they require a tethered solution (plugging a light into a computer via USB). What PresenceLight does is leverage the [Presence Api](https://docs.microsoft.com/graph/api/presence-get), which is available in [Microsoft Graph](https://docs.microsoft.com/graph/overview), allowing to retrieve your presence without having to be tethered. This could potentially allow someone to update the light bulb from a remote machine they do not use.

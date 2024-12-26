@@ -21,7 +21,7 @@ Thank you for your interest in contributing to the PresenceLight project! We wel
 To contribute to PresenceLight, you will need to have the following prerequisites:
 
 - Basic knowledge of Git and GitHub.
-- Knowledge of the .NET framework and C# programming language (this project uses the latest version, [.NET 8](https://dot.net)).
+- Knowledge of the .NET framework and C# programming language (this project uses the latest version, [.NET 9](https://dot.net)).
 - IDE of choice ([Visual Studio 2022](https://visualstudio.microsoft.com/downloads/), [Visual Studio Code](https://code.visualstudio.com/Download), [JetBrains Rider](https://www.jetbrains.com/rider/download))
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) if you want to test the Web project running as a container.
 

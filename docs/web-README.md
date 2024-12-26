@@ -2,7 +2,7 @@
 # PresenceLight - Web Version
 ![.github/workflows/Deploy_Web.yml](https://github.com/isaacrlevin/presencelight/workflows/.github/workflows/Deploy_Web.yml/badge.svg)
 
-The cross platform version of PresenceLight runs as a .NET 6 single file executable application that runs a Server-Side Blazor Web Application and a ASP.NET Core Worker Service. The Blazor App is used as the mechanism to log the user in and configure settings of the app, while the Worker Service is responsible for interaction with Graph Api as well as the Smart Lights. This allows users to not need to have a UI version of the app open at all time, since the worker runs as a process.
+The cross platform version of PresenceLight runs as a .NET 9 single file executable application that runs a Server-Side Blazor Web Application and a ASP.NET Core Worker Service. The Blazor App is used as the mechanism to log the user in and configure settings of the app, while the Worker Service is responsible for interaction with Graph Api as well as the Smart Lights. This allows users to not need to have a UI version of the app open at all time, since the worker runs as a process.
 ## App Setup
 
 ### Prerequisites
