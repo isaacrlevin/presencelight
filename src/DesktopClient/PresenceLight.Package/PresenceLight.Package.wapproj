@@ -86,7 +86,7 @@
     <Exec Command="$(NpeExecCmd)" />
     <Message Text="Built ref " />
     <ItemGroup>
-      <TheFiles Include="..\PresenceLight\bin\$(Configuration)\net8.0-windows10.0.19041\win-$(Platform)\publish\**\*.*" />
+      <TheFiles Include="..\PresenceLight\bin\$(Configuration)\net9.0-windows10.0.19041\win-$(Platform)\publish\**\*.*" />
       <TheFiles TargetPath="PresenceLight\%(RecursiveDir)%(Filename)%(Extension)" />
       <File Include="@(TheFiles)">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
