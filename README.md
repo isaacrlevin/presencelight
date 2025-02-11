@@ -1,7 +1,7 @@
 ![Logo](https://github.com/isaacrlevin/PresenceLight/raw/main/Icon.png)
 # PresenceLight
 
-### NOTE: The new version of PresenceLight for now has a requirement on WebView2. If you experience issues with PresenceLight, please install from this [location](https://go.microsoft.com/fwlink/p/?LinkId=2124703)
+### NOTE: Due to internal changes at Microsoft, the Web/Container Version no longer works. I am currently looking into resolving this issue, but in the meantime, you will have to create an App Registration yourself and build the code on your own. :(
 
 
 ![.github/workflows/Deploy_Web.yml](https://github.com/isaacrlevin/presencelight/workflows/.github/workflows/Deploy_Web.yml/badge.svg)
