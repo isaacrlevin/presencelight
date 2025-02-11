@@ -5,6 +5,7 @@ on:
     paths-ignore:
     - '.github/workflows/Deploy_Desktop.yml'
     - 'src/DesktopClient/**'
+    - 'src/**'    
     - '*..md'
     - 'docs/*..md'
     - 'Build/**'
@@ -15,6 +16,7 @@ on:
     paths-ignore:
     - '.github/workflows/Deploy_Desktop.yml'
     - 'src/DesktopClient/**'
+    - 'src/**'        
     - '*..md'
     - 'docs/*..md'
     - 'Build/**'
