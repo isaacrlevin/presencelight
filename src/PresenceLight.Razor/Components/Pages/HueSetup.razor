@@ -6,7 +6,7 @@
 <MudPaper Width="100%" Elevation="0">
     <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Style="text-align:center">
         <MudText Typo="Typo.h3">Configure Phlips Hue</MudText>
-        <MudGrid Class="mt-10" Justify="Justify.Center">
+        <MudGrid Class="mt-5" Justify="Justify.Center">
             <MudItem xs="4">
                 <MudCheckBox @bind-Value="@appState.Config.LightSettings.Hue.IsEnabled" Label="Connect to Philips Hue"></MudCheckBox>
             </MudItem>
@@ -21,11 +21,11 @@
         {
             @if (!appState.Config.LightSettings.Hue.UseRemoteApi)
             {
-                <MudGrid Class="mt-10" Justify=" Justify.Center">
+                <MudGrid Class="mt-5" Justify=" Justify.Center">
                     <MudItem xs="       12">
                         <MudButton OnClick="        FindBridge" Variant="    Variant.Filled" Color="MudBlazor.Color.Primary">Find Hue Bridge</MudButton>
                     </MudItem>
-                    <MudItem xs="    4">
+                    <MudItem xs="4">
                         <EditForm Model="@appState.Config" OnValidSubmit=" RegisterBridge">
                             <MudTextField Variant="       Variant.Outlined" @bind-Value="@appState.Config.LightSettings.Hue.HueIpAddress" />
                             <br />
@@ -40,13 +40,13 @@
             }
             @if (showHueMessage)
             {
-                <MudGrid Class="mt-10" Justify="Justify.Center">
+                <MudGrid Class="mt-5" Justify="Justify.Center">
                     <MudItem xs="12">
                         <MudText Class=@hueMessageClass Typo="Typo.body1">@hueMessage</MudText>
                     </MudItem>
                 </MudGrid>
             }
-            <MudGrid Class="mt-10" Justify="Justify.Center">
+            <MudGrid Class="mt-5" Justify="Justify.Center">
                 <MudItem xs="12">
                     <MudButton @onclick="@((ev) => CheckHue("Lights"))" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">Get Hue Lights</MudButton>
                     <span>&nbsp;&nbsp;</span>
@@ -65,7 +65,7 @@
                 @if (appState.HueLights != null)
                 {
 
-                    <MudGrid Class="mt-10" Justify="Justify.Center">
+                    <MudGrid Class="mt-5" Justify="Justify.Center">
                         <MudItem xs="4">
                             <MudSelect Value=@($"{selectedLightLabel}") Dense="true" Label="@($"Select Hue {lastType}")" T="string" Variant="Variant.Outlined" ValueChanged="OnChange">
                                 @foreach (var light in appState.HueLights)
@@ -86,7 +86,7 @@
                         </MudItem>
                     </MudGrid>
 
-                    <MudGrid Class="mt-10 align-center" Justify="Justify.FlexStart">
+                    <MudGrid Class="mt-5 align-center" Justify="Justify.FlexStart">
                         <MudItem xs="3">
                             <MudText Typo="Typo.h5">Brightness</MudText>
                         </MudItem>
@@ -102,7 +102,7 @@
                 }
             }
         }
-        <MudItem Class="mt-10" xs="12">
+        <MudItem Class="mt-5" xs="12">
             <MudButton Class="mb-10" OnClick="Save" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">Save</MudButton>
             @if (settingsSaved)
             {

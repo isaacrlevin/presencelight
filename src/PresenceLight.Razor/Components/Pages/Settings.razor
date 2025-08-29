@@ -6,7 +6,7 @@
 <MudPaper Width="100%" Elevation="0">
     <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Style="text-align:center">
         <MudText Typo="Typo.h3">Settings</MudText>   <MudLink Typo="Typo.body1" Href="" title="Click to download configuration file" @onclick="@((ev) => DownloadSettings(@localConfigurationPath))" Align="Align.Left">Download File</MudLink>
-        <MudGrid Class="mt-10" Justify="Justify.Center">
+        <MudGrid Class="mt-5" Justify="Justify.Center">
             <MudItem xs="6">
                 <MudCheckBox @bind-Value="@appState.Config.LightSettings.SyncLights" Label="Light Sync Enabled"></MudCheckBox>
             </MudItem>

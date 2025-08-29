@@ -18,12 +18,12 @@
         <ContentTemplate>
             <MudPaper Width="100%" Elevation="0">
                 <MudContainer MaxWidth="MaxWidth.Small" Style="text-align:center">
-                    <MudGrid Class="mt-10" Justify="Justify.FlexStart">
+                    <MudGrid Class="mt-5" Justify="Justify.FlexStart">
                         <MudItem xs="12">
                             <MudText Typo="Typo.h3">@appState.User?.DisplayName</MudText>
                         </MudItem>
                         <MudItem xs="12">
-                            <MudAvatar class="mt-10"
+                            <MudAvatar Class="mt-5"
                                        Style="height:300px; width:300px">
                                 <MudImage Src="@(@appState.ProfileImage != null ? @appState.ProfileImage : "/_content/PresenceLight.Razor/images/unknownprofile.png")" />
                             </MudAvatar>

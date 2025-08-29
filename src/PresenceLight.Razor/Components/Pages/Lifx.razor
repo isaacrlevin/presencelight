@@ -6,14 +6,14 @@
 <MudPaper Width="100%" Elevation="0">
     <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Style="text-align:center">
         <MudText Typo="Typo.h3">Configure LIFX</MudText>
-        <MudGrid Class="mt-10" Justify="Justify.Center">
+        <MudGrid Class="mt-5" Justify="Justify.Center">
             <MudItem xs="12">
                 <MudCheckBox @bind-Value="@appState.Config.LightSettings.LIFX.IsEnabled" Label="Connect to LIFX"></MudCheckBox>
             </MudItem>
         </MudGrid>
         @if (appState.Config.LightSettings.LIFX.IsEnabled)
         {
-            <MudGrid Class="mt-10 align-center" Justify="Justify.FlexStart">
+            <MudGrid Class="mt-5 align-center" Justify="Justify.FlexStart">
                 <MudItem xs="3">
                     <h5>LIFX Token</h5>
                 </MudItem>
@@ -25,7 +25,7 @@
                 </MudItem>
             </MudGrid>
 
-            <MudGrid Class="mt-10" Justify="Justify.Center">
+            <MudGrid Class="mt-5" Justify="Justify.Center">
                 <MudItem xs="12">
                     <MudButton OnClick="@((ev) => CheckLIFX("Lights"))" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">Find LIFX Lights</MudButton>
                     <MudButton OnClick="@((ev) => CheckLIFX("Groups"))" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">Find LIFX Groups</MudButton>
@@ -42,7 +42,7 @@
             {
                 @if (appState.LIFXLights != null)
                 {
-                    <MudGrid Class="mt-10" Justify="Justify.Center">
+                    <MudGrid Class="mt-5" Justify="Justify.Center">
                         <MudItem xs="4">
                             <MudSelect Dense="true" Value=@($"{selectedLightLabel}") Label="@($"Select LIFX {lastType}")" T="string" Variant="Variant.Outlined" ValueChanged="OnChange">
                                 @foreach (var light in appState.LIFXLights)
@@ -62,7 +62,7 @@
                         </MudItem>
                     </MudGrid>
 
-                    <MudGrid Class="mt-10 align-center" Justify="Justify.FlexStart">
+                    <MudGrid Class="mt-5 align-center" Justify="Justify.FlexStart">
                         <MudItem xs="3">
                             <MudText Typo="Typo.h5">Brightness</MudText>
                         </MudItem>
@@ -78,7 +78,7 @@
                 }
             }
         }
-        <MudItem Class="mt-10" xs="12">
+        <MudItem Class="mt-5" xs="12">
             <MudButton Class="mb-10" OnClick="Save" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">Save</MudButton>
             @if (settingsSaved)
             {

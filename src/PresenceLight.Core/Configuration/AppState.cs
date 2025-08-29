@@ -81,14 +81,10 @@ namespace PresenceLight.Core
         public string LIFXLightId { get; set; }
 
         /// <summary>
-        /// Gets or sets the list of Wiz lights.
+        /// Gets or sets the Wiz light.
         /// </summary>
-        public IEnumerable<WizLight> WizLights { get; set; }
+        public WizLight WizLight { get; set; }
 
-        /// <summary>
-        /// Gets or sets the selected Wiz light ID.
-        /// </summary>
-        public string WizLightId { get; set; }
 
         /// <summary>
         /// Gets or sets the profile image URL.
@@ -228,15 +224,6 @@ namespace PresenceLight.Core
             NotifyStateChanged();
         }
 
-        /// <summary>
-        /// Sets the list of Wiz lights.
-        /// </summary>
-        /// <param name="lights">The list of Wiz lights.</param>
-        public void SetWizLights(IEnumerable<WizLight> lights)
-        {
-            WizLights = lights;
-            NotifyStateChanged();
-        }
 
         /// <summary>
         /// Sets the list of local serial hosts.
@@ -259,12 +246,12 @@ namespace PresenceLight.Core
         }
 
         /// <summary>
-        /// Sets the selected Wiz light ID.
+        /// Sets the selected Wiz light.
         /// </summary>
-        /// <param name="lightId">The selected Wiz light ID.</param>
-        public void SetWizLight(string lightId)
+        /// <param name="light">The selected Wiz light.</param>
+        public void SetWizLight(WizLight light)
         {
-            WizLightId = lightId;
+            WizLight = light;
             NotifyStateChanged();
         }
 

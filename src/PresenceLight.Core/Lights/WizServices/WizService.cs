@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -9,17 +7,15 @@ using Microsoft.Extensions.Logging;
 
 using OpenWiz;
 
-using PresenceLight.Core.Lights.WizServices;
 using PresenceLight.Core.WizServices;
 
 using Q42.HueApi.ColorConverters;
-using Q42.HueApi.Models.Bridge;
 
 namespace PresenceLight.Core
 {
     public interface IWizService
     {
-        Task<IEnumerable<WizLight>> GetLights();
+        Task<WizLight> GetLight();
 
         Task SetColor(string availability, string activity, string lightId);
     }
@@ -27,8 +23,6 @@ namespace PresenceLight.Core
     {
         private AppState _appState;
         private readonly ILogger<WizService> _logger;
-
-        private IPAddress _loopbackAddress;
 
         public WizService(AppState appState, ILogger<WizService> logger)
         {
@@ -41,20 +35,43 @@ namespace PresenceLight.Core
             _appState = appState;
         }
 
-        public async Task<IEnumerable<WizLight>> GetLights()
+        public async Task<WizLight> GetLight()
         {
-            var lights = await GetHomeIds();
-            List<WizLight> wizLights = new List<WizLight>();
-            foreach (var light in lights)
-            {
-                wizLights.Add(new WizLight
-                {
-                    LightName = light.LightName,
-                    MacAddress = light.MacAddress
-                });
-            }
+            WizSocket socket = new WizSocket();
+            socket.GetSocket().EnableBroadcast = true; // This will enable sending to the broadcast address
 
-            return wizLights;
+            WizHandle handle = new WizHandle("000000000000", IPAddress.Parse(_appState.Config.LightSettings.Wiz.IPAddress)); // MAC doesn't matter here
+
+            WizState state = WizState.MakeGetSystemConfig();
+
+
+            socket.GetSocket().ReceiveTimeout = 10000; // This will prevent the demo from running indefinitely
+
+
+            await Task.Run(() => socket.SendTo(state, handle));
+
+            WizLight light = new WizLight();
+
+            // You won't easily get an IP address here, but this will list all Home IDs on the network.
+            while (true)
+            {
+                try
+                {
+                    state = socket.ReceiveFrom(handle);
+                    if (!string.IsNullOrEmpty(state.Result.ModuleName) && !string.IsNullOrEmpty(state.Result.Mac))
+                    {
+                        Console.WriteLine($"Home ID for light {state.Result.Mac} = {state.Result.HomeId}");
+
+                        light.MacAddress = state.Result.Mac;
+                        light.LightName = state.Result.ModuleName;
+                    }
+                    break;
+                }
+                catch (Exception e)
+                {
+                }
+            }
+            return light;
 
         }
 
@@ -146,45 +163,6 @@ namespace PresenceLight.Core
             }
         }
 
-        private async Task<IEnumerable<(string LightName, string MacAddress)>> GetHomeIds()
-        {
-            GetLoopbackIP();
-            WizSocket socket = new WizSocket();
-            socket.GetSocket().EnableBroadcast = true; // This will enable sending to the broadcast address
-
-            WizHandle handle = new WizHandle("000000000000", IPAddress.Parse(_loopbackAddress.ToString())); // MAC doesn't matter here
-
-            WizState state = WizState.MakeGetSystemConfig();
-
-            socket.GetSocket().ReceiveTimeout = 10000; // This will prevent the demo from running indefinitely
-
-            await Task.Run(() => socket.SendTo(state, handle));
-
-            List<(string LightName, string MacAddress)> homeIds = new List<(string LightName, string MacAddress)>();
-
-            // You won't easily get an IP address here, but this will list all Home IDs on the network.
-            while (true)
-            {
-                try
-                {
-                    state = socket.ReceiveFrom(handle);
-                    if (state.Result.HomeId != null)
-                    {
-                        Console.WriteLine($"Home ID for light {state.Result.Mac} = {state.Result.HomeId}");
-
-                        (string LightName, string MacAddress) result = (state.Result.ModuleName, state.Result.Mac);
-                        homeIds.Add(result);
-                    }
-                    break;
-                }
-                catch (Exception e)
-                {
-                }
-            }
-
-            return homeIds;
-        }
-
         private async Task<(string color, WizParams command, bool returnFunc)> Handle(string presence, string lightId)
         {
             var props = _appState.Config.LightSettings.Wiz.Statuses.GetType().GetProperties().ToList();
@@ -236,24 +214,13 @@ namespace PresenceLight.Core
             return (color, command, false);
         }
 
-        private void GetLoopbackIP()
-        {
-            var netInterface = NetworkInterfaceExtensions.GetAllUpNetworkInterfacesFirstPrivateIPv4();
 
-            _loopbackAddress = netInterface.Address.GetNetworkLoopbackAddress(netInterface.IPv4Mask);
-
-        }
         private async Task<WizResult> UpdateLight(WizParams wizParams, string lightId)
         {
-            if (_loopbackAddress == null)
-            {
-                GetLoopbackIP();
-            }
-
             WizSocket socket = new WizSocket();
             socket.GetSocket().EnableBroadcast = true; // This will enable sending to the broadcast address
             socket.GetSocket().ReceiveTimeout = 1000; // This will prevent the demo from running indefinitely
-            WizHandle handle = new WizHandle(lightId, IPAddress.Parse(_loopbackAddress.ToString())); // MAC doesn't matter here
+            WizHandle handle = new WizHandle(lightId, IPAddress.Parse(_appState.Config.LightSettings.Wiz.IPAddress)); // MAC doesn't matter here
 
             WizState state = new WizState
             {

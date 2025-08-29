@@ -6,7 +6,7 @@ using OpenWiz;
 
 namespace PresenceLight.Core.WizServices
 {
-    public class GetLightsCommand : IRequest<IEnumerable<WizLight>>
+    public class GetLightCommand : IRequest<WizLight>
     {
     }
 }

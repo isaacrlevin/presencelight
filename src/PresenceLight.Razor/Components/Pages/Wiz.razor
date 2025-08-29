@@ -6,18 +6,39 @@
 <MudPaper Width="100%" Elevation="0">
     <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Style="text-align:center">
         <MudText Typo="Typo.h3">Configure Wiz</MudText>
-        <MudGrid Class="mt-10" Justify="Justify.Center">
+        <MudGrid Class="mt-5" Justify="Justify.Center">
             <MudItem xs="12">
                 <MudCheckBox @bind-Value="@appState.Config.LightSettings.Wiz.IsEnabled" Label="Connect to Wiz"></MudCheckBox>
             </MudItem>
         </MudGrid>
         @if (appState.Config.LightSettings.Wiz.IsEnabled)
         {
-            <MudGrid Class="mt-10" Justify="Justify.Center">
-                <MudItem xs="12">
-                    <MudButton OnClick="GetLights" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">Find Wiz Lights</MudButton>
+            <MudGrid Justify="Justify.Center">
+                <MudItem xs="4">
+                    <EditForm Model="@appState.Config" OnValidSubmit="GetLight">
+                        <DataAnnotationsValidator />
+                        <MudTextField Label="IP Address"
+                                      Variant="Variant.Outlined"
+                                      @bind-Value="@appState.Config.LightSettings.Wiz.IPAddress"
+                                      For="@(() => appState.Config.LightSettings.Wiz.IPAddress)"
+                                      Validation="true" />
+                        <br />
+
+                        <MudButton ButtonType="MudBlazor.ButtonType.Submit"
+                                   Variant="Variant.Filled"
+                                   Color="MudBlazor.Color.Primary">Get Light</MudButton>
+                    </EditForm>
                 </MudItem>
             </MudGrid>
+
+            @if (showWizMessage)
+            {
+                <MudGrid Class="mt-5" Justify="Justify.Center">
+                    <MudItem xs="12">
+                        <MudText Class=@wizMessageClass Typo="Typo.body1">@wizMessage</MudText>
+                    </MudItem>
+                </MudGrid>
+            }
             if (isLoadingLights)
             {
                 <br />
@@ -27,21 +48,9 @@
             }
             else
             {
-                @if (appState.WizLights != null)
+                @if (appState.WizLight != null)
                 {
-                    <MudGrid Class="mt-10" Justify="Justify.Center">
-                        <MudItem xs="4">
-                            <MudSelect Value=@($"{selectedLightLabel}") Dense="true" T="string" Variant="Variant.Outlined" ValueChanged="OnChange">
-                                <MudSelectItem Disabled="true" Value="@("Select")" />
-                                @foreach (var light in appState.WizLights)
-                                {
-                                    <MudSelectItem Value="@light.MacAddress">@light.LightName</MudSelectItem>
-                                }
-                            </MudSelect>
-                        </MudItem>
-                    </MudGrid>
-
-                    <MudGrid Class="mt-10 align-center" Justify="Justify.FlexStart">
+                    <MudGrid Class="mt-5 align-center" Justify="Justify.FlexStart">
                         <MudItem xs="3">
                             <MudText Typo="Typo.h5">Brightness</MudText>
                         </MudItem>
@@ -57,7 +66,7 @@
                 }
             }
         }
-        <MudItem Class="mt-10" xs="12">
+        <MudItem Class="mt-5" xs="12">
             <MudButton Class="mb-10" OnClick="Save" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">Save</MudButton>
             @if (settingsSaved)
             {
@@ -72,8 +81,12 @@
     bool settingsSaved = false;
     bool isLoadingLights = false;
     string message;
-    string selectedLightLabel = "";
+    string wizMessageClass;
 
+    bool showWizMessage = false;
+    string wizMessage;
+    string selectedLightLabel = "";
+    string ipAddress = "";
     protected override async Task OnInitializedAsync()
     {
         try
@@ -85,7 +98,7 @@
                 NavManager.NavigateTo("/");
             }
 
-            await GetLights();
+            await GetLight();
         }
 
         catch (Exception e)
@@ -112,40 +125,49 @@
         }
     }
 
-    private void OnChange(string e)
+    public async Task GetLight()
     {
-        var light = e;
-        appState.Config.LightSettings.Wiz.SelectedItemId = light;
-        selectedLightLabel = appState.WizLights.Where(a => a.MacAddress == appState.Config.LightSettings.Wiz.SelectedItemId).FirstOrDefault().LightName;
-        appState.SetWizLight(light);
-        _logger.LogInformation($"Selected Wiz Light Set: {light}");
-    }
-
-    public async Task GetLights()
-    {
-        if (appState.Config.LightSettings.Wiz.IsEnabled)
+        if (appState.Config.LightSettings.Wiz.IsEnabled && !string.IsNullOrEmpty(appState.Config.LightSettings.Wiz.IPAddress))
         {
-            try
+            if (System.Text.RegularExpressions.Regex.IsMatch(
+                 appState.Config.LightSettings.Wiz.IPAddress,
+                 @"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b"))
             {
-                isLoadingLights = true;
-                _logger.LogInformation("Wiz Light Retrieval Initialized");
-                appState.SetWizLights(await _mediator.Send(new Core.WizServices.GetLightsCommand()));
 
-                if (string.IsNullOrEmpty(appState.Config.LightSettings.Wiz.SelectedItemId) && appState.WizLights.Count() > 0)
+                try
                 {
-                    appState.Config.LightSettings.Wiz.SelectedItemId = appState.WizLights.FirstOrDefault().MacAddress;
+                    isLoadingLights = true;
+                    _logger.LogInformation("Wiz Light Retrieval Initialized");
+                    appState.SetWizLight(await _mediator.Send(new Core.WizServices.GetLightCommand()));
+
+                    if (string.IsNullOrEmpty(appState.Config.LightSettings.Wiz.SelectedItemId) && appState.WizLight != null)
+                    {
+                        appState.Config.LightSettings.Wiz.SelectedItemId = appState.WizLight.MacAddress;
+                    }
+                    else
+                    {
+                        selectedLightLabel = appState.WizLight.LightName;
+                    }
+                    _logger.LogInformation("Wiz Light Retrieval Successful");
+                    showWizMessage = true;
+                    wizMessage = $"Connected to {appState.WizLight.LightName}";
+                    wizMessageClass = "text-success";
+                    isLoadingLights = false;
                 }
-                else
+                catch (Exception ex)
                 {
-                    selectedLightLabel = appState.WizLights.Where(a => a.MacAddress == appState.Config.LightSettings.Wiz.SelectedItemId).FirstOrDefault().LightName;
+                    _logger.LogError(ex, "Error occurred Finding Wiz Lights");
+                    wizMessage = "Error Occurred finding light, please try another IP Address";
+                    showWizMessage = true;
+                    wizMessageClass = "text-danger";
+                    throw;
                 }
-                _logger.LogInformation("Wiz Light Retrieval Successful");
-                isLoadingLights = false;
             }
-            catch (Exception ex)
+            else
             {
-                _logger.LogError(ex, "Error occurred Finding Wiz Lights");
-                throw;
+                wizMessage = "Not a valid IP Address";
+                showWizMessage = true;
+                wizMessageClass = "text-danger";
             }
         }
     }

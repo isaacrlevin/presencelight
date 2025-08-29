@@ -6,14 +6,14 @@
 <MudPaper Width="100%" Elevation="0">
     <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Style="text-align:center">
         <MudText Typo="Typo.h3">Configure Local Serial </MudText>
-        <MudGrid Class="mt-10" Justify="Justify.Center">
+        <MudGrid Class="mt-5" Justify="Justify.Center">
             <MudItem xs="12">
                 <MudCheckBox @bind-Value="@appState.Config.LightSettings.LocalSerialHost.IsEnabled" Label="Connect to Local Serial Host"></MudCheckBox>
             </MudItem>
         </MudGrid>
         @if (appState.Config.LightSettings.LocalSerialHost.IsEnabled)
         {
-            <MudGrid Class="mt-10" Justify="Justify.Center">
+            <MudGrid Class="mt-5" Justify="Justify.Center">
                 <MudItem xs="12">
                     <MudButton OnClick="GetSerialHosts" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">Get Serial Ports</MudButton>
                 </MudItem>
@@ -36,7 +36,7 @@
                             object LocalSerialHostSettingValue = LocalSerialHostSetting.GetValue(appState.Config.LightSettings.LocalSerialHost, null);
                             var lab = $"{LocalSerialHostSetting.Name}Uri";
 
-                            <MudGrid Class="mt-10" Justify="Justify.Center">
+                            <MudGrid Class="mt-5" Justify="Justify.Center">
                                 <MudItem xs="3">
                                     <strong><label for="@lab">@Helpers.HumanifyText(LocalSerialHostSetting.Name.Replace("LocalSerialHost","")):</label></strong>
                                 </MudItem>
@@ -100,7 +100,7 @@
                                 object LocalSerialHostSettingValue = LocalSerialHostSetting.GetValue(appState.Config.LightSettings.LocalSerialHost, null);
                                 var lab = $"{LocalSerialHostSetting.Name}Uri";
 
-                                <MudGrid Class="mt-10" Justify="Justify.Center">
+                                <MudGrid Class="mt-5" Justify="Justify.Center">
                                     <MudItem xs="3">
                                         <strong><label for="@lab">@Helpers.HumanifyText(LocalSerialHostSetting.Name.Replace("LocalSerialHost","")):</label></strong>
                                     </MudItem>
@@ -117,7 +117,7 @@
         }
 
 
-        <MudItem Class="mt-10" xs="12">
+        <MudItem Class="mt-5" xs="12">
             <MudButton Class="mb-10" OnClick="Save" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">Save</MudButton>
             @if (settingsSaved)
             {

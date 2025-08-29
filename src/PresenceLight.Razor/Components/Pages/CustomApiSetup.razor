@@ -6,7 +6,7 @@
 <MudPaper Width="100%" Elevation="0">
     <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Style="text-align:center">
         <MudText Typo="Typo.h3">Configure Custom API</MudText>
-        <MudGrid Class="mt-10" Justify="Justify.Center">
+        <MudGrid Class="mt-5" Justify="Justify.Center">
             <MudItem xs="12">
                 <MudCheckBox @bind-Value="@appState.Config.LightSettings.CustomApi.IsEnabled" Label="Connect to Custom API"></MudCheckBox>
             </MudItem>
@@ -21,7 +21,7 @@
                     var lab = $"{customApiSetting.Name}Uri";
                     var  body = $"{customApiSetting.Name}body";
 
-                    <MudGrid Class="mt-10" Justify="Justify.Center">
+                    <MudGrid Class="mt-5" Justify="Justify.Center">
                         <MudItem xs="12">
                             <strong><label for="@lab">@Helpers.HumanifyText(customApiSetting.Name.Replace("CustomApi","")):</label></strong>
                         </MudItem>
@@ -62,7 +62,7 @@
                 }
             }
 
-            <MudGrid Class="mt-10" Justify="Justify.Center">
+            <MudGrid Class="mt-5" Justify="Justify.Center">
                 <MudItem xs="12">
                     <input type="checkbox" checked="@appState.Config.LightSettings.CustomApi.UseBasicAuth" @bind-value="@appState.Config.LightSettings.CustomApi.UseBasicAuth" /> Use Basic Auth
                 </MudItem>
@@ -71,7 +71,7 @@
 
             @if (appState.Config.LightSettings.CustomApi.UseBasicAuth)
             {
-                <MudGrid Class="mt-10" Justify="Justify.Center">
+                <MudGrid Class="mt-5" Justify="Justify.Center">
                     <MudItem xs="3">
                         Basic Auth Username:
                     </MudItem>
@@ -80,7 +80,7 @@
                     </MudItem>
                 </MudGrid>
 
-                <MudGrid Class="mt-10" Justify="Justify.Center">
+                <MudGrid Class="mt-5" Justify="Justify.Center">
                     <MudItem xs="3">
                         Basic Auth Password:
                     </MudItem>
@@ -89,14 +89,14 @@
                     </MudItem>
                 </MudGrid>
             }
-            <MudGrid Class="mt-10" Justify="Justify.Center">
+            <MudGrid Class="mt-5" Justify="Justify.Center">
                 <MudItem xs="12">
                     <input type="checkbox" checked="@appState.Config.LightSettings.CustomApi.IgnoreCertificateErrors" @bind-value="@appState.Config.LightSettings.CustomApi.IgnoreCertificateErrors" /> Ignore Certificate Errors
                 </MudItem>
             </MudGrid>
         }
 
-        <MudItem Class="mt-10" xs="12">
+        <MudItem Class="mt-5" xs="12">
             <MudButton Class="mb-10" OnClick="Save" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">Save</MudButton>
             @if (settingsSaved)
             {
