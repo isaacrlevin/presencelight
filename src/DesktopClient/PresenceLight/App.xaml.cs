@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Windows;
 
 using Blazorise;
@@ -34,8 +35,6 @@ namespace PresenceLight
         public IServiceProvider? ServiceProvider { get; private set; }
 
         public IConfiguration? Configuration { get; private set; }
-
-        public static IConfiguration? StaticConfig { get; private set; }
 
         public App()
         {
@@ -77,25 +76,25 @@ namespace PresenceLight
                  .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                  .AddJsonFile($"appsettings.Development.json", optional: true, reloadOnChange: true);
 
-
-            Configuration = builder.Build();
-            StaticConfig = builder.Build();
+            string userAppSettings;
 
             //Override the save file location for logs if this is a packaged app... 
             if (new DesktopBridge.Helpers().IsRunningAsUwp())
             {
                 var _logFilePath = System.IO.Path.Combine(ApplicationData.Current.LocalFolder.Path, "PresenceLight\\logs\\DesktopClient\\log-.json");
-
                 InMemorySettings.Add("Serilog:WriteTo:1:Args:Path", _logFilePath);
-                builder = new Microsoft.Extensions.Configuration.ConfigurationBuilder()
-                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                 .AddJsonFile($"appsettings.Development.json", optional: true, reloadOnChange: true)
-                 .AddInMemoryCollection(InMemorySettings);
+                builder.AddInMemoryCollection(InMemorySettings);
 
-                Configuration = builder.Build();
-                StaticConfig = builder.Build();
-
+                userAppSettings = AppPackageSettingsService.BuildSettingsFileLocation();
             }
+            else
+            {
+                userAppSettings = StandaloneSettingsService.BuildSettingsFileLocation();
+            }
+            
+            builder.AddJsonFile(userAppSettings, optional: true, reloadOnChange: true);
+
+            Configuration = builder.Build();
 
             services.Configure<BaseConfig>(Configuration);
             services.AddSingleton(Configuration);

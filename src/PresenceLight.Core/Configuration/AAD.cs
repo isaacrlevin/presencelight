@@ -19,6 +19,11 @@ namespace PresenceLight.Core
         public string? ClientId { get; set; }
 
         /// <summary>
+        /// Gets or sets the tenant ID for AAD authentication.
+        /// </summary>
+        public string? TenantId { get; set; }
+
+        /// <summary>
         /// Gets or sets the Client Secret for AAD authentication.
         /// </summary>
         public string? ClientSecret { get; set; }

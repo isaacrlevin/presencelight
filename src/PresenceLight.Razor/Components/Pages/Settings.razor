@@ -7,6 +7,44 @@
     <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Style="text-align:center">
         <MudText Typo="Typo.h3">Settings</MudText>   <MudLink Typo="Typo.body1" Href="" title="Click to download configuration file" @onclick="@((ev) => DownloadSettings(@localConfigurationPath))" Align="Align.Left">Download File</MudLink>
         <MudGrid Class="mt-5" Justify="Justify.Center">
+            <MudItem xs="12">
+                <MudText Typo="Typo.h5">Microsoft Entra / Azure AD</MudText>
+            </MudItem>
+            <br />
+            <MudItem xs="12">
+                <MudGrid Spacing="2">
+                    <MudItem xs="12" sm="6">
+                        <MudTextField Label="Tenant ID"
+                                    Variant="Variant.Outlined"
+                                    @bind-Value="@appState.Config.AADSettings.TenantId" 
+                                    Placeholder="common or tenant GUID" />
+                    </MudItem>
+
+                    <MudItem xs="12" sm="6">
+                        <MudTextField Label="Client ID"
+                                    Variant="Variant.Outlined"
+                                    @bind-Value="@appState.Config.AADSettings.ClientId"
+                                    Placeholder="Application (client) ID GUID" />
+                    </MudItem>
+
+                    <MudItem xs="12">
+                        <MudTextField Label="Instance"
+                                    Variant="Variant.Outlined"
+                                    @bind-Value="@appState.Config.AADSettings.Instance"
+                                    Placeholder="https://login.microsoftonline.com/" />
+                    </MudItem>
+
+                    <MudItem xs="12">
+                        <MudTextField Label="Redirect URI"
+                                    Variant="Variant.Outlined"
+                                    @bind-Value="@appState.Config.AADSettings.RedirectUri"
+                                    Placeholder="http://localhost" />
+                    </MudItem>
+
+                </MudGrid>
+
+
+            </MudItem>
             <MudItem xs="6">
                 <MudCheckBox @bind-Value="@appState.Config.LightSettings.SyncLights" Label="Light Sync Enabled"></MudCheckBox>
             </MudItem>

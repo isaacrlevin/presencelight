@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Graph;
 using Microsoft.Identity.Client;
@@ -18,54 +20,95 @@ namespace PresenceLight.Core
     {
         public IPublicClientApplication PubClient { get; set; }
         public IConfidentialClientApplication ConfClient { get; set; }
-        BaseConfig config;
+        
+        private readonly ILogger<AuthorizationProvider> _logger;
+        private readonly IOptionsMonitor<BaseConfig> _configMonitor;
+        private readonly IDisposable? _reloadSubscription;
+
+        private readonly object _sync = new();
+        
         public IAccount UserAccount { get; set; }
 
-        public AuthorizationProvider(IOptions<BaseConfig> optionsAccessor)
+        public AuthorizationProvider(IOptionsMonitor<BaseConfig> configMonitor, ILogger<AuthorizationProvider> logger)
         {
-            config = optionsAccessor.Value;
-
-            if (config.AppType == "Desktop")
+            _logger = logger;
+            _configMonitor = configMonitor;
+        }
+    
+        public bool RebuildMsalClients()
+        {
+            lock (_sync)
             {
-                PubClient = PublicClientApplicationBuilder.Create(config.AADSettings.ClientId)
-                                                        .WithAuthority($"{config.AADSettings.Instance}common/")
-                                                        .WithRedirectUri(config.AADSettings.RedirectUri)
-                                                        .Build();
-
-                TokenCacheHelper.EnableSerialization(PubClient.UserTokenCache);
-            }
-            else if (config.AppType == "Web")
-            {
-                if (optionsAccessor != null && optionsAccessor.Value != null)
+                BaseConfig config = _configMonitor.CurrentValue;
+                if (config.AppType == "Desktop")
                 {
-                    config = optionsAccessor.Value;
-                    if (!Helpers.AreStringsNotEmpty(new string[] { config.AADSettings.ClientId,
-                                                        config.AADSettings.ClientSecret,
-                                                        config.AADSettings.Instance,
-                                                        config.AADSettings.RedirectHost,
-                                                        config.AADSettings.CallbackPath }))
-                    { }
-                    else
+                    if (!Helpers.AreStringsNotEmpty(new string[] {
+                        config.AADSettings.ClientId,
+                        config.AADSettings.TenantId,
+                        config.AADSettings.Instance,
+                        config.AADSettings.RedirectUri }))
                     {
-                        ConfClient = ConfidentialClientApplicationBuilder
-                         .Create(config.AADSettings.ClientId)
-                         .WithClientSecret(config.AADSettings.ClientSecret)
-                         .WithAuthority($"{config.AADSettings.Instance}common/v2.0")
-                         .WithRedirectUri($"{config.AADSettings.RedirectHost}{config.AADSettings.CallbackPath}")
-                         .Build();
-
-                        var cacheHelper = CreateCacheHelperAsync(config.AADSettings.ClientId);
-                        cacheHelper.RegisterCache(ConfClient.UserTokenCache);
+                        _logger.LogWarning("One or more of ClientId, TenantId, Instance, or RedirectUri is not set.");
+                        PubClient = null;
+                        return false;
                     }
+
+                    PubClient = PublicClientApplicationBuilder.Create(config.AADSettings.ClientId)
+                        .WithAuthority($"{config.AADSettings.Instance}{config.AADSettings.TenantId}/")
+                        .WithRedirectUri(config.AADSettings.RedirectUri)
+                        .Build();
+
+                    TokenCacheHelper.EnableSerialization(PubClient.UserTokenCache);
+                    return true;
+                }
+                else if (config.AppType == "Web")
+                {
+                    if (!Helpers.AreStringsNotEmpty(new string[] {
+                        config.AADSettings.ClientId,
+                        config.AADSettings.ClientSecret,
+                        config.AADSettings.Instance,
+                        config.AADSettings.RedirectHost,
+                        config.AADSettings.CallbackPath }))
+                    {
+                        _logger.LogWarning("One or more of ClientId, ClientSecret, Instance, RedirectUri, or CallbackPath is not set.");
+                        ConfClient = null;
+                        return false;
+                    }
+
+                    ConfClient = ConfidentialClientApplicationBuilder
+                        .Create(config.AADSettings.ClientId)
+                        .WithClientSecret(config.AADSettings.ClientSecret)
+                        .WithAuthority($"{config.AADSettings.Instance}{config.AADSettings.TenantId}/v2.0")
+                        .WithRedirectUri($"{config.AADSettings.RedirectHost}{config.AADSettings.CallbackPath}")
+                        .Build();
+
+                    var cacheHelper = CreateCacheHelperAsync(config.AADSettings.ClientId);
+                    cacheHelper.RegisterCache(ConfClient.UserTokenCache);
+                    return true;
                 }
             }
+
+            return false;
         }
+
+        
+
+        public void Invalidate()
+        {
+            lock (_sync)
+            {
+                PubClient = null;
+                ConfClient = null;
+                UserAccount = null;
+            }
+        }
+
 
         public async Task<string> AcquireToken()
         {
             AuthenticationResult authResult = null;
             string accessToken = null;
-
+            BaseConfig config = _configMonitor.CurrentValue;
             if (config.AppType == "Desktop")
             {
                 var accounts = await PubClient.GetAccountsAsync();
@@ -81,6 +124,7 @@ namespace PresenceLight.Core
                 }
                 catch (MsalUiRequiredException)
                 {
+                    _logger.LogInformation("Silent token acquisition failed. Falling back to interactive.");
                     try
                     {
                         authResult = await PubClient.AcquireTokenInteractive(config.AADSettings.Scopes)
@@ -92,7 +136,7 @@ namespace PresenceLight.Core
                     }
                     catch
                     {
-
+                        _logger.LogWarning("Interactive token acquisition failed.");
                     }
                 }
             }
@@ -159,6 +203,36 @@ namespace PresenceLight.Core
             {
                 request.Headers.Add("Authorization", $"Bearer {accessToken}");
             }
+        }
+
+        public static bool AadChanged(BaseConfig config, BaseConfig newConfig)
+        {
+            if (config.AppType != newConfig.AppType)
+            {
+                return true;
+            }
+            else if (config.AppType == "Desktop")
+            {
+                bool aadChanged =
+                       config.AADSettings.ClientId != newConfig.AADSettings.ClientId ||
+                       config.AADSettings.TenantId != newConfig.AADSettings.TenantId ||
+                       config.AADSettings.Instance != newConfig.AADSettings.Instance ||
+                       config.AADSettings.RedirectUri != newConfig.AADSettings.RedirectUri;
+                return aadChanged;
+            }
+            else if (config.AppType == "Web")
+            {
+                bool aadChanged =
+                       config.AADSettings.ClientId != newConfig.AADSettings.ClientId ||
+                       config.AADSettings.TenantId != newConfig.AADSettings.TenantId ||
+                       config.AADSettings.Instance != newConfig.AADSettings.Instance ||
+                       config.AADSettings.CallbackPath != newConfig.AADSettings.CallbackPath ||
+                       config.AADSettings.RedirectHost != newConfig.AADSettings.RedirectHost ||
+                       config.AADSettings.ClientSecret != newConfig.AADSettings.ClientSecret;
+                return aadChanged;
+            }
+
+            return false;
         }
     }
 }

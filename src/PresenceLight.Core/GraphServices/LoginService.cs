@@ -1,6 +1,8 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Graph;
 
@@ -9,87 +11,121 @@ namespace PresenceLight.Core
     public class LoginService
     {
         public GraphServiceClient GraphServiceClient { get; set; }
-        BaseConfig config;
-        AuthorizationProvider authProvider;
-
+        
+        private readonly AuthorizationProvider _authProvider;
+        private readonly ILogger<LoginService> _logger;
+        private readonly IOptionsMonitor<BaseConfig> _configMonitor;
+        private readonly IDisposable? _reloadSubscription;
+        private readonly AppState _appState;
+        private readonly object _sync = new();
         public bool IsInitialized { get; set; }
+        private BaseConfig config;
 
-        public LoginService(IOptions<BaseConfig> optionsAccessor, AuthorizationProvider _authProvider)
+        public LoginService(IOptionsMonitor<BaseConfig> configMonitor, AuthorizationProvider authProvider, AppState appState, ILogger<LoginService> logger)
         {
-            config = optionsAccessor.Value;
-            authProvider = _authProvider;
+            _authProvider = authProvider;
+            _appState = appState;
+            _logger = logger;
+            _configMonitor = configMonitor;
+            config = _configMonitor.CurrentValue;
+            _appState.AadConfigComplete = authProvider.RebuildMsalClients();
+
+            _reloadSubscription = _configMonitor.OnChange(async newConfig =>
+            {
+                try
+                {
+                    if (AuthorizationProvider.AadChanged(config, newConfig))
+                    {
+                        _logger?.LogInformation("AAD settings changed; signing out and invalidating auth provider.");
+                        _appState.SignOutRequested = true;
+                        await SignOut();
+                        _authProvider.Invalidate();
+                        _appState.AadConfigComplete = authProvider.RebuildMsalClients();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger?.LogWarning(ex, "Error reacting to AAD settings change.");
+                }
+
+                config = newConfig;
+            });
         }
+
         public async Task GetAuthenticatedGraphClient()
         {
-            await authProvider.AcquireToken();
-            GraphServiceClient = new GraphServiceClient(authProvider);
+            await _authProvider.AcquireToken();
+            GraphServiceClient = new GraphServiceClient(_authProvider);
             IsInitialized = true;
         }
 
         public async Task<bool> IsUserAuthenticated()
         {
+            BaseConfig config = _configMonitor.CurrentValue;
             // If we already have the user account we're
             // authenticated
-            if (authProvider.UserAccount != null)
+            if (_authProvider.UserAccount != null)
             {
                 return true;
             }
 
             if (config.AppType == "Desktop")
             {
-                if (authProvider.PubClient == null)
+                if (_authProvider.PubClient == null)
                 {
                     return false;
                 }
 
-                var accounts = await authProvider.PubClient.GetAccountsAsync();
+                var accounts = await _authProvider.PubClient.GetAccountsAsync();
 
-                authProvider.UserAccount = accounts.FirstOrDefault();
-                return null != authProvider.UserAccount;
+                _authProvider.UserAccount = accounts.FirstOrDefault();
+                return null != _authProvider.UserAccount;
             }
             else if (config.AppType == "Web")
             {
-                if (authProvider.ConfClient == null)
+                if (_authProvider.ConfClient == null)
                 {
                     return false;
                 }
 
-                var accounts = await authProvider.ConfClient.GetAccountsAsync();
+                var accounts = await _authProvider.ConfClient.GetAccountsAsync();
 
-                authProvider.UserAccount = accounts.FirstOrDefault();
-                return null != authProvider.UserAccount;
+                _authProvider.UserAccount = accounts.FirstOrDefault();
+                return null != _authProvider.UserAccount;
             }
             return false;
         }
 
         public async Task<string> AddUserToTokenCache(string authorizationCode)
         {
-            var result = await authProvider.ConfClient
+            BaseConfig config = _configMonitor.CurrentValue;
+            var result = await _authProvider.ConfClient
                 .AcquireTokenByAuthorizationCode(config.AADSettings.Scopes, authorizationCode)
                 .ExecuteAsync();
 
-            authProvider.UserAccount = result.Account;
+            _authProvider.UserAccount = result.Account;
 
             return result.IdToken;
         }
 
         public async Task SignOut()
         {
+            BaseConfig config = _configMonitor.CurrentValue;
             if (config.AppType == "Desktop")
             {
-                if (authProvider.UserAccount != null)
+                if (_authProvider.UserAccount != null)
                 {
-                    await authProvider.PubClient.RemoveAsync(authProvider.UserAccount);
+                    await _authProvider.PubClient.RemoveAsync(_authProvider.UserAccount);
                 }
             }
             else if (config.AppType == "Web")
             {
-                if (authProvider.UserAccount != null)
+                if (_authProvider.UserAccount != null)
                 {
-                    await authProvider.ConfClient.RemoveAsync(authProvider.UserAccount);
+                    await _authProvider.ConfClient.RemoveAsync(_authProvider.UserAccount);
                 }
             }
-            authProvider.UserAccount = null;
+            _authProvider.UserAccount = null;
             IsInitialized = false;
             GraphServiceClient = null;
         }

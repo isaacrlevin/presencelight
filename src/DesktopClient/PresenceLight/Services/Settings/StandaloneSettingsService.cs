@@ -99,6 +99,11 @@ namespace PresenceLight.Services
 
         public string GetSettingsFileLocation()
         {
+            return BuildSettingsFileLocation();
+        }
+
+        public static string BuildSettingsFileLocation()
+        {
             return Path.Combine(_settingsFolder, _settingsFileName);
         }
     }

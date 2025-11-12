@@ -23,12 +23,17 @@ namespace PresenceLight.Core
         /// <summary>
         /// Gets or sets the user information.
         /// </summary>
-        public User User { get; set; } = new User();
+        public User User { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the user is signed in.
         /// </summary>
         public bool SignedIn { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the AAD config is complete.
+        /// </summary>
+        public bool AadConfigComplete { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether a sign-in request has been made.
