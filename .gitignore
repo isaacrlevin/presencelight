@@ -402,3 +402,4 @@ logs/
 /src/config
 
 .ionide
+src/DesktopClient/PresenceLight/settings.json
