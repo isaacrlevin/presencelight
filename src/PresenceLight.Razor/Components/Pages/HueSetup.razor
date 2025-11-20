@@ -70,15 +70,15 @@
                             <MudSelect Value=@($"{selectedLightLabel}") Dense="true" Label="@($"Select Hue {lastType}")" T="string" Variant="Variant.Outlined" ValueChanged="OnChange">
                                 @foreach (var light in appState.HueLights)
                                 {
-                                    if (light.GetType() == typeof(Q42.HueApi.Models.Groups.Group))
+                                    if (light.GetType() == typeof(HueApi.Models.GroupedLight))
                                     {
-                                        var obj = (Q42.HueApi.Models.Groups.Group)light;
-                                        <MudSelectItem Value="@($"group_id:{@obj.Id}")">@obj.Name</MudSelectItem>
+                                        var obj = (HueApi.Models.GroupedLight)light;
+                                        <MudSelectItem Value="@($"group_id:{@obj.IdV1}")">@obj.Metadata?.Name</MudSelectItem>
                                     }
                                     else
                                     {
-                                        var obj = (Q42.HueApi.Light)light;
-                                        <MudSelectItem Value="@($"id:{@obj.Id}")">@obj.Name</MudSelectItem>
+                                        var obj = (HueApi.Models.Light)light;
+										<MudSelectItem Value="@($"id:{@obj.IdV1}")">@obj.Metadata?.Name</MudSelectItem>
                                     }
 
                                 }
@@ -251,7 +251,11 @@
 
                     if (string.IsNullOrEmpty(appState.Config.LightSettings.Hue.SelectedItemId) && appState.HueLights.Count() > 0)
                     {
-                        appState.Config.LightSettings.Hue.SelectedItemId = ((Q42.HueApi.Light)appState.HueLights.FirstOrDefault()).Id;
+                        var firstLight = appState.HueLights.FirstOrDefault();
+                        if (firstLight is HueApi.Models.Light light)
+                        {
+							appState.Config.LightSettings.Hue.SelectedItemId = $"id:{light.IdV1}";
+                        }
                     }
                 }
                 catch (Exception e)
@@ -327,12 +331,21 @@
 
                         if (string.IsNullOrEmpty(appState.Config.LightSettings.Hue.SelectedItemId) && appState.HueLights.Count() > 0)
                         {
-                            var obj = (Q42.HueApi.Models.Groups.Group)appState.HueLights.FirstOrDefault();
-                            appState.Config.LightSettings.Hue.SelectedItemId = $"group_id:{obj.Id}";
+                            var firstGroup = appState.HueLights.FirstOrDefault();
+                            if (firstGroup is HueApi.Models.GroupedLight group)
+                            {
+								appState.Config.LightSettings.Hue.SelectedItemId = $"group_id:{group.IdV1}";
+                            }
                         }
                         else
                         {
-                            selectedLightLabel = ((Q42.HueApi.Models.Groups.Group)appState.HueLights.Where(a => ((Q42.HueApi.Models.Groups.Group)a).Id == appState.Config.LightSettings.Hue.SelectedItemId.Replace("group_id:", "")).FirstOrDefault()).Name;
+                            var matchingGroup = appState.HueLights.OfType<HueApi.Models.GroupedLight>()
+								.Where(a => a.IdV1 == appState.Config.LightSettings.Hue.SelectedItemId.Replace("group_id:", ""))
+                                .FirstOrDefault();
+                            if (matchingGroup != null)
+                            {
+                                selectedLightLabel = matchingGroup.Metadata?.Name;
+                            }
                         }
                     }
                     else
@@ -349,12 +362,21 @@
 
                         if (string.IsNullOrEmpty(appState.Config.LightSettings.Hue.SelectedItemId) && appState.HueLights.Count() > 0)
                         {
-                            var obj = (Q42.HueApi.Light)appState.HueLights.FirstOrDefault();
-                            appState.Config.LightSettings.Hue.SelectedItemId = $"id:{obj.Id}";
+                            var firstLight = appState.HueLights.FirstOrDefault();
+                            if (firstLight is HueApi.Models.Light light)
+                            {
+								appState.Config.LightSettings.Hue.SelectedItemId = $"id:{light.IdV1}";
+                            }
                         }
                         else
                         {
-                            selectedLightLabel = ((Q42.HueApi.Light)appState.HueLights.Where(a => ((Q42.HueApi.Light)a).Id == appState.Config.LightSettings.Hue.SelectedItemId.Replace("id:", "")).FirstOrDefault()).Name;
+                            var matchingLight = appState.HueLights.OfType<HueApi.Models.Light>()
+								.Where(a => a.IdV1 == appState.Config.LightSettings.Hue.SelectedItemId.Replace("id:", ""))
+                                .FirstOrDefault();
+                            if (matchingLight != null)
+                            {
+                                selectedLightLabel = matchingLight.Metadata?.Name;
+                            }
                         }
                     }
 
@@ -373,7 +395,7 @@
                     hueMessage = "Error Occurred Connecting to Hue, please try again";
                     hueMessageClass = "text-danger";
                     this.StateHasChanged();
-                    appState.SetHueLights(new List<Q42.HueApi.Light>());
+                    appState.SetHueLights(new List<HueApi.Models.Light>());
                 }
             }
             isLoadingLights = false;
@@ -387,11 +409,23 @@
         appState.SetHueLight(light);
         if (lastType == "Groups")
         {
-            selectedLightLabel = ((Q42.HueApi.Models.Groups.Group)appState.HueLights.Where(a => ((Q42.HueApi.Models.Groups.Group)a).Id == appState.Config.LightSettings.Hue.SelectedItemId.Replace("group_id:", "")).FirstOrDefault()).Name;
+            var matchingGroup = appState.HueLights.OfType<HueApi.Models.GroupedLight>()
+				.Where(a => a.IdV1 == appState.Config.LightSettings.Hue.SelectedItemId.Replace("group_id:", ""))
+                .FirstOrDefault();
+            if (matchingGroup != null)
+            {
+                selectedLightLabel = matchingGroup.Metadata?.Name;
+            }
         }
         else
         {
-            selectedLightLabel = ((Q42.HueApi.Light)appState.HueLights.Where(a => ((Q42.HueApi.Light)a).Id == appState.Config.LightSettings.Hue.SelectedItemId.Replace("id:", "")).FirstOrDefault()).Name;
+            var matchingLight = appState.HueLights.OfType<HueApi.Models.Light>()
+				.Where(a => a.IdV1 == appState.Config.LightSettings.Hue.SelectedItemId.Replace("id:", ""))
+                .FirstOrDefault();
+            if (matchingLight != null)
+            {
+                selectedLightLabel = matchingLight.Metadata?.Name;
+            }
         }        
 
         _logger.LogInformation($"Selected Hue Light Set: {light}");

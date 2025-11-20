@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using Q42.HueApi;
+using HueApi.Models;
 using System.Collections.Generic;
 
 namespace PresenceLight.Core.RemoteHueServices

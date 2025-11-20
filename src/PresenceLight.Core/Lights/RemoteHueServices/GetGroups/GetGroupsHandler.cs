@@ -1,14 +1,12 @@
 ﻿using MediatR;
-using Q42.HueApi;
-using Q42.HueApi.Models.Groups;
-
+using HueApi.Models;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace PresenceLight.Core.RemoteHueServices
 {
-    internal class GetGroupsHandler : IRequestHandler<GetGroupsCommand, IEnumerable<Group>>
+    internal class GetGroupsHandler : IRequestHandler<GetGroupsCommand, IEnumerable<GroupedLight>>
     {
         readonly IRemoteHueService _service;
         public GetGroupsHandler(IRemoteHueService service)
@@ -16,7 +14,7 @@ namespace PresenceLight.Core.RemoteHueServices
             _service = service;
         }
 
-        public async Task<IEnumerable<Group>> Handle(GetGroupsCommand command, CancellationToken cancellationToken)
+        public async Task<IEnumerable<GroupedLight>> Handle(GetGroupsCommand command, CancellationToken cancellationToken)
         {
             return await _service.GetGroups();
         }

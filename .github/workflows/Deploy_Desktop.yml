@@ -40,7 +40,7 @@ jobs:
       DOTNET_NOLOGO: true
       BuildConfiguration: Release
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
-      Win10RID: net9.0-windows10.0.19041
+      Win10RID: net10.0-windows10.0.19041
 
     steps:
 
@@ -49,12 +49,12 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Use .NET Core SDK 8.0.x and 9.0.x
+    - name: Use .NET Core SDK 8.0.x and 10.0.x
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: |
           8.0.x
-          9.0.x
+          10.0.x
 
     - name: Get Version from Nerdbank.GitVersioning
       uses: dotnet/nbgv@v0.4.2
@@ -112,19 +112,19 @@ jobs:
       DOTNET_NOLOGO: true
       BuildConfiguration: Release
       ACTIONS_ALLOW_UNSECURE_COMMANDS: true
-      Win10RID: net9.0-windows10.0.19041
+      Win10RID: net10.0-windows10.0.19041
 
     steps:
 
     - name: setup-msbuild
       uses: microsoft/setup-msbuild@v1
 
-    - name: Use .NET Core SDK 8.0.x and 9.0.x
+    - name: Use .NET Core SDK 8.0.x and 10.0.x
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: |
           8.0.x
-          9.0.x
+          10.0.x
 
     - name: Download PreBuild
       uses: actions/download-artifact@v4

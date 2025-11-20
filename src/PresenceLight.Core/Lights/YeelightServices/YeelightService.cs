@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using YeelightAPI;
-using Q42.HueApi.ColorConverters;
+using HueApi.ColorConverters;
 using Microsoft.Extensions.Logging;
 
 namespace PresenceLight.Core
