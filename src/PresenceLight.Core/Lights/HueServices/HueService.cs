@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
+
+using HueApi;
+using HueApi.BridgeLocator;
+using HueApi.ColorConverters.Original.Extensions;
+using HueApi.Models;
+using HueApi.Models.Requests;
 
 using Microsoft.Extensions.Logging;
 
-using Q42.HueApi;
-using Q42.HueApi.ColorConverters;
-using Q42.HueApi.ColorConverters.HSB;
-using Q42.HueApi.Interfaces;
-using Q42.HueApi.Models.Groups;
 
 namespace PresenceLight.Core
 {
@@ -20,14 +20,14 @@ namespace PresenceLight.Core
         Task<string> RegisterBridge();
         Task<IEnumerable<Light>> GetLights();
 
-        Task<IEnumerable<Group>> GetGroups();
+        Task<IEnumerable<GroupedLight>> GetGroups();
         Task<string> FindBridge();
         void Initialize(AppState appState);
     }
     public class HueService : IHueService
     {
         private AppState _appState;
-        private LocalHueClient _client;
+        private LocalHueApi _client;
         private readonly ILogger<HueService> _logger;
 
         public HueService(AppState appState, ILogger<HueService> logger)
@@ -43,6 +43,18 @@ namespace PresenceLight.Core
 
         public async Task SetColor(string availability, string activity, string lightId)
         {
+            if (_appState.HueLights == null || _appState.HueLights.Count() == 0)
+            {
+                if (lightId.Contains("group_id:"))
+                {
+                    _appState.SetHueLights(await GetGroups());
+                }
+                else
+                {
+                    _appState.SetHueLights(await GetLights());
+                }
+            }
+
             if (string.IsNullOrEmpty(lightId))
             {
                 _logger.LogInformation("Selected Hue Light Not Specified");
@@ -51,8 +63,7 @@ namespace PresenceLight.Core
 
             try
             {
-                _client = new LocalHueClient(_appState.Config.LightSettings.Hue.HueIpAddress);
-                _client.Initialize(_appState.Config.LightSettings.Hue.HueApiKey);
+                _client = new LocalHueApi(_appState.Config.LightSettings.Hue.HueIpAddress, _appState.Config.LightSettings.Hue.HueApiKey);
 
                 var o = await Handle(_appState.Config.LightSettings.Hue.UseActivityStatus ? activity : availability, lightId);
 
@@ -77,20 +88,25 @@ namespace PresenceLight.Core
                         throw new ArgumentException("Supplied Color had an issue");
                 }
 
-                command.SetColor(new RGBColor(color));
+                var rgbColor = new HueApi.ColorConverters.RGBColor(color);
+                // Set the color using extension method
+                command.SetColor(rgbColor);
+
 
 
                 if (availability == "Off")
                 {
-                    command.On = false;
+                    command.TurnOff();
 
                     if (lightId.Contains("group_id:"))
                     {
-                        await _client.SendGroupCommandAsync(command, lightId.Replace("group_id:", ""));
+                        var groupCommand = new UpdateGroupedLight();
+                        groupCommand.TurnOff();
+                        await _client.UpdateGroupedLightAsync(Guid.Parse(lightId.Replace("group_id:", "")), groupCommand);
                     }
                     else
                     {
-                        await _client.SendCommandAsync(command, new List<string> { lightId.Replace("id:", "") });
+                        await _client.UpdateLightAsync(Guid.Parse(lightId.Replace("id:", "")), command);
                     }
 
                     message = $"Turning Hue Light {lightId} Off";
@@ -102,36 +118,45 @@ namespace PresenceLight.Core
                 {
                     if (_appState.Config.LightSettings.DefaultBrightness == 0)
                     {
-                        command.On = false;
+                        command.TurnOff();
                     }
                     else
                     {
-                        command.On = true;
-                        command.Brightness = Convert.ToByte(((Convert.ToDouble(_appState.Config.LightSettings.DefaultBrightness) / 100) * 254));
-                        command.TransitionTime = new TimeSpan(0);
+                        command.TurnOn();
+                        command.Dimming = new Dimming { Brightness = Convert.ToDouble(_appState.Config.LightSettings.DefaultBrightness) };
+                        command.Dynamics = new Dynamics { Duration = 0 };
                     }
                 }
                 else
                 {
                     if (_appState.Config.LightSettings.Hue.Brightness == 0)
                     {
-                        command.On = false;
+                        command.TurnOff();
                     }
                     else
                     {
-                        command.On = true;
-                        command.Brightness = Convert.ToByte(((Convert.ToDouble(_appState.Config.LightSettings.Hue.Brightness) / 100) * 254));
-                        command.TransitionTime = new TimeSpan(0);
+                        command.TurnOn();
+                        command.Dimming = new Dimming { Brightness = Convert.ToDouble(_appState.Config.LightSettings.Hue.Brightness) };
+                        command.Dynamics = new Dynamics { Duration = 0 };
                     }
                 }
 
                 if (lightId.Contains("group_id:"))
                 {
-                    await _client.SendGroupCommandAsync(command, lightId.Replace("group_id:", ""));
+                    var newLightId = ((GroupedLight)_appState.HueLights.First(a => ((GroupedLight)a).IdV1 == lightId.Replace("group_id:", ""))).Id;
+
+
+                    var groupCommand = new UpdateGroupedLight();
+                    groupCommand.Color = command.Color;
+                    groupCommand.On = command.On;
+                    groupCommand.Dimming = command.Dimming;
+                    groupCommand.Dynamics = command.Dynamics;
+                    await _client.GroupedLight.UpdateAsync(newLightId, groupCommand);
                 }
                 else
                 {
-                    await _client.SendCommandAsync(command, new List<string> { lightId.Replace("id:", "") });
+                    var newLightId = ((Light)_appState.HueLights.First(a => ((Light)a).IdV1 == lightId.Replace("id:", ""))).Id;
+                    await _client.Light.UpdateAsync(newLightId, command);
                 }
 
                 message = $"Setting Hue Light {lightId} to {color}";
@@ -151,12 +176,9 @@ namespace PresenceLight.Core
             {
                 try
                 {
-                    _client = new LocalHueClient(_appState.Config.LightSettings.Hue.HueIpAddress);
-
-                    //Make sure the user has pressed the button on the bridge before calling RegisterAsync
-                    //It will throw an LinkButtonNotPressedException if the user did not press the button
-
-                    return await _client.RegisterAsync("presence-light", "presence-light");
+                    _logger.LogInformation("Registering with Hue Bridge - Please press the button on your bridge");
+                    var result = await LocalHueApi.RegisterAsync(_appState.Config.LightSettings.Hue.HueIpAddress, "PresenceLight", Environment.MachineName, true);
+                    return result.Username; // RegisterAsync returns RegisterEntertainmentResult with Username property
                 }
                 catch (Exception e)
                 {
@@ -171,7 +193,7 @@ namespace PresenceLight.Core
         {
             try
             {
-                IBridgeLocator locator = new HttpBridgeLocator();
+                HttpBridgeLocator locator = new HttpBridgeLocator();
                 var bridges = await locator.LocateBridgesAsync(TimeSpan.FromSeconds(5));
                 if (bridges.Any())
                 {
@@ -192,45 +214,37 @@ namespace PresenceLight.Core
             {
                 if (_client == null)
                 {
-                    _client = new LocalHueClient(_appState.Config.LightSettings.Hue.HueIpAddress);
-                    _client.Initialize(_appState.Config.LightSettings.Hue.HueApiKey);
+                    _client = new LocalHueApi(_appState.Config.LightSettings.Hue.HueIpAddress, _appState.Config.LightSettings.Hue.HueApiKey);
                 }
-                var lights = await _client.GetLightsAsync();
-                // if there are no lights, get some
-                if (!lights.Any())
-                {
-                    await _client.SearchNewLightsAsync();
-                    Thread.Sleep(40000);
-                    lights = await _client.GetNewLightsAsync();
-                }
-                return lights;
+                var lightsResponse = await _client.Light.GetAllAsync();
+                return lightsResponse.Data;
             }
             catch (Exception e)
             {
-                _logger.LogError(e, message: "Error Occurred Getting Bridge");
+                _logger.LogError(e, message: "Error Occurred Getting Lights");
                 throw;
             }
         }
 
-        public async Task<IEnumerable<Group>> GetGroups()
+        public async Task<IEnumerable<GroupedLight>> GetGroups()
         {
             try
             {
                 if (_client == null)
                 {
-                    _client = new LocalHueClient(_appState.Config.LightSettings.Hue.HueIpAddress);
-                    _client.Initialize(_appState.Config.LightSettings.Hue.HueApiKey);
+                    _client = new LocalHueApi(_appState.Config.LightSettings.Hue.HueIpAddress, _appState.Config.LightSettings.Hue.HueApiKey);
                 }
-                return await _client.GetGroupsAsync();
+                var groupsResponse = await _client.GroupedLight.GetAllAsync();
+                return groupsResponse.Data;
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Error Occurred Getting Bridge");
+                _logger.LogError(e, "Error Occurred Getting Groups");
                 throw;
             }
         }
 
-        private async Task<(string color, LightCommand command, bool returnFunc)> Handle(string presence, string lightId)
+        private async Task<(string color, UpdateLight command, bool returnFunc)> Handle(string presence, string lightId)
         {
             var props = _appState.Config.LightSettings.Hue.Statuses.GetType().GetProperties().ToList();
 
@@ -245,13 +259,13 @@ namespace PresenceLight.Core
 
             string color = "";
             string message;
-            var command = new LightCommand();
+            var command = new UpdateLight();
 
             if (presence.Contains('#'))
             {
                 // provided presence is actually a custom color
                 color = presence;
-                command.On = true;
+                command.TurnOn();
                 return (color, command, false);
             }
 
@@ -263,21 +277,23 @@ namespace PresenceLight.Core
 
                     if (!value.Disabled)
                     {
-                        command.On = true;
+                        command.TurnOn();
                         color = value.Color;
                         return (color, command, false);
                     }
                     else
                     {
-                        command.On = false;
+                        command.TurnOff();
 
                         if (lightId.Contains("group_id:"))
                         {
-                            await _client.SendGroupCommandAsync(command, lightId.Replace("group_id:", ""));
+                            var groupCommand = new UpdateGroupedLight();
+                            groupCommand.TurnOff();
+                            await _client.UpdateGroupedLightAsync(Guid.Parse(lightId.Replace("group_id:", "")), groupCommand);
                         }
                         else
                         {
-                            await _client.SendCommandAsync(command, new List<string> { lightId.Replace("id:", "") });
+                            await _client.UpdateLightAsync(Guid.Parse(lightId.Replace("id:", "")), command);
                         }
                         message = $"Turning Hue Light {lightId} Off";
                         _logger.LogInformation(message);

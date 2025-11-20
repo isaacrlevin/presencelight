@@ -9,7 +9,7 @@ using OpenWiz;
 
 using PresenceLight.Core.WizServices;
 
-using Q42.HueApi.ColorConverters;
+using HueApi.ColorConverters;
 
 namespace PresenceLight.Core
 {

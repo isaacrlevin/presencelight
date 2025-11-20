@@ -5,7 +5,7 @@ on:
     paths-ignore:
     - '.github/workflows/Deploy_Desktop.yml'
     - 'src/DesktopClient/**'
-    - 'src/**'    
+    - 'src/**'
     - '*..md'
     - 'docs/*..md'
     - 'Build/**'
@@ -16,7 +16,7 @@ on:
     paths-ignore:
     - '.github/workflows/Deploy_Desktop.yml'
     - 'src/DesktopClient/**'
-    - 'src/**'        
+    - 'src/**'
     - '*..md'
     - 'docs/*..md'
     - 'Build/**'
@@ -40,12 +40,12 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Use .NET Core SDK 8.0.x and 9.0.x
+    - name: Use .NET Core SDK 8.0.x and 10.0.x
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: |
           8.0.x
-          9.0.x
+          10.0.x
 
     - name: Nerdbank.GitVersioning
       uses: dotnet/nbgv@v0.4.2
@@ -113,12 +113,12 @@ jobs:
 
     steps:
 
-    - name: Use .NET Core SDK 8.0.x and 9.0.x
+    - name: Use .NET Core SDK 8.0.x and 10.0.x
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: |
           8.0.x
-          9.0.x
+          10.0.x
 
     - name: Download PreBuild
       uses: actions/download-artifact@v4

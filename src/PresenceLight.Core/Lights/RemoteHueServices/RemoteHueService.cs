@@ -13,10 +13,9 @@ using Newtonsoft.Json;
 
 using Q42.HueApi;
 using Q42.HueApi.ColorConverters;
-using Q42.HueApi.ColorConverters.HSB;
+using Q42.HueApi.ColorConverters.Original;
 using Q42.HueApi.Interfaces;
 using Q42.HueApi.Models;
-using Q42.HueApi.Models.Groups;
 
 namespace PresenceLight.Core
 {
@@ -24,9 +23,10 @@ namespace PresenceLight.Core
     {
         Task SetColor(string availability, string activity, string lightId, string bridgeId);
         Task<(string bridgeId, string apiKey, string bridgeIp)> RegisterBridge();
-        Task<IEnumerable<Light>> GetLights();
-        Task<IEnumerable<Group>> GetGroups();
+        Task<IEnumerable<HueApi.Models.Light>> GetLights();
+        Task<IEnumerable<HueApi.Models.GroupedLight>> GetGroups();
     }
+
     public class RemoteHueService : IRemoteHueService
     {
         private AppState _appState;
@@ -35,7 +35,7 @@ namespace PresenceLight.Core
         private readonly ILogger<RemoteHueService> _logger;
         private MediatR.IMediator _mediator;
         private string _cacheFile = $"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\\PresenceLight\\huetoken.cache";
-        
+
         public RemoteHueService(AppState appState, ILogger<RemoteHueService> logger, MediatR.IMediator mediator)
         {
             _mediator = mediator;
@@ -51,7 +51,7 @@ namespace PresenceLight.Core
                         _appState.Config.LightSettings.Hue.RemoteHueClientSecret,
                         _appState.Config.LightSettings.Hue.RemoteHueClientAppName }))
             {
-                _authClient = new RemoteAuthenticationClient(_appState.Config.LightSettings.Hue.RemoteHueClientId,
+                _authClient = new RemoteAuthenticationClientV2(_appState.Config.LightSettings.Hue.RemoteHueClientId,
                                                              _appState.Config.LightSettings.Hue.RemoteHueClientSecret,
                                                              _appState.Config.LightSettings.Hue.RemoteHueClientAppName);
             }
@@ -83,7 +83,7 @@ namespace PresenceLight.Core
                     {
                         if (File.Exists(_cacheFile))
                         {
-                            AccessTokenResponse response = JsonConvert.DeserializeObject<AccessTokenResponse>(File.ReadAllText(_cacheFile));
+                            AccessTokenResponseV2 response = JsonConvert.DeserializeObject<AccessTokenResponseV2>(File.ReadAllText(_cacheFile));
                             if (response != null)
                             {
                                 _authClient.Initialize(response);
@@ -151,93 +151,50 @@ namespace PresenceLight.Core
         {
             await InitializeClient();
 
-            if (_client == null && !_client.IsInitialized)
+            if (_client == null || !_client.IsInitialized)
             {
                 _logger.LogInformation("Hue Client Not Initialized");
                 return;
             }
-            else
+
+            try
             {
-                try
+                if (string.IsNullOrEmpty(lightId))
                 {
-                    if (string.IsNullOrEmpty(lightId))
-                    {
-                        _logger.LogInformation("Selected Hue Light Not Specified");
-                        return;
-                    }
+                    _logger.LogInformation("Selected Hue Light Not Specified");
+                    return;
+                }
 
-                    var o = await Handle(_appState.Config.LightSettings.Hue.UseActivityStatus ? activity : availability, lightId);
+                var o = await Handle(_appState.Config.LightSettings.Hue.UseActivityStatus ? activity : availability, lightId);
 
-                    if (o.returnFunc)
-                    {
-                        return;
-                    }
+                if (o.returnFunc)
+                {
+                    return;
+                }
 
-                    var color = o.color.Replace("#", "");
-                    var command = o.command;
-                    var message = "";
+                var color = o.color.Replace("#", "");
+                var command = o.command;
+                var message = "";
 
-                    switch (color.Length)
-                    {
+                switch (color.Length)
+                {
+                    case var length when color.Length == 6:
+                        // Do Nothing
+                        break;
+                    case var length when color.Length > 6:
+                        // Get last 6 characters
+                        color = color.Substring(0, 6);
+                        break;
+                    default:
+                        throw new ArgumentException("Supplied Color had an issue");
+                }
 
-                        case var length when color.Length == 6:
-                            // Do Nothing
-                            break;
-                        case var length when color.Length > 6:
-                            // Get last 6 characters
-                            color = color.Substring(0, 6);
-                            break;
-                        default:
-                            throw new ArgumentException("Supplied Color had an issue");
-                    }
-
-                    command.SetColor(new RGBColor(color));
+                command.SetColor(new RGBColor(color));
 
 
-                    if (availability == "Off")
-                    {
-                        command.On = false;
-
-                        if (lightId.Contains("group_id:"))
-                        {
-                            await _client.SendGroupCommandAsync(command, lightId.Replace("group_id:", ""));
-                        }
-                        else
-                        {
-                            await _client.SendCommandAsync(command, new List<string> { lightId.Replace("id:", "") });
-                        }
-
-                        message = $"Turning Hue Light {lightId} Off";
-                        _logger.LogInformation(message);
-                        return;
-                    }
-
-                    if (_appState.Config.LightSettings.UseDefaultBrightness)
-                    {
-                        if (_appState.Config.LightSettings.DefaultBrightness == 0)
-                        {
-                            command.On = false;
-                        }
-                        else
-                        {
-                            command.On = true;
-                            command.Brightness = Convert.ToByte(((Convert.ToDouble(_appState.Config.LightSettings.DefaultBrightness) / 100) * 254));
-                            command.TransitionTime = new TimeSpan(0);
-                        }
-                    }
-                    else
-                    {
-                        if (_appState.Config.LightSettings.Hue.Brightness == 0)
-                        {
-                            command.On = false;
-                        }
-                        else
-                        {
-                            command.On = true;
-                            command.Brightness = Convert.ToByte(((Convert.ToDouble(_appState.Config.LightSettings.Hue.Brightness) / 100) * 254));
-                            command.TransitionTime = new TimeSpan(0);
-                        }
-                    }
+                if (availability == "Off")
+                {
+                    command.On = false;
 
                     if (lightId.Contains("group_id:"))
                     {
@@ -248,68 +205,134 @@ namespace PresenceLight.Core
                         await _client.SendCommandAsync(command, new List<string> { lightId.Replace("id:", "") });
                     }
 
-                    message = $"Setting Hue Light {lightId} to {color}";
+                    message = $"Turning Hue Light {lightId} Off";
                     _logger.LogInformation(message);
+                    return;
                 }
-                catch (Exception e)
-                {
-                    _logger.LogError(e, "Error Occurred Setting Color");
-                    throw;
-                }
-            }
-        }
 
-        public async Task<IEnumerable<Light>> GetLights()
-        {
-            await InitializeClient();
-
-            if (_client == null && !_client.IsInitialized)
-            {
-                _logger.LogInformation("Hue Client Not Initialized");
-                return null;
-            }
-            else
-            {
-                try
+                if (_appState.Config.LightSettings.UseDefaultBrightness)
                 {
-                    var lights = await _client.GetLightsAsync();
-                    // if there are no lights, get some
-                    if (lights.Count() == 0)
+                    if (_appState.Config.LightSettings.DefaultBrightness == 0)
                     {
-                        await _client.SearchNewLightsAsync();
-                        Thread.Sleep(40000);
-                        lights = await _client.GetNewLightsAsync();
+                        command.On = false;
                     }
-                    return lights;
+                    else
+                    {
+                        command.On = true;
+                        command.Brightness = Convert.ToByte(((Convert.ToDouble(_appState.Config.LightSettings.DefaultBrightness) / 100) * 254));
+                        command.TransitionTime = new TimeSpan(0);
+                    }
                 }
-                catch (Exception e)
+                else
                 {
-                    _logger.LogError(e, "Error Getting Lights");
-                    throw;
+                    if (_appState.Config.LightSettings.Hue.Brightness == 0)
+                    {
+                        command.On = false;
+                    }
+                    else
+                    {
+                        command.On = true;
+                        command.Brightness = Convert.ToByte(((Convert.ToDouble(_appState.Config.LightSettings.Hue.Brightness) / 100) * 254));
+                        command.TransitionTime = new TimeSpan(0);
+                    }
                 }
+
+                if (lightId.Contains("group_id:"))
+                {
+                    await _client.SendGroupCommandAsync(command, lightId.Replace("group_id:", ""));
+                }
+                else
+                {
+                    await _client.SendCommandAsync(command, new List<string> { lightId.Replace("id:", "") });
+                }
+
+                message = $"Setting Hue Light {lightId} to {color}";
+                _logger.LogInformation(message);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Error Occurred Setting Color");
+                throw;
             }
         }
 
-        public async Task<IEnumerable<Group>> GetGroups()
+        public async Task<IEnumerable<HueApi.Models.Light>> GetLights()
         {
             await InitializeClient();
 
-            if (_client == null && !_client.IsInitialized)
+            if (_client == null || !_client.IsInitialized)
             {
                 _logger.LogInformation("Hue Client Not Initialized");
                 return null;
             }
-            else
+
+            try
             {
-                try
+                var q42Lights = await _client.GetLightsAsync();
+                // if there are no lights, get some
+                if (!q42Lights.Any())
                 {
-                    return await _client.GetGroupsAsync();
+                    await _client.SearchNewLightsAsync();
+                    Thread.Sleep(40000);
+                    q42Lights = await _client.GetNewLightsAsync();
                 }
-                catch (Exception e)
+
+                // Convert Q42 Light models to HueApi Light models
+                var hueApiLights = new List<HueApi.Models.Light>();
+                foreach (var light in q42Lights)
                 {
-                    _logger.LogError(e, "Error Getting Lights");
-                    throw;
+                    var guid = light.UniqueId?.Replace(":", "-");
+                    hueApiLights.Add(new HueApi.Models.Light
+                    {
+                        IdV1 = light.Id,
+                        Metadata = new HueApi.Models.Metadata
+                        {
+                            Name = light.Name
+                        }
+                    });
                 }
+                return hueApiLights;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Error Getting Lights");
+                throw;
+            }
+        }
+
+        public async Task<IEnumerable<HueApi.Models.GroupedLight>> GetGroups()
+        {
+            await InitializeClient();
+
+            if (_client == null || !_client.IsInitialized)
+            {
+                _logger.LogInformation("Hue Client Not Initialized");
+                return null;
+            }
+
+            try
+            {
+                var q42Groups = await _client.GetGroupsAsync();
+
+                // Convert Q42 Group models to HueApi GroupedLight models
+                var hueApiGroups = new List<HueApi.Models.GroupedLight>();
+                foreach (var group in q42Groups)
+                {
+                    hueApiGroups.Add(new HueApi.Models.GroupedLight
+                    {
+                        IdV1 = group.Id,
+                        Metadata = new HueApi.Models.Metadata
+                        {
+                            Name = group.Name
+                        }
+                    });
+                }
+                return hueApiGroups;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Error Getting Groups");
+                throw;
             }
         }
 
