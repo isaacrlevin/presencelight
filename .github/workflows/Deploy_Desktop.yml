@@ -160,6 +160,12 @@ jobs:
         $badge.Save(".\${{ matrix.ChannelName }}\stable_badge.svg")
       shell: powershell
 
+    - name: Setup Windows SDK
+      uses: GuillaumeFalourd/setup-windows10-sdk-action@v2
+      with:
+        sdk-version: 19041
+      if:  ${{ success() && matrix.ChannelName  != 'Standalone' }}
+
     - name: Build Standalone Presence Light x86
       run: |
         dotnet restore .\src\DesktopClient\PresenceLight\PresenceLight.csproj
