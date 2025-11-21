@@ -64,7 +64,11 @@ namespace PresenceLight.Web
                     await _mediator.Send(new Core.GraphServices.InitializeCommand()
                     {
                     });
-                    _appState.SignedIn = true;
+
+                    if (loginService.IsInitialized)
+                    {
+                        _appState.SignedIn = true;
+                    }
                 }
 
                 var (user, presence) = await GetUserAndPresence();

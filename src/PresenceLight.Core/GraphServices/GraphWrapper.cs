@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Graph;
 using Microsoft.Graph.Models;
+using Microsoft.Graph.Models.ODataErrors;
 
 using Polly;
 using Polly.Retry;
@@ -69,7 +70,22 @@ namespace PresenceLight.Core
 
         public async Task<System.IO.Stream> GetPhoto(CancellationToken token)
         {
-            return await _retryPolicy.ExecuteAsync<Stream>(async () => await _graphServiceClient.Me.Photo.Content.GetAsync().ConfigureAwait(true));
+            try
+            {
+                return await _retryPolicy.ExecuteAsync<Stream>(async () => await _graphServiceClient.Me.Photo.Content.GetAsync().ConfigureAwait(true));
+            }
+            catch (ODataError ex)
+            {
+                if ("ImageNotFound".Equals(ex.Error.Code))
+                {
+                    _logger.LogInformation(ex, "Profile photo does not exist");
+                    return null;
+                }
+                else
+                {
+                    throw;
+                }
+            }
         }
 
         public async Task<User> GetProfile(CancellationToken token)
