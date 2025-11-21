@@ -28,7 +28,7 @@ namespace PresenceLight.Core
             _logger = logger;
             _configMonitor = configMonitor;
             config = _configMonitor.CurrentValue;
-            _appState.AadConfigComplete = authProvider.RebuildMsalClients();
+            _appState.AadConfigComplete = _authProvider.RebuildMsalClients();
 
             _reloadSubscription = _configMonitor.OnChange(async newConfig =>
             {
@@ -37,10 +37,11 @@ namespace PresenceLight.Core
                     if (AuthorizationProvider.AadChanged(config, newConfig))
                     {
                         _logger?.LogInformation("AAD settings changed; signing out and invalidating auth provider.");
-                        _appState.SignOutRequested = true;
-                        await SignOut();
-                        _authProvider.Invalidate();
-                        _appState.AadConfigComplete = authProvider.RebuildMsalClients();
+                        if (_appState.SignInRequested)
+                        {
+                            _appState.SignInRequested = false;
+                        }
+                        _appState.RebuildRequested = true;
                     }
                 }
                 catch (Exception ex)
@@ -55,8 +56,11 @@ namespace PresenceLight.Core
         public async Task GetAuthenticatedGraphClient()
         {
             await _authProvider.AcquireToken();
-            GraphServiceClient = new GraphServiceClient(_authProvider);
-            IsInitialized = true;
+            if (_authProvider.UserAccount != null)
+            {
+                GraphServiceClient = new GraphServiceClient(_authProvider);
+                IsInitialized = true;
+            }
         }
 
         public async Task<bool> IsUserAuthenticated()
@@ -128,6 +132,12 @@ namespace PresenceLight.Core
             _authProvider.UserAccount = null;
             IsInitialized = false;
             GraphServiceClient = null;
+        }
+
+        public void RebuildClient()
+        {
+            _authProvider.Invalidate();
+            _appState.AadConfigComplete = _authProvider.RebuildMsalClients();
         }
     }
 }

@@ -46,6 +46,11 @@ namespace PresenceLight.Core
         public bool SignOutRequested { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether a rebuild request has been made.
+        /// </summary>
+        public bool RebuildRequested { get; set; }
+
+        /// <summary>
         /// Gets or sets the list of Hue lights.
         /// </summary>
         public IEnumerable<object> HueLights { get; set; }

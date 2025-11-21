@@ -116,27 +116,57 @@ namespace PresenceLight.Core
 
                 try
                 {
+                    _logger.LogTrace("Acquiring token silently");
                     authResult = await PubClient.AcquireTokenSilent(config.AADSettings.Scopes, accounts.FirstOrDefault())
                     .ExecuteAsync();
 
                     UserAccount = authResult.Account;
                     accessToken = authResult.AccessToken;
+                    _logger.LogDebug("Got tokens silently");
                 }
                 catch (MsalUiRequiredException)
                 {
                     _logger.LogInformation("Silent token acquisition failed. Falling back to interactive.");
                     try
                     {
+                        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(120));
+                        //without a timeout, this hangs indefinitely if the browser/tab is closed
                         authResult = await PubClient.AcquireTokenInteractive(config.AADSettings.Scopes)
                            .WithUseEmbeddedWebView(false)
-                           .ExecuteAsync();
-
+                           .ExecuteAsync(cts.Token);
+                        _logger.LogTrace("Getting tokens interactively");
                         UserAccount = authResult.Account;
+                        _logger.LogDebug("Got user account");
                         accessToken = authResult.AccessToken;
+                        _logger.LogDebug("Got tokens interactively");
                     }
-                    catch
+                    catch (MsalException ex) when (ex.ErrorCode == "access_denied")
                     {
-                        _logger.LogWarning("Interactive token acquisition failed.");
+                        // User closed the browser / cancelled login
+                        _logger.LogWarning("User canceled interactive login");
+                    }
+                    catch (MsalException ex) when (ex.ErrorCode == "consent_required")
+                    {
+                        _logger.LogWarning("User did not consent to the application");
+                    }
+                    catch (MsalException ex) when (ex.ErrorCode == "invalid_request")
+                    {
+                        if (ex.Message != null && ex.Message.Contains("not configured as a multi-tenant application"))
+                        {
+                            _logger.LogWarning("Application is not configured as multi-tenant");
+                        }
+                        else
+                        {
+                            _logger.LogWarning(ex, "Interactive token acquisition failed");    
+                        }
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        _logger.LogWarning("Interactive login canceled or timed out");
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogWarning(ex, "Interactive token acquisition failed");
                     }
                 }
             }
